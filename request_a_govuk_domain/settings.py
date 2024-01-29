@@ -15,31 +15,16 @@ from pathlib import Path
 from environ import Env
 
 
-def expandvars(obj):
-    """
-    Recursively expand environment variables in a JSON-like object.
-    """
-    if isinstance(obj, str):
-        return os.path.expandvars(obj)
-    elif isinstance(obj, list):
-        return [expandvars(item) for item in obj]
-    elif isinstance(obj, dict):
-        return {expandvars(key): expandvars(value) for key, value in obj.items()}
-    else:
-        return obj
-
-
-class ExpandingEnv(Env):
-    def json(self, *args, **kwargs):
-        return expandvars(super().json(*args, **kwargs))
-
-
-env = ExpandingEnv()
+env = Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
+Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -50,8 +35,7 @@ SECRET_KEY = 'django-insecure-lvnq%@y6f9c$kkvojjxm_ogh4hiskve4idm$^gh4&83@krxx8^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
 # Application definition
 
