@@ -1,12 +1,8 @@
-{% load static %}
+{% extends "base.html" %}
 
+{% block main %}
+  <h1 class="govuk-heading-xl">Request a .gov.uk domain</h1>
 
-<html>
-  <head>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-  </head>
+  {{ form }}
 
-  <body>
-    <h1>blah {{title}}</h1>
-  </body>
-</html>
+{% endblock %}
