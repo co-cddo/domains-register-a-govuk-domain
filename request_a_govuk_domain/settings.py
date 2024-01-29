@@ -12,6 +12,31 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from environ import Env
+
+
+def expandvars(obj):
+    """
+    Recursively expand environment variables in a JSON-like object.
+    """
+    if isinstance(obj, str):
+        return os.path.expandvars(obj)
+    elif isinstance(obj, list):
+        return [expandvars(item) for item in obj]
+    elif isinstance(obj, dict):
+        return {expandvars(key): expandvars(value) for key, value in obj.items()}
+    else:
+        return obj
+
+
+class ExpandingEnv(Env):
+    def json(self, *args, **kwargs):
+        return expandvars(super().json(*args, **kwargs))
+
+
+env = ExpandingEnv()
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -38,6 +63,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'request_a_govuk_domain.request',
+    "django.contrib.postgres",
+    "psqlextra"
 ]
 
 MIDDLEWARE = [
@@ -74,12 +101,24 @@ WSGI_APPLICATION = 'request_a_govuk_domain.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if "RDS_DB_NAME" in os.environ:
+    DATABASES = {
+        "default": {
+            "ENGINE": "psqlextra.backend",
+            "NAME": os.environ["RDS_DB_NAME"],
+            "USER": os.environ["RDS_USERNAME"],
+            "PASSWORD": os.environ["RDS_PASSWORD"],
+            "HOST": os.environ["RDS_HOST"],
+            "PORT": os.environ["RDS_PORT"],
+            "OPTIONS": {
+                "connect_timeout": 5,
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": env.db_url(default="postgresql:///govuk_domain", engine="psqlextra.backend"),
+    }
 
 
 # Password validation
