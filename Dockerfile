@@ -13,7 +13,7 @@ RUN poetry config virtualenvs.create false \
   && poetry install ${POETRY_ARGS}
 
 COPY manage.py /srv/request_a_govuk_domain/
-COPY request_a_govuk_domain /srv/request_a_govuk_domain/req/srv/request_a_govuk_domain
+COPY request_a_govuk_domain /srv/request_a_govuk_domain/request_a_govuk_domain
 
 RUN sed -i 's/\r$//' /srv/request_a_govuk_domain/manage.py  && \
         chmod +x /srv/request_a_govuk_domain/manage.py
