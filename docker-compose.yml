@@ -1,0 +1,38 @@
+services:
+
+  web:
+    platform: linux/amd64
+    build:
+      context: .
+      args:
+        POETRY_ARGS: "--no-root --no-ansi"
+    volumes:
+      - .:/srv/request_a_govuk_domain
+    ports:
+      - "8000:8000"
+    entrypoint: ["/usr/local/bin/gunicorn", "request_a_govuk_domain.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "120", "--access-logfile", "-"]
+    environment:
+      DEBUG: "True"
+      DJANGO_SETTINGS_MODULE: request_a_govuk_domain.settings
+      DATABASE_URL: postgresql://govuk_domain:govuk_domain@postgres:5432/govuk_domain  # pragma: allowlist secret
+    depends_on:
+      postgres:
+        condition: service_started
+
+  postgres:
+    platform: linux/amd64
+    image: postgres
+    ports:
+      -  54320:5432
+    environment:
+      POSTGRES_USER: govuk_domain
+      POSTGRES_PASSWORD: govuk_domain  # pragma: allowlist secret
+      POSTGRES_DB: govuk_domain
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+
+
+volumes:
+  postgres-data: {}
