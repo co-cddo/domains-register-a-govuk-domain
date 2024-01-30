@@ -1,5 +1,14 @@
 services:
 
+  x-api-base: &api-base
+    platform: linux/amd64
+    build:
+      context: .
+      args:
+        POETRY_ARGS: "--no-root --no-ansi"
+    volumes:
+      - .:/srv/request_a_govuk_domain
+
   web:
     platform: linux/amd64
     build:
@@ -10,7 +19,7 @@ services:
       - .:/srv/request_a_govuk_domain
     ports:
       - "8000:8000"
-    entrypoint: ["/usr/local/bin/gunicorn", "request_a_govuk_domain.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "120", "--access-logfile", "-"]
+    entrypoint: [ "/usr/local/bin/gunicorn", "request_a_govuk_domain.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "120", "--access-logfile", "-" ]
     environment:
       DEBUG: "True"
       DJANGO_SETTINGS_MODULE: request_a_govuk_domain.settings
@@ -23,7 +32,7 @@ services:
     platform: linux/amd64
     image: postgres
     ports:
-      -  54320:5432
+      - 54320:5432
     environment:
       POSTGRES_USER: govuk_domain
       POSTGRES_PASSWORD: govuk_domain  # pragma: allowlist secret
@@ -32,7 +41,13 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  init:
+    <<: *api-base
+    restart: 'no'
+    command: [ "sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput" ]
+    depends_on:
+      - postgres
 
 
 volumes:
-  postgres-data: {}
+  postgres-data: { }
