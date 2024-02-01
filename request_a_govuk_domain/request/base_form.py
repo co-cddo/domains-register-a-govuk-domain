@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 from django import forms
 from django.forms import BoundField
 
@@ -11,7 +13,7 @@ class BoundFieldWithLabelClass(BoundField):
         self.label_style = label_style
         super().__init__(*args)
 
-    def label_tag(self, contents=None, attrs=None, label_suffix=None, tag=None):
+    def label_tag(self, contents: str = None, attrs: Dict[str, Any] = None, label_suffix: str = None, tag: str = None):
         """
         Override the label generation so we can add the style
         :param contents:
@@ -30,18 +32,34 @@ class BoundFieldWithLabelClass(BoundField):
 class FieldProxy(object):
     """
     Proxy that wraps any Field object and provide
-    an instance of BoundFieldWithLabelClass instance on the
+    an instance of BoundFieldWithLabelClass on the
     return value of get_bound_field
     """
 
-    def __init__(self, proxied, label_style):
+    def __init__(self, proxied: forms.Field, label_style: str):
+        """
+        Wrapper for a form.Field, tht will add label styles to the bound field.
+        :param proxied:
+        :param label_style:
+        """
         self.proxied = proxied
         self.label_style = label_style
 
-    def __getattr__(self, item):
+    def __getattr__(self, item: str):
+        """
+        Proxy any property access to the proxied object
+        :param item:
+        :return:
+        """
         return getattr(self.proxied, item)
 
-    def get_bound_field(self, form, field_name):
+    def get_bound_field(self, form: forms.Form, field_name: str):
+        """
+        Overridden method to get the bound field, that supports the label styling
+        :param form:
+        :param field_name:
+        :return:
+        """
         # Intercept the bound field and return the proxy that supports label styles
         return BoundFieldWithLabelClass(self.label_style, form, self.proxied, field_name, )
 
