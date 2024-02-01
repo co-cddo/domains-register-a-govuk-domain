@@ -1,13 +1,19 @@
-services:
+x-common-application-variables: &common-application-variables
+  DEBUG: "True"
+  DJANGO_SETTINGS_MODULE: request_a_govuk_domain.settings
+  DATABASE_URL: postgresql://govuk_domain:govuk_domain@postgres:5432/govuk_domain  # pragma: allowlist secret
 
-  x-api-base: &api-base
-    platform: linux/amd64
-    build:
-      context: .
-      args:
-        POETRY_ARGS: "--no-root --no-ansi"
-    volumes:
-      - .:/srv/request_a_govuk_domain
+
+x-api-base: &api-base
+  platform: linux/amd64
+  build:
+    context: .
+    args:
+      POETRY_ARGS: "--no-root --no-ansi"
+  volumes:
+    - .:/srv/request_a_govuk_domain
+
+services:
 
   web:
     platform: linux/amd64
@@ -16,14 +22,13 @@ services:
       args:
         POETRY_ARGS: "--no-root --no-ansi"
     volumes:
-      - .:/srv/request_a_govuk_domain
+      - ./request_a_govuk_domain:/srv/request_a_govuk_domain/request_a_govuk_domain
     ports:
       - "8000:8000"
-    entrypoint: [ "/usr/local/bin/gunicorn", "request_a_govuk_domain.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "120", "--access-logfile", "-" ]
+    #Added the reload flag so the application will be reloaded when the source is modified.
+    entrypoint: [ "/usr/local/bin/gunicorn", "request_a_govuk_domain.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "120", "--access-logfile", "-", "--reload" ]
     environment:
-      DEBUG: "True"
-      DJANGO_SETTINGS_MODULE: request_a_govuk_domain.settings
-      DATABASE_URL: postgresql://govuk_domain:govuk_domain@postgres:5432/govuk_domain  # pragma: allowlist secret
+      <<: *common-application-variables
     depends_on:
       postgres:
         condition: service_started
@@ -44,7 +49,9 @@ services:
   init:
     <<: *api-base
     restart: 'no'
-    command: [ "sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput" ]
+    environment:
+      <<: *common-application-variables
+    command: [ "sh", "-c", "python manage.py migrate --noinput" ]
     depends_on:
       - postgres
 
