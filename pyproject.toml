@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "request-a-govuk-domain"
+name = "request_a_govuk_domain"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
@@ -9,9 +9,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 django = "^4.2"
-#psycopg2 = "^2.9.9"
 django-environ = "^0.11.2"
 django-postgres-extra = "^2.0.8"
+psycopg2-binary = "^2.9.9"
+whitenoise = "^6.6.0"
 
 
 [tool.poetry.group.dev.dependencies]
