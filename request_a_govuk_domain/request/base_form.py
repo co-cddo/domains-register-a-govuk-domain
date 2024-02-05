@@ -22,7 +22,7 @@ class BoundFieldWithLabelClass(BoundField):
         :param tag:
         :return:
         """
-        if not attrs:
+        if attrs is None:
             attrs = {}
         if self.label_style:
             attrs["class"] = self.label_style
@@ -70,10 +70,10 @@ class FormWithLabelStyle(forms.Form):
     attributes to the labels as it is not supported by default.
     """
 
-    def __init__(self, label_style: str = "govuk-label", *args):
-        super().__init__(*args)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, *kwargs)
         proxied_fields = dict()
         for field_name in self.fields:
-            proxied_fields[field_name] = FieldProxy(self.fields[field_name], label_style)
+            proxied_fields[field_name] = FieldProxy(self.fields[field_name], "govuk-label")
         # Replace the fields with the proxies, that provide the label styling.
         self.fields = proxied_fields

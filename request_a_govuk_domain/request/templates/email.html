@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <h1 class="govuk-heading-xl">Email</h1>
+
+
+    <form method="post" action="{% url 'email' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+            Save and continue
+        </button>
+    </form>
+{% endblock %}
