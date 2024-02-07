@@ -1,0 +1,5 @@
+services:
+  web:
+    depends_on:
+      init:
+        condition: service_completed_successfully
