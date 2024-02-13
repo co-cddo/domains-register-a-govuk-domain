@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 
 {% block main %}
-    <h1 class="govuk-heading-xl">Name</h1>
 
+    {% load govuk_frontend_django %}
+
+    {% gds_component "back-link" href="/name" %}
+
+    <h1 class="govuk-heading-xl">Name</h1>
 
     <form method="post" action="{% url 'name' %}">
         {% csrf_token %}
         {{ form.as_p }}
-
-        <button type="submit" class="govuk-button" data-module="govuk-button">
-            Save and continue
-        </button>
+        {% gds_component "button" text="Save" %}
     </form>
+
 {% endblock %}
