@@ -16,9 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .request import views
+
+from .request.views import NameView, EmailView, ConfirmView, SuccessView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name="index"),
+    path('name/', NameView.as_view(), name='name'),
+    path('email/', EmailView.as_view(), name='email'),
+    path('confirm/', ConfirmView.as_view(), name='confirm'),
+    path('success/', SuccessView.as_view(), name='success'),
 ]

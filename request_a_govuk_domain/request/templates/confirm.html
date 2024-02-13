@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <h1 class="govuk-heading-xl">Confirm</h1>
+
+
+    <form method="post" action="{% url 'confirm' %}">
+        {% csrf_token %}
+        <p>Name: {{ registration_data.registrant_full_name }}</p>
+        <p>Email: {{ registration_data.registrant_email_address }}</p>
+
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+            Submit
+        </button>
+    </form>
+{% endblock %}
+
