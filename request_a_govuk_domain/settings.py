@@ -48,8 +48,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'request_a_govuk_domain.request',
     "django.contrib.postgres",
-    "psqlextra"
+    "psqlextra",
+    "govuk_frontend_django",
+    "crispy_forms",
+    "crispy_forms_gds",
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["gds"]
+CRISPY_TEMPLATE_PACK = "gds"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -184,6 +190,8 @@ LOGGING = {
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# Django Whitenoise Configuration
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['.map']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

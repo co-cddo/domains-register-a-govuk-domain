@@ -1,15 +1,8 @@
 {% extends "base.html" %}
-
+{% load crispy_forms_tags crispy_forms_gds %}
 {% block main %}
-    <h1 class="govuk-heading-xl">Email</h1>
 
+    {% error_summary form %}
+    {% crispy form %}
 
-    <form method="post" action="{% url 'email' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-
-        <button type="submit" class="govuk-button" data-module="govuk-button">
-            Save and continue
-        </button>
-    </form>
 {% endblock %}
