@@ -10,9 +10,6 @@ down:
 build:
 	docker compose build
 
-logs:
-	docker compose logs web -f
-
 collectstatic:
 		docker compose -f docker-compose.yml -f docker-compose-local.yml run --rm --service-ports --entrypoint "python manage.py collectstatic --noinput" web
 
