@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags crispy_forms_gds %}
+{% load govuk_frontend_django %}
+
+{% block main %}
+
+  {% block beforeContent %}
+    {% gds_component "back-link" href="/exemption_upload" %}
+  {% endblock %}
+
+  {% block content %}
+    {% error_summary form %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">
+          Upload evidence of the exemption
+        </h1>
+        <form method="post" action="{% url 'exemption_upload' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% crispy form %}
+        </form>
+      </div>
+    </div>
+  {% endblock %}
+{% endblock %}

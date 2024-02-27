@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .forms import NameForm, EmailForm
+from .forms import NameForm, EmailForm, ExemptionForm, ExemptionUploadForm
 from .models import RegistrationData
+from django.views.generic.edit import FormView
+
+from .utils import handle_uploaded_file
+
 
 """
 All views are example views, please modify remove as needed
@@ -65,3 +69,53 @@ class SuccessView(View):
 
     def get(self, request):
         return render(request, self.template_name, {})
+
+
+class ExemptionView(FormView):
+    template_name = 'exemption.html'
+
+    def get(self, request):
+        form = ExemptionForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = ExemptionForm(request.POST or None)
+
+        if form.is_valid():
+            exe_radio = form.cleaned_data['exe_radio']
+            exe_radio = dict(form.fields['exe_radio'].choices)[exe_radio]
+            if exe_radio == 'Yes':
+                return redirect('exemption_upload')
+            else:
+                return redirect('exemption_fail')
+        return render(request, self.template_name, {'form': form})
+
+
+class ExemptionUploadView(FormView):
+    template_name = 'exemption_upload.html'
+
+    def get(self, request):
+        form = ExemptionUploadForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        """
+        If the file is an image we encode using base64
+        ex: b64encode(form.cleaned_data['file'].read()).decode('utf-8')
+        If the file is a pdf we do not encode
+        """
+        form = ExemptionUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            handle_uploaded_file(request.FILES["file"])
+            return render(request,
+                          'exemption_upload_confirm.html',
+                          {'file': request.FILES["file"]})
+        return render(request, self.template_name, {'form': form})
+
+
+class ExemptionFailView(FormView):
+    template_name = 'exemption_fail.html'
+
+    def get(self, request):
+        return render(request, 'exemption_fail.html')

@@ -1,3 +1,7 @@
+from django import forms
+from django.template.defaultfilters import filesizeformat
+from django.conf import settings
+
 from crispy_forms_gds.helper import FormHelper
 from crispy_forms_gds.layout import (
     Button,
@@ -5,9 +9,8 @@ from crispy_forms_gds.layout import (
     Fieldset,
     Fluid,
     Layout,
-    Size,
+    Size
 )
-from django import forms
 
 from .base_form import FormWithLabelStyle
 
@@ -55,3 +58,68 @@ class EmailForm(forms.Form):
             raise forms.ValidationError("Email address must end with .gov.uk")
 
         return registrant_email_address
+
+
+class ExemptionForm(forms.Form):
+    exe_radio = forms.ChoiceField(
+        label="Does your registrant have an exemption from using the GOV.UK \
+            website?",
+        help_text="If your registrant is a central government department or \
+            agency, they must have an exemption from the Government Digital \
+            Service before applying for a new third-level .gov.uk domain \
+            name.",
+        choices=(("yes", "Yes"), ("no", "No")),
+        widget=forms.RadioSelect,
+        error_messages={"required": "Are you exempted?"},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field.radios("exe_radio",
+                         legend_size=Size.MEDIUM,
+                         legend_tag="h1",
+                         inline=True),
+            Button("submit", "Continue"),
+        )
+
+    def get_choice(self, field):
+        value = self.cleaned_data[field]
+        return dict(self.fields[field].choices).get(value)
+
+
+class ExemptionUploadForm(forms.Form):
+    file = forms.FileField(
+        label="Upload a file",
+        help_text="Support file is .jpeg or .png and the maximum size is 2.5 MB.",
+        error_messages={
+            "required": "Choose the file you want to upload."
+        },
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                Field.text("file", field_width=Fluid.TWO_THIRDS),
+            ),
+            Button("submit", "Submit"))
+
+    def clean_file(self):
+        """
+        Custom Error messages for
+        1. Size
+        2. Content Type
+        """
+        file = self.cleaned_data.get('file')
+        file_content = file.content_type.split('/')[0]
+
+        if file_content in settings.CONTENT_TYPES:
+            if file.size > int(settings.MAX_UPLOAD_SIZE):
+                raise forms.ValidationError(('Please keep filesize under %s. Current filesize %s') % (filesizeformat(settings.MAX_UPLOAD_SIZE), filesizeformat(file.size)))
+        else:
+            raise forms.ValidationError('Support file is .jpeg or .png and the maximum size is 2.5 MB.')
+
+        return file
