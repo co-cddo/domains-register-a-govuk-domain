@@ -1,10 +1,16 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .forms import NameForm, EmailForm, ExemptionForm, ExemptionUploadForm
+from .forms import (
+    NameForm,
+    EmailForm,
+    ExemptionForm,
+    ExemptionUploadForm,
+    RegistrarForm
+)
 from .models import RegistrationData
 from django.views.generic.edit import FormView
 
-from .utils import handle_uploaded_file
+from .utils import handle_uploaded_file, organisations_list
 
 
 """
@@ -119,3 +125,22 @@ class ExemptionFailView(FormView):
 
     def get(self, request):
         return render(request, 'exemption_fail.html')
+
+
+class RegistrarView(View):
+    template_name = 'registrar.html'
+
+    def get(self, request):
+        form = RegistrarForm()
+        return render(request,
+                      self.template_name,
+                      {'form': form, 'organisations': organisations_list()})
+
+    def post(self, request):
+        form = RegistrarForm(None, request.POST)
+        if form.is_valid():
+            request.session['organisations_choice'] = {
+                'organisation': form.cleaned_data['organisations_choice']
+                }
+            return redirect('exemption_upload')
+        return render(request, self.template_name, {'form': form})
