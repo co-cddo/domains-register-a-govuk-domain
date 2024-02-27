@@ -13,6 +13,7 @@ from crispy_forms_gds.layout import (
 )
 
 from .base_form import FormWithLabelStyle
+from .utils import organisations_list
 
 
 class NameForm(FormWithLabelStyle):
@@ -123,3 +124,19 @@ class ExemptionUploadForm(forms.Form):
             raise forms.ValidationError('Support file is .jpeg or .png and the maximum size is 2.5 MB.')
 
         return file
+
+
+class RegistrarForm(FormWithLabelStyle):
+    """
+    Registrar Form with organisations choice fields
+    """
+    organisations_choice = forms.ChoiceField(
+        label='Choose your organisation',
+        choices=tuple(organisations_list()),
+        widget=forms.Select(attrs={"class": "govuk-select"}),
+        required=True
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()

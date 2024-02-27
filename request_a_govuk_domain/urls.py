@@ -26,7 +26,8 @@ from .request.views import (
     SuccessView,
     ExemptionView,
     ExemptionUploadView,
-    ExemptionFailView
+    ExemptionFailView,
+    RegistrarView
 )
 
 urlpatterns = [
@@ -38,4 +39,5 @@ urlpatterns = [
     path('exemption/', ExemptionView.as_view(), name='exemption'),
     path('exemption_upload/', ExemptionUploadView.as_view(), name='exemption_upload'),
     path('exemption_fail/', ExemptionFailView.as_view(), name='exemption_fail'),
+    path('registrar/', RegistrarView.as_view(), name='registrar'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
