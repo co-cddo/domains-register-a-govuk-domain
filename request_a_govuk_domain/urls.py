@@ -16,8 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls.static import static
+from django.conf import settings
 
-from .request.views import NameView, EmailView, ConfirmView, SuccessView
+from .request.views import (
+    NameView,
+    EmailView,
+    ConfirmView,
+    SuccessView,
+    ExemptionView,
+    ExemptionUploadView,
+    ExemptionFailView
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +35,7 @@ urlpatterns = [
     path('email/', EmailView.as_view(), name='email'),
     path('confirm/', ConfirmView.as_view(), name='confirm'),
     path('success/', SuccessView.as_view(), name='success'),
-]
+    path('exemption/', ExemptionView.as_view(), name='exemption'),
+    path('exemption_upload/', ExemptionUploadView.as_view(), name='exemption_upload'),
+    path('exemption_fail/', ExemptionFailView.as_view(), name='exemption_fail'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

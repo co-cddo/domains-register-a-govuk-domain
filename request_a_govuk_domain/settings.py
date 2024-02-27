@@ -68,6 +68,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+FILE_UPLOAD_HANDLERS = [
+     "django.core.files.uploadhandler.MemoryFileUploadHandler",
+     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+]
+
 ROOT_URLCONF = 'request_a_govuk_domain.urls'
 
 TEMPLATES = [
@@ -192,8 +197,15 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Django Whitenoise Configuration
 WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['.map']
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# https://djangosnippets.org/snippets/1303/
+CONTENT_TYPES = ['image']
+# 2.5 MB
+MAX_UPLOAD_SIZE = "2621440"
