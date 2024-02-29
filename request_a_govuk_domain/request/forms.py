@@ -16,13 +16,27 @@ from .base_form import FormWithLabelStyle
 from .utils import organisations_list
 
 
-class NameForm(FormWithLabelStyle):
+class NameForm(forms.Form):
     """
-    Example form, please modify/ remove this when the actual requirements are clear
-    This is only created to test the ui with gov uk design is working
+    Example form
+    This is an example of Crispy forms with govuk design system
+    https://github.com/wildfish/crispy-forms-gds
     """
-    registrant_full_name = forms.CharField(label='Registrant Full Name', max_length=100,
-                                           widget=forms.TextInput(attrs={"class": "govuk-input"}))
+    registrant_full_name = forms.CharField(
+        label="Registrant Full Name",
+        help_text="Enter your name as it appears on your passport.",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Fieldset(
+                Field.text("registrant_full_name"),
+            ),
+            Button("submit", "Continue"),
+        )
 
 
 class EmailForm(forms.Form):
@@ -48,17 +62,9 @@ class EmailForm(forms.Form):
             Button("submit", "Continue"),
         )
 
-    def clean_registrant_email_address(self):
-        """
-        Example custom validation for email address
-        Checks that the email address ends with .gov.uk
-        """
-        registrant_email_address = self.cleaned_data.get('registrant_email_address')
 
-        if not registrant_email_address.endswith('.gov.uk'):
-            raise forms.ValidationError("Email address must end with .gov.uk")
-
-        return registrant_email_address
+class ConfirmForm(forms.Form):
+    pass
 
 
 class ExemptionForm(forms.Form):

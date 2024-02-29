@@ -1,17 +1,8 @@
 {% extends "base.html" %}
-
+{% load crispy_forms_tags crispy_forms_gds %}
 {% block main %}
 
-    {% load govuk_frontend_django %}
-
-    {% gds_component "back-link" href="/name" %}
-
-    <h1 class="govuk-heading-xl">Name</h1>
-
-    <form method="post" action="{% url 'name' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        {% gds_component "button" text="Save" %}
-    </form>
+    {% error_summary form %}
+    {% crispy form %}
 
 {% endblock %}
