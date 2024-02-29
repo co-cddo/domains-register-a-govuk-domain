@@ -9,6 +9,7 @@ from crispy_forms_gds.layout import (
     Field,
     Fieldset,
     Fluid,
+    HTML,
     Layout,
     Size
 )
@@ -146,3 +147,15 @@ class RegistrarForm(FormWithLabelStyle):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Fieldset(
+                Field.text("organisations_choice"),
+            ),
+            HTML.warning(
+                """If you are not listed as a .gov.uk Approved Registrar
+                on the registry operator's website, you cannot use
+                this service."""
+            ),
+            Button("submit", "Submit"),
+        )
