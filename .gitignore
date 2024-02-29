@@ -163,3 +163,6 @@ cython_debug/
 .vscode/
 
 /request_a_govuk_domain/static/
+
+# macos specific
+.DS_Store
