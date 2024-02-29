@@ -1,24 +1,21 @@
 describe('name spec', () => {
   it('passes', () => {
-    cy.visit('http://0.0.0.0:8000/name/')
+    cy.visit('http://0.0.0.0:8000/email/')
 
-    //Get an input, type into it
-    cy.get('.govuk-input').type('GOV UK')
-
-    //Click Save
+    // Don't type anything, just click on the button
     cy.get('.govuk-button').click()
 
     // There should be an error
-    cy.get('h2').should('exist')
-    cy.get('h2').should('have.value', 'There is a problem')
+    cy.get('#error-summary-title').should('exist')
+    cy.get('#error-summary-title').should('include.text', 'There is a problem')
+    cy.get('.govuk-error-summary__list').should('include.text', 'This field is required.')
 
-    //Retrying with a correct email
+    // Retrying with a correct email
     cy.get('.govuk-input').type('something@some.gov.uk')
     cy.get('.govuk-button').click()
 
     // No error message this time
-    cy.get('h2').should('not.exist')
-
+    cy.get('#error-summary-title').should('not.exist')
   })
 
   // it('fails', () => {
