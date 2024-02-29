@@ -16,7 +16,7 @@ describe('upload_exemption', () => {
   /* ==== Test Created with Cypress Studio ==== */
   it('exemption_fail', function() {
     /* ==== Generated with Cypress Studio ==== */
-    cy.visit('http://127.0.0.1:8000/exemption/');
+    cy.visit('exemption/');
     cy.get('#id_exe_radio_2').check();
     cy.get('#id_submit').click();
     /* ==== End Cypress Studio ==== */
