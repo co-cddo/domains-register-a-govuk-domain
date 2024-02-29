@@ -123,9 +123,7 @@ class ExemptionUploadForm(forms.Form):
         2. Content Type
         """
         file = self.cleaned_data.get('file')
-        file_content = file.content_type.split('/')[0]
-
-        if file_content in settings.CONTENT_TYPES:
+        if file is not None and file.content_type.split('/')[0] in settings.CONTENT_TYPES:
             if file.size > int(settings.MAX_UPLOAD_SIZE):
                 raise forms.ValidationError(('Please keep filesize under %s. Current filesize %s') % (filesizeformat(settings.MAX_UPLOAD_SIZE), filesizeformat(file.size)))
         else:

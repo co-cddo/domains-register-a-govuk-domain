@@ -13,7 +13,7 @@ class BoundFieldWithLabelClass(BoundField):
         self.label_style = label_style
         super().__init__(*args)
 
-    def label_tag(self, contents: str = None, attrs: Dict[str, Any] = None, label_suffix: str = None, tag: str = None):
+    def label_tag(self, contents: str = "", attrs: Dict[str, Any] = {}, label_suffix: str = "", tag: str = ""):
         """
         Override the label generation so we can add the style
         :param contents:
