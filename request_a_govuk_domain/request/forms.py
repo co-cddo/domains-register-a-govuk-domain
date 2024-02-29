@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import EmailValidator
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 
@@ -49,6 +50,7 @@ class EmailForm(forms.Form):
         label="Email",
         help_text="Enter your email address.",
         widget=forms.EmailInput,
+        validators=[EmailValidator("Please enter a valid email address")],
     )
 
     def __init__(self, *args, **kwargs):
