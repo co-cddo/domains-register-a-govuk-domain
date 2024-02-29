@@ -133,7 +133,7 @@ class ExemptionUploadForm(forms.Form):
         return file
 
 
-class RegistrarForm(FormWithLabelStyle):
+class RegistrarForm(forms.Form):
     """
     Registrar Form with organisations choice fields
     """
