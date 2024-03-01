@@ -14,7 +14,6 @@ from crispy_forms_gds.layout import (
     Size
 )
 
-from .base_form import FormWithLabelStyle
 from .utils import organisations_list
 
 
