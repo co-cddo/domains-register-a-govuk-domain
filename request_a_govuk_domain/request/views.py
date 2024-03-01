@@ -128,7 +128,7 @@ class ExemptionFailView(FormView):
 class RegistrarView(FormView):
     template_name = 'registrar.html'
     form_class = RegistrarForm
-    success_url = reverse_lazy('registrar')
+    success_url = reverse_lazy('email')
 
     def form_valid(self, form):
         self.request.session['registration_data'] = {
