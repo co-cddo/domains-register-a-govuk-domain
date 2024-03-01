@@ -20,6 +20,39 @@ from .utils import organisations_list
 
 class NameForm(forms.Form):
     """
+    Example form, please modify/ remove this when the actual requirements are clear
+    This is only created to test the ui with gov uk design is working
+    """
+    registrant_full_name = forms.CharField(
+        label='Registrant Full Name',
+        max_length=100,
+        widget=forms.TextInput(attrs={"class": "govuk-input"})
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        if args and 'registrant_full_name' in args[0]:
+            self.helper.layout = Layout(
+                Fieldset(
+                    Field.text("registrant_full_name",
+                            field_width=Fluid.TWO_THIRDS),
+                ),
+                Button("submit", "Save"),
+                Button.secondary("cancel", "Back to Answers"),
+            )
+        else:
+            self.helper.layout = Layout(
+                Fieldset(
+                    Field.text("registrant_full_name",
+                            field_width=Fluid.TWO_THIRDS),
+                ),
+                Button("submit", "Save"),
+            )
+
+
+class EmailForm(forms.Form):
+    """
     Example form
     This is an example of Crispy forms with govuk design system
     https://github.com/wildfish/crispy-forms-gds
