@@ -8,14 +8,13 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
 
+        {% error_summary form %}
+
         <h1 class="govuk-heading-xl">
           Which .gov.uk Approved Registrar organisation are you from?
         </h1>
 
-        <form method="post" action="{% url 'registrar' %}">
-          {% csrf_token %}
-          {% crispy form %}
-        </form>
+        {% crispy form %}
       </div>
     </div>
   {% endblock %}

@@ -42,14 +42,8 @@ class NameForm(forms.Form):
 
 
 class EmailForm(forms.Form):
-    """
-    Another example form
-    This is an example of Crispy forms with govuk design system
-    https://github.com/wildfish/crispy-forms-gds
-    """
     registrant_email_address = forms.CharField(
-        label="Email",
-        help_text="Enter your email address.",
+        label="Email address of the .gov.uk Approved Registrar",
         widget=forms.EmailInput,
         validators=[EmailValidator("Please enter a valid email address")],
     )
