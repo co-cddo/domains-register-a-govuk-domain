@@ -3,35 +3,20 @@
 {% load govuk_frontend_django %}
 
 {% block main %}
-  
-  {% block beforeContent %}
-    {% gds_component "back-link" href="/" %}
-  {% endblock %}
 
   {% block content %}
-    <h1 class="govuk-heading-xl">
-      Which .gov.uk Approved Registrar organisation are you from?
-    </h1>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
 
-    <form method="post" action="{% url 'registrar' %}">
-      {% csrf_token %}
-      {% crispy form %}
+        {% error_summary form %}
 
-      <div class="govuk-warning-text">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        <strong class="govuk-warning-text__text">
-          <span class="govuk-visually-hidden">Warning</span>
-          If you are not listed as a .gov.uk Approved Registrar
-          on the registry operator's website, you cannot use
-          this service.
-        </strong>
+        <h1 class="govuk-heading-xl">
+          Which .gov.uk Approved Registrar organisation are you from?
+        </h1>
+
+        {% crispy form %}
       </div>
-
-      <a href="/exemption_upload" class="govuk-button" data-module="govuk-button">
-        Continue
-      </a>
-    </form>
+    </div>
   {% endblock %}
 
 {% endblock %}
-  

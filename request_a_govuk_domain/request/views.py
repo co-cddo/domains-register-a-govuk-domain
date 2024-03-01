@@ -125,20 +125,13 @@ class ExemptionFailView(FormView):
         return render(request, 'exemption_fail.html')
 
 
-class RegistrarView(View):
+class RegistrarView(FormView):
     template_name = 'registrar.html'
+    form_class = RegistrarForm
+    success_url = reverse_lazy('email')
 
-    def get(self, request):
-        form = RegistrarForm()
-        return render(request,
-                      self.template_name,
-                      {'form': form, 'organisations': organisations_list()})
-
-    def post(self, request):
-        form = RegistrarForm(None, request.POST)
-        if form.is_valid():
-            request.session['organisations_choice'] = {
-                'organisation': form.cleaned_data['organisations_choice']
-                }
-            return redirect('exemption_upload')
-        return render(request, self.template_name, {'form': form})
+    def form_valid(self, form):
+        self.request.session['registration_data'] = {
+            'registrar_organisation': form.cleaned_data['organisations_choice']
+        }
+        return super().form_valid(form)

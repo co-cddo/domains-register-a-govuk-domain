@@ -9,6 +9,7 @@ from crispy_forms_gds.layout import (
     Field,
     Fieldset,
     Fluid,
+    HTML,
     Layout,
     Size
 )
@@ -41,14 +42,8 @@ class NameForm(forms.Form):
 
 
 class EmailForm(forms.Form):
-    """
-    Another example form
-    This is an example of Crispy forms with govuk design system
-    https://github.com/wildfish/crispy-forms-gds
-    """
     registrant_email_address = forms.CharField(
-        label="Email",
-        help_text="Enter your email address.",
+        label="Email address of the .gov.uk Approved Registrar",
         widget=forms.EmailInput,
         validators=[EmailValidator("Please enter a valid email address")],
     )
@@ -123,9 +118,7 @@ class ExemptionUploadForm(forms.Form):
         2. Content Type
         """
         file = self.cleaned_data.get('file')
-        file_content = file.content_type.split('/')[0]
-
-        if file_content in settings.CONTENT_TYPES:
+        if file is not None and file.content_type.split('/')[0] in settings.CONTENT_TYPES:
             if file.size > int(settings.MAX_UPLOAD_SIZE):
                 raise forms.ValidationError(('Please keep filesize under %s. Current filesize %s') % (filesizeformat(settings.MAX_UPLOAD_SIZE), filesizeformat(file.size)))
         else:
@@ -134,7 +127,7 @@ class ExemptionUploadForm(forms.Form):
         return file
 
 
-class RegistrarForm(FormWithLabelStyle):
+class RegistrarForm(forms.Form):
     """
     Registrar Form with organisations choice fields
     """
@@ -148,3 +141,15 @@ class RegistrarForm(FormWithLabelStyle):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Fieldset(
+                Field.text("organisations_choice"),
+            ),
+            HTML.warning(
+                """If you are not listed as a .gov.uk Approved Registrar
+                on the registry operator's website, you cannot use
+                this service."""
+            ),
+            Button("submit", "Submit"),
+        )
