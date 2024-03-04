@@ -72,21 +72,25 @@ class EmailView(FormView):
                 return redirect('confirm')
         return render(request, self.template_name, {'form': form})
 
+
 class RegistrantTypeView(FormView):
-    template_name = 'registrant_type.html'
+    template_name = "registrant_type.html"
     form_class = RegistrantTypeForm
-    success_url = reverse_lazy('confirm')
+    success_url = reverse_lazy("confirm")
 
     def form_valid(self, form):
-        registration_data = self.request.session.get('registration_data', {})
-        registration_data['registrant_type'] = form.cleaned_data['registrant_type']
-        self.request.session['registration_data'] = registration_data
-        if form.cleaned_data['registrant_type'] == 'none':
-            self.success_url = reverse_lazy('registrant_type_fail')
+        registration_data = self.request.session.get("registration_data", {})
+        registration_data["registrant_type"] = form.cleaned_data["registrant_type"]
+        self.request.session["registration_data"] = registration_data
+        if form.cleaned_data["registrant_type"] == "none":
+            self.success_url = reverse_lazy("registrant_type_fail")
         return super().form_valid(form)
 
+
 class RegistrantTypeFailView(TemplateView):
-    template_name = 'registrant_type_fail.html'
+    template_name = "registrant_type_fail.html"
+
+
 class ConfirmView(FormView):
     template_name = "confirm.html"
     form_class = ConfirmForm
