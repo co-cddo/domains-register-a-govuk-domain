@@ -27,18 +27,25 @@ from .request.views import (
     ExemptionView,
     ExemptionUploadView,
     ExemptionFailView,
-    RegistrarView
+    RegistrarView,
+    RegistrantTypeView,
+    RegistrantTypeFailView,
 )
 
-urlpatterns = [
-    path('', RegistrarView.as_view(), name='registrar'),
-    path('admin/', admin.site.urls),
-    path('name/', NameView.as_view(), name='name'),
-    path('email/', EmailView.as_view(), name='email'),
-    path('confirm/', ConfirmView.as_view(), name='confirm'),
-    path('success/', SuccessView.as_view(), name='success'),
-    path('exemption/', ExemptionView.as_view(), name='exemption'),
-    path('exemption_upload/', ExemptionUploadView.as_view(), name='exemption_upload'),
-    path('exemption_fail/', ExemptionFailView.as_view(), name='exemption_fail'),
-    path('registrar/', RegistrarView.as_view(), name='registrar'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns = (
+        [
+            path('', RegistrarView.as_view(), name='registrar'),
+            path('admin/', admin.site.urls),
+            path('name/', NameView.as_view(), name='name'),
+            path('email/', EmailView.as_view(), name='email'),
+            path('registrant_type/', RegistrantTypeView.as_view(), name='registrant_type'),
+            path('registrant_type_fail/', RegistrantTypeFailView.as_view(), name='registrant_type_fail'),
+            path('confirm/', ConfirmView.as_view(), name='confirm'),
+            path('success/', SuccessView.as_view(), name='success'),
+            path('exemption/', ExemptionView.as_view(), name='exemption'),
+            path('exemption_upload/', ExemptionUploadView.as_view(), name='exemption_upload'),
+            path('exemption_fail/', ExemptionFailView.as_view(), name='exemption_fail'),
+            path('registrar/', RegistrarView.as_view(), name='registrar'),
+        ]
+        + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+)
