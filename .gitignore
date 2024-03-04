@@ -168,3 +168,6 @@ cython_debug/
 # node files from using cypress
 node_modules/
 cypress/screenshots/
+
+# macos Specific
+.DS_Store
