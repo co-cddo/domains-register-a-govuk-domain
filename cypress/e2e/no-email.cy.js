@@ -22,4 +22,3 @@ describe('Check if user entered an email', () => {
     cy.get('#error-summary-title').should('not.exist')
   })
 })
-

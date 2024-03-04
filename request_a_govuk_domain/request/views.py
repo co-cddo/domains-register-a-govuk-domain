@@ -56,6 +56,7 @@ class NameView(FormView):
 
 class EmailView(FormView):
     template_name = 'email.html'
+
     def get(self, request):
         params = {}
         if 'change' in request.GET:
@@ -74,7 +75,7 @@ class EmailView(FormView):
             if 'cancel' in request.POST:
                 return redirect('confirm')
             else:
-                return redirect('confirm')
+                return redirect('registrant_type')
         return render(request, self.template_name, {'form': form})
 
 
@@ -148,20 +149,31 @@ class RegistryDetailsView(FormView):
 
 class RegistrantTypeView(FormView):
     template_name = "registrant_type.html"
-    form_class = RegistrantTypeForm
-    success_url = reverse_lazy("registrant")
 
-    def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        registration_data["registrant_type"] = form.cleaned_data["registrant_type"]
-        self.request.session["registration_data"] = registration_data
-        if form.cleaned_data["registrant_type"] == "none":
-            self.success_url = reverse_lazy("registrant_type_fail")
-        return super().form_valid(form)
+    def get(self, request):
+        params = {}
+        if 'change' in request.GET:
+            params['registrant_type'] = request.session['registration_data']['registrant_type']
+            form = RegistrantTypeForm(params)
+        else:
+            form = RegistrantTypeForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = RegistrantTypeForm(request.POST)
+        if form.is_valid():
+            registration_data = request.session.get('registration_data', {})
+            registration_data['registrant_type'] = form.cleaned_data['registrant_type']
+            request.session['registration_data'] = registration_data
+            if form.cleaned_data["registrant_type"] == "none":
+                return redirect('registrant_type_fail')
+            else:
+                return redirect('confirm')
+        return render(request, self.template_name, {'form': form})
 
 
 class RegistrantTypeFailView(TemplateView):
-    template_name = 'registrant_type_fail.html'
+    template_name = "registrant_type_fail.html"
 
 
 class RegistrantView(FormView):
