@@ -2,7 +2,6 @@ import json
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
-from django.views import View
 from .forms import (
     NameForm,
     EmailForm,
@@ -10,6 +9,7 @@ from .forms import (
     ExemptionUploadForm,
     RegistrarForm,
     ConfirmForm,
+    RegistrantTypeForm,
 )
 from .models import RegistrationData
 from django.views.generic.edit import FormView
@@ -18,7 +18,7 @@ from .utils import handle_uploaded_file, organisations_list
 
 
 """
-All views are example views, please modify remove as needed
+Some views are example views, please modify/remove as needed
 """
 
 
@@ -35,7 +35,7 @@ class NameView(FormView):
 class EmailView(FormView):
     template_name = 'email.html'
     form_class = EmailForm
-    success_url = reverse_lazy('confirm')
+    success_url = reverse_lazy('registrant_type')
 
     def form_valid(self, form):
         registration_data = self.request.session.get('registration_data', {})
@@ -43,6 +43,22 @@ class EmailView(FormView):
         self.request.session['registration_data'] = registration_data
         return super().form_valid(form)
 
+
+class RegistrantTypeView(FormView):
+    template_name = 'registrant_type.html'
+    form_class = RegistrantTypeForm
+    success_url = reverse_lazy('confirm')
+
+    def form_valid(self, form):
+        registration_data = self.request.session.get('registration_data', {})
+        registration_data['registrant_type'] = form.cleaned_data['registrant_type']
+        self.request.session['registration_data'] = registration_data
+        if form.cleaned_data['registrant_type'] == 'none':
+            self.success_url = reverse_lazy('registrant_type_fail')
+        return super().form_valid(form)
+
+class RegistrantTypeFailView(TemplateView):
+    template_name = 'registrant_type_fail.html'
 
 class ConfirmView(FormView):
     template_name = 'confirm.html'

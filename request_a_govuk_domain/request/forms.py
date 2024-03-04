@@ -2,6 +2,7 @@ from django import forms
 from django.core.validators import EmailValidator
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
+from crispy_forms_gds.choices import Choice
 
 from crispy_forms_gds.helper import FormHelper
 from crispy_forms_gds.layout import (
@@ -11,7 +12,7 @@ from crispy_forms_gds.layout import (
     Fluid,
     HTML,
     Layout,
-    Size
+    Size,
 )
 
 from .utils import organisations_list
@@ -57,6 +58,54 @@ class EmailForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+
+
+class RegistrantTypeForm(forms.Form):
+    REGISTRANT_TYPES = (
+        Choice("Central government department or agency",
+               "Central government department or agency"),
+        Choice("Non-departmental body - also known as an arm's length body",
+               "Non-departmental body - also known as an arm's length body"),
+        Choice("Fire service",
+               "Fire service"),
+        Choice("County, borough, metropolitan or district council",
+               "County, borough, metropolitan or district council"),
+        Choice("Parish, town or community council",
+               "Parish, town or community council"),
+        Choice("Neighbourhood or village council",
+               "Neighbourhood or village council"),
+        Choice("Combined or unitary authority",
+               "Combined or unitary authority"),
+        Choice("Police and crime commissioner",
+               "Police and crime commissioner"),
+        Choice("Joint authority",
+               "Joint authority"),
+        Choice("Joint committee",
+               "Joint committee"),
+        Choice("Representing public sector bodies",
+               "Representing public sector bodies",
+               divider="Or"),
+        Choice("none",
+               "None of the above"),
+    )
+
+    registrant_type = forms.ChoiceField(
+        choices=REGISTRANT_TYPES,
+        widget=forms.RadioSelect,
+        label="Your registrant must be from an eligible organisation to get a .gov.uk domain name.",
+        error_messages={
+            "required": "Please select from one of the choices"
+        },
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field.radios("registrant_type", legend_size=Size.SMALL),
+            Button("submit", "Continue"),
+        )
+
 
 
 class ConfirmForm(forms.Form):
