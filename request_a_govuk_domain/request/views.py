@@ -23,43 +23,53 @@ Some views are example views, please modify remove as needed
 
 
 class NameView(FormView):
-    template_name = "name.html"
-    form_class = NameForm
-    success_url = reverse_lazy("email")
+    template_name = 'name.html'
 
-    def form_valid(self, form):
-        self.request.session["registration_data"] = {
-            "registrant_full_name": form.cleaned_data["registrant_full_name"]
-        }
-        return super().form_valid(form)
+    def get(self, request):
+        params = {}
+        if 'change' in request.GET:
+            params['registrant_full_name'] = request.session['registration_data']['registrant_full_name']
+            form = NameForm(params)
+        else:
+            form = NameForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = NameForm(request.POST)
+        if form.is_valid():
+            registration_data = request.session.get('registration_data', {})
+            registration_data['registrant_full_name'] = form.cleaned_data['registrant_full_name']
+            request.session['registration_data'] = registration_data
+            if 'cancel' in request.POST:
+                return redirect('confirm')
+            else:
+                return redirect('email')
+        return render(request, self.template_name, {'form': form})
 
 
 class EmailView(FormView):
-    template_name = "email.html"
-    form_class = EmailForm
-    success_url = reverse_lazy("registrant_type")
+    template_name = 'email.html'
 
-    def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        registration_data["registrant_email_address"] = form.cleaned_data[
-            "registrant_email_address"
-        ]
-        self.request.session["registration_data"] = registration_data
-        return super().form_valid(form)
+    def get(self, request):
+        params = {}
+        if 'change' in request.GET:
+            params['registrant_email_address'] = request.session['registration_data']['registrant_email_address']
+            form = EmailForm(params)
+        else:
+            form = EmailForm()
+        return render(request, self.template_name, {'form': form})
 
-
-class RegistrantTypeView(FormView):
-    template_name = "registrant_type.html"
-    form_class = RegistrantTypeForm
-    success_url = reverse_lazy("confirm")
-
-    def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        registration_data["registrant_type"] = form.cleaned_data["registrant_type"]
-        self.request.session["registration_data"] = registration_data
-        if form.cleaned_data["registrant_type"] == "none":
-            self.success_url = reverse_lazy("registrant_type_fail")
-        return super().form_valid(form)
+    def post(self, request):
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            registration_data = request.session.get('registration_data', {})
+            registration_data['registrant_email_address'] = form.cleaned_data['registrant_email_address']
+            request.session['registration_data'] = registration_data
+            if 'cancel' in request.POST:
+                return redirect('confirm')
+            else:
+                return redirect('confirm')
+        return render(request, self.template_name, {'form': form})
 
 
 class RegistrantTypeFailView(TemplateView):
