@@ -56,7 +56,6 @@ class NameView(FormView):
 
 class EmailView(FormView):
     template_name = 'email.html'
-
     def get(self, request):
         params = {}
         if 'change' in request.GET:
@@ -162,7 +161,7 @@ class RegistrantTypeView(FormView):
 
 
 class RegistrantTypeFailView(TemplateView):
-    template_name = "registrant_type_fail.html"
+    template_name = 'registrant_type_fail.html'
 
 
 class RegistrantView(FormView):
