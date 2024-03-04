@@ -19,9 +19,9 @@ def organisations_list() -> list:
         ("Read", ("Read"))
     )
     """
-    csv_filename = os.path.join(os.getcwd(),
-                                'request_a_govuk_domain',
-                                'input/organisations.csv')
+    csv_filename = os.path.join(
+        os.getcwd(), "request_a_govuk_domain", "input/organisations.csv"
+    )
     data = [("", "")]
     with open(csv_filename) as csvfile:
         reader = csv.reader(csvfile)

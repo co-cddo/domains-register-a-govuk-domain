@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class RequestConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'request_a_govuk_domain.request'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "request_a_govuk_domain.request"
