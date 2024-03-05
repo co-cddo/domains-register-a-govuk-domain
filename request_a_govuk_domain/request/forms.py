@@ -103,15 +103,14 @@ class ConfirmForm(forms.Form):
 
 class ExemptionForm(forms.Form):
     exe_radio = forms.ChoiceField(
-        label="Does your registrant have an exemption from using the GOV.UK \
-            website?",
+        label="",
         help_text="If your registrant is a central government department or \
             agency, they must have an exemption from the Government Digital \
             Service before applying for a new third-level .gov.uk domain \
             name.",
         choices=(("yes", "Yes"), ("no", "No")),
         widget=forms.RadioSelect,
-        error_messages={"required": "Are you exempted?"},
+        error_messages={"required": "Please answer Yes or No"},
     )
 
     def __init__(self, *args, **kwargs):
@@ -119,7 +118,10 @@ class ExemptionForm(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field.radios(
-                "exe_radio", legend_size=Size.MEDIUM, legend_tag="h1", inline=True
+                "exe_radio",
+                legend_size=Size.MEDIUM,
+                legend_tag="h1",
+                inline=True,
             ),
             Button("submit", "Continue"),
         )
