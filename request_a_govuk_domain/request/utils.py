@@ -22,7 +22,7 @@ def organisations_list() -> list:
     csv_filename = os.path.join(
         os.getcwd(), "request_a_govuk_domain", "input/organisations.csv"
     )
-    data = [("", "")]
+    data: list[tuple[str, str]] = [("", "Select your organisation from the list")]
     with open(csv_filename) as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
