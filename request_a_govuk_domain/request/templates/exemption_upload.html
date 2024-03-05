@@ -7,7 +7,8 @@
 {% block main %}
 
   {% block beforeContent %}
-    {% gds_component "back-link" href="/exemption_upload" %}
+    {% url "/exemption_upload" as back_url %}
+    {% back_link back_url %}
   {% endblock %}
 
   {% block content %}

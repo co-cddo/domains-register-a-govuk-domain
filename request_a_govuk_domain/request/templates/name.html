@@ -3,9 +3,12 @@
 
 {% block title %}Registrant organisation name{% endblock %}
 
+{% block beforeContent %}
+  {% url "/registrant_type" as back_url %}
+  {% back_link back_url %}
+{% endblock %}
+
 {% block main %}
-
-    {% error_summary form %}
-    {% crispy form %}
-
+  {% error_summary form %}
+  {% crispy form %}
 {% endblock %}

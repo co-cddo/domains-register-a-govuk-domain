@@ -7,7 +7,8 @@
 {% block main %}
 
   {% block beforeContent %}
-    {% gds_component "back-link" href="/" %}
+    {% url "/" as back_url %}
+    {% back_link back_url %}
   {% endblock %}
 
   {% block content %}

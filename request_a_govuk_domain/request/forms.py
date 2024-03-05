@@ -180,6 +180,7 @@ class RegistrarForm(forms.Form):
 
     organisations_choice = forms.ChoiceField(
         label="Choose your organisation",
+        error_messages={"required": "Please select an item from the list"},
         choices=tuple(organisations_list()),
         widget=forms.Select(attrs={"class": "govuk-select"}),
         required=True,
