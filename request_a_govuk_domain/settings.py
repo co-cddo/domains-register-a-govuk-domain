@@ -66,6 +66,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "request_a_govuk_domain.request.middleware.FormProgressMiddleware",
 ]
 
 FILE_UPLOAD_HANDLERS = [

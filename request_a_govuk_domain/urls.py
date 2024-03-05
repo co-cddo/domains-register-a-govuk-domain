@@ -33,7 +33,7 @@ from .request.views import (
 )
 
 urlpatterns = [
-    path("", RegistrarView.as_view(), name="registrar"),
+    path("", RegistrarView.as_view(), name="start"),
     path("admin/", admin.site.urls),
     path("name/", NameView.as_view(), name="name"),
     path("email/", EmailView.as_view(), name="email"),
