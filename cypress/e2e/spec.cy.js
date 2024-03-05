@@ -8,7 +8,7 @@ describe('name spec', () => {
     // There should be an error
     cy.get('#error-summary-title').should('exist')
     cy.get('#error-summary-title').should('include.text', 'There is a problem')
-    cy.get('.govuk-error-summary__list').should('include.text', 'This field is required.')
+    cy.get('.govuk-error-summary__list').should('include.text', 'Please select an item from the list')
 
     // Retrying with a correct email
     cy.get('.govuk-input').type('something@some.gov.uk')
