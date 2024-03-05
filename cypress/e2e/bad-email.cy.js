@@ -19,7 +19,7 @@ describe('Email format verification', () => {
 
     cy.get('.govuk-input').clear().type('a@b.com')
     cy.get('.govuk-button').click()
-    cy.get('h1').should('include.text', '')
+    cy.get('h1').should('include.text', 'Which of the following best describes your registrant\'s organisation?')
 
   })
 })
