@@ -1,5 +1,5 @@
-describe('name spec', () => {
-  it('passes', () => {
+describe('Check if user entered an email', () => {
+  it('Complains when no email is entered', () => {
     cy.visit('http://0.0.0.0:8000/email/')
 
     // Don't type anything, just click on the button
@@ -8,7 +8,7 @@ describe('name spec', () => {
     // There should be an error
     cy.get('#error-summary-title').should('exist')
     cy.get('#error-summary-title').should('include.text', 'There is a problem')
-    cy.get('.govuk-error-summary__list').should('include.text', 'Please select an item from the list')
+    cy.get('.govuk-error-summary__list').should('include.text', 'This field is required')
 
     // Retrying with a correct email
     cy.get('.govuk-input').type('something@some.gov.uk')
@@ -17,12 +17,4 @@ describe('name spec', () => {
     // No error message this time
     cy.get('#error-summary-title').should('not.exist')
   })
-
-  // it('fails', () => {
-  //   cy.visit('http://0.0.0.0:8000/name/')
-
-  //   //Get an input, type into it
-  //   cy.get('.govuk-input').should('not.to.match', ':empty')
-
-  // })
 })
