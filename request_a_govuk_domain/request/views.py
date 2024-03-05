@@ -10,6 +10,7 @@ from .forms import (
     RegistrarForm,
     ConfirmForm,
     RegistrantTypeForm,
+    DomainPurposeForm,
 )
 from .models import RegistrationData
 from django.views.generic.edit import FormView
@@ -160,6 +161,19 @@ class RegistrarView(FormView):
         self.request.session["registration_data"] = {
             "registrar_organisation": form.cleaned_data["organisations_choice"]
         }
+        return super().form_valid(form)
+
+
+class DomainPurposeView(FormView):
+    template_name = "domain_purpose.html"
+    form_class = DomainPurposeForm
+
+    def form_valid(self, form):
+        # TBC: this is generic for now, but routing needs to be added
+        registration_data = self.request.session.get("registration_data", {})
+        registration_data["domain_purpose"] = form.cleaned_data["domain_purpose"]
+        self.request.session["registration_data"] = registration_data
+        self.success_url = reverse_lazy("exemption")
         return super().form_valid(form)
 
 

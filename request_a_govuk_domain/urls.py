@@ -30,6 +30,7 @@ from .request.views import (
     RegistrarView,
     RegistrantTypeView,
     RegistrantTypeFailView,
+    DomainPurposeView,
 )
 
 urlpatterns = [
@@ -49,4 +50,5 @@ urlpatterns = [
     path("exemption_upload/", ExemptionUploadView.as_view(), name="exemption_upload"),
     path("exemption_fail/", ExemptionFailView.as_view(), name="exemption_fail"),
     path("registrar/", RegistrarView.as_view(), name="registrar"),
+    path("domain_purpose/", DomainPurposeView.as_view(), name="domain_purpose"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

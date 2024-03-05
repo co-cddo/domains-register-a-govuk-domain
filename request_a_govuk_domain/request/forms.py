@@ -201,3 +201,39 @@ class RegistrarForm(forms.Form):
             ),
             Button("submit", "Submit"),
         )
+
+
+class DomainPurposeForm(forms.Form):
+    DOMAIN_PURPOSES = (
+        Choice("website_email", "Website and email address"),
+        Choice("email-only", "Email address only", divider="or"),
+        Choice("api", "API", hint="For example, hmrc01application.api.gov.uk"),
+        Choice("service", "Service", hint="For example, get-a-fishing-licence.gov.uk"),
+        Choice(
+            "campaign",
+            "Campaign",
+            hint="For example, helpforhouseholds.campaign.gov.uk",
+        ),
+        Choice(
+            "inquiry",
+            "Independent inquiry",
+            hint="For example, icai.independent.gov.uk",
+        ),
+        Choice("blog", "Blog", hint="For example, gds.blog.gov.uk"),
+        Choice("dataset", "Dataset", hint="For example, coronavirus.data.gov.uk"),
+    )
+
+    domain_purpose = forms.ChoiceField(
+        choices=DOMAIN_PURPOSES,
+        widget=forms.RadioSelect,
+        label="Tell us what you plan to use the .gov.uk domain name for. Select one option",
+        error_messages={"required": "Please select from one of the choices"},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field.radios("domain_purpose", legend_size=Size.SMALL),
+            Button("submit", "Continue"),
+        )
