@@ -145,7 +145,7 @@ class ExemptionUploadForm(forms.Form):
             Fieldset(
                 Field.text("file", field_width=Fluid.TWO_THIRDS),
             ),
-            Button("submit", "Submit"),
+            Button("submit", "Upload evidence"),
         )
 
     def clean_file(self):
