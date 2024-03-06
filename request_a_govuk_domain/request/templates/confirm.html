@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block main %}
-  <h1 class="govuk-heading-xl">Confirm</h1>
+  <h1 class="govuk-heading-l">Confirm</h1>
 
   <form method="post" action="{% url 'confirm' %}">
     {% csrf_token %}
