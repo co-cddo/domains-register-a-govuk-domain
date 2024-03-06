@@ -31,6 +31,7 @@ from .request.views import (
     RegistrantTypeView,
     RegistrantTypeFailView,
     DomainPurposeView,
+    RegistrantView,
 )
 
 urlpatterns = [
@@ -44,6 +45,7 @@ urlpatterns = [
         RegistrantTypeFailView.as_view(),
         name="registrant_type_fail",
     ),
+    path("registrant/", RegistrantView.as_view(), name="registrant"),
     path("confirm/", ConfirmView.as_view(), name="confirm"),
     path("success/", SuccessView.as_view(), name="success"),
     path("exemption/", ExemptionView.as_view(), name="exemption"),
