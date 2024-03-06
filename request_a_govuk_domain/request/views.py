@@ -71,7 +71,7 @@ class RegistrantTypeFailView(TemplateView):
 class RegistrantView(FormView):
     template_name = "registrant.html"
     form_class = RegistrantForm
-    success_url = reverse_lazy("confirm")
+    success_url = reverse_lazy("written_permission")
 
     def form_valid(self, form):
         registration_data = self.request.session.get("registration_data", {})
