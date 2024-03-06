@@ -97,6 +97,27 @@ class RegistrantTypeForm(forms.Form):
         )
 
 
+class RegistrantForm(forms.Form):
+    registrant_organisation_name = forms.CharField(
+        label="You must provide the formal legal name of your registrant’s organisation.",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Fieldset(
+                Field.text("registrant_organisation_name"),
+            ),
+            HTML.warning(
+                ": The Domains Team will reject applications if the registrant's organisation name does not match \
+                official records or is spelled incorrectly."
+            ),
+            Button("submit", "Continue"),
+        )
+
+
 class ConfirmForm(forms.Form):
     pass
 
