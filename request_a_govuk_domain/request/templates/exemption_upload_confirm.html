@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags crispy_forms_gds %}
 {% load govuk_frontend_django %}
 
 {% block title %}Exemption upload confirmation{% endblock %}
@@ -38,7 +38,7 @@
           </dd>
         </div>
       </dl>
-      <a class="govuk-button" href="/">
+      <a class="govuk-button" href="{% url "written_permission" %}">
         Continue
       </a>
       </div>

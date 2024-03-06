@@ -163,7 +163,7 @@ cython_debug/
 .vscode/
 
 # files uploaded in the application
-/request_a_govuk_domain/static/
+/request_a_govuk_domain/media/
 
 # node files from using cypress
 node_modules/
