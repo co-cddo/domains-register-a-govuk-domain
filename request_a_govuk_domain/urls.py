@@ -19,7 +19,8 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 
-from .request.views import (
+from .request.views.registrant_type import RegistrantTypeView
+from .request.old_views import (
     NameView,
     EmailView,
     ConfirmView,
@@ -28,7 +29,6 @@ from .request.views import (
     ExemptionUploadView,
     ExemptionFailView,
     RegistrarView,
-    RegistrantTypeView,
     RegistrantTypeFailView,
 )
 
