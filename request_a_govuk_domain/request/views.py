@@ -11,6 +11,7 @@ from .forms import (
     ConfirmForm,
     RegistrantTypeForm,
     DomainPurposeForm,
+    RegistrantForm,
 )
 from .models import RegistrationData
 from django.views.generic.edit import FormView
@@ -52,7 +53,7 @@ class EmailView(FormView):
 class RegistrantTypeView(FormView):
     template_name = "registrant_type.html"
     form_class = RegistrantTypeForm
-    success_url = reverse_lazy("confirm")
+    success_url = reverse_lazy("registrant")
 
     def form_valid(self, form):
         registration_data = self.request.session.get("registration_data", {})
@@ -65,6 +66,24 @@ class RegistrantTypeView(FormView):
 
 class RegistrantTypeFailView(TemplateView):
     template_name = "registrant_type_fail.html"
+
+
+class RegistrantView(FormView):
+    template_name = "registrant.html"
+    form_class = RegistrantForm
+    success_url = reverse_lazy("confirm")
+
+    def form_valid(self, form):
+        registration_data = self.request.session.get("registration_data", {})
+        registration_data["registrant_organisation_name"] = form.cleaned_data[
+            "registrant_organisation_name"
+        ]
+        self.request.session["registration_data"] = registration_data
+
+        # if registrant_type is central_gov, redirect to domain_purpose
+        if registration_data["registrant_type"] == "central_gov":
+            self.success_url = reverse_lazy("domain_purpose")
+        return super().form_valid(form)
 
 
 class ConfirmView(FormView):
