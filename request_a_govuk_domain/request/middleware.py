@@ -22,6 +22,7 @@ class FormProgressMiddleware:
                 "registrant_full_name",
                 "registrant_email_address",
                 "registrar_organisation",
+                "domain_name",
             ]:
                 # A key in the session data is invalid. So go back to the beginning
                 request.session["registration_data"] = {}

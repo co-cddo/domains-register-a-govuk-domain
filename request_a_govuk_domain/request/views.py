@@ -12,6 +12,7 @@ from .forms import (
     RegistrantTypeForm,
     DomainPurposeForm,
     RegistrantForm,
+    DomainForm,
 )
 from .models import RegistrationData
 from django.views.generic.edit import FormView
@@ -47,6 +48,23 @@ class EmailView(FormView):
             "registrant_email_address"
         ]
         self.request.session["registration_data"] = registration_data
+        return super().form_valid(form)
+
+
+class DomainView(FormView):
+    template_name = "domain.html"
+    form_class = DomainForm
+
+    def form_valid(self, form):
+        registration_data = self.request.session.get("registration_data", {})
+        registration_data["domain_name"] = form.cleaned_data["domain_name"]
+        self.request.session["registration_data"] = registration_data
+
+        if registration_data["registrant_type"] == "central_gov":
+            self.success_url = reverse_lazy("minister")
+        else:
+            self.success_url = reverse_lazy("applicant_details")
+
         return super().form_valid(form)
 
 

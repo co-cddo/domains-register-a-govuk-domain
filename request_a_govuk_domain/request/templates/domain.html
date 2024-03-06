@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags crispy_forms_gds %}
+{% load govuk_frontend_django %}
+
+{% block title %}Domain{% endblock %}
+
+{% block main %}
+
+  {% block beforeContent %}
+    {% url 'written_premission_upload_confirm' as back_url %}
+    {% back_link back_url %}
+  {% endblock %}
+
+  {% block content %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+
+        {% error_summary form %}
+
+        <h1 class="govuk-heading-l">
+          What .gov.uk domain name do you want?
+        </h1>
+
+        <div id="domain-hint">
+          <p class="govuk-body govuk-hint">A .gov.uk domain name must clearly describe your registrant’s organisation or government initiative. For example a:
+          </p>
+          <ul class="govuk-list govuk-list--bullet govuk-hint">
+            <li>central department can use <code class="govspeak-code">hmrc.gov.uk</code></li>
+            <li>county council can use <code class="govspeak-code">northamptonshire.gov.uk</code></li>
+            <li>town council can use <code class="govspeak-code">biggleswadetowncouncil.gov.uk</code>or <code class="govspeak-code">biggleswadetown.gov.uk</code></li>
+            <li>parish councils can use <code class="govspeak-code">bonbyparishcouncil.gov.uk</code>, <code class="govspeak-code">bonbyparish.gov.uk</code> or <code class="govspeak-code">bonby-pc.gov.uk</code></li>
+          </ul>
+        </div>
+
+        <p class="govuk-body">
+          <a href="https://www.gov.uk/guidance/choose-your-govuk-domain-name" class="govuk-link" target="new">Follow rules on how to choose a .gov.uk domain name (opens in a new tab)</a>.
+        </p>
+        <div class="govuk-inset-text">
+          We approve domains on a first-come first-served basis so you may need to use a geographic identifier for your organisation.
+        </div>
+
+        {% crispy form %}
+      </div>
+    </div>
+  {% endblock %}
+
+{% endblock %}

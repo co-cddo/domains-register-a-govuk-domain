@@ -42,6 +42,26 @@ class NameForm(forms.Form):
         )
 
 
+class DomainForm(forms.Form):
+    domain_name = forms.CharField(
+        label="Domain name",
+        help_text="Enter the .gov.uk domain name you want to get approval for",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Fieldset(
+                Field.text(
+                    "domain_name"
+                ),  # TODO: Crispy doesn't support text input suffixes so we might have to add it
+            ),
+            Button("submit", "Continue"),
+        )
+
+
 class EmailForm(forms.Form):
     registrant_email_address = forms.CharField(
         label="Email address of the .gov.uk Approved Registrar",
