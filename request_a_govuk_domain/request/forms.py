@@ -166,7 +166,7 @@ class ExemptionUploadForm(forms.Form):
             Fieldset(
                 Field.text("file", field_width=Fluid.TWO_THIRDS),
             ),
-            Button("submit", "Submit"),
+            Button("submit", "Upload evidence"),
         )
 
     def clean_file(self):
@@ -228,7 +228,7 @@ class RegistrarForm(forms.Form):
 
 class DomainPurposeForm(forms.Form):
     DOMAIN_PURPOSES = (
-        Choice("website_email", "Website and email address"),
+        Choice("website-email", "Website and email address"),
         Choice("email-only", "Email address only", divider="or"),
         Choice("api", "API", hint="For example, hmrc01application.api.gov.uk"),
         Choice("service", "Service", hint="For example, get-a-fishing-licence.gov.uk"),

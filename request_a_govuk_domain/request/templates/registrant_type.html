@@ -4,14 +4,14 @@
 {% block main %}
 
   {% block beforeContent %}
-    {% url "/email" as back_url %}
+    {% url "registrar_email" as back_url %}
     {% back_link back_url %}
   {% endblock %}
 
   {% block content %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-l">
           Which of the following best describes your registrant's organisation?
         </h1>
         {% error_summary form %}

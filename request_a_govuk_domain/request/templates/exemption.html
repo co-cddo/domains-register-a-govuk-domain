@@ -7,7 +7,7 @@
 {% block main %}
 
   {% block beforeContent %}
-    {% url "/" as back_url %}
+    {% url "domain_purpose" as back_url %}
     {% back_link back_url %}
   {% endblock %}
 
@@ -15,7 +15,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         {% error_summary form %}
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-l">
           Does your registrant have an exemption from using the GOV.UK website?
         </h1>
         {% crispy form %}

@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from .forms import (
@@ -121,22 +121,16 @@ class SuccessView(TemplateView):
 
 class ExemptionView(FormView):
     template_name = "exemption.html"
+    form_class = ExemptionForm
 
-    def get(self, request):
-        form = ExemptionForm()
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request):
-        form = ExemptionForm(request.POST or None)
-
-        if form.is_valid():
-            exe_radio = form.cleaned_data["exe_radio"]
-            exe_radio = dict(form.fields["exe_radio"].choices)[exe_radio]
-            if exe_radio == "Yes":
-                return redirect("exemption_upload")
-            else:
-                return redirect("exemption_fail")
-        return render(request, self.template_name, {"form": form})
+    def form_valid(self, form):
+        exe_radio = form.cleaned_data["exe_radio"]
+        exe_radio = dict(form.fields["exe_radio"].choices)[exe_radio]
+        if exe_radio == "Yes":
+            self.success_url = reverse_lazy("exemption_upload")
+        else:
+            self.success_url = reverse_lazy("exemption_fail")
+        return super().form_valid(form)
 
 
 class ExemptionUploadView(FormView):
@@ -168,7 +162,7 @@ class ExemptionFailView(FormView):
     template_name = "exemption_fail.html"
 
     def get(self, request):
-        return render(request, "exemption_fail.html")
+        return render(request, self.template_name)
 
 
 class RegistrarView(FormView):
@@ -188,12 +182,26 @@ class DomainPurposeView(FormView):
     form_class = DomainPurposeForm
 
     def form_valid(self, form):
-        # TBC: this is generic for now, but routing needs to be added
+        purpose = form.cleaned_data["domain_purpose"]
         registration_data = self.request.session.get("registration_data", {})
-        registration_data["domain_purpose"] = form.cleaned_data["domain_purpose"]
+        registration_data["domain_purpose"] = purpose
         self.request.session["registration_data"] = registration_data
-        self.success_url = reverse_lazy("exemption")
+
+        if purpose == "email-only":
+            self.success_url = reverse_lazy("written_permission")
+        elif purpose == "website-email":
+            self.success_url = reverse_lazy("exemption")
+        else:
+            self.success_url = reverse_lazy("domain_purpose_fail")
+
         return super().form_valid(form)
+
+
+class DomainPurposeFailView(FormView):
+    template_name = "domain_purpose_fail.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
 
 
 def answers_context_processor(request):
