@@ -49,6 +49,11 @@ https://python-poetry.org/
 
 To install dependencies for local development ( e.g. when using IDE to make changes ) , use `poetry install`.
 
+
+This repository is set up with [pre-commit](https://pre-commit.com/) for style and error checking before every commit.
+You should install pre-commit, then run `pre-commit install` from within the project directory.
+
+
 ## Make commands
 
 Following are some of the make commands:
