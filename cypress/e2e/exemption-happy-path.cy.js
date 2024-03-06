@@ -30,6 +30,14 @@ describe('Happy passes', () => {
     cy.get('.govuk-button').click()
 
     cy.get('h1').should('include.text', 'Upload evidence of the exemption')
+    cy.get('input[type=file]').selectFile('request_a_govuk_domain/static/images/govuk-crest.png')
+    cy.get('.govuk-button').click()
+
+    cy.get('h1').should('include.text', 'Upload evidence of the exemption')
+    cy.get('a').should('include.text', 'govuk-crest.png')
+    cy.get('.govuk-button').click()
+
+    cy.get('h1').should('include.text', 'Does your registrant have written permission to apply for a .gov.uk domain name?')
 
   })
 })
