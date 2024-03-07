@@ -19,7 +19,7 @@ from .forms import (
     RegistryDetailsForm,
     WrittenPermissionForm,
 )
-from .models import RegistrationData
+
 from django.views.generic.edit import FormView
 
 from .utils import handle_uploaded_file
@@ -237,13 +237,7 @@ class ConfirmView(FormView):
         return context
 
     def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-
-        # Save data to the database
-        RegistrationData.objects.create(
-            registrant_full_name=registration_data["registrant_full_name"],
-            registrant_email_address=registration_data["registrant_email_address"],
-        )
+        # registration_data = self.request.session.get("registration_data", {})
 
         # Clear session data after saving
         self.request.session.pop("registration_data", None)
