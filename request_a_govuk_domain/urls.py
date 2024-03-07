@@ -35,10 +35,12 @@ from .request.views import (
     DomainPurposeFailView,
     RegistrantView,
     MinisterView,
+    MinisterUploadView,
     ApplicantDetailsView,
     RegistrantDetailsView,
     RegistryDetailsView,
     WrittenPermissionView,
+    WrittenPermissionUploadView,
     WrittenPermissionFailView,
 )
 
@@ -67,7 +69,7 @@ urlpatterns = [
         DomainPurposeFailView.as_view(),
         name="domain_purpose_fail",
     ),
-    path("minister/", MinisterView.as_view(), name="domain_purpose"),
+    path("minister/", MinisterView.as_view(), name="minister"),
     path(
         "applicant_details/",
         ApplicantDetailsView.as_view(),
@@ -87,6 +89,16 @@ urlpatterns = [
         "written-permission/",
         WrittenPermissionView.as_view(),
         name="written_permission",
+    ),
+    path(
+        "written-permission-upload/",
+        WrittenPermissionUploadView.as_view(),
+        name="written_permission_upload",
+    ),
+    path(
+        "minister-upload/",
+        MinisterUploadView.as_view(),
+        name="minister_upload",
     ),
     path(
         "written-permission-fail/",

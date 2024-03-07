@@ -2,12 +2,12 @@
 {% load crispy_forms_tags crispy_forms_gds %}
 {% load govuk_frontend_django %}
 
-{% block title %}Exemption upload{% endblock %}
+{% block title %}Written permission upload{% endblock %}
 
 {% block main %}
 
   {% block beforeContent %}
-    {% url "exemption" as back_url %}
+    {% url "written_permission" as back_url %}
     {% back_link back_url %}
   {% endblock %}
 
@@ -16,9 +16,9 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">
-          Upload evidence of the exemption
+          Upload evidence of written permission
         </h1>
-        <form method="post" action="{% url 'exemption_upload' %}" enctype="multipart/form-data">
+        <form method="post" action="{% url 'written_permission_upload' %}" enctype="multipart/form-data">
           {% crispy form %}
         </form>
       </div>

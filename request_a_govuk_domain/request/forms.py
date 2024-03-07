@@ -67,12 +67,12 @@ class ApplicantDetailsForm(forms.Form):
         label="Full name",
     )
 
-    applicant_phone_number = forms.CharField(
+    applicant_phone = forms.CharField(
         label="Telephone number",
         help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
     )
 
-    applicant_email_address = forms.CharField(
+    applicant_email = forms.CharField(
         label="Email address",
     )
 
@@ -87,8 +87,8 @@ class ApplicantDetailsForm(forms.Form):
             ),
             Fieldset(
                 HTML('<h2 class="govuk-heading-m">Applicant contact details</h2>'),
-                Field.text("applicant_phone_number", field_width=20),
-                Field.text("applicant_email_address"),
+                Field.text("applicant_phone", field_width=20),
+                Field.text("applicant_email"),
             ),
             HTML(
                 """<div class="govuk-inset-text">
@@ -100,11 +100,11 @@ class ApplicantDetailsForm(forms.Form):
 
 
 class RegistrantDetailsForm(forms.Form):
-    registrant_name = forms.CharField(
+    registrant_full_name = forms.CharField(
         label="Full name",
     )
 
-    registrant_phone_number = forms.CharField(
+    registrant_phone = forms.CharField(
         label="Telephone number",
         help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
     )
@@ -120,11 +120,11 @@ class RegistrantDetailsForm(forms.Form):
         self.helper.layout = Layout(
             Fieldset(
                 HTML('<h2 class="govuk-heading-m">Registrant name</h2>'),
-                Field.text("registrant_name", field_width=20),
+                Field.text("registrant_full_name", field_width=20),
             ),
             Fieldset(
                 HTML('<h2 class="govuk-heading-m">Registrant contact details</h2>'),
-                Field.text("registrant_phone_number", field_width=20),
+                Field.text("registrant_phone", field_width=20),
                 Field.text("registrant_email_address"),
             ),
             HTML(
@@ -311,7 +311,7 @@ class ExemptionForm(forms.Form):
 
 
 class MinisterForm(forms.Form):
-    exe_radio = forms.ChoiceField(
+    minister_radios = forms.ChoiceField(
         label="",
         help_text="""If the requested .gov.uk domain does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.""",
         choices=(("yes", "Yes"), ("no", "No")),
@@ -324,7 +324,7 @@ class MinisterForm(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field.radios(
-                "exe_radio",
+                "minister_radios",
                 legend_size=Size.MEDIUM,
                 legend_tag="h1",
                 inline=True,
@@ -338,6 +338,94 @@ class MinisterForm(forms.Form):
 
 
 class ExemptionUploadForm(forms.Form):
+    file = forms.FileField(
+        label="Upload a file",
+        help_text="Support file is .jpeg or .png and the maximum size is 2.5 MB.",
+        error_messages={"required": "Choose the file you want to upload."},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                Field.text("file", field_width=Fluid.TWO_THIRDS),
+            ),
+            Button("submit", "Upload evidence"),
+        )
+
+    def clean_file(self):
+        """
+        Custom Error messages for
+        1. Size
+        2. Content Type
+        """
+        file = self.cleaned_data.get("file")
+        if (
+            file is not None
+            and file.content_type.split("/")[0] in settings.CONTENT_TYPES
+        ):
+            if file.size > int(settings.MAX_UPLOAD_SIZE):
+                raise forms.ValidationError(
+                    ("Please keep filesize under %s. Current filesize %s")
+                    % (
+                        filesizeformat(settings.MAX_UPLOAD_SIZE),
+                        filesizeformat(file.size),
+                    )
+                )
+        else:
+            raise forms.ValidationError(
+                "Support file is .jpeg or .png and the maximum size is 2.5 MB."
+            )
+
+        return file
+
+
+class MinisterUploadForm(forms.Form):
+    file = forms.FileField(
+        label="Upload a file",
+        help_text="Support file is .jpeg or .png and the maximum size is 2.5 MB.",
+        error_messages={"required": "Choose the file you want to upload."},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                Field.text("file", field_width=Fluid.TWO_THIRDS),
+            ),
+            Button("submit", "Upload evidence"),
+        )
+
+    def clean_file(self):
+        """
+        Custom Error messages for
+        1. Size
+        2. Content Type
+        """
+        file = self.cleaned_data.get("file")
+        if (
+            file is not None
+            and file.content_type.split("/")[0] in settings.CONTENT_TYPES
+        ):
+            if file.size > int(settings.MAX_UPLOAD_SIZE):
+                raise forms.ValidationError(
+                    ("Please keep filesize under %s. Current filesize %s")
+                    % (
+                        filesizeformat(settings.MAX_UPLOAD_SIZE),
+                        filesizeformat(file.size),
+                    )
+                )
+        else:
+            raise forms.ValidationError(
+                "Support file is .jpeg or .png and the maximum size is 2.5 MB."
+            )
+
+        return file
+
+
+class WrittenPermissionUploadForm(forms.Form):
     file = forms.FileField(
         label="Upload a file",
         help_text="Support file is .jpeg or .png and the maximum size is 2.5 MB.",

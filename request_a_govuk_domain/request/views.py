@@ -14,10 +14,12 @@ from .forms import (
     RegistrantForm,
     DomainForm,
     MinisterForm,
+    MinisterUploadForm,
     ApplicantDetailsForm,
     RegistrantDetailsForm,
     RegistryDetailsForm,
     WrittenPermissionForm,
+    WrittenPermissionUploadForm,
 )
 from .models import RegistrationData
 from django.views.generic.edit import FormView
@@ -80,12 +82,8 @@ class ApplicantDetailsView(FormView):
     def form_valid(self, form):
         registration_data = self.request.session.get("registration_data", {})
         registration_data["applicant_name"] = form.cleaned_data["applicant_name"]
-        registration_data["applicant_telephone_number"] = form.cleaned_data[
-            "applicant_telephone_number"
-        ]
-        registration_data["applicant_email_address"] = form.cleaned_data[
-            "applicant_email_address"
-        ]
+        registration_data["applicant_phone"] = form.cleaned_data["applicant_phone"]
+        registration_data["applicant_email"] = form.cleaned_data["applicant_email"]
         self.request.session["registration_data"] = registration_data
         self.success_url = reverse_lazy("registrant_details")
         return super().form_valid(form)
@@ -97,10 +95,10 @@ class RegistrantDetailsView(FormView):
 
     def form_valid(self, form):
         registration_data = self.request.session.get("registration_data", {})
-        registration_data["registrant_name"] = form.cleaned_data["registrant_name"]
-        registration_data["registrant_telephone_number"] = form.cleaned_data[
-            "registrant_telephone_number"
+        registration_data["registrant_full_name"] = form.cleaned_data[
+            "registrant_full_name"
         ]
+        registration_data["registrant_phone"] = form.cleaned_data["registrant_phone"]
         registration_data["registrant_email_address"] = form.cleaned_data[
             "registrant_email_address"
         ]
@@ -116,8 +114,11 @@ class RegistryDetailsView(FormView):
     def form_valid(self, form):
         registration_data = self.request.session.get("registration_data", {})
         registration_data["registrant_role"] = form.cleaned_data["registrant_role"]
-        registration_data["registrant_contact_details"] = form.cleaned_data[
-            "registrant_contact_details"
+        registration_data["registrant_contact_phone"] = form.cleaned_data[
+            "registrant_contact_phone"
+        ]
+        registration_data["registrant_contact_email"] = form.cleaned_data[
+            "registrant_contact_email"
         ]
         self.request.session["registration_data"] = registration_data
         self.success_url = reverse_lazy("confirm")
@@ -161,7 +162,7 @@ class RegistrantView(FormView):
 class WrittenPermissionView(FormView):
     template_name = "written_permission.html"
     form_class = WrittenPermissionForm
-    success_url = reverse_lazy("confirm")
+    success_url = reverse_lazy("written_permission_upload")
 
     def form_valid(self, form):
         registration_data = self.request.session.get("registration_data", {})
@@ -229,9 +230,9 @@ class MinisterView(FormView):
     form_class = MinisterForm
 
     def form_valid(self, form):
-        exe_radio = form.cleaned_data["exe_radio"]
-        exe_radio = dict(form.fields["exe_radio"].choices)[exe_radio]
-        if exe_radio == "Yes":
+        minister_radios = form.cleaned_data["minister_radios"]
+        minister_radios = dict(form.fields["minister_radios"].choices)[minister_radios]
+        if minister_radios == "Yes":
             self.success_url = reverse_lazy("minister_upload")
         else:
             self.success_url = reverse_lazy("registrant_details")
@@ -263,6 +264,56 @@ class ExemptionUploadView(FormView):
             return render(
                 request,
                 "exemption_upload_confirm.html",
+                {"file": request.FILES["file"]},
+            )
+        return render(request, self.template_name, {"form": form})
+
+
+class MinisterUploadView(FormView):
+    template_name = "minister_upload.html"
+
+    def get(self, request):
+        form = MinisterUploadForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        """
+        If the file is an image we encode using base64
+        ex: b64encode(form.cleaned_data['file'].read()).decode('utf-8')
+        If the file is a pdf we do not encode
+        """
+        form = MinisterUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            handle_uploaded_file(request.FILES["file"])
+            return render(
+                request,
+                "minister_upload_confirm.html",
+                {"file": request.FILES["file"]},
+            )
+        return render(request, self.template_name, {"form": form})
+
+
+class WrittenPermissionUploadView(FormView):
+    template_name = "written_permission_upload.html"
+
+    def get(self, request):
+        form = WrittenPermissionUploadForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        """
+        If the file is an image we encode using base64
+        ex: b64encode(form.cleaned_data['file'].read()).decode('utf-8')
+        If the file is a pdf we do not encode
+        """
+        form = WrittenPermissionUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            handle_uploaded_file(request.FILES["file"])
+            return render(
+                request,
+                "written_permission_upload_confirm.html",
                 {"file": request.FILES["file"]},
             )
         return render(request, self.template_name, {"form": form})
