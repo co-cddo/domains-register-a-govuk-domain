@@ -29,7 +29,7 @@ describe('Don\'t allow breaking the flow', () => {
         method: "POST",
         body: {
           registrant_email_address: "example@example.com",
-          csrfmiddlewaretoken: "eLqwO7i5BCusJsqUD7EWkkGKSt8Ztu63X8Lkf0x5OF8a3xAh8Dpr0joJsuELlX0i" # pragma: allowlist secret
+          csrfmiddlewaretoken: "eLqwO7i5BCusJsqUD7EWkkGKSt8Ztu63X8Lkf0x5OF8a3xAh8Dpr0joJsuELlX0i" // pragma: allowlist secret
         }
     });
 
