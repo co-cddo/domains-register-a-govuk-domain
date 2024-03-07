@@ -89,7 +89,7 @@ class RegistrantTypeFailView(TemplateView):
 class RegistrantView(FormView):
     template_name = "registrant.html"
     form_class = RegistrantForm
-    success_url = reverse_lazy("confirm")
+    success_url = reverse_lazy("written_permission")
 
     def form_valid(self, form):
         registration_data = self.request.session.get("registration_data", {})
@@ -97,8 +97,6 @@ class RegistrantView(FormView):
             "registrant_organisation_name"
         ]
         self.request.session["registration_data"] = registration_data
-
-        # if registrant_type is central_gov, redirect to domain_purpose
         if registration_data["registrant_type"] == "central_gov":
             self.success_url = reverse_lazy("domain_purpose")
         return super().form_valid(form)

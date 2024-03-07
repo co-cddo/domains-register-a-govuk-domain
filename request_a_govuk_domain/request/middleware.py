@@ -14,7 +14,6 @@ class FormProgressMiddleware:
 
     def is_valid_progress(self, request):
         if request.session.get("registration_data") is None:
-            print("FALSE: no reg data")
             return False
         for key in request.session.get("registration_data"):
             if key not in [
@@ -22,11 +21,11 @@ class FormProgressMiddleware:
                 "registrant_full_name",
                 "registrant_email_address",
                 "registrar_organisation",
+                "registrant_organisation_name",
+                "domain_purpose",
                 "domain_name",
             ]:
                 # A key in the session data is invalid. So go back to the beginning
                 request.session["registration_data"] = {}
-                print("FALSE: unknown reg data:", key)
                 return False
-        print("TRUE")
         return True
