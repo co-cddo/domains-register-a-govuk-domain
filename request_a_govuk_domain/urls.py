@@ -34,6 +34,10 @@ from .request.views import (
     DomainPurposeView,
     DomainPurposeFailView,
     RegistrantView,
+    MinisterView,
+    ApplicantDetailsView,
+    RegistrantDetailsView,
+    RegistryDetailsView,
 )
 
 urlpatterns = [
@@ -60,5 +64,21 @@ urlpatterns = [
         "domain_purpose_fail/",
         DomainPurposeFailView.as_view(),
         name="domain_purpose_fail",
+    ),
+    path("minister/", MinisterView.as_view(), name="domain_purpose"),
+    path(
+        "applicant_details/",
+        ApplicantDetailsView.as_view(),
+        name="applicant_details",
+    ),
+    path(
+        "registrant_details/",
+        RegistrantDetailsView.as_view(),
+        name="registrant_details",
+    ),
+    path(
+        "registry_details/",
+        RegistryDetailsView.as_view(),
+        name="registry_details",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

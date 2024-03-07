@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags crispy_forms_gds %}
+
+{% block title %}Applicant details{% endblock %}
+
+{% block main %}
+
+  {% block beforeContent %}
+    {% url "domain" as back_url %}
+    {% back_link back_url %}
+  {% endblock %}
+
+  {% block content %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+
+        {% error_summary form %}
+
+        <h1 class="govuk-heading-l">
+          Applicant details
+        </h1>
+
+        <p class="govuk-body">The applicant is the person from the registrant's organisation who has submitted the application and arranges:</p>
+
+        <ul class="govuk-list govuk-list--bullet">
+          <li>payment to the.gov.uk Approved Registrar</li>
+          <li>the signing of the Registrant Agreement</li>
+        </ul>
+
+        <p class="govuk-body">The applicant does not have to be the same person as the registrant.</p>
+
+        {% crispy form %}
+      </div>
+    </div>
+  {% endblock %}
+{% endblock %}
