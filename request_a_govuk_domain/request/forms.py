@@ -62,6 +62,121 @@ class DomainForm(forms.Form):
         )
 
 
+class ApplicantDetailsForm(forms.Form):
+    applicant_name = forms.CharField(
+        label="Full name",
+    )
+
+    applicant_phone_number = forms.CharField(
+        label="Telephone number",
+        help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
+    )
+
+    applicant_email_address = forms.CharField(
+        label="Email address",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Fieldset(
+                HTML('<h2 class="govuk-heading-m">Applicant name</h2>'),
+                Field.text("applicant_name", field_width=20),
+            ),
+            Fieldset(
+                HTML('<h2 class="govuk-heading-m">Applicant contact details</h2>'),
+                Field.text("applicant_phone_number", field_width=20),
+                Field.text("applicant_email_address"),
+            ),
+            HTML(
+                """<div class="govuk-inset-text">
+            <span class="govuk-hint">An email to confirm your application will be sent to:</span><br>
+            <p class="govuk-body govuk-!-font-size-24"></p></div>"""
+            ),
+            Button("submit", "Continue"),
+        )
+
+
+class RegistrantDetailsForm(forms.Form):
+    registrant_name = forms.CharField(
+        label="Full name",
+    )
+
+    registrant_phone_number = forms.CharField(
+        label="Telephone number",
+        help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
+    )
+
+    registrant_email_address = forms.CharField(
+        label="Email address",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Fieldset(
+                HTML('<h2 class="govuk-heading-m">Registrant name</h2>'),
+                Field.text("registrant_name", field_width=20),
+            ),
+            Fieldset(
+                HTML('<h2 class="govuk-heading-m">Registrant contact details</h2>'),
+                Field.text("registrant_phone_number", field_width=20),
+                Field.text("registrant_email_address"),
+            ),
+            HTML(
+                """<div class="govuk-inset-text">An email to check identity will be sent to:</div>"""
+            ),
+            Button("submit", "Continue"),
+        )
+
+
+class RegistryDetailsForm(forms.Form):
+    registrant_role = forms.CharField(
+        label="Role name",
+    )
+
+    registrant_contact_phone = forms.CharField(
+        label="Telephone number",
+        help_text="Give a business telephone number and don't use personal",
+    )
+
+    registrant_contact_email = forms.CharField(
+        label="Email address",
+        help_text="Use a role-based email address, like support@romseyparishcouncil.gov.uk",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Fieldset(
+                HTML('<h2 class="govuk-heading-m">Registrant role</h2>'),
+                Field.text("registrant_role", field_width=20),
+            ),
+            Fieldset(
+                HTML('<h2 class="govuk-heading-m">Registrant contact details</h2>'),
+                Field.text("registrant_contact_phone", field_width=20),
+                Field.text("registrant_contact_email"),
+            ),
+            HTML(
+                """<div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                <span class="govuk-visually-hidden">Warning</span>
+                We will show all information collected on this page on the registry,
+                which is open to the general public.
+                </strong>
+                </div>"""
+            ),
+            Button("submit", "Continue"),
+        )
+
+
 class EmailForm(forms.Form):
     registrant_email_address = forms.CharField(
         label="Email address of the .gov.uk Approved Registrar",

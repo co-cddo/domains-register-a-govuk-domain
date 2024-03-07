@@ -14,6 +14,9 @@ from .forms import (
     RegistrantForm,
     DomainForm,
     MinisterForm,
+    ApplicantDetailsForm,
+    RegistrantDetailsForm,
+    RegistryDetailsForm,
 )
 from .models import RegistrationData
 from django.views.generic.edit import FormView
@@ -66,6 +69,57 @@ class DomainView(FormView):
         else:
             self.success_url = reverse_lazy("applicant_details")
 
+        return super().form_valid(form)
+
+
+class ApplicantDetailsView(FormView):
+    template_name = "applicant_details.html"
+    form_class = ApplicantDetailsForm
+
+    def form_valid(self, form):
+        registration_data = self.request.session.get("registration_data", {})
+        registration_data["applicant_name"] = form.cleaned_data["applicant_name"]
+        registration_data["applicant_telephone_number"] = form.cleaned_data[
+            "applicant_telephone_number"
+        ]
+        registration_data["applicant_email_address"] = form.cleaned_data[
+            "applicant_email_address"
+        ]
+        self.request.session["registration_data"] = registration_data
+        self.success_url = reverse_lazy("registrant_details")
+        return super().form_valid(form)
+
+
+class RegistrantDetailsView(FormView):
+    template_name = "registrant_details.html"
+    form_class = RegistrantDetailsForm
+
+    def form_valid(self, form):
+        registration_data = self.request.session.get("registration_data", {})
+        registration_data["registrant_name"] = form.cleaned_data["registrant_name"]
+        registration_data["registrant_telephone_number"] = form.cleaned_data[
+            "registrant_telephone_number"
+        ]
+        registration_data["registrant_email_address"] = form.cleaned_data[
+            "registrant_email_address"
+        ]
+        self.request.session["registration_data"] = registration_data
+        self.success_url = reverse_lazy("registry_details")
+        return super().form_valid(form)
+
+
+class RegistryDetailsView(FormView):
+    template_name = "registry_details.html"
+    form_class = RegistryDetailsForm
+
+    def form_valid(self, form):
+        registration_data = self.request.session.get("registration_data", {})
+        registration_data["registrant_role"] = form.cleaned_data["registrant_role"]
+        registration_data["registrant_contact_details"] = form.cleaned_data[
+            "registrant_contact_details"
+        ]
+        self.request.session["registration_data"] = registration_data
+        self.success_url = reverse_lazy("confirm")
         return super().form_valid(form)
 
 
@@ -160,7 +214,7 @@ class MinisterView(FormView):
         if exe_radio == "Yes":
             self.success_url = reverse_lazy("minister_upload")
         else:
-            self.success_url = reverse_lazy("applicant_details")
+            self.success_url = reverse_lazy("registrant_details")
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):

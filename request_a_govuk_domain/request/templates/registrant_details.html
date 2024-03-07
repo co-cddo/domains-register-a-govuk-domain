@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags crispy_forms_gds %}
+
+{% block title %}Registrant details{% endblock %}
+
+{% block main %}
+
+  {% block beforeContent %}
+    {% url "applicant_details" as back_url %}
+    {% back_link back_url %}
+  {% endblock %}
+
+  {% block content %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+
+        {% error_summary form %}
+
+        <h1 class="govuk-heading-l">
+          Registrant details
+        </h1>
+
+        <p class="govuk-body">
+          The registrant must be a civil servant or a public servant, and be the person responsible for:
+        </p>
+
+        <ul class="govuk-list govuk-list--bullet">
+          <li>managing the domain and renewing the domain</li>
+          <li>authorising changes to the domain</li>
+          <li>protecting the domain on behalf of their public sector organisation</li>
+        </ul>
+
+        <p class="govuk-body">
+          For example, for a parish councils the registrant may be the clerk.
+        </p>
+
+        {% crispy form %}
+      </div>
+    </div>
+  {% endblock %}
+{% endblock %}
