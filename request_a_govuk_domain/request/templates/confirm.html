@@ -6,19 +6,6 @@
     <form method="post" action="{% url 'confirm' %}">
         {% csrf_token %}
         <h2 class="govuk-heading-m">Registrar details</h2>
-        {% gds_summary_list %}
-            {% gds_summary_list_row %}
-                {% gds_summary_list_row_key %}
-                    Name
-                {% endgds_summary_list_row_key %}
-                {% gds_summary_list_row_value %}
-                    {{ registration_data.registrant_full_name }}
-                {% endgds_summary_list_row_value %}
-                {% gds_summary_list_row_actions %}
-                    {% gds_summary_list_row_actions_item_inline text="Change" href="/name?change" %}
-                {% endgds_summary_list_row_actions %}
-            {% endgds_summary_list_row %}
-        {% endgds_summary_list %}
 
         {% gds_summary_list %}
             {% gds_summary_list_row %}
