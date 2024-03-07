@@ -34,6 +34,7 @@ from .request.views import (
     DomainPurposeView,
     DomainPurposeFailView,
     RegistrantView,
+    MinisterView,
 )
 
 urlpatterns = [
@@ -61,4 +62,5 @@ urlpatterns = [
         DomainPurposeFailView.as_view(),
         name="domain_purpose_fail",
     ),
+    path("minister/", MinisterView.as_view(), name="domain_purpose"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -13,6 +13,7 @@ from .forms import (
     DomainPurposeForm,
     RegistrantForm,
     DomainForm,
+    MinisterForm,
 )
 from .models import RegistrationData
 from django.views.generic.edit import FormView
@@ -147,6 +148,25 @@ class ExemptionView(FormView):
         else:
             self.success_url = reverse_lazy("exemption_fail")
         return super().form_valid(form)
+
+
+class MinisterView(FormView):
+    template_name = "minister.html"
+    form_class = MinisterForm
+
+    def form_valid(self, form):
+        exe_radio = form.cleaned_data["exe_radio"]
+        exe_radio = dict(form.fields["exe_radio"].choices)[exe_radio]
+        if exe_radio == "Yes":
+            self.success_url = reverse_lazy("minister_upload")
+        else:
+            self.success_url = reverse_lazy("applicant_details")
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["domain_name"] = self.request.session.get("domain", "")
+        return context
 
 
 class ExemptionUploadView(FormView):

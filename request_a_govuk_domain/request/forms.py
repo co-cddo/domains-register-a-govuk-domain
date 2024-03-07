@@ -172,6 +172,33 @@ class ExemptionForm(forms.Form):
         return dict(self.fields[field].choices).get(value)
 
 
+class MinisterForm(forms.Form):
+    exe_radio = forms.ChoiceField(
+        label="",
+        help_text="""If the requested .gov.uk domain does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.""",
+        choices=(("yes", "Yes"), ("no", "No")),
+        widget=forms.RadioSelect,
+        error_messages={"required": "Please answer Yes or No"},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field.radios(
+                "exe_radio",
+                legend_size=Size.MEDIUM,
+                legend_tag="h1",
+                inline=True,
+            ),
+            Button("submit", "Continue"),
+        )
+
+    def get_choice(self, field):
+        value = self.cleaned_data[field]
+        return dict(self.fields[field].choices).get(value)
+
+
 class ExemptionUploadForm(forms.Form):
     file = forms.FileField(
         label="Upload a file",
