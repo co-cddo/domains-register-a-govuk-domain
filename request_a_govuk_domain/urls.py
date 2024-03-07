@@ -30,6 +30,7 @@ from .request.views import (
     RegistrarView,
     RegistrantTypeView,
     RegistrantTypeFailView,
+    DomainView,
     DomainPurposeView,
     DomainPurposeFailView,
     RegistrantView,
@@ -40,6 +41,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("name/", NameView.as_view(), name="name"),
     path("email/", EmailView.as_view(), name="email"),
+    path("domain/", DomainView.as_view(), name="domain"),
     path("registrant_type/", RegistrantTypeView.as_view(), name="registrant_type"),
     path(
         "registrant_type_fail/",
