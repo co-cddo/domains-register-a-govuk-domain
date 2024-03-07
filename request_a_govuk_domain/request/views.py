@@ -17,6 +17,7 @@ from .forms import (
     ApplicantDetailsForm,
     RegistrantDetailsForm,
     RegistryDetailsForm,
+    WrittenPermissionForm,
 )
 from .models import RegistrationData
 from django.views.generic.edit import FormView
@@ -155,6 +156,25 @@ class RegistrantView(FormView):
         if registration_data["registrant_type"] == "central_gov":
             self.success_url = reverse_lazy("domain_purpose")
         return super().form_valid(form)
+
+
+class WrittenPermissionView(FormView):
+    template_name = "written_permission.html"
+    form_class = WrittenPermissionForm
+    success_url = reverse_lazy("confirm")
+
+    def form_valid(self, form):
+        registration_data = self.request.session.get("registration_data", {})
+        written_permission = form.cleaned_data["written_permission"]
+        registration_data["written_permission"] = written_permission
+        self.request.session["registration_data"] = registration_data
+        if written_permission == "no":
+            self.success_url = reverse_lazy("written_permission_fail")
+        return super().form_valid(form)
+
+
+class WrittenPermissionFailView(TemplateView):
+    template_name = "written_permission_fail.html"
 
 
 class ConfirmView(FormView):

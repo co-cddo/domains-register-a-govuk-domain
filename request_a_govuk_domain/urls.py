@@ -38,6 +38,8 @@ from .request.views import (
     ApplicantDetailsView,
     RegistrantDetailsView,
     RegistryDetailsView,
+    WrittenPermissionView,
+    WrittenPermissionFailView,
 )
 
 urlpatterns = [
@@ -80,5 +82,15 @@ urlpatterns = [
         "registry_details/",
         RegistryDetailsView.as_view(),
         name="registry_details",
+    ),
+    path(
+        "written-permission/",
+        WrittenPermissionView.as_view(),
+        name="written_permission",
+    ),
+    path(
+        "written-permission-fail/",
+        WrittenPermissionFailView.as_view(),
+        name="written_permission_fail",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

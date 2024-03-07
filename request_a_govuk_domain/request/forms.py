@@ -253,6 +253,29 @@ class RegistrantForm(forms.Form):
         )
 
 
+class WrittenPermissionForm(forms.Form):
+    CHOICES = (
+        Choice("yes", "Yes"),
+        Choice("no", "No"),
+    )
+
+    written_permission = forms.ChoiceField(
+        choices=CHOICES,
+        widget=forms.RadioSelect,
+        label="Your registrant must get written permission from a Chief Information Officer or equivalent you're \
+        applying on behalf of a central government department or agency.",
+        error_messages={"required": "Please answer Yes or No"},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field.radios("written_permission", legend_size=Size.SMALL, inline=True),
+            Button("submit", "Continue"),
+        )
+
+
 class ConfirmForm(forms.Form):
     pass
 
