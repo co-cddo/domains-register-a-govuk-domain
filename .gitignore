@@ -170,3 +170,6 @@ request_a_govuk_domain/media/**
 # node files from using cypress
 node_modules/
 cypress/screenshots/
+
+# macos Specific
+.DS_Store

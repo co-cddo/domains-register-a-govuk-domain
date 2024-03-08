@@ -1,0 +1,55 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ main, add-pr-github-actions ]
+  pull_request:
+    branches: [ main, add-pr-github-actions ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        # Docker Hub image
+        image: postgres
+        env:
+          POSTGRES_DB: test_dnswatch
+          POSTGRES_USER: dnswatch
+          POSTGRES_PASSWORD: dnswatch
+        ports:
+          - "5432:5432"
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Install required system packages
+      run: |
+        sudo apt-get update &&
+        sudo apt-get -y install libcurl4-nss-dev curl git make build-essential libssl-dev zlib1g-dev libbz2-dev \
+        libreadline-dev libsqlite3-dev wget ca-certificates libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
+        libffi-dev liblzma-dev mecab-ipadic-utf8 unzip --fix-missing
+    - name: Install pyenv and Python
+      run: |
+        curl https://pyenv.run | bash && \
+        export PYENV_ROOT="$HOME/.pyenv" && \
+        [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH" && \
+        eval "$(pyenv init -)" && \
+        pyenv update && \
+        pyenv install 3.10.11 && \
+        pyenv global 3.10.11 && \
+        pyenv rehash
+    - uses: actions/checkout@v3
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade poetry pre-commit
+        poetry install --no-root
+    - name: Run linters
+      run: |
+        pre-commit run --all

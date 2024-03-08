@@ -1,15 +1,52 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags crispy_forms_gds %}
+{% load govuk_frontend_django %}
 
 {% block main %}
   <h1 class="govuk-heading-l">Check your answers</h1>
+    <form method="post" action="{% url 'confirm' %}">
+        {% csrf_token %}
+        <h2 class="govuk-heading-m">Registrar details</h2>
+        {% gds_summary_list %}
+            {% gds_summary_list_row %}
+                {% gds_summary_list_row_key %}
+                    Email
+                {% endgds_summary_list_row_key %}
+                {% gds_summary_list_row_value %}
+                    {{ registration_data.registrant_email_address }}
+                {% endgds_summary_list_row_value %}
+                {% gds_summary_list_row_actions %}
+                    {% gds_summary_list_row_actions_item_inline text="Change" href="/email?change" %}
+                {% endgds_summary_list_row_actions %}
+            {% endgds_summary_list_row %}
+        {% endgds_summary_list %}
+        <h2 class="govuk-heading-m">Registrar details</h2>
+        {% gds_summary_list %}
+            {% gds_summary_list_row %}
+                {% gds_summary_list_row_key %}
+                Registrant Type
+                {% endgds_summary_list_row_key %}
+                {% gds_summary_list_row_value %}
+                    Line 1
+                    <br>
+                    Line 2
+                    <br>
+                    Line 3
+                {% endgds_summary_list_row_value %}
+                {% gds_summary_list_row_actions %}
+                    {% gds_summary_list_row_actions_item_inline text="Change" href="/registrant_type?change" %}
+                {% endgds_summary_list_row_actions %}
+            {% endgds_summary_list_row %}
+        {% endgds_summary_list %}
 
-  <form method="post" action="{% url 'confirm' %}">
-    {% csrf_token %}
-    <p>Name: {{ registration_data.registrant_full_name }}</p>
-    <p>Email: {{ registration_data.registrant_email_address }}</p>
-
+        <h2 class="govuk-heading-m">
+          Now send your registrant's application 
+        </h2>
+        <p>
+          By submitting this application you are confirming the details you are providing are correct to the best of your knowledge.
+        </p>
     <button type="submit" class="govuk-button" data-module="govuk-button">
-      Submit
+      Accept and send
     </button>
   </form>
 {% endblock %}
