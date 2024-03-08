@@ -16,6 +16,7 @@ from crispy_forms_gds.layout import (
 )
 
 from .utils import organisations_list
+from .models.organisation import RegistrantTypeChoices
 
 
 class NameForm(forms.Form):
@@ -203,27 +204,14 @@ class EmailForm(forms.Form):
 
 
 class RegistrantTypeForm(forms.Form):
-    REGISTRANT_TYPES = (
-        Choice("central_gov", "Central government department or agency"),
-        Choice("alb", "Non-departmental body - also known as an arm's length body"),
-        Choice("fire_service", "Fire service"),
-        Choice("county_council", "County, borough, metropolitan or district council"),
-        Choice("parish_council", "Parish, town or community council"),
-        Choice("village_council", "Neighbourhood or village council"),
-        Choice("combined_authority", "Combined or unitary authority"),
-        Choice("pcc", "Police and crime commissioner"),
-        Choice("joint_authority", "Joint authority"),
-        Choice("joint_committee", "Joint committee"),
-        Choice(
-            "representing_public_sector",
-            "Representing public sector bodies",
-            divider="Or",
-        ),
-        Choice("none", "None of the above"),
-    )
+    registrant_types = [
+        Choice(*item) for item in RegistrantTypeChoices.__members__.items()
+    ]
+    registrant_types[-1].divider = "Or"
+    registrant_types.append(Choice("none", "None of the above"))
 
     registrant_type = forms.ChoiceField(
-        choices=REGISTRANT_TYPES,
+        choices=registrant_types,
         widget=forms.RadioSelect,
         label="Your registrant must be from an eligible organisation to get a .gov.uk domain name.",
         error_messages={"required": "Please select from one of the choices"},
