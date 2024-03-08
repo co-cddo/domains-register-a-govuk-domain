@@ -27,32 +27,73 @@ make collectstatic; make up
 
 The command `make collectstatic` is to collect the static files and `make up` is to run the application on docker.
 
-`make collectstatic` is a one-time command to collect the static files. It is not required to run this command every
-time, unless there are changes in the static files.
+`make collectstatic` is a one-time command to collect the static files. It is not required to run this command every time, unless there are changes in the static files.
 
 So after the first time, the command to run the application on local docker is:
 ```bash
 make up
 ```
 
+Alternatively, you can use `make up-devserver` to use the Django development server in place of gunicorn.
+
+When the application is run, any migrations are applied to the database. Seed data for the `reviewer` user group (see below) is also applied.
+
+When running the application for the first time, or after deleting the docker volume containing the database, it's typical for docker to throw the following error:
+
+```
+service "init" didn't completed successfully: exit 1
+make: *** [Makefile:5: up-devserver] Error 1
+```
+
+Just run either `make up` or `make up-devserver` again.
+
 ## Usage instructions
 
-The application will be accessible via http://localhost:8000/name
+The user-facing application is accessible via http://localhost:8000
 
-Note: The application is in initial stages and the forms are at prototype/R&D stage. The pages on the application and
-logic within them are not yet representative of application.
+Note: The application is in initial stages and the forms are at prototype/R&D stage. The pages on the application and logic within them are not yet representative of application.
+
+The team can view and assess registration applications via the Django admin site. Each time the app is started, it will create a superuser and a 'reviewer' (staff) user if these do not already exist. The credentials are:
+
+- admin, ilovedomains
+- reviewer, ilovedomains
 
 ## Development instructions
 
-This project uses Poetry for dependency management and packaging. To install Poetry, follow the instructions at
-https://python-poetry.org/
+This project uses Poetry for dependency management and packaging. To install Poetry, follow the instructions at https://python-poetry.org/
 
 To install dependencies for local development ( e.g. when using IDE to make changes ) , use `poetry install`.
-
 
 This repository is set up with [pre-commit](https://pre-commit.com/) for style and error checking before every commit.
 You should install pre-commit, then run `pre-commit install` from within the project directory.
 
+### Updating fixtures
+
+Seed data is included for users, a single user group ('reviewer') and enough records to populate a single registration application.
+
+If the models are changed it will be necessary to update the seed data. New seed data can be produced with:
+
+```
+python manage.py dumpdata request --indent 2
+```
+
+If the models change to the extent that the permissions for staff/reviewer users have to be changed (e.g. to provide visibility of a new model in the admin site) the it will be necessary to update the seed data. Log into the admin site as a superuser and change the permissions for the `reviewer` group as required.
+
+Then copy and paste the output of the following command into the `reviewer_group.json` file, replacing the existing content:
+
+```
+python manage.py dumpdata auth.group --indent 2
+```
+
+If additional groups are added or other fundamental changes made which mean the default superuser/reviewer user records are changed, then paste the output of the following command into the `users.json` file, again replacing the existing content:
+
+```
+python manage.py dumpdata auth.user --indent 2
+```
+
+### Clearing the database
+
+While we're in the early stages of development it makes sense to delete existing migrations and create them afresh. To enable this, use the `make clear-db` command. Seed data will be re-applied when the application is restarted.
 
 ## Make commands
 
@@ -62,9 +103,17 @@ Following are some of the make commands:
 
 `make collectstatic` - Collect the static files
 
+`make makemigrations` - Create migrations which will be applied on each application start
+
 `make up` - Run the application on docker
 
+`make up-devserver` - Run the application on docker using the Django development server
+
+`make shell` - Open a bash console within the running application container (you'll get an error if the service isn't running)
+
 `make down` - Stop the application on docker
+
+`make clear-db` - Delete the database volume
 
 
 ## End-to-end testing
