@@ -51,7 +51,7 @@ services:
     restart: 'no'
     environment:
       <<: *common-application-variables
-    command: [ "sh", "-c", "python manage.py migrate --noinput" ]
+    command: [ "sh", "-c", "python manage.py migrate --noinput && python manage.py loaddata ./seed/reviewer_group.json ./seed/users.json ./seed/request.json" ]
     depends_on:
       - postgres
 
