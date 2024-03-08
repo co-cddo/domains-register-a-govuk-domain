@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     "govuk_frontend_django",
     "crispy_forms",
     "crispy_forms_gds",
+    "simple_history",
+    "phonenumber_field",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["gds"]

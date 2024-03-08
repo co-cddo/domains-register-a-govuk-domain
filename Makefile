@@ -10,8 +10,14 @@ down:
 build:
 	docker compose build
 
+shell:
+	docker compose exec web bash
+
 collectstatic:
-		docker compose -f docker-compose.yml -f docker-compose-local.yml run --rm --service-ports --entrypoint "python manage.py collectstatic --noinput" web
+	docker compose -f docker-compose.yml -f docker-compose-local.yml run --rm --service-ports --entrypoint "python manage.py collectstatic --noinput" web
+
+makemigrations:
+	docker compose run --entrypoint "python manage.py makemigrations" web
 
 migrate-devserver:
 	docker exec -it domains-register-a-govuk-domain-web-1 ./manage.py migrate

@@ -19,7 +19,7 @@ from .forms import (
     RegistryDetailsForm,
     WrittenPermissionForm,
 )
-from .models import RegistrationData
+
 from django.views.generic.edit import FormView
 
 from .utils import handle_uploaded_file
@@ -97,7 +97,7 @@ class DomainView(FormView):
         registration_data["domain_name"] = form.cleaned_data["domain_name"]
         self.request.session["registration_data"] = registration_data
 
-        if registration_data["registrant_type"] == "central_gov":
+        if registration_data["registrant_type"] == "central_government":
             self.success_url = reverse_lazy("minister")
         else:
             self.success_url = reverse_lazy("applicant_details")
@@ -198,7 +198,7 @@ class RegistrantView(FormView):
             "registrant_organisation_name"
         ]
         self.request.session["registration_data"] = registration_data
-        if registration_data["registrant_type"] == "central_gov":
+        if registration_data["registrant_type"] == "central_government":
             self.success_url = reverse_lazy("domain_purpose")
         return super().form_valid(form)
 
@@ -237,13 +237,7 @@ class ConfirmView(FormView):
         return context
 
     def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-
-        # Save data to the database
-        RegistrationData.objects.create(
-            registrant_full_name=registration_data["registrant_full_name"],
-            registrant_email_address=registration_data["registrant_email_address"],
-        )
+        # registration_data = self.request.session.get("registration_data", {})
 
         # Clear session data after saving
         self.request.session.pop("registration_data", None)
