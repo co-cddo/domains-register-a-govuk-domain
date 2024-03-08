@@ -180,7 +180,7 @@ class RegistrantTypeView(FormView):
             if form.cleaned_data["registrant_type"] == "none":
                 return redirect("registrant_type_fail")
             else:
-                return redirect("confirm")
+                return redirect("registrant")
         return render(request, self.template_name, {"form": form})
 
 
