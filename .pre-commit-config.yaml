@@ -21,4 +21,4 @@ repos:
     rev: v1.4.0
     hooks:
     -   id: detect-secrets
-        exclude: (^\.github/workflows/)|package\.lock\.json|(^tests/fixtures/)|request_a_govuk_domain/static
+        exclude: (^\.github/workflows/)|package\.lock\.json|(^tests/fixtures/)|request_a_govuk_domain/static|seed/
