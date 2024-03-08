@@ -23,7 +23,7 @@ describe('Change Answers', () => {
       // check changed email
       cy.get('#id_registrant_email_address').type('a1@b.com');
       cy.get('#id_cancel').click();
-      
+
       // check new value
       cy.get('.govuk-summary-list__value').should('include.text', 'a1@b.com')
     })
