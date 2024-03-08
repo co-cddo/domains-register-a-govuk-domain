@@ -1,10 +1,13 @@
 from django.db import models
 from simple_history.models import HistoricalRecords
+from .application import Application
 
 NOTES_MAX_LENGTH = 500
 
 
 class Review(models.Model):
+    application = models.OneToOneField(Application, on_delete=models.CASCADE)
+
     registrant_org_exists = models.BooleanField(default=False)
     registrant_org_exists_notes = models.TextField(max_length=NOTES_MAX_LENGTH)
 
@@ -32,3 +35,9 @@ class Review(models.Model):
     nac_appeal_validated_notes = models.TextField(max_length=NOTES_MAX_LENGTH)
 
     history = HistoricalRecords()
+
+    def __str__(self):
+        return str(self.application)
+
+    class Meta:
+        default_related_name = "review"

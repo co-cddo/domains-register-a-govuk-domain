@@ -7,3 +7,6 @@ class Person(models.Model):
     email_address = models.EmailField(max_length=320)
     role = models.CharField()
     phone_number = PhoneNumberField(blank=True)
+
+    def __str__(self):
+        return self.name

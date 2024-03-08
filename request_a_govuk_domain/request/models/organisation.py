@@ -4,6 +4,9 @@ from django.db import models
 class Organisation(models.Model):
     name = models.CharField()
 
+    def __str__(self):
+        return self.name
+
 
 class RegistrantTypeChoices(models.TextChoices):
     central_goverment = "Central government department or agency"
