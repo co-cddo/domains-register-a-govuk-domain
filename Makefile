@@ -21,3 +21,6 @@ makemigrations:
 
 migrate-devserver:
 	docker exec -it domains-register-a-govuk-domain-web-1 ./manage.py migrate
+
+clear-db:
+	docker compose down && docker container prune -f && docker volume rm domains-register-a-govuk-domain_postgres-data
