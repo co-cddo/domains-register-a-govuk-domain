@@ -33,53 +33,61 @@ Some views are example views, please modify remove as needed
 
 
 class NameView(FormView):
-    template_name = 'name.html'
+    template_name = "name.html"
 
     def get(self, request):
         params = {}
-        if 'change' in request.GET:
-            params['registrant_full_name'] = request.session['registration_data']['registrant_full_name']
+        if "change" in request.GET:
+            params["registrant_full_name"] = request.session["registration_data"][
+                "registrant_full_name"
+            ]
             form = NameForm(params)
         else:
             form = NameForm()
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request):
         form = NameForm(request.POST)
         if form.is_valid():
-            registration_data = request.session.get('registration_data', {})
-            registration_data['registrant_full_name'] = form.cleaned_data['registrant_full_name']
-            request.session['registration_data'] = registration_data
-            if 'cancel' in request.POST:
-                return redirect('confirm')
+            registration_data = request.session.get("registration_data", {})
+            registration_data["registrant_full_name"] = form.cleaned_data[
+                "registrant_full_name"
+            ]
+            request.session["registration_data"] = registration_data
+            if "cancel" in request.POST:
+                return redirect("confirm")
             else:
-                return redirect('email')
-        return render(request, self.template_name, {'form': form})
+                return redirect("email")
+        return render(request, self.template_name, {"form": form})
 
 
 class EmailView(FormView):
-    template_name = 'email.html'
+    template_name = "email.html"
 
     def get(self, request):
         params = {}
-        if 'change' in request.GET:
-            params['registrant_email_address'] = request.session['registration_data']['registrant_email_address']
+        if "change" in request.GET:
+            params["registrant_email_address"] = request.session["registration_data"][
+                "registrant_email_address"
+            ]
             form = EmailForm(params)
         else:
             form = EmailForm()
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request):
         form = EmailForm(request.POST)
         if form.is_valid():
-            registration_data = request.session.get('registration_data', {})
-            registration_data['registrant_email_address'] = form.cleaned_data['registrant_email_address']
-            request.session['registration_data'] = registration_data
-            if 'cancel' in request.POST:
-                return redirect('confirm')
+            registration_data = request.session.get("registration_data", {})
+            registration_data["registrant_email_address"] = form.cleaned_data[
+                "registrant_email_address"
+            ]
+            request.session["registration_data"] = registration_data
+            if "cancel" in request.POST:
+                return redirect("confirm")
             else:
-                return redirect('registrant_type')
-        return render(request, self.template_name, {'form': form})
+                return redirect("registrant_type")
+        return render(request, self.template_name, {"form": form})
 
 
 class DomainView(FormView):
@@ -154,24 +162,26 @@ class RegistrantTypeView(FormView):
 
     def get(self, request):
         params = {}
-        if 'change' in request.GET:
-            params['registrant_type'] = request.session['registration_data']['registrant_type']
+        if "change" in request.GET:
+            params["registrant_type"] = request.session["registration_data"][
+                "registrant_type"
+            ]
             form = RegistrantTypeForm(params)
         else:
             form = RegistrantTypeForm()
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request):
         form = RegistrantTypeForm(request.POST)
         if form.is_valid():
-            registration_data = request.session.get('registration_data', {})
-            registration_data['registrant_type'] = form.cleaned_data['registrant_type']
-            request.session['registration_data'] = registration_data
+            registration_data = request.session.get("registration_data", {})
+            registration_data["registrant_type"] = form.cleaned_data["registrant_type"]
+            request.session["registration_data"] = registration_data
             if form.cleaned_data["registrant_type"] == "none":
-                return redirect('registrant_type_fail')
+                return redirect("registrant_type_fail")
             else:
-                return redirect('confirm')
-        return render(request, self.template_name, {'form': form})
+                return redirect("confirm")
+        return render(request, self.template_name, {"form": form})
 
 
 class RegistrantTypeFailView(TemplateView):
