@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags crispy_forms_gds %}
+{% load govuk_frontend_django %}
+
+{% block title %}Written permission upload confirmation{% endblock %}
+
+{% block main %}
+
+  {% block beforeContent %}
+    {% url "written_permission_upload" as back_url %}
+    {% back_link back_url %}
+  {% endblock %}
+
+  {% block content %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">
+          Upload evidence of written permission
+      </h2>
+      <div class="govuk-hint">
+        Support file is .jpeg or .png and the maximum size is 10MB.
+      </div>
+
+      <dl class="govuk-summary-list govuk-summary-list--long-key">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            <a class="govuk-link" href="/media/{{ file }}" target="_blank">{{ file }}</a>
+          </dt>
+          <dd class="govuk-summary-list__value">
+            <strong class="govuk-tag govuk-tag--green">
+              uploaded
+            </strong>
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" href="/written_permission_upload">
+              Remove<span class="govuk-visually-hidden"> {{ file }}</span>
+            </a>
+          </dd>
+        </div>
+      </dl>
+      <a class="govuk-button" href="{% url "domain" %}">
+        Continue
+      </a>
+      </div>
+    </div>
+  {% endblock %}
+{% endblock %}

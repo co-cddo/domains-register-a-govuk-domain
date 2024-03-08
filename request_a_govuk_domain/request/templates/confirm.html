@@ -3,10 +3,10 @@
 {% load govuk_frontend_django %}
 
 {% block main %}
+  <h1 class="govuk-heading-l">Check your answers</h1>
     <form method="post" action="{% url 'confirm' %}">
         {% csrf_token %}
         <h2 class="govuk-heading-m">Registrar details</h2>
-
         {% gds_summary_list %}
             {% gds_summary_list_row %}
                 {% gds_summary_list_row_key %}
