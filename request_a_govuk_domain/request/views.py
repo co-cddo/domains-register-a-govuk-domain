@@ -97,7 +97,7 @@ class DomainView(FormView):
         registration_data["domain_name"] = form.cleaned_data["domain_name"]
         self.request.session["registration_data"] = registration_data
 
-        if registration_data["registrant_type"] == "central_gov":
+        if registration_data["registrant_type"] == "central_government":
             self.success_url = reverse_lazy("minister")
         else:
             self.success_url = reverse_lazy("applicant_details")
@@ -198,7 +198,7 @@ class RegistrantView(FormView):
             "registrant_organisation_name"
         ]
         self.request.session["registration_data"] = registration_data
-        if registration_data["registrant_type"] == "central_gov":
+        if registration_data["registrant_type"] == "central_government":
             self.success_url = reverse_lazy("domain_purpose")
         return super().form_valid(form)
 
