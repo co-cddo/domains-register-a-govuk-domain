@@ -32,7 +32,7 @@ services:
       <<: *common-application-variables
     depends_on:
       postgres:
-        condition: service_started
+          condition: service_healthy
 
   postgres:
     platform: linux/amd64
@@ -46,6 +46,11 @@ services:
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   init:
     <<: *api-base
@@ -54,7 +59,8 @@ services:
       <<: *common-application-variables
     command: [ "sh", "-c", "python manage.py migrate --noinput && python manage.py loaddata ./seed/reviewer_group.json ./seed/users.json ./seed/request.json" ]
     depends_on:
-      - postgres
+      postgres:
+          condition: service_healthy
 
 
 volumes:
