@@ -4,9 +4,7 @@
 
 {% block main %}
   <h1 class="govuk-heading-l">Check your answers</h1>
-    <form method="post" action="{% url 'confirm' %}">
-        {% csrf_token %}
-        <h2 class="govuk-heading-m">Registrar details</h2>
+  <h2 class="govuk-heading-m">Registrar details</h2>
         {% gds_summary_list %}
             {% gds_summary_list_row %}
                 {% gds_summary_list_row_key %}
@@ -45,8 +43,8 @@
         <p>
           By submitting this application you are confirming the details you are providing are correct to the best of your knowledge.
         </p>
-    <button type="submit" class="govuk-button" data-module="govuk-button">
-      Accept and send
-    </button>
+        <a class="govuk-button" id="button-continue" href="{% url "success" %}">
+          Accept and send
+        </a>
   </form>
 {% endblock %}

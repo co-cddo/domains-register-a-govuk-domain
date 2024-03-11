@@ -8,7 +8,6 @@ from .forms import (
     ExemptionForm,
     ExemptionUploadForm,
     RegistrarForm,
-    ConfirmForm,
     RegistrantTypeForm,
     DomainPurposeForm,
     RegistrantForm,
@@ -223,10 +222,8 @@ class WrittenPermissionFailView(TemplateView):
     template_name = "written_permission_fail.html"
 
 
-class ConfirmView(FormView):
+class ConfirmView(TemplateView):
     template_name = "confirm.html"
-    form_class = ConfirmForm
-    success_url = reverse_lazy("success")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -237,17 +234,16 @@ class ConfirmView(FormView):
 
         return context
 
-    def form_valid(self, form):
-        # registration_data = self.request.session.get("registration_data", {})
-
-        # Clear session data after saving
-        self.request.session.pop("registration_data", None)
-
-        return super().form_valid(form)
-
-
 class SuccessView(TemplateView):
     template_name = "success.html"
+
+    def get(self, request, *args, **kwargs):
+
+        # We're finished, so clear the session data
+        self.request.session.pop("registration_data", None)
+
+        return render(request, self.template_name)
+
 
 
 class ExemptionView(FormView):
