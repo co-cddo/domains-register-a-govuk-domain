@@ -234,16 +234,15 @@ class ConfirmView(TemplateView):
 
         return context
 
+
 class SuccessView(TemplateView):
     template_name = "success.html"
 
     def get(self, request, *args, **kwargs):
-
         # We're finished, so clear the session data
         self.request.session.pop("registration_data", None)
 
         return render(request, self.template_name)
-
 
 
 class ExemptionView(FormView):
