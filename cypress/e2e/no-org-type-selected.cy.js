@@ -22,6 +22,6 @@ describe('Email format verification', () => {
     cy.get('#id_registrant_type_5').click()
     cy.get('.govuk-button#id_submit').click()
 
-    cy.get('h1').should('include.text', 'Confirm') // Should change later as more pages get added
+    cy.get('h1').should('include.text', 'What is your registrant’s organisation name?') // Should change later as more pages get added
   })
 })

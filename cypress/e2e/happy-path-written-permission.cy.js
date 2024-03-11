@@ -25,6 +25,6 @@ describe('Happy passes until written permission', () => {
         cy.get('#id_written_permission_1').click()
         cy.get('.govuk-button#id_submit').click()
 
-        cy.get('h1').should('include.text', 'Confirm') // Should change later as more pages get added
+        cy.get('h1').should('include.text', 'Upload evidence of written permission')
     })
 })
