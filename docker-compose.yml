@@ -11,19 +11,13 @@ x-api-base: &api-base
     args:
       POETRY_ARGS: "--no-root --no-ansi"
   volumes:
-    - .:/srv/request_a_govuk_domain
+    - .:/app
 
 services:
 
   web:
     platform: linux/amd64
-    build:
-      context: .
-      args:
-        POETRY_ARGS: "--no-root --no-ansi"
-    volumes:
-      - ./request_a_govuk_domain:/srv/request_a_govuk_domain/request_a_govuk_domain
-      - govuk_domain_home:/home/govuk_domain
+    <<: *api-base
     ports:
       - "8000:8000"
     #Added the reload flag so the application will be reloaded when the source is modified.
@@ -33,6 +27,8 @@ services:
     depends_on:
       postgres:
           condition: service_healthy
+      init:
+        condition: service_completed_successfully
 
   postgres:
     platform: linux/amd64
@@ -57,7 +53,7 @@ services:
     restart: 'no'
     environment:
       <<: *common-application-variables
-    command: [ "sh", "-c", "python manage.py migrate --noinput && python manage.py loaddata ./seed/reviewer_group.json ./seed/users.json ./seed/request.json" ]
+    command: [ "sh", "/app/local-init.sh" ]
     depends_on:
       postgres:
           condition: service_healthy

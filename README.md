@@ -20,25 +20,21 @@ Steps to run the project locally on docker:
 1. Clone the repository
 2. Go to the project directory: domains-register-a-govuk-domain
 3. Ensure docker is running on your machine
-4. Run the following command to run the application:
-```bash
-make collectstatic; make up
-```
+4. Run one of the following commands to run the application:
 
-The command `make collectstatic` is to collect the static files and `make up` is to run the application on docker.
+- Using gunicorn:
+    ```bash
+    make up
+    ```
+- Using the Django development server:
+    ```bash
+    make up-devserver
+    ```
 
-`make collectstatic` is a one-time command to collect the static files. It is not required to run this command every time, unless there are changes in the static files.
-
-So after the first time, the command to run the application on local docker is:
-```bash
-make up
-```
-
-Alternatively, you can use `make up-devserver` to use the Django development server in place of gunicorn.
-
-When the application is run, any migrations are applied to the database. Seed data for the `reviewer` user group (see below) is also applied.
-
-Just run either `make up` or `make up-devserver` again.
+When the application is run:
+- Any migrations are applied to the database.
+- Static files collected.
+- Seed data (see below) is also applied if it doesn't already exist.
 
 ## Usage instructions
 
