@@ -22,6 +22,8 @@ class FormProgressMiddleware:
         return False
 
     def is_valid_progress(self, request):
+        if request.path == reverse("success"):
+            return True
         if request.session.get("registration_data") is None:
             return False
         for key in request.session.get("registration_data"):
