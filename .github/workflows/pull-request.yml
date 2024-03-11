@@ -16,9 +16,9 @@ jobs:
         # Docker Hub image
         image: postgres
         env:
-          POSTGRES_DB: test_dnswatch
-          POSTGRES_USER: dnswatch
-          POSTGRES_PASSWORD: dnswatch
+          POSTGRES_DB: govuk_domain
+          POSTGRES_USER: govuk_domain
+          POSTGRES_PASSWORD: govuk_domain
         ports:
           - "5432:5432"
         # Set health checks to wait until postgres has started
@@ -53,3 +53,11 @@ jobs:
     - name: Run linters
       run: |
         pre-commit run --all
+    - name: Cypress
+      uses: cypress-io/github-action@v6
+      env:
+        SECRET_KEY: blah
+        DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
+      with:
+        build: poetry run ./manage.py migrate --noinput
+        start: poetry run ./manage.py runserver
