@@ -7,7 +7,7 @@ describe('Happy passes', () => {
 
     cy.get('select.govuk-select').select('34SP.com')
 
-    cy.get('.govuk-button').click()
+    cy.get('.govuk-button#id_submit').click()
 
 
   })

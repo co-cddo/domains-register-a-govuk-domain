@@ -4,10 +4,10 @@ describe('Check if user entered an email', () => {
 
     cy.get('h1').should('include.text', 'Which .gov.uk Approved Registrar organisation are you from?')
     cy.get('select.govuk-select').select('34SP.com')
-    cy.get('.govuk-button').click()
+    cy.get('.govuk-button#id_submit').click()
 
     // Don't type anything, just click on the button
-    cy.get('.govuk-button').click()
+    cy.get('.govuk-button#id_submit').click()
 
     // There should be an error
     cy.get('#error-summary-title').should('exist')
@@ -16,7 +16,7 @@ describe('Check if user entered an email', () => {
 
     // Retrying with a correct email
     cy.get('.govuk-input').type('something@some.gov.uk')
-    cy.get('.govuk-button').click()
+    cy.get('.govuk-button#id_submit').click()
 
     // No error message this time
     cy.get('#error-summary-title').should('not.exist')
