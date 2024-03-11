@@ -23,6 +23,7 @@ services:
         POETRY_ARGS: "--no-root --no-ansi"
     volumes:
       - ./request_a_govuk_domain:/srv/request_a_govuk_domain/request_a_govuk_domain
+      - govuk_domain_home:/home/govuk_domain
     ports:
       - "8000:8000"
     #Added the reload flag so the application will be reloaded when the source is modified.
@@ -58,3 +59,4 @@ services:
 
 volumes:
   postgres-data: { }
+  govuk_domain_home: { }

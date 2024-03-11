@@ -23,5 +23,10 @@ RUN SECRET_KEY=unneeded /srv/request_a_govuk_domain/manage.py collectstatic --no
 RUN mkdir /var/run/request_a_govuk_domain \
   && chown govuk_domain:govuk_domain /var/run/request_a_govuk_domain
 
+RUN mkdir /home/govuk_domain && \
+    chown govuk_domain:govuk_domain /home/govuk_domain
+
 USER govuk_domain
+
+
 EXPOSE 8000
