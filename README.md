@@ -38,13 +38,6 @@ Alternatively, you can use `make up-devserver` to use the Django development ser
 
 When the application is run, any migrations are applied to the database. Seed data for the `reviewer` user group (see below) is also applied.
 
-When running the application for the first time, or after deleting the docker volume containing the database, it's typical for docker to throw the following error:
-
-```
-service "init" didn't completed successfully: exit 1
-make: *** [Makefile:5: up-devserver] Error 1
-```
-
 Just run either `make up` or `make up-devserver` again.
 
 ## Usage instructions
