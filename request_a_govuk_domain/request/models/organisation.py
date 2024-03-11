@@ -9,7 +9,7 @@ class Organisation(models.Model):
 
 
 class RegistrantTypeChoices(models.TextChoices):
-    central_goverment = "Central government department or agency"
+    central_government = "Central government department or agency"
     ndpb = "Non-departmental body - also known as an arm's length body"
     fire_service = "Fire Service"
     local_authority = "County, borough, metropolitan or district council"
