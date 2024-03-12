@@ -4,7 +4,13 @@ from django.contrib.auth.admin import GroupAdmin
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 
-from .models import Application, CentralGovernmentAttributes, Review
+from .models import (
+    Application,
+    CentralGovernmentAttributes,
+    Review,
+    Registrar,
+    Registrant,
+)
 
 
 class DomainRegistrationUserAdmin(UserAdmin):
@@ -38,6 +44,14 @@ class ApplicationAdmin(admin.ModelAdmin):
     inlines = [CentralGovernmentAttributesInline, ReviewInline]
 
 
+class RegistrarAdmin(admin.ModelAdmin):
+    model = Registrar
+
+
+class RegistrantAdmin(admin.ModelAdmin):
+    model = Registrant
+
+
 admin.site.unregister(User)
 admin.site.register(User, DomainRegistrationUserAdmin)
 
@@ -45,3 +59,5 @@ admin.site.unregister(Group)
 admin.site.register(Group, DomainRegistrationGroupAdmin)
 
 admin.site.register(Application, ApplicationAdmin)
+admin.site.register(Registrar, RegistrarAdmin)
+admin.site.register(Registrant, RegistrantAdmin)
