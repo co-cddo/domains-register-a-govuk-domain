@@ -23,8 +23,7 @@ from .forms import (
 
 from django.views.generic.edit import FormView
 
-from .utils import handle_uploaded_file
-
+from .utils import handle_uploaded_file, add_to_session
 
 """
 Some views are example views, please modify remove as needed
@@ -77,11 +76,7 @@ class EmailView(FormView):
     def post(self, request):
         form = EmailForm(request.POST)
         if form.is_valid():
-            registration_data = request.session.get("registration_data", {})
-            registration_data["registrant_email_address"] = form.cleaned_data[
-                "registrant_email_address"
-            ]
-            request.session["registration_data"] = registration_data
+            add_to_session(form, request, "registrant_email_address")
             if "cancel" in request.POST:
                 return redirect("confirm")
             else:
@@ -173,10 +168,8 @@ class RegistrantTypeView(FormView):
     def post(self, request):
         form = RegistrantTypeForm(request.POST)
         if form.is_valid():
-            registration_data = request.session.get("registration_data", {})
-            registration_data["registrant_type"] = form.cleaned_data["registrant_type"]
-            request.session["registration_data"] = registration_data
-            if form.cleaned_data["registrant_type"] == "none":
+            registrant_type = add_to_session(form, request, "registrant_type")
+            if registrant_type == "none":
                 return redirect("registrant_type_fail")
             else:
                 return redirect("registrant")
@@ -209,10 +202,7 @@ class WrittenPermissionView(FormView):
     success_url = reverse_lazy("written_permission_upload")
 
     def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        written_permission = form.cleaned_data["written_permission"]
-        registration_data["written_permission"] = written_permission
-        self.request.session["registration_data"] = registration_data
+        written_permission = add_to_session(form, self.request, "written_permission")
         if written_permission == "no":
             self.success_url = reverse_lazy("written_permission_fail")
         return super().form_valid(form)
@@ -377,10 +367,7 @@ class DomainPurposeView(FormView):
     form_class = DomainPurposeForm
 
     def form_valid(self, form):
-        purpose = form.cleaned_data["domain_purpose"]
-        registration_data = self.request.session.get("registration_data", {})
-        registration_data["domain_purpose"] = purpose
-        self.request.session["registration_data"] = registration_data
+        purpose = add_to_session(form, self.request, "domain_purpose")
 
         if purpose == "email-only":
             self.success_url = reverse_lazy("written_permission")
