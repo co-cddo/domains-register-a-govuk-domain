@@ -10,8 +10,7 @@ x-api-base: &api-base
     context: .
     args:
       POETRY_ARGS: "--no-root --no-ansi"
-  volumes:
-    - .:/app
+
 
 services:
 
@@ -24,6 +23,9 @@ services:
     entrypoint: [ "/usr/local/bin/gunicorn", "request_a_govuk_domain.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "120", "--access-logfile", "-", "--reload" ]
     environment:
       <<: *common-application-variables
+    volumes:
+      - .:/app
+      - govuk_domain_home:/home/govuk_domain
     depends_on:
       postgres:
           condition: service_healthy
@@ -54,6 +56,8 @@ services:
     environment:
       <<: *common-application-variables
     command: [ "sh", "/app/local-init.sh" ]
+    volumes:
+      - .:/app
     depends_on:
       postgres:
           condition: service_healthy
