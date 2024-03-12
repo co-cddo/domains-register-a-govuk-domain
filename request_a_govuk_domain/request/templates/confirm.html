@@ -3,12 +3,34 @@
 {% load govuk_frontend_django %}
 
 {% block main %}
+  {% block beforeContent %}
+    {% url "registry_details" as back_url %}
+    {% back_link back_url %}
+  {% endblock %}
+
+  {% block content %}
   <h1 class="govuk-heading-l">Check your answers</h1>
+  <div id="checkanswers-hint" class="govuk-hint">
+    Make sure your answers are complete and correct. If you need to change any of your details, change them at this stage. 
+  </div>
   <h2 class="govuk-heading-m">Registrar details</h2>
         {% gds_summary_list %}
             {% gds_summary_list_row %}
                 {% gds_summary_list_row_key %}
-                    Email
+                    Organisation name
+                {% endgds_summary_list_row_key %}
+                {% gds_summary_list_row_value %}
+                    {{ registration_data.organisations_choice }}
+                {% endgds_summary_list_row_value %}
+                {% gds_summary_list_row_actions %}
+                  {% gds_summary_list_row_actions_item_inline text="Change" href="/registrar?change" %}
+                {% endgds_summary_list_row_actions %}
+            {% endgds_summary_list_row %}
+        {% endgds_summary_list %}
+        {% gds_summary_list %}
+            {% gds_summary_list_row %}
+                {% gds_summary_list_row_key %}
+                    Email address
                 {% endgds_summary_list_row_key %}
                 {% gds_summary_list_row_value %}
                     {{ registration_data.registrant_email_address }}
@@ -18,33 +40,85 @@
                 {% endgds_summary_list_row_actions %}
             {% endgds_summary_list_row %}
         {% endgds_summary_list %}
-        <h2 class="govuk-heading-m">Registrar details</h2>
+        <h2 class="govuk-heading-m">Registrant details</h2>
+        {% gds_summary_list %}
+          {% for data in registration_objs %}
+            {% gds_summary_list_row %}
+                {% gds_summary_list_row_key %}
+                  {{ data.summary_key }}
+                {% endgds_summary_list_row_key %}
+                {% gds_summary_list_row_value %}
+                  {{ data.summary_value }}
+                {% endgds_summary_list_row_value %}
+                  {% gds_summary_list_row_actions %}
+                    {% gds_summary_list_row_actions_item_inline href="/" %}
+                      <a href="/{{ data.change_url }}/?change">Change</a>
+                    {% endgds_summary_list_row_actions_item %}
+                  {% endgds_summary_list_row_actions %}
+            {% endgds_summary_list_row %}
+          {% endfor %}
+        {% endgds_summary_list %}
+        <h2 class="govuk-heading-m">Contact details</h2>
         {% gds_summary_list %}
             {% gds_summary_list_row %}
                 {% gds_summary_list_row_key %}
-                Registrant Type
+                  Applicant
                 {% endgds_summary_list_row_key %}
                 {% gds_summary_list_row_value %}
-                    Line 1
-                    <br>
-                    Line 2
-                    <br>
-                    Line 3
+                  {{ registration_data.applicant_name }}
+                  <br>
+                  {{ registration_data.applicant_phone }}
+                  <br>
+                  {{ registration_data.applicant_email }}
                 {% endgds_summary_list_row_value %}
                 {% gds_summary_list_row_actions %}
-                    {% gds_summary_list_row_actions_item_inline text="Change" href="/registrant_type?change" %}
+                    {% gds_summary_list_row_actions_item_inline text="Change" href="/applicant_details?change" %}
                 {% endgds_summary_list_row_actions %}
             {% endgds_summary_list_row %}
         {% endgds_summary_list %}
-
+        {% gds_summary_list %}
+            {% gds_summary_list_row %}
+                {% gds_summary_list_row_key %}
+                  Registrant
+                {% endgds_summary_list_row_key %}
+                {% gds_summary_list_row_value %}
+                  {{ registration_data.registrant_full_name }}
+                  <br>
+                  {{ registration_data.registrant_phone }}
+                  <br>
+                  {{ registration_data.registrant_email_address }}
+                {% endgds_summary_list_row_value %}
+                {% gds_summary_list_row_actions %}
+                    {% gds_summary_list_row_actions_item_inline text="Change" href="/registrant_details?change" %}
+                {% endgds_summary_list_row_actions %}
+            {% endgds_summary_list_row %}
+        {% endgds_summary_list %}
+        {% gds_summary_list %}
+            {% gds_summary_list_row %}
+                {% gds_summary_list_row_key %}
+                  Registry (public information)
+                {% endgds_summary_list_row_key %}
+                {% gds_summary_list_row_value %}
+                  {{ registration_data.registrant_role }}
+                  <br>
+                  {{ registration_data.registrant_contact_phone }}
+                  <br>
+                  {{ registration_data.registrant_contact_email }}
+                {% endgds_summary_list_row_value %}
+                {% gds_summary_list_row_actions %}
+                    {% gds_summary_list_row_actions_item_inline text="Change" href="/registry_details?change" %}
+                {% endgds_summary_list_row_actions %}
+            {% endgds_summary_list_row %}
+        {% endgds_summary_list %}
         <h2 class="govuk-heading-m">
           Now send your registrant's application
         </h2>
-        <p>
+        <div id="checkanswers-hint" class="govuk-hint">
           By submitting this application you are confirming the details you are providing are correct to the best of your knowledge.
-        </p>
+        </div>
         <a class="govuk-button" id="button-continue" href="{% url "success" %}">
           Accept and send
         </a>
   </form>
+  {% endblock %}
 {% endblock %}

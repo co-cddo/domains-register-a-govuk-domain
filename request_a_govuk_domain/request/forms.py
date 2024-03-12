@@ -18,6 +18,13 @@ from crispy_forms_gds.layout import (
 from .models.organisation import RegistrantTypeChoices, Registrar
 
 
+def add_back_to_answers_button(args, field, layout):
+    if args and field in args[0]:
+        layout.fields.append(
+            Button.secondary("cancel", "Back to Answers")
+        )
+
+
 class DomainForm(forms.Form):
     domain_name = forms.CharField(
         label="Domain name",
@@ -36,6 +43,7 @@ class DomainForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "domain_name", self.helper.layout)
 
 
 class ApplicantDetailsForm(forms.Form):
@@ -73,6 +81,7 @@ class ApplicantDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "applicant_name", self.helper.layout)
 
 
 class RegistrantDetailsForm(forms.Form):
@@ -108,6 +117,7 @@ class RegistrantDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "registrant_full_name", self.helper.layout)
 
 
 class RegistryDetailsForm(forms.Form):
@@ -151,6 +161,7 @@ class RegistryDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "registrant_role", self.helper.layout)
 
 
 class EmailForm(forms.Form):
@@ -170,10 +181,7 @@ class EmailForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        if args and "registrant_email_address" in args[0]:
-            self.helper.layout.fields.append(
-                Button.secondary("cancel", "Back to Answers")
-            )
+        add_back_to_answers_button(args, "registrant_email_address", self.helper.layout)
 
 
 class RegistrantTypeForm(forms.Form):
@@ -218,12 +226,13 @@ class RegistrantForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "registrant_organisation_name", self.helper.layout)
 
 
 class WrittenPermissionForm(forms.Form):
     CHOICES = (
-        Choice("yes", "Yes"),
-        Choice("no", "No"),
+        Choice("Yes", "Yes"),
+        Choice("No", "No"),
     )
 
     written_permission = forms.ChoiceField(
@@ -241,6 +250,7 @@ class WrittenPermissionForm(forms.Form):
             Field.radios("written_permission", legend_size=Size.SMALL, inline=True),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "written_permission", self.helper.layout)
 
 
 class ExemptionForm(forms.Form):
@@ -250,7 +260,7 @@ class ExemptionForm(forms.Form):
             agency, they must have an exemption from the Government Digital \
             Service before applying for a new third-level .gov.uk domain \
             name.",
-        choices=(("yes", "Yes"), ("no", "No")),
+        choices=(("Yes", "Yes"), ("No", "No")),
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},
     )
@@ -267,6 +277,7 @@ class ExemptionForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "exe_radio", self.helper.layout)
 
     def get_choice(self, field):
         value = self.cleaned_data[field]
@@ -277,7 +288,7 @@ class MinisterForm(forms.Form):
     minister_radios = forms.ChoiceField(
         label="",
         help_text="""If the requested .gov.uk domain does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.""",
-        choices=(("yes", "Yes"), ("no", "No")),
+        choices=(("Yes", "Yes"), ("No", "No")),
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},
     )
@@ -294,6 +305,7 @@ class MinisterForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "minister_radios", self.helper.layout)
 
     def get_choice(self, field):
         value = self.cleaned_data[field]
@@ -377,6 +389,7 @@ class RegistrarForm(forms.Form):
             ),
             Button("submit", "Submit"),
         )
+        add_back_to_answers_button(args, "organisations_choice", self.helper.layout)
 
 
 class DomainPurposeForm(forms.Form):
