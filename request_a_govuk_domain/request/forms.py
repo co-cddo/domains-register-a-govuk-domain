@@ -270,10 +270,6 @@ class WrittenPermissionForm(forms.Form):
         )
 
 
-class ConfirmForm(forms.Form):
-    pass
-
-
 class ExemptionForm(forms.Form):
     exe_radio = forms.ChoiceField(
         label="",

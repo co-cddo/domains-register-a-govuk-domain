@@ -4,15 +4,15 @@ describe('Email format verification', () => {
 
     cy.get('h1').should('include.text', 'Which .gov.uk Approved Registrar organisation are you from?')
     cy.get('select.govuk-select').select('34SP.com')
-    cy.get('.govuk-button').click()
+    cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'What is your email address?')
 
     cy.get('.govuk-input').type('a@b.com')
-    cy.get('.govuk-button').click()
+    cy.get('.govuk-button#id_submit').click()
     cy.get('h1').should('include.text', 'Which of the following best describes your registrant\'s organisation?')
 
-    cy.get('.govuk-button').click()
+    cy.get('.govuk-button#id_submit').click()
 
     // There should be an error
     cy.get('#error-summary-title').should('exist')
@@ -20,8 +20,8 @@ describe('Email format verification', () => {
     cy.get('.govuk-error-summary__list').should('include.text', 'Please select from one of the choices')
 
     cy.get('#id_registrant_type_5').click()
-    cy.get('.govuk-button').click()
+    cy.get('.govuk-button#id_submit').click()
 
-    cy.get('h1').should('include.text', 'Confirm') // Should change later as more pages get added
+    cy.get('h1').should('include.text', 'What is your registrant’s organisation name?')
   })
 })
