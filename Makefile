@@ -1,8 +1,8 @@
 up:
-	docker compose -f docker-compose.yml -f docker-compose-local.yml run --rm --service-ports web
+	docker compose -f docker-compose.yml run --rm --service-ports web
 
 up-devserver:
-	docker compose -f docker-compose.yml -f docker-compose-local.yml run --rm --service-ports --entrypoint "python manage.py runserver 0.0.0.0:8000" web
+	docker compose -f docker-compose.yml run --rm --service-ports --entrypoint "python manage.py runserver 0.0.0.0:8000" web
 
 down:
 	docker compose down
@@ -14,7 +14,7 @@ shell:
 	docker compose exec web bash
 
 collectstatic:
-	docker compose -f docker-compose.yml -f docker-compose-local.yml run --rm --service-ports --entrypoint "python manage.py collectstatic --noinput" web
+	docker compose -f docker-compose.yml run --rm --service-ports --entrypoint "python manage.py collectstatic --noinput" web
 
 makemigrations:
 	docker compose run --entrypoint "python manage.py makemigrations" web
