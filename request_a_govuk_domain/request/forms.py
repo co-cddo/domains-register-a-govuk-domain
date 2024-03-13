@@ -16,7 +16,7 @@ from crispy_forms_gds.layout import (
 )
 
 from .utils import organisations_list
-from .models.organisation import RegistrantTypeChoices
+from .models.organisation import RegistrantTypeChoices, Registrar
 
 
 class DomainForm(forms.Form):
@@ -440,13 +440,21 @@ class RegistrarForm(forms.Form):
 
     organisations_choice = forms.ChoiceField(
         label="Choose your organisation",
-        choices=tuple(organisations_list()),
+        choices=[],
         widget=forms.Select(attrs={"class": "govuk-select"}),
         required=True,
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        registrars = [("", "Select an item from the list")] + list(
+            (f"registrar-{registrar.id}", registrar.name)
+            for registrar in Registrar.objects.all()
+        )
+
+        self.fields["organisations_choice"].choices = registrars
+
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
