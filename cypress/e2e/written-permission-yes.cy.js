@@ -14,7 +14,7 @@ describe('Traverses to Written Permission page and selects Yes', () => {
         cy.get('.govuk-button#id_submit').click()
 
         cy.get('h1').should('include.text', 'Which of the following best describes your registrant\'s organisation?')
-        cy.get('#id_registrant_type_2').click()
+        cy.get('#id_registrant_type_3').click()
         cy.get('.govuk-button#id_submit').click()
 
         cy.get('h1').should('include.text', 'What is your registrant’s organisation name?')
