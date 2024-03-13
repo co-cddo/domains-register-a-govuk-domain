@@ -3,7 +3,6 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from .forms import (
-    NameForm,
     EmailForm,
     ExemptionForm,
     ExemptionUploadForm,
@@ -28,35 +27,6 @@ from .utils import handle_uploaded_file, add_to_session, is_central_government
 """
 Some views are example views, please modify remove as needed
 """
-
-
-class NameView(FormView):
-    template_name = "name.html"
-
-    def get(self, request):
-        params = {}
-        if "change" in request.GET:
-            params["registrant_full_name"] = request.session["registration_data"][
-                "registrant_full_name"
-            ]
-            form = NameForm(params)
-        else:
-            form = NameForm()
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request):
-        form = NameForm(request.POST)
-        if form.is_valid():
-            registration_data = request.session.get("registration_data", {})
-            registration_data["registrant_full_name"] = form.cleaned_data[
-                "registrant_full_name"
-            ]
-            request.session["registration_data"] = registration_data
-            if "cancel" in request.POST:
-                return redirect("confirm")
-            else:
-                return redirect("email")
-        return render(request, self.template_name, {"form": form})
 
 
 class EmailView(FormView):
