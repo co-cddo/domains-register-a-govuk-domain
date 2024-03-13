@@ -30,36 +30,6 @@
       }
     },
     {
-      "model": "request.person",
-      "pk": 4,
-      "fields": {
-        "name": "Bob Roberts",
-        "email_address": "",
-        "role": "",
-        "phone_number": ""
-      }
-    },
-    {
-      "model": "request.person",
-      "pk": 5,
-      "fields": {
-        "name": "Terry Terrence",
-        "email_address": "",
-        "role": "",
-        "phone_number": ""
-      }
-    },
-    {
-      "model": "request.person",
-      "pk": 6,
-      "fields": {
-        "name": "Peter Peters",
-        "email_address": "",
-        "role": "",
-        "phone_number": ""
-      }
-    },
-    {
       "model": "request.registrant",
       "pk": 1,
       "fields": {
