@@ -24,3 +24,6 @@ migrate-devserver:
 
 clear-db:
 	docker compose down && docker container prune -f && docker volume rm domains-register-a-govuk-domain_postgres-data
+
+test:
+	docker compose run --rm --service-ports --entrypoint "python manage.py test -v 2" web
