@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% load crispy_forms_tags crispy_forms_gds %}
 {% load govuk_frontend_django %}
 
@@ -18,5 +19,18 @@
       </div>
     </div>
   {% endblock %}
+{% endblock %}
 
+{% block bottomjs %}
+  <script type="text/javascript" src="{% static 'accessible-autocomplete.min.js' %}"></script>
+  <script>
+   accessibleAutocomplete.enhanceSelectElement({
+     selectElement: document.querySelector('#id_organisations_choice'),
+     menuClasses: "govuk-list"
+   })
+  </script>
+{% endblock %}
+
+{% block extra_stylesheets %}
+  <link rel="stylesheet" href="{% static 'accessible-autocomplete.min.css' %}">
 {% endblock %}
