@@ -16,7 +16,7 @@ from crispy_forms_gds.layout import (
 )
 
 from .utils import organisations_list
-from .models.organisation import RegistrantTypeChoices
+from .models.organisation import RegistrantTypeChoices, Registrar
 
 
 class NameForm(forms.Form):
@@ -464,9 +464,12 @@ class RegistrarForm(forms.Form):
     Registrar Form with organisations choice fields
     """
 
+    registrars = [("", "Select an item from the list")] + \
+        list((f"registrar-{registrar.id}", registrar.name) for registrar in Registrar.objects.all())
+
     organisations_choice = forms.ChoiceField(
         label="Choose your organisation",
-        choices=tuple(organisations_list()),
+        choices=registrars,
         widget=forms.Select(attrs={"class": "govuk-select"}),
         required=True,
     )
