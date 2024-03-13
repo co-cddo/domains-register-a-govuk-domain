@@ -3,7 +3,7 @@ describe('Check if user entered an email', () => {
     cy.visit('http://0.0.0.0:8000/')
 
     cy.get('h1').should('include.text', 'Which .gov.uk Approved Registrar organisation are you from?')
-    cy.get('select.govuk-select').select('WeRegister')
+    cy.get('#id_organisations_choice').type('WeRegister')
     cy.get('.govuk-button#id_submit').click()
 
     // Don't type anything, just click on the button
