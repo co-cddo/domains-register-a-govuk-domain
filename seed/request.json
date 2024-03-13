@@ -60,59 +60,35 @@
       }
     },
     {
-      "model": "request.organisation",
+      "model": "request.registrant",
       "pk": 1,
       "fields": {
-        "name": "The Registrar Co."
-      }
-    },
-    {
-      "model": "request.organisation",
-      "pk": 2,
-      "fields": {
-        "name": "The Ministry of Domains"
-      }
-    },
-    {
-      "model": "request.organisation",
-      "pk": 3,
-      "fields": {
-        "name": "The Registrar Co."
-      }
-    },
-    {
-      "model": "request.organisation",
-      "pk": 4,
-      "fields": {
-        "name": "The Ministry of Domains"
+        "type": "",
+        "name": "Ministry of Transport"
       }
     },
     {
       "model": "request.registrant",
       "pk": 2,
       "fields": {
-        "type": ""
-      }
-    },
-    {
-      "model": "request.registrant",
-      "pk": 4,
-      "fields": {
-        "type": ""
+        "type": "",
+        "name": "HMRC"
       }
     },
     {
       "model": "request.registrar",
       "pk": 1,
       "fields": {
-        "email_address": ""
+        "email_address": "",
+        "name": "Register This Ltd"
       }
     },
     {
       "model": "request.registrar",
-      "pk": 3,
+      "pk": 2,
       "fields": {
-        "email_address": ""
+        "email_address": "",
+        "name": "The Registrar Co"
       }
     },
     {

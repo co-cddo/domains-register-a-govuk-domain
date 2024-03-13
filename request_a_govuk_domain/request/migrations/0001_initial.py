@@ -120,7 +120,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            bases=("request.organisation",),
         ),
         migrations.CreateModel(
             name="Registrar",
@@ -138,7 +137,6 @@ class Migration(migrations.Migration):
                 ),
                 ("email_address", models.EmailField(max_length=320)),
             ],
-            bases=("request.organisation",),
         ),
         migrations.CreateModel(
             name="Review",
