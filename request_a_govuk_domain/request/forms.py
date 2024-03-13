@@ -15,7 +15,6 @@ from crispy_forms_gds.layout import (
     Size,
 )
 
-from .utils import organisations_list
 from .models.organisation import RegistrantTypeChoices, Registrar
 
 

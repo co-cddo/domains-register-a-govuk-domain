@@ -10,7 +10,7 @@ describe('Registrar no-select error', () => {
     cy.get('#error-summary-title').should('include.text', 'There is a problem')
     cy.get('#id_organisations_choice_1_error').should('include.text', 'This field is required')
 
-    cy.get('select.govuk-select').select('34SP.com')
+    cy.get('select.govuk-select').select('WeRegister')
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'What is your email address?')
