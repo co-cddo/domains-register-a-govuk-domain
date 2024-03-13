@@ -1,5 +1,6 @@
 import os
 import csv
+from typing import List
 
 from django.conf import settings
 
@@ -38,14 +39,19 @@ def is_central_government(registrant_type: str) -> bool:
     return registrant_type in ["central_government", "ndpb"]
 
 
-def add_to_session(form, request, field_name: str) -> str:
+def add_to_session(form, request, field_names: List[str]) -> str:
     """
-    Common utility method to clean the field and save it in the session
-    Returns the field value
-    This is to save boilerplate code in the views
+    Common utility method to clean the list of fields and save them in the session. This is to save boilerplate code.
+
+    :param form: form object
+    :param request: request object
+    :param field_names: list of field names to be cleaned and saved in the session
+
+    :return: A tuple of cleaned field value and registration data
     """
     registration_data = request.session.get("registration_data", {})
-    field_value = form.cleaned_data[field_name]
-    registration_data[field_name] = field_value
+    for field_name in field_names:
+        field_value = form.cleaned_data[field_name]
+        registration_data[field_name] = field_value
     request.session["registration_data"] = registration_data
-    return field_value
+    return field_value, registration_data

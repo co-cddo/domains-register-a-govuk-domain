@@ -20,7 +20,6 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from .request.views import (
-    NameView,
     EmailView,
     ConfirmView,
     SuccessView,
@@ -47,7 +46,6 @@ from .request.views import (
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", RegistrarView.as_view(), name="start"),
-    path("name/", NameView.as_view(), name="name"),
     path("email/", EmailView.as_view(), name="email"),
     path("domain/", DomainView.as_view(), name="domain"),
     path("registrant_type/", RegistrantTypeView.as_view(), name="registrant_type"),

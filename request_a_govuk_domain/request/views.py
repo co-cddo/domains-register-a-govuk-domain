@@ -3,7 +3,6 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from .forms import (
-    NameForm,
     EmailForm,
     ExemptionForm,
     ExemptionUploadForm,
@@ -23,40 +22,11 @@ from .forms import (
 
 from django.views.generic.edit import FormView
 
-from .utils import handle_uploaded_file, add_to_session
+from .utils import handle_uploaded_file, add_to_session, is_central_government
 
 """
 Some views are example views, please modify remove as needed
 """
-
-
-class NameView(FormView):
-    template_name = "name.html"
-
-    def get(self, request):
-        params = {}
-        if "change" in request.GET:
-            params["registrant_full_name"] = request.session["registration_data"][
-                "registrant_full_name"
-            ]
-            form = NameForm(params)
-        else:
-            form = NameForm()
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request):
-        form = NameForm(request.POST)
-        if form.is_valid():
-            registration_data = request.session.get("registration_data", {})
-            registration_data["registrant_full_name"] = form.cleaned_data[
-                "registrant_full_name"
-            ]
-            request.session["registration_data"] = registration_data
-            if "cancel" in request.POST:
-                return redirect("confirm")
-            else:
-                return redirect("email")
-        return render(request, self.template_name, {"form": form})
 
 
 class EmailView(FormView):
@@ -76,7 +46,7 @@ class EmailView(FormView):
     def post(self, request):
         form = EmailForm(request.POST)
         if form.is_valid():
-            add_to_session(form, request, "registrant_email_address")
+            add_to_session(form, request, ["registrant_email_address"])
             if "cancel" in request.POST:
                 return redirect("confirm")
             else:
@@ -89,11 +59,8 @@ class DomainView(FormView):
     form_class = DomainForm
 
     def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        registration_data["domain_name"] = form.cleaned_data["domain_name"]
-        self.request.session["registration_data"] = registration_data
-
-        if registration_data["registrant_type"] == "central_government":
+        _, registration_data = add_to_session(form, self.request, ["domain_name"])
+        if is_central_government(registration_data["registrant_type"]):
             self.success_url = reverse_lazy("minister")
         else:
             self.success_url = reverse_lazy("applicant_details")
@@ -106,11 +73,8 @@ class ApplicantDetailsView(FormView):
     form_class = ApplicantDetailsForm
 
     def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        registration_data["applicant_name"] = form.cleaned_data["applicant_name"]
-        registration_data["applicant_phone"] = form.cleaned_data["applicant_phone"]
-        registration_data["applicant_email"] = form.cleaned_data["applicant_email"]
-        self.request.session["registration_data"] = registration_data
+        field_names = ["applicant_name", "applicant_phone", "applicant_email"]
+        add_to_session(form, self.request, field_names)
         self.success_url = reverse_lazy("registrant_details")
         return super().form_valid(form)
 
@@ -120,15 +84,12 @@ class RegistrantDetailsView(FormView):
     form_class = RegistrantDetailsForm
 
     def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        registration_data["registrant_full_name"] = form.cleaned_data[
-            "registrant_full_name"
+        field_names = [
+            "registrant_full_name",
+            "registrant_phone",
+            "registrant_email_address",
         ]
-        registration_data["registrant_phone"] = form.cleaned_data["registrant_phone"]
-        registration_data["registrant_email_address"] = form.cleaned_data[
-            "registrant_email_address"
-        ]
-        self.request.session["registration_data"] = registration_data
+        add_to_session(form, self.request, field_names)
         self.success_url = reverse_lazy("registry_details")
         return super().form_valid(form)
 
@@ -138,15 +99,12 @@ class RegistryDetailsView(FormView):
     form_class = RegistryDetailsForm
 
     def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        registration_data["registrant_role"] = form.cleaned_data["registrant_role"]
-        registration_data["registrant_contact_phone"] = form.cleaned_data[
-            "registrant_contact_phone"
+        field_names = [
+            "registrant_role",
+            "registrant_contact_phone",
+            "registrant_contact_email",
         ]
-        registration_data["registrant_contact_email"] = form.cleaned_data[
-            "registrant_contact_email"
-        ]
-        self.request.session["registration_data"] = registration_data
+        add_to_session(form, self.request, field_names)
         self.success_url = reverse_lazy("confirm")
         return super().form_valid(form)
 
@@ -168,7 +126,7 @@ class RegistrantTypeView(FormView):
     def post(self, request):
         form = RegistrantTypeForm(request.POST)
         if form.is_valid():
-            registrant_type = add_to_session(form, request, "registrant_type")
+            registrant_type, _ = add_to_session(form, request, ["registrant_type"])
             if registrant_type == "none":
                 return redirect("registrant_type_fail")
             else:
@@ -186,12 +144,10 @@ class RegistrantView(FormView):
     success_url = reverse_lazy("written_permission")
 
     def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        registration_data["registrant_organisation_name"] = form.cleaned_data[
-            "registrant_organisation_name"
-        ]
-        self.request.session["registration_data"] = registration_data
-        if registration_data["registrant_type"] == "central_government":
+        _, registration_data = add_to_session(
+            form, self.request, ["registrant_organisation_name"]
+        )
+        if is_central_government(registration_data["registrant_type"]):
             self.success_url = reverse_lazy("domain_purpose")
         return super().form_valid(form)
 
@@ -202,7 +158,9 @@ class WrittenPermissionView(FormView):
     success_url = reverse_lazy("written_permission_upload")
 
     def form_valid(self, form):
-        written_permission = add_to_session(form, self.request, "written_permission")
+        written_permission, _ = add_to_session(
+            form, self.request, ["written_permission"]
+        )
         if written_permission == "no":
             self.success_url = reverse_lazy("written_permission_fail")
         return super().form_valid(form)
@@ -367,7 +325,7 @@ class DomainPurposeView(FormView):
     form_class = DomainPurposeForm
 
     def form_valid(self, form):
-        purpose = add_to_session(form, self.request, "domain_purpose")
+        purpose, _ = add_to_session(form, self.request, ["domain_purpose"])
 
         if purpose == "email-only":
             self.success_url = reverse_lazy("written_permission")
