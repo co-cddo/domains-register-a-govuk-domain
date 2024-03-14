@@ -29,11 +29,11 @@ describe('Central-gov registrant scenario - Traverses to Written Permission page
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'Upload evidence of the exemption')
-    cy.get('input[type=file]').selectFile('request_a_govuk_domain/static/images/govuk-crest.png')
+    cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'Upload evidence of the exemption')
-    cy.get('a').should('include.text', 'govuk-crest.png')
+    cy.get('a').should('include.text', 'image.png')
     cy.get('.govuk-button#button-continue').click()
 
     cy.get('h1').should('include.text', 'Does your registrant have written permission to apply for a .gov.uk domain name?')

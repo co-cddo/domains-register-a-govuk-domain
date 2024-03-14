@@ -30,11 +30,11 @@ describe('Happy passes', () => {
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'Upload evidence of the exemption')
-    cy.get('input[type=file]').selectFile('request_a_govuk_domain/static/images/govuk-crest.png')
+    cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'Upload evidence of the exemption')
-    cy.get('a').should('include.text', 'govuk-crest.png')
+    cy.get('a').should('include.text', 'image.png')
     cy.get('.govuk-button#button-continue').click()
 
     cy.get('h1').should('include.text', 'Does your registrant have written permission to apply for a .gov.uk domain name?')
@@ -42,11 +42,11 @@ describe('Happy passes', () => {
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'Upload evidence of written permission')
-    cy.get('input[type=file]').selectFile('request_a_govuk_domain/static/images/govuk-crest.png')
+    cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'Upload evidence of written permission')
-    cy.get('a').should('include.text', 'govuk-crest.png')
+    cy.get('a').should('include.text', 'image.png')
     cy.get('.govuk-button#button-continue').click()
 
     // Domain
@@ -61,12 +61,12 @@ describe('Happy passes', () => {
 
     // Minister upload
     cy.get('h1').should('include.text', 'Upload evidence of the minister\'s request')
-    cy.get('input[type=file]').selectFile('request_a_govuk_domain/static/images/govuk-crest.png')
+    cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
     cy.get('.govuk-button#id_submit').click()
 
     // Minister upload confirmation
     cy.get('h1').should('include.text', 'Upload evidence of the minister\'s request')
-    cy.get('a').should('include.text', 'govuk-crest.png')
+    cy.get('a').should('include.text', 'image.png')
     cy.get('.govuk-button#button-continue').click()
 
     // Applicant details
