@@ -53,11 +53,21 @@ jobs:
     - name: Run linters
       run: |
         pre-commit run --all
+    - name: Init server
+      uses: actions/checkout@v4
+      env:
+        SECRET_KEY: blah
+        DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
+      run: |
+        poetry run ./manage.py collectstatic --noinput
+        poetry run ./manage.py migrate --noinput
+        ls -la
+        ls -la seed
+        poetry run ./manage.py loaddata ./seed/reviewer_group.json ./seed/users.json ./seed/request.json
     - name: Cypress
       uses: cypress-io/github-action@v6
       env:
         SECRET_KEY: blah
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
       with:
-        build: poetry run ./manage.py migrate --noinput
         start: poetry run ./manage.py runserver
