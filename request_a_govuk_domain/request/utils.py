@@ -1,5 +1,4 @@
 import os
-import csv
 import uuid
 from typing import List
 from django.conf import settings
@@ -8,6 +7,9 @@ from django.conf import settings
 def handle_uploaded_file(file):
     """
     How and where to save a file that the user has uploaded
+
+    :param file: a File object
+    :return: the name of the file as store on the server
     """
     _, file_extension = os.path.splitext(file.name)
 
@@ -21,25 +23,6 @@ def handle_uploaded_file(file):
     return saved_filename
 
 
-def organisations_list() -> list:
-    """
-    Hard coded path for now
-    (
-        ("Unread", ("Unread")),
-        ("Read", ("Read"))
-    )
-    """
-    csv_filename = os.path.join(
-        os.getcwd(), "request_a_govuk_domain", "input/organisations.csv"
-    )
-    data: list[tuple[str, str]] = [("", "Select your organisation from the list")]
-    with open(csv_filename) as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            data.append((row[0], (row[0])))
-    return data
-
-
 def is_central_government(registrant_type: str) -> bool:
     """
     Check if the registrant type is Central Government or Non-departmental body
@@ -48,7 +31,7 @@ def is_central_government(registrant_type: str) -> bool:
     return registrant_type in ["central_government", "ndpb"]
 
 
-def add_to_session(form, request, field_names: List[str]) -> str:
+def add_to_session(form, request, field_names: List[str]) -> tuple:
     """
     Common utility method to clean the list of fields and save them in the session. This is to save boilerplate code.
 
