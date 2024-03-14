@@ -5,7 +5,7 @@ from request_a_govuk_domain.request import models
 PERSON_NAMES = ["Bob Roberts", "Peter Peters", "Olivia Oliver"]
 
 REGISTRANT_ORG = "Ministry of Domains"
-REGISTRAR = "The Registrar Co."
+REGISTRAR = "WeRegister"
 
 DOMAIN_NAME = "ministryofdomains.gov.uk"
 DOMAIN_PURPOSE = "Web site"

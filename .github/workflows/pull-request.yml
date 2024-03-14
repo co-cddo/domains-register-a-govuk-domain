@@ -53,13 +53,23 @@ jobs:
     - name: Run linters
       run: |
         pre-commit run --all
+    - name: Init server
+      env:
+        SECRET_KEY: blah
+        DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
+      run: |
+        poetry run ./manage.py collectstatic --noinput
+        poetry run ./manage.py migrate --noinput
+        poetry run ./manage.py create_reviewer_group
+        poetry run ./manage.py loaddata ./seed/users.json
+        poetry run ./manage.py create_sample_application
+
     - name: Cypress
       uses: cypress-io/github-action@v6
       env:
         SECRET_KEY: blah
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
       with:
-        build: poetry run ./manage.py migrate --noinput
         start: poetry run ./manage.py runserver
     - name: Run Unit Tests
       env:
