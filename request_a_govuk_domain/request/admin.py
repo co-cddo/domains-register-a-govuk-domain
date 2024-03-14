@@ -6,6 +6,13 @@ from django.contrib.auth.models import Group
 
 from .models import Application, CentralGovernmentAttributes, Review
 
+class ReviewerReadOnlyFieldsMixin:
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return []
+        else:
+            return [field.name for field in self.model._meta.fields]
+
 
 class DomainRegistrationUserAdmin(UserAdmin):
     def has_module_permission(self, request):
@@ -21,7 +28,7 @@ class DomainRegistrationGroupAdmin(GroupAdmin):
         return False
 
 
-class CentralGovernmentAttributesInline(admin.StackedInline):
+class CentralGovernmentAttributesInline(ReviewerReadOnlyFieldsMixin, admin.StackedInline):
     model = CentralGovernmentAttributes
     can_delete = False
     verbose_name_plural = "Central Government Attributes"
@@ -33,9 +40,11 @@ class ReviewInline(admin.StackedInline):
     verbose_name_plural = "Reviews"
 
 
-class ApplicationAdmin(admin.ModelAdmin):
+class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
     model = Application
     inlines = [CentralGovernmentAttributesInline, ReviewInline]
+
+
 
 
 admin.site.unregister(User)
