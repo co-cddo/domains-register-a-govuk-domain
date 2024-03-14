@@ -1,8 +1,8 @@
-describe('Central-gov registrant scenario - Traverses to Written Permission page and selects No', () => {
-  it('Central-gov registrant scenario - Traverses to Written Permission page and selects No', () => {
+const goToUploadExemption = function() {
     cy.visit('http://0.0.0.0:8000/')
 
     cy.get('h1').should('include.text', 'Which .gov.uk Approved Registrar organisation are you from?')
+    cy.get('select.govuk-select').should('exist')
     cy.get('#id_organisations_choice').type('WeRegister')
     cy.get('.govuk-button#id_submit').click()
 
@@ -29,18 +29,42 @@ describe('Central-gov registrant scenario - Traverses to Written Permission page
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'Upload evidence of the exemption')
-    cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
+}
+
+
+describe('Errors when uploading files', () => {
+  it('Rejects files that are too big', () => {
+
+    goToUploadExemption()
+
+    cy.get('input[type=file]').selectFile('cypress/fixtures/large-image.png')
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'Upload evidence of the exemption')
-    cy.get('a').should('include.text', 'image.png')
-    cy.get('.govuk-button#button-continue').click()
+    cy.get('h2').should('include.text', 'There is a problem')
+    cy.get('#id_file_1_error').should('include.text', 'Please keep filesize under 2.5\u00a0MB. Current filesize 2.9\u00a0MB')
 
-    cy.get('h1').should('include.text', 'Does your registrant have written permission to apply for a .gov.uk domain name?')
-    cy.get('#id_written_permission_2').click()
+    cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
+    cy.get('.govuk-button#id_submit').click()
+    cy.get('h1').should('include.text', 'Upload evidence of the exemption')
+    cy.get('.govuk-tag').should('include.text', 'uploaded')
+  })
+
+  it('Rejects files that are not images', () => {
+
+    goToUploadExemption()
+
+    cy.get('input[type=file]').selectFile('cypress/fixtures/example.json')
     cy.get('.govuk-button#id_submit').click()
 
-    //This message should be displayed for central-gov registrants
-    cy.get('body').should('include.text', 'Chief Information Officer or equivalent you\’re applying on behalf of a central')
+    cy.get('h1').should('include.text', 'Upload evidence of the exemption')
+    cy.get('h2').should('include.text', 'There is a problem')
+    cy.get('#id_file_1_error').should('include.text', 'Wrong file format. Please upload an image.')
+
+    cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
+    cy.get('.govuk-button#id_submit').click()
+    cy.get('h1').should('include.text', 'Upload evidence of the exemption')
+    cy.get('.govuk-tag').should('include.text', 'uploaded')
+
   })
-})
+});

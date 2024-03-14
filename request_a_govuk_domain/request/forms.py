@@ -337,9 +337,7 @@ class ExemptionUploadForm(forms.Form):
                     )
                 )
         else:
-            raise forms.ValidationError(
-                "Support file is .jpeg or .png and the maximum size is 2.5 MB."
-            )
+            raise forms.ValidationError("Wrong file format. Please upload an image.")
 
         return file
 
@@ -381,9 +379,7 @@ class MinisterUploadForm(forms.Form):
                     )
                 )
         else:
-            raise forms.ValidationError(
-                "Support file is .jpeg or .png and the maximum size is 2.5 MB."
-            )
+            raise forms.ValidationError("Wrong file format. Please upload an image.")
 
         return file
 
@@ -425,9 +421,7 @@ class WrittenPermissionUploadForm(forms.Form):
                     )
                 )
         else:
-            raise forms.ValidationError(
-                "Support file is .jpeg or .png and the maximum size is 2.5 MB."
-            )
+            raise forms.ValidationError("Wrong file format. Please upload an image.")
 
         return file
 
