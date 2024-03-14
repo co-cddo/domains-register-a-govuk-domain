@@ -1,15 +1,24 @@
 import os
 import csv
+import uuid
 from typing import List
-
 from django.conf import settings
 
 
 def handle_uploaded_file(file):
-    file_path = os.path.join(settings.MEDIA_ROOT, file.name)
-    with open(file_path, "wb+") as destination:
+    """
+    How and where to save a file that the user has uploaded
+    """
+    _, file_extension = os.path.splitext(file.name)
+
+    saved_filename = f"{uuid.uuid4()}{file_extension}"
+
+    file_path = os.path.join(settings.MEDIA_ROOT, saved_filename)
+    with open(file_path, "wb") as destination:
         for chunk in file.chunks():
             destination.write(chunk)
+
+    return saved_filename
 
 
 def organisations_list() -> list:

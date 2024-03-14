@@ -246,19 +246,23 @@ class ExemptionUploadView(FormView):
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
-        """
-        If the file is an image we encode using base64
-        ex: b64encode(form.cleaned_data['file'].read()).decode('utf-8')
-        If the file is a pdf we do not encode
-        """
         form = ExemptionUploadForm(request.POST, request.FILES)
 
         if form.is_valid():
-            handle_uploaded_file(request.FILES["file"])
+            saved_filename = handle_uploaded_file(request.FILES["file"])
+            registration_data = request.session.get("registration_data", {})
+            registration_data["exemption_file_uploaded_filename"] = saved_filename
+            registration_data["exemption_file_original_filename"] = request.FILES[
+                "file"
+            ].name
+            request.session["registration_data"] = registration_data
             return render(
                 request,
                 "exemption_upload_confirm.html",
-                {"file": request.FILES["file"]},
+                {
+                    "original_filename": request.FILES["file"].name,
+                    "uploaded_filename": saved_filename,
+                },
             )
         return render(request, self.template_name, {"form": form})
 
@@ -271,19 +275,23 @@ class MinisterUploadView(FormView):
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
-        """
-        If the file is an image we encode using base64
-        ex: b64encode(form.cleaned_data['file'].read()).decode('utf-8')
-        If the file is a pdf we do not encode
-        """
         form = MinisterUploadForm(request.POST, request.FILES)
 
         if form.is_valid():
-            handle_uploaded_file(request.FILES["file"])
+            saved_filename = handle_uploaded_file(request.FILES["file"])
+            registration_data = request.session.get("registration_data", {})
+            registration_data["minister_file_uploaded_filename"] = saved_filename
+            registration_data["minister_file_original_filename"] = request.FILES[
+                "file"
+            ].name
+            request.session["registration_data"] = registration_data
             return render(
                 request,
                 "minister_upload_confirm.html",
-                {"file": request.FILES["file"]},
+                {
+                    "original_filename": request.FILES["file"].name,
+                    "uploaded_filename": saved_filename,
+                },
             )
         return render(request, self.template_name, {"form": form})
 
@@ -296,19 +304,25 @@ class WrittenPermissionUploadView(FormView):
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
-        """
-        If the file is an image we encode using base64
-        ex: b64encode(form.cleaned_data['file'].read()).decode('utf-8')
-        If the file is a pdf we do not encode
-        """
         form = WrittenPermissionUploadForm(request.POST, request.FILES)
 
         if form.is_valid():
-            handle_uploaded_file(request.FILES["file"])
+            saved_filename = handle_uploaded_file(request.FILES["file"])
+            registration_data = request.session.get("registration_data", {})
+            registration_data[
+                "written_permission_file_uploaded_filename"
+            ] = saved_filename
+            registration_data[
+                "written_permission_file_original_filename"
+            ] = request.FILES["file"].name
+            request.session["registration_data"] = registration_data
             return render(
                 request,
                 "written_permission_upload_confirm.html",
-                {"file": request.FILES["file"]},
+                {
+                    "original_filename": request.FILES["file"].name,
+                    "uploaded_filename": saved_filename,
+                },
             )
         return render(request, self.template_name, {"form": form})
 
