@@ -61,9 +61,7 @@ jobs:
       run: |
         poetry run ./manage.py collectstatic --noinput
         poetry run ./manage.py migrate --noinput
-        ls -la
-        ls -la seed
-        poetry run ./manage.py loaddata ./seed/reviewer_group.json ./seed/users.json ./seed/request.json
+        poetry run ./manage.py loaddata ./seed/users.json ./seed/request.json
     - name: Cypress
       uses: cypress-io/github-action@v6
       env:
