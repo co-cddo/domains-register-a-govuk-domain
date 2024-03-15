@@ -5,19 +5,17 @@ from django.views.generic import TemplateView
 from .forms import (
     EmailForm,
     ExemptionForm,
-    ExemptionUploadForm,
+    UploadForm,
     RegistrarForm,
     RegistrantTypeForm,
     DomainPurposeForm,
     RegistrantForm,
     DomainForm,
     MinisterForm,
-    MinisterUploadForm,
     ApplicantDetailsForm,
     RegistrantDetailsForm,
     RegistryDetailsForm,
     WrittenPermissionForm,
-    WrittenPermissionUploadForm,
 )
 
 from django.views.generic.edit import FormView
@@ -238,79 +236,47 @@ class MinisterView(FormView):
         return context
 
 
-class ExemptionUploadView(FormView):
-    template_name = "exemption_upload.html"
+class UploadView(FormView):
+    page_type = ""
 
     def get(self, request):
-        form = ExemptionUploadForm()
-        return render(request, self.template_name, {"form": form})
+        form = UploadForm()
+        return render(request, f"{self.page_type}_upload.html", {"form": form})
 
     def post(self, request):
-        """
-        If the file is an image we encode using base64
-        ex: b64encode(form.cleaned_data['file'].read()).decode('utf-8')
-        If the file is a pdf we do not encode
-        """
-        form = ExemptionUploadForm(request.POST, request.FILES)
+        form = UploadForm(request.POST, request.FILES)
 
         if form.is_valid():
-            handle_uploaded_file(request.FILES["file"])
+            saved_filename = handle_uploaded_file(request.FILES["file"])
+            registration_data = request.session.get("registration_data", {})
+            registration_data[
+                f"{self.page_type}_file_uploaded_filename"
+            ] = saved_filename
+            registration_data[
+                f"{self.page_type}_file_original_filename"
+            ] = request.FILES["file"].name
+            request.session["registration_data"] = registration_data
             return render(
                 request,
-                "exemption_upload_confirm.html",
-                {"file": request.FILES["file"]},
+                f"{self.page_type}_upload_confirm.html",
+                {
+                    "original_filename": request.FILES["file"].name,
+                    "uploaded_filename": saved_filename,
+                },
             )
-        return render(request, self.template_name, {"form": form})
+        return render(request, f"{self.page_type}_upload.html", {"form": form})
 
 
-class MinisterUploadView(FormView):
-    template_name = "minister_upload.html"
-
-    def get(self, request):
-        form = MinisterUploadForm()
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request):
-        """
-        If the file is an image we encode using base64
-        ex: b64encode(form.cleaned_data['file'].read()).decode('utf-8')
-        If the file is a pdf we do not encode
-        """
-        form = MinisterUploadForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            handle_uploaded_file(request.FILES["file"])
-            return render(
-                request,
-                "minister_upload_confirm.html",
-                {"file": request.FILES["file"]},
-            )
-        return render(request, self.template_name, {"form": form})
+class ExemptionUploadView(UploadView):
+    page_type = "exemption"
 
 
-class WrittenPermissionUploadView(FormView):
-    template_name = "written_permission_upload.html"
+class MinisterUploadView(UploadView):
+    page_type = "minister"
 
-    def get(self, request):
-        form = WrittenPermissionUploadForm()
-        return render(request, self.template_name, {"form": form})
 
-    def post(self, request):
-        """
-        If the file is an image we encode using base64
-        ex: b64encode(form.cleaned_data['file'].read()).decode('utf-8')
-        If the file is a pdf we do not encode
-        """
-        form = WrittenPermissionUploadForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            handle_uploaded_file(request.FILES["file"])
-            return render(
-                request,
-                "written_permission_upload_confirm.html",
-                {"file": request.FILES["file"]},
-            )
-        return render(request, self.template_name, {"form": form})
+class WrittenPermissionUploadView(UploadView):
+    page_type = "written_permission"
 
 
 class ExemptionFailView(FormView):
