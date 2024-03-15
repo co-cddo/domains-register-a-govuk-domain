@@ -24,21 +24,71 @@ def handle_uploaded_file(file):
 
 
 def create_summary_list(registration_data):
+    """
+    compose the summary list based on the path taken to register domain.
+    """
     summary_list = [
-        {"summary_key": "Organisation type", "summary_value": registration_data.get('registrant_type', ''), "change_url": "registrant_type"},
-        {"summary_key": "Organisation name", "summary_value": registration_data.get('registrant_organisation_name', ''), "change_url": "registrant"},
-        {"summary_key": "Registrant's written permission", "summary_value": f"{registration_data.get('written_permission', '')}, evidence provided.", "change_url": "written_permission_upload"},
-        {"summary_key": "Domain name", "summary_value": registration_data.get('domain_name', ''), "change_url": "domain"}
+        {
+            "summary_key": "Organisation type",
+            "summary_value": registration_data.get("registrant_type", ""),
+            "change_url": "registrant-type",
+        },
+        {
+            "summary_key": "Organisation name",
+            "summary_value": registration_data.get("registrant_organisation_name", ""),
+            "change_url": "registrant",
+        },
+        {
+            "summary_key": "Registrant's written permission",
+            "summary_value": f"{registration_data.get('written_permission', '')}, evidence provided.",
+            "change_url": "written-permission-upload",
+        },
+        {
+            "summary_key": "Domain name",
+            "summary_value": registration_data.get("domain_name", ""),
+            "change_url": "domain",
+        },
     ]
-    if 'registrant_type' in registration_data and registration_data["registrant_type"] == "central_government":
-        summary_list.insert(2, {"summary_key": "Reason for request", "summary_value": registration_data.get('domain_purpose', ''), "change_url": "domain_purpose"})
-        summary_list.insert(3, {"summary_key": "Exemption from GOV.UK website", "summary_value": f"{registration_data.get('exe_radio', '')}, evidence provided.", "change_url": "exemption_upload"})
-        summary_list.insert(6, {"summary_key": "Minister's support", "summary_value": f"{registration_data.get('minister_radios', '')}, evidence provided.", "change_url": "minister_upload"})
+    if (
+        "registrant_type" in registration_data
+        and registration_data["registrant_type"] == "central_government"
+    ):
+        summary_list.insert(
+            2,
+            {
+                "summary_key": "Reason for request",
+                "summary_value": registration_data.get("domain_purpose", ""),
+                "change_url": "domain-purpose",
+            },
+        )
+        summary_list.insert(
+            3,
+            {
+                "summary_key": "Exemption from GOV.UK website",
+                "summary_value": f"{registration_data.get('exe_radio', '')}, evidence provided."
+                if registration_data["exe_radio"] == "Yes"
+                else registration_data["exe_radio"],
+                "change_url": "exemption-upload",
+            },
+        )
+        summary_list.insert(
+            6,
+            {
+                "summary_key": "Minister's support",
+                "summary_value": f"{registration_data.get('minister_radios', '')}, evidence provided.",
+                "change_url": "minister-upload",
+            },
+        )
 
     return summary_list
 
 
 class RegistrationDataClass:
+    """
+    Registration data dictionary is converted to calss object
+    with key, value pair for accessing in loop while rendering.
+    """
+
     def __init__(self, dictionary):
         for k, v in dictionary.items():
             setattr(self, k, v)

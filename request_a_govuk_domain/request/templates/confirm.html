@@ -11,7 +11,7 @@
   {% block content %}
   <h1 class="govuk-heading-l">Check your answers</h1>
   <div id="checkanswers-hint" class="govuk-hint">
-    Make sure your answers are complete and correct. If you need to change any of your details, change them at this stage. 
+    Make sure your answers are complete and correct. If you need to change any of your details, change them at this stage.
   </div>
   <h2 class="govuk-heading-m">Registrar details</h2>
         {% gds_summary_list %}
@@ -72,7 +72,7 @@
                   {{ registration_data.applicant_email }}
                 {% endgds_summary_list_row_value %}
                 {% gds_summary_list_row_actions %}
-                    {% gds_summary_list_row_actions_item_inline text="Change" href="/applicant_details?change" %}
+                    {% gds_summary_list_row_actions_item_inline text="Change" href="/applicant-details?change" %}
                 {% endgds_summary_list_row_actions %}
             {% endgds_summary_list_row %}
         {% endgds_summary_list %}
@@ -89,7 +89,7 @@
                   {{ registration_data.registrant_email_address }}
                 {% endgds_summary_list_row_value %}
                 {% gds_summary_list_row_actions %}
-                    {% gds_summary_list_row_actions_item_inline text="Change" href="/registrant_details?change" %}
+                    {% gds_summary_list_row_actions_item_inline text="Change" href="/registrant-details?change" %}
                 {% endgds_summary_list_row_actions %}
             {% endgds_summary_list_row %}
         {% endgds_summary_list %}
@@ -106,7 +106,7 @@
                   {{ registration_data.registrant_contact_email }}
                 {% endgds_summary_list_row_value %}
                 {% gds_summary_list_row_actions %}
-                    {% gds_summary_list_row_actions_item_inline text="Change" href="/registry_details?change" %}
+                    {% gds_summary_list_row_actions_item_inline text="Change" href="/registry-details?change" %}
                 {% endgds_summary_list_row_actions %}
             {% endgds_summary_list_row %}
         {% endgds_summary_list %}

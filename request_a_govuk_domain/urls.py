@@ -61,7 +61,12 @@ urlpatterns = [
     path("confirm/", ConfirmView.as_view(), name="confirm"),
     path("success/", SuccessView.as_view(), name="success"),
     path("exemption/", ExemptionView.as_view(), name="exemption"),
-    path("exemption_upload/", ExemptionUploadView.as_view(), name="exemption_upload"),
+    path("exemption-upload/", ExemptionUploadView.as_view(), name="exemption_upload"),
+    path(
+        "exemption-upload-remove/",
+        ExemptionUploadRemoveView.as_view(),
+        name="exemption_upload_remove",
+    ),
     path("exemption_fail/", ExemptionFailView.as_view(), name="exemption_fail"),
     path("registrar/", RegistrarView.as_view(), name="registrar"),
     path("domain-purpose/", DomainPurposeView.as_view(), name="domain_purpose"),

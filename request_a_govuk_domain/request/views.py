@@ -8,8 +8,6 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, RedirectView
-from django.conf import settings
 from .forms import (
     EmailForm,
     ExemptionForm,
@@ -37,18 +35,20 @@ from .utils import (
     is_central_government,
 )
 
-"""
-Some views are example views, please modify remove as needed
-"""
-
 
 def get_registration_data_to_prepopulate(request, fields, form):
+    """
+    Based on request we figure out if we are coming to this view
+    from summary list.
+    1. If coming from summary list we display back to button.
+    2. We pre populate the data from registration_data dict.
+    """
     params = {}
     if "change" in request.GET:
         for field in fields:
             registration_data = request.session["registration_data"]
             if registration_data:
-                params[field] = registration_data.get(field, '')
+                params[field] = registration_data.get(field, "")
         form = form(params)
     else:
         form = form()
@@ -59,7 +59,9 @@ class EmailView(FormView):
     template_name = "email.html"
 
     def get(self, request):
-        form = get_registration_data_to_prepopulate(request, ['registrant_email_address'], EmailForm)
+        form = get_registration_data_to_prepopulate(
+            request, ["registrant_email_address"], EmailForm
+        )
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
@@ -75,17 +77,18 @@ class EmailView(FormView):
 
 class DomainView(FormView):
     template_name = "domain.html"
-    # form_class = DomainForm
 
     def get(self, request):
-        form = get_registration_data_to_prepopulate(request, ['domain_name'], DomainForm)
+        form = get_registration_data_to_prepopulate(
+            request, ["domain_name"], DomainForm
+        )
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
         form = DomainForm(request.POST)
         if form.is_valid():
             _, registration_data = add_to_session(form, self.request, ["domain_name"])
-            if 'cancel' in request.POST:
+            if "cancel" in request.POST:
                 return redirect("confirm")
             elif is_central_government(registration_data["registrant_type"]):
                 return redirect("minister")
@@ -98,9 +101,11 @@ class ApplicantDetailsView(FormView):
     template_name = "applicant_details.html"
 
     def get(self, request):
-        form = get_registration_data_to_prepopulate(request,
-                                                    ['applicant_name', 'applicant_phone', 'applicant_email'],
-                                                    ApplicantDetailsForm)
+        form = get_registration_data_to_prepopulate(
+            request,
+            ["applicant_name", "applicant_phone", "applicant_email"],
+            ApplicantDetailsForm,
+        )
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
@@ -122,9 +127,11 @@ class RegistrantDetailsView(FormView):
     template_name = "registrant_details.html"
 
     def get(self, request):
-        form = get_registration_data_to_prepopulate(request,
-                                                    ['registrant_full_name', 'registrant_phone', 'registrant_email_address'],
-                                                    RegistrantDetailsForm)
+        form = get_registration_data_to_prepopulate(
+            request,
+            ["registrant_full_name", "registrant_phone", "registrant_email_address"],
+            RegistrantDetailsForm,
+        )
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
@@ -147,9 +154,11 @@ class RegistryDetailsView(FormView):
     template_name = "registry_details.html"
 
     def get(self, request):
-        form = get_registration_data_to_prepopulate(request,
-                                                    ['registrant_role', 'registrant_contact_phone', 'registrant_contact_email'],
-                                                    RegistryDetailsForm)
+        form = get_registration_data_to_prepopulate(
+            request,
+            ["registrant_role", "registrant_contact_phone", "registrant_contact_email"],
+            RegistryDetailsForm,
+        )
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
@@ -191,9 +200,9 @@ class RegistrantView(FormView):
     template_name = "registrant.html"
 
     def get(self, request):
-        form = get_registration_data_to_prepopulate(request,
-                                                    ['registrant_organisation_name'],
-                                                    RegistrantForm)
+        form = get_registration_data_to_prepopulate(
+            request, ["registrant_organisation_name"], RegistrantForm
+        )
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
@@ -220,7 +229,8 @@ class WrittenPermissionView(FormView):
         written_permission, _ = add_to_session(
             form, self.request, ["written_permission"]
         )
-        if written_permission == "no":
+        print(f"{written_permission=}")
+        if written_permission == "No":
             self.success_url = reverse_lazy("written_permission_fail")
         return super().form_valid(form)
 
@@ -291,7 +301,9 @@ class ConfirmView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         registration_objs = []
-        for summary_item in create_summary_list(self.request.session["registration_data"]):
+        for summary_item in create_summary_list(
+            self.request.session["registration_data"]
+        ):
             registration_obj = RegistrationDataClass(summary_item)
             registration_objs.append(registration_obj)
 
@@ -319,19 +331,24 @@ class SuccessView(View):
 
 class ExemptionView(FormView):
     template_name = "exemption.html"
-    form_class = ExemptionForm
 
-    def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        exe_radio = form.cleaned_data["exe_radio"]
-        registration_data["exe_radio"] = exe_radio
-        self.request.session["registration_data"] = registration_data
-        exe_radio = dict(form.fields["exe_radio"].choices)[exe_radio]
-        if exe_radio == "Yes":
-            self.success_url = reverse_lazy("exemption_upload")
-        else:
-            self.success_url = reverse_lazy("exemption_fail")
-        return super().form_valid(form)
+    def get(self, request):
+        form = get_registration_data_to_prepopulate(
+            request, ["exe_radio"], ExemptionForm
+        )
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = ExemptionForm(request.POST)
+        if form.is_valid():
+            exe_radio, _ = add_to_session(form, self.request, ["exe_radio"])
+            if "cancel" in request.POST:
+                return redirect("confirm")
+            elif exe_radio == "Yes":
+                return redirect("exemption_upload")
+            else:
+                return redirect("written_permission")
+        return render(request, self.template_name, {"form": form})
 
 
 class MinisterView(FormView):
@@ -343,7 +360,6 @@ class MinisterView(FormView):
         minister_radios = form.cleaned_data["minister_radios"]
         registration_data["minister_radios"] = minister_radios
         self.request.session["registration_data"] = registration_data
-        # minister_radios = dict(form.fields["minister_radios"].choices)[minister_radios]
         if minister_radios == "Yes":
             self.success_url = reverse_lazy("minister_upload")
         else:
@@ -410,7 +426,9 @@ class RegistrarView(FormView):
     template_name = "registrar.html"
 
     def get(self, request):
-        form = get_registration_data_to_prepopulate(request, ['organisations_choice'], RegistrarForm)
+        form = get_registration_data_to_prepopulate(
+            request, ["organisations_choice"], RegistrarForm
+        )
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):

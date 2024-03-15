@@ -19,10 +19,12 @@ from .models.organisation import RegistrantTypeChoices, Registrar
 
 
 def add_back_to_answers_button(args, field, layout):
+    """
+    Add the back button when coming to chnage the answer.
+    """
     if args and field in args[0]:
-        layout.fields.append(
-            Button.secondary("cancel", "Back to Answers")
-        )
+        if args[0][field] != "":
+            layout.fields.append(Button.secondary("cancel", "Back to Answers"))
 
 
 class DomainForm(forms.Form):
@@ -226,7 +228,9 @@ class RegistrantForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "registrant_organisation_name", self.helper.layout)
+        add_back_to_answers_button(
+            args, "registrant_organisation_name", self.helper.layout
+        )
 
 
 class WrittenPermissionForm(forms.Form):
@@ -250,7 +254,6 @@ class WrittenPermissionForm(forms.Form):
             Field.radios("written_permission", legend_size=Size.SMALL, inline=True),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "written_permission", self.helper.layout)
 
 
 class ExemptionForm(forms.Form):
