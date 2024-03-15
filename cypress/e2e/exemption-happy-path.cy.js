@@ -96,5 +96,6 @@ describe('Happy passes', () => {
 
     // Success
     cy.get('h1').should('include.text', 'Application submitted')
+    cy.get('body').should('include.text', 'We have sent you a confirmation email with a record of your answers')
   })
 })

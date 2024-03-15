@@ -1,6 +1,10 @@
 import json
+import random
+import string
+from datetime import datetime
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import TemplateView
 from .forms import (
     EmailForm,
@@ -195,14 +199,18 @@ class ConfirmView(TemplateView):
         return context
 
 
-class SuccessView(TemplateView):
-    template_name = "success.html"
+class SuccessView(View):
+    def get(self, request):
+        # TODO Change when requirements are finalised and add comment accordingly
+        reference_number = (
+            "GOVUK"
+            + datetime.today().strftime("%d%m%Y")
+            + "".join(random.choice(string.ascii_uppercase) for _ in range(4))
+        )
 
-    def get(self, request, *args, **kwargs):
         # We're finished, so clear the session data
-        self.request.session.pop("registration_data", None)
-
-        return render(request, self.template_name)
+        request.session.pop("registration_data", None)
+        return render(request, "success.html", {"reference_number": reference_number})
 
 
 class ExemptionView(FormView):
