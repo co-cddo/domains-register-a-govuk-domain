@@ -8,6 +8,8 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
+from django.views.generic import TemplateView, RedirectView
+from django.conf import settings
 from .forms import (
     EmailForm,
     ExemptionForm,
