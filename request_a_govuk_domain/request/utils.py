@@ -47,3 +47,13 @@ def add_to_session(form, request, field_names: List[str]) -> tuple:
         registration_data[field_name] = field_value
     request.session["registration_data"] = registration_data
     return field_value, registration_data
+
+
+def remove_from_session(session, field_names: List[str]) -> None:
+    """
+    Remove fields from a session, for instance when an uploaded
+    file is removed
+    """
+    for field_name in field_names:
+        if session["registration_data"].get(field_name) is not None:
+            session["registration_data"][field_name] = None
