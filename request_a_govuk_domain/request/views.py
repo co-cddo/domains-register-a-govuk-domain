@@ -1,7 +1,9 @@
 import json
+import os
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
+from django.conf import settings
 from .forms import (
     EmailForm,
     ExemptionForm,
@@ -20,7 +22,12 @@ from .forms import (
 
 from django.views.generic.edit import FormView
 
-from .utils import handle_uploaded_file, add_to_session, is_central_government
+from .utils import (
+    handle_uploaded_file,
+    add_to_session,
+    remove_from_session,
+    is_central_government,
+)
 
 """
 Some views are example views, please modify remove as needed
@@ -178,6 +185,49 @@ class WrittenPermissionFailView(TemplateView):
             registration_data["registrant_type"]
         )
         return context
+
+
+class UploadRemoveView(RedirectView):
+    page_type = ""  # to be subclassed
+    permanent = False
+    query_string = True
+    pattern_name = ""  # to be subclassed
+
+    def get_redirect_url(self, *args, **kwargs):
+        # delete the uploaded file
+        file_name = self.request.session["registration_data"].get(
+            self.page_type + "_file_uploaded_filename"
+        )
+        if file_name is not None:
+            file_path = os.path.join(settings.MEDIA_ROOT, file_name)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
+        # delete the filenames from the session data
+        remove_from_session(
+            self.request.session,
+            [
+                self.page_type + "_file_uploaded_filename",
+                self.page_type + "_file_original_filename",
+            ],
+        )
+
+        return super().get_redirect_url(*args, **kwargs)
+
+
+class ExemptionUploadRemoveView(UploadRemoveView):
+    page_type = "exemption"
+    pattern_name = "exemption_upload"
+
+
+class WrittenPermissionUploadRemoveView(UploadRemoveView):
+    page_type = "written_permission"
+    pattern_name = "written_permission_upload"
+
+
+class MinisterUploadRemoveView(UploadRemoveView):
+    page_type = "minister"
+    pattern_name = "minister_upload"
 
 
 class ConfirmView(TemplateView):

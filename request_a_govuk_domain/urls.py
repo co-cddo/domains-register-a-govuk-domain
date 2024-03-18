@@ -25,6 +25,9 @@ from .request.views import (
     SuccessView,
     ExemptionView,
     ExemptionUploadView,
+    ExemptionUploadRemoveView,
+    WrittenPermissionUploadRemoveView,
+    MinisterUploadRemoveView,
     ExemptionFailView,
     RegistrarView,
     RegistrantTypeView,
@@ -59,6 +62,11 @@ urlpatterns = [
     path("success/", SuccessView.as_view(), name="success"),
     path("exemption/", ExemptionView.as_view(), name="exemption"),
     path("exemption_upload/", ExemptionUploadView.as_view(), name="exemption_upload"),
+    path(
+        "exemption-upload-remove/",
+        ExemptionUploadRemoveView.as_view(),
+        name="exemption_upload_remove",
+    ),
     path("exemption_fail/", ExemptionFailView.as_view(), name="exemption_fail"),
     path("registrar/", RegistrarView.as_view(), name="registrar"),
     path("domain_purpose/", DomainPurposeView.as_view(), name="domain_purpose"),
@@ -94,9 +102,19 @@ urlpatterns = [
         name="written_permission_upload",
     ),
     path(
+        "written-permission-upload-remove/",
+        WrittenPermissionUploadRemoveView.as_view(),
+        name="written_permission_upload_remove",
+    ),
+    path(
         "minister-upload/",
         MinisterUploadView.as_view(),
         name="minister_upload",
+    ),
+    path(
+        "minister-upload-remove/",
+        MinisterUploadRemoveView.as_view(),
+        name="minister_upload_remove",
     ),
     path(
         "written-permission-fail/",
