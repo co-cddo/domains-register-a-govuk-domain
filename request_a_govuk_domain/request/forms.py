@@ -357,7 +357,7 @@ class RegistrarForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        registrars = [("", "Select an item from the list")] + list(
+        registrars = [("", "")] + list(
             (f"registrar-{registrar.id}", registrar.name)
             for registrar in Registrar.objects.all()
         )
