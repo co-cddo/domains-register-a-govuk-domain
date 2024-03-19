@@ -23,6 +23,76 @@ def handle_uploaded_file(file):
     return saved_filename
 
 
+def create_summary_list(registration_data):
+    """
+    compose the summary list based on the path taken to register domain.
+    """
+    summary_list = [
+        {
+            "summary_key": "Organisation type",
+            "summary_value": registration_data.get("registrant_type", ""),
+            "change_url": "registrant-type",
+        },
+        {
+            "summary_key": "Organisation name",
+            "summary_value": registration_data.get("registrant_organisation_name", ""),
+            "change_url": "registrant",
+        },
+        {
+            "summary_key": "Registrant's written permission",
+            "summary_value": f"{registration_data.get('written_permission', '').title()}, evidence provided.",
+            "change_url": "written-permission-upload",
+        },
+        {
+            "summary_key": "Domain name",
+            "summary_value": registration_data.get("domain_name", ""),
+            "change_url": "domain",
+        },
+    ]
+    if "registrant_type" in registration_data and is_central_government(
+        registration_data["registrant_type"]
+    ):
+        summary_list.insert(
+            2,
+            {
+                "summary_key": "Reason for request",
+                "summary_value": registration_data.get("domain_purpose", ""),
+                "change_url": "domain-purpose",
+            },
+        )
+        summary_list.insert(
+            3,
+            {
+                "summary_key": "Exemption from GOV.UK website",
+                "summary_value": f"{registration_data.get('exe_radio', '').title()}, evidence provided."
+                if registration_data["exe_radio"] == "yes"
+                else registration_data["exe_radio"],
+                "change_url": "exemption-upload",
+            },
+        )
+        summary_list.insert(
+            6,
+            {
+                "summary_key": "Minister's support",
+                "summary_value": f"{registration_data.get('minister_radios', '').title()}, evidence provided.",
+                "change_url": "minister-upload",
+            },
+        )
+
+    return summary_list
+
+
+class RegistrationDataClass:
+    """
+    Registration data dictionary is converted to class object
+    with key, value pair for accessing in loop while rendering.
+    """
+
+    def __init__(self, dictionary):
+        for k, v in dictionary.items():
+            setattr(self, k, v)
+
+
 def is_central_government(registrant_type: str) -> bool:
     """
     Check if the registrant type is Central Government or Non-departmental body

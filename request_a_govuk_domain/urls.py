@@ -67,7 +67,7 @@ urlpatterns = [
         ExemptionUploadRemoveView.as_view(),
         name="exemption_upload_remove",
     ),
-    path("exemption-fail/", ExemptionFailView.as_view(), name="exemption_fail"),
+    path("exemption_fail/", ExemptionFailView.as_view(), name="exemption_fail"),
     path("registrar/", RegistrarView.as_view(), name="registrar"),
     path("domain-purpose/", DomainPurposeView.as_view(), name="domain_purpose"),
     path(

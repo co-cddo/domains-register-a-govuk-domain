@@ -28,35 +28,47 @@ from django.views.generic.edit import FormView
 
 from .utils import (
     handle_uploaded_file,
+    create_summary_list,
+    RegistrationDataClass,
     add_to_session,
     remove_from_session,
     is_central_government,
 )
 
-"""
-Some views are example views, please modify remove as needed
-"""
+
+def get_registration_data_to_prepopulate(request, fields, form):
+    """
+    Based on request we figure out if we are coming to this view
+    from summary list.
+    1. If coming from summary list we display back to button.
+    2. We pre populate the data from registration_data dict.
+    """
+    params = {}
+    if "change" in request.GET:
+        for field in fields:
+            registration_data = request.session["registration_data"]
+            if registration_data:
+                params[field] = registration_data.get(field, "")
+        form = form(params)
+    else:
+        form = form()
+    return form
 
 
 class EmailView(FormView):
     template_name = "email.html"
 
     def get(self, request):
-        params = {}
-        if "change" in request.GET:
-            params["registrant_email_address"] = request.session["registration_data"][
-                "registrant_email_address"
-            ]
-            form = EmailForm(params)
-        else:
-            form = EmailForm()
+        form = get_registration_data_to_prepopulate(
+            request, ["registrant_email_address"], EmailForm
+        )
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
         form = EmailForm(request.POST)
         if form.is_valid():
             add_to_session(form, request, ["registrant_email_address"])
-            if "cancel" in request.POST:
+            if "back_to_answers" in request.POST:
                 return redirect("confirm")
             else:
                 return redirect("registrant_type")
@@ -65,71 +77,108 @@ class EmailView(FormView):
 
 class DomainView(FormView):
     template_name = "domain.html"
-    form_class = DomainForm
 
-    def form_valid(self, form):
-        _, registration_data = add_to_session(form, self.request, ["domain_name"])
-        if is_central_government(registration_data["registrant_type"]):
-            self.success_url = reverse_lazy("minister")
-        else:
-            self.success_url = reverse_lazy("applicant_details")
+    def get(self, request):
+        form = get_registration_data_to_prepopulate(
+            request, ["domain_name"], DomainForm
+        )
+        return render(request, self.template_name, {"form": form})
 
-        return super().form_valid(form)
+    def post(self, request):
+        form = DomainForm(request.POST)
+        if form.is_valid():
+            _, registration_data = add_to_session(form, self.request, ["domain_name"])
+            if "back_to_answers" in request.POST:
+                return redirect("confirm")
+            elif is_central_government(registration_data["registrant_type"]):
+                return redirect("minister")
+            else:
+                return redirect("applicant_details")
+        return render(request, self.template_name, {"form": form})
 
 
 class ApplicantDetailsView(FormView):
     template_name = "applicant_details.html"
-    form_class = ApplicantDetailsForm
 
-    def form_valid(self, form):
-        field_names = ["applicant_name", "applicant_phone", "applicant_email"]
-        add_to_session(form, self.request, field_names)
-        self.success_url = reverse_lazy("registrant_details")
-        return super().form_valid(form)
+    def get(self, request):
+        form = get_registration_data_to_prepopulate(
+            request,
+            ["applicant_name", "applicant_phone", "applicant_email"],
+            ApplicantDetailsForm,
+        )
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = ApplicantDetailsForm(request.POST)
+        if form.is_valid():
+            _, registration_data = add_to_session(
+                form,
+                self.request,
+                ["applicant_name", "applicant_phone", "applicant_email"],
+            )
+            if "back_to_answers" in request.POST:
+                return redirect("confirm")
+            else:
+                return redirect("registrant_details")
+        return render(request, self.template_name, {"form": form})
 
 
 class RegistrantDetailsView(FormView):
     template_name = "registrant_details.html"
-    form_class = RegistrantDetailsForm
 
-    def form_valid(self, form):
-        field_names = [
-            "registrant_full_name",
-            "registrant_phone",
-            "registrant_email_address",
-        ]
-        add_to_session(form, self.request, field_names)
-        self.success_url = reverse_lazy("registry_details")
-        return super().form_valid(form)
+    def get(self, request):
+        form = get_registration_data_to_prepopulate(
+            request,
+            ["registrant_full_name", "registrant_phone", "registrant_email_address"],
+            RegistrantDetailsForm,
+        )
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = RegistrantDetailsForm(request.POST)
+        if form.is_valid():
+            field_names = [
+                "registrant_full_name",
+                "registrant_phone",
+                "registrant_email_address",
+            ]
+            add_to_session(form, self.request, field_names)
+            if "back_to_answers" in request.POST:
+                return redirect("confirm")
+            else:
+                return redirect("registry_details")
+        return render(request, self.template_name, {"form": form})
 
 
 class RegistryDetailsView(FormView):
     template_name = "registry_details.html"
-    form_class = RegistryDetailsForm
 
-    def form_valid(self, form):
-        field_names = [
-            "registrant_role",
-            "registrant_contact_phone",
-            "registrant_contact_email",
-        ]
-        add_to_session(form, self.request, field_names)
-        self.success_url = reverse_lazy("confirm")
-        return super().form_valid(form)
+    def get(self, request):
+        form = get_registration_data_to_prepopulate(
+            request,
+            ["registrant_role", "registrant_contact_phone", "registrant_contact_email"],
+            RegistryDetailsForm,
+        )
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = RegistryDetailsForm(request.POST)
+        if form.is_valid():
+            field_names = [
+                "registrant_role",
+                "registrant_contact_phone",
+                "registrant_contact_email",
+            ]
+            add_to_session(form, self.request, field_names)
+            return redirect("confirm")
+        return render(request, self.template_name, {"form": form})
 
 
 class RegistrantTypeView(FormView):
     template_name = "registrant_type.html"
 
     def get(self, request):
-        params = {}
-        if "change" in request.GET:
-            params["registrant_type"] = request.session["registration_data"][
-                "registrant_type"
-            ]
-            form = RegistrantTypeForm(params)
-        else:
-            form = RegistrantTypeForm()
+        form = RegistrantTypeForm()
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
@@ -149,16 +198,26 @@ class RegistrantTypeFailView(TemplateView):
 
 class RegistrantView(FormView):
     template_name = "registrant.html"
-    form_class = RegistrantForm
-    success_url = reverse_lazy("written_permission")
 
-    def form_valid(self, form):
-        _, registration_data = add_to_session(
-            form, self.request, ["registrant_organisation_name"]
+    def get(self, request):
+        form = get_registration_data_to_prepopulate(
+            request, ["registrant_organisation_name"], RegistrantForm
         )
-        if is_central_government(registration_data["registrant_type"]):
-            self.success_url = reverse_lazy("domain_purpose")
-        return super().form_valid(form)
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = RegistrantForm(request.POST)
+        if form.is_valid():
+            _, registration_data = add_to_session(
+                form, self.request, ["registrant_organisation_name"]
+            )
+            if "back_to_answers" in request.POST:
+                return redirect("confirm")
+            elif is_central_government(registration_data["registrant_type"]):
+                return redirect("domain_purpose")
+            else:
+                return redirect("written_permission")
+        return render(request, self.template_name, {"form": form})
 
 
 class WrittenPermissionView(FormView):
@@ -240,9 +299,17 @@ class ConfirmView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        registration_objs = []
+        for summary_item in create_summary_list(
+            self.request.session["registration_data"]
+        ):
+            registration_obj = RegistrationDataClass(summary_item)
+            registration_objs.append(registration_obj)
+
         # Access session data and include it in the context
         registration_data = self.request.session.get("registration_data", {})
         context["registration_data"] = registration_data
+        context["registration_objs"] = registration_objs
 
         return context
 
@@ -263,16 +330,24 @@ class SuccessView(View):
 
 class ExemptionView(FormView):
     template_name = "exemption.html"
-    form_class = ExemptionForm
 
-    def form_valid(self, form):
-        exe_radio = form.cleaned_data["exe_radio"]
-        exe_radio = dict(form.fields["exe_radio"].choices)[exe_radio]
-        if exe_radio == "Yes":
-            self.success_url = reverse_lazy("exemption_upload")
-        else:
-            self.success_url = reverse_lazy("exemption_fail")
-        return super().form_valid(form)
+    def get(self, request):
+        form = get_registration_data_to_prepopulate(
+            request, ["exe_radio"], ExemptionForm
+        )
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = ExemptionForm(request.POST)
+        if form.is_valid():
+            exe_radio, _ = add_to_session(form, self.request, ["exe_radio"])
+            if "back_to_answers" in request.POST:
+                return redirect("confirm")
+            elif exe_radio == "yes":
+                return redirect("exemption_upload")
+            else:
+                return redirect("written_permission")
+        return render(request, self.template_name, {"form": form})
 
 
 class MinisterView(FormView):
@@ -280,9 +355,8 @@ class MinisterView(FormView):
     form_class = MinisterForm
 
     def form_valid(self, form):
-        minister_radios = form.cleaned_data["minister_radios"]
-        minister_radios = dict(form.fields["minister_radios"].choices)[minister_radios]
-        if minister_radios == "Yes":
+        minister_radios, _ = add_to_session(form, self.request, ["minister_radios"])
+        if minister_radios == "yes":
             self.success_url = reverse_lazy("minister_upload")
         else:
             self.success_url = reverse_lazy("registrant_details")
@@ -346,14 +420,23 @@ class ExemptionFailView(FormView):
 
 class RegistrarView(FormView):
     template_name = "registrar.html"
-    form_class = RegistrarForm
-    success_url = reverse_lazy("email")
 
-    def form_valid(self, form):
-        self.request.session["registration_data"] = {
-            "registrar_organisation": form.cleaned_data["organisations_choice"]
-        }
-        return super().form_valid(form)
+    def get(self, request):
+        form = get_registration_data_to_prepopulate(
+            request, ["organisations_choice"], RegistrarForm
+        )
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = RegistrarForm(request.POST)
+        if form.is_valid():
+            field_names = ["organisations_choice"]
+            add_to_session(form, self.request, field_names)
+            if "back_to_answers" in request.POST:
+                return redirect("confirm")
+            else:
+                return redirect("email")
+        return render(request, self.template_name, {"form": form})
 
 
 class DomainPurposeView(FormView):

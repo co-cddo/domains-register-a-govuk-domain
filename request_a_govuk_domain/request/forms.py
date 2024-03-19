@@ -18,6 +18,15 @@ from crispy_forms_gds.layout import (
 from .models.organisation import RegistrantTypeChoices, Registrar
 
 
+def add_back_to_answers_button(args, field, layout):
+    """
+    Add the back button when coming to chnage the answer.
+    """
+    if args and field in args[0]:
+        if args[0][field] != "":
+            layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
+
+
 class DomainForm(forms.Form):
     domain_name = forms.CharField(
         label="Domain name",
@@ -36,6 +45,7 @@ class DomainForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "domain_name", self.helper.layout)
 
 
 class ApplicantDetailsForm(forms.Form):
@@ -73,6 +83,7 @@ class ApplicantDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "applicant_name", self.helper.layout)
 
 
 class RegistrantDetailsForm(forms.Form):
@@ -108,6 +119,7 @@ class RegistrantDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "registrant_full_name", self.helper.layout)
 
 
 class RegistryDetailsForm(forms.Form):
@@ -151,6 +163,7 @@ class RegistryDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "registrant_role", self.helper.layout)
 
 
 class EmailForm(forms.Form):
@@ -170,10 +183,7 @@ class EmailForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        if args and "registrant_email_address" in args[0]:
-            self.helper.layout.fields.append(
-                Button.secondary("cancel", "Back to Answers")
-            )
+        add_back_to_answers_button(args, "registrant_email_address", self.helper.layout)
 
 
 class RegistrantTypeForm(forms.Form):
@@ -217,6 +227,9 @@ class RegistrantForm(forms.Form):
                 official records or is spelled incorrectly."
             ),
             Button("submit", "Continue"),
+        )
+        add_back_to_answers_button(
+            args, "registrant_organisation_name", self.helper.layout
         )
 
 
@@ -267,6 +280,7 @@ class ExemptionForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "exe_radio", self.helper.layout)
 
     def get_choice(self, field):
         value = self.cleaned_data[field]
@@ -294,6 +308,7 @@ class MinisterForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        add_back_to_answers_button(args, "minister_radios", self.helper.layout)
 
     def get_choice(self, field):
         value = self.cleaned_data[field]
@@ -377,6 +392,7 @@ class RegistrarForm(forms.Form):
             ),
             Button("submit", "Submit"),
         )
+        add_back_to_answers_button(args, "organisations_choice", self.helper.layout)
 
 
 class DomainPurposeForm(forms.Form):
