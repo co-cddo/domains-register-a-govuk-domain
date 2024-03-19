@@ -1,9 +1,10 @@
+import re
 from django import forms
 from django.core.validators import EmailValidator
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 from crispy_forms_gds.choices import Choice
-
+from django.core.exceptions import ValidationError
 from crispy_forms_gds.helper import FormHelper
 from crispy_forms_gds.layout import (
     Button,
@@ -14,7 +15,7 @@ from crispy_forms_gds.layout import (
     Layout,
     Size,
 )
-
+from typing import Optional
 from .models.organisation import RegistrantTypeChoices, Registrar
 
 
@@ -32,6 +33,22 @@ class DomainForm(forms.Form):
         label="Domain name",
         help_text="Enter the .gov.uk domain name you want to get approval for",
     )
+    domain_input_regexp = re.compile(
+        "^[a-z][a-z0-9-]+[a-z0-9](\\.gov\\.uk)?$"
+    )  # based on RFC1035
+
+    def clean_domain_name(self):
+        domain_typed = self.cleaned_data["domain_name"].strip()
+        matched: Optional[re.Match] = re.fullmatch(
+            self.domain_input_regexp, domain_typed
+        )
+        if matched is not None:
+            if ".gov.uk" not in domain_typed:
+                domain_typed = domain_typed + ".gov.uk"
+        else:
+            raise ValidationError("Invalid domain name entered")
+
+        return domain_typed
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,9 +56,7 @@ class DomainForm(forms.Form):
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
             Fieldset(
-                Field.text(
-                    "domain_name"
-                ),  # TODO: Crispy doesn't support text input suffixes so we might have to add it
+                Field.text("domain_name"),
             ),
             Button("submit", "Continue"),
         )

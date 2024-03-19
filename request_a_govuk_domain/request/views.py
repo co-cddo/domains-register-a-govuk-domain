@@ -87,7 +87,7 @@ class DomainView(FormView):
     def post(self, request):
         form = DomainForm(request.POST)
         if form.is_valid():
-            _, registration_data = add_to_session(form, self.request, ["domain_name"])
+            registration_data = add_to_session(form, self.request, ["domain_name"])
             if "back_to_answers" in request.POST:
                 return redirect("confirm")
             elif is_central_government(registration_data["registrant_type"]):
@@ -111,7 +111,7 @@ class ApplicantDetailsView(FormView):
     def post(self, request):
         form = ApplicantDetailsForm(request.POST)
         if form.is_valid():
-            _, registration_data = add_to_session(
+            add_to_session(
                 form,
                 self.request,
                 ["applicant_name", "applicant_phone", "applicant_email"],
@@ -184,8 +184,8 @@ class RegistrantTypeView(FormView):
     def post(self, request):
         form = RegistrantTypeForm(request.POST)
         if form.is_valid():
-            registrant_type, _ = add_to_session(form, request, ["registrant_type"])
-            if registrant_type == "none":
+            session_data = add_to_session(form, request, ["registrant_type"])
+            if session_data["registrant_type"] == "none":
                 return redirect("registrant_type_fail")
             else:
                 return redirect("registrant")
@@ -208,7 +208,7 @@ class RegistrantView(FormView):
     def post(self, request):
         form = RegistrantForm(request.POST)
         if form.is_valid():
-            _, registration_data = add_to_session(
+            registration_data = add_to_session(
                 form, self.request, ["registrant_organisation_name"]
             )
             if "back_to_answers" in request.POST:
@@ -226,10 +226,8 @@ class WrittenPermissionView(FormView):
     success_url = reverse_lazy("written_permission_upload")
 
     def form_valid(self, form):
-        written_permission, _ = add_to_session(
-            form, self.request, ["written_permission"]
-        )
-        if written_permission == "no":
+        registration_data = add_to_session(form, self.request, ["written_permission"])
+        if registration_data["written_permission"] == "no":
             self.success_url = reverse_lazy("written_permission_fail")
         return super().form_valid(form)
 
@@ -340,7 +338,8 @@ class ExemptionView(FormView):
     def post(self, request):
         form = ExemptionForm(request.POST)
         if form.is_valid():
-            exe_radio, _ = add_to_session(form, self.request, ["exe_radio"])
+            registration_data = add_to_session(form, self.request, ["exe_radio"])
+            exe_radio = registration_data["exe_radio"]
             if "back_to_answers" in request.POST:
                 return redirect("confirm")
             elif exe_radio == "yes":
@@ -355,7 +354,8 @@ class MinisterView(FormView):
     form_class = MinisterForm
 
     def form_valid(self, form):
-        minister_radios, _ = add_to_session(form, self.request, ["minister_radios"])
+        registration_data = add_to_session(form, self.request, ["minister_radios"])
+        minister_radios = registration_data["exe_radio"]
         if minister_radios == "yes":
             self.success_url = reverse_lazy("minister_upload")
         else:
@@ -444,8 +444,8 @@ class DomainPurposeView(FormView):
     form_class = DomainPurposeForm
 
     def form_valid(self, form):
-        purpose, _ = add_to_session(form, self.request, ["domain_purpose"])
-
+        registration_data = add_to_session(form, self.request, ["domain_purpose"])
+        purpose = registration_data["domain_purpose"]
         if purpose == "email-only":
             self.success_url = reverse_lazy("written_permission")
         elif purpose == "website-email":

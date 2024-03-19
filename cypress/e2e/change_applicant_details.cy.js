@@ -2,7 +2,7 @@ import './base.cy'
 
 describe('change applicant details', () => {
     it('correctly changes the applicant name when the users goes back to change it', () => {
-      cy.base('')
+      cy.goToConfirmPage('')
       // Change applicant name
       cy.visit("applicant-details/?change");
       cy.get('#id_applicant_name').clear('');
