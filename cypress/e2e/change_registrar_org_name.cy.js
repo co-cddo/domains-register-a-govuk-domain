@@ -2,7 +2,7 @@ import './base.cy'
 
 describe('change registrar organisation name', () => {
     it('goes back to the answers page after the user changed the registrar', () => {
-      cy.base('')
+      cy.goToConfirmPage('')
       // Change registrar organisation name
       cy.visit("registrar/?change");
       cy.get('#id_organisations_choice').type('WeRegister')
