@@ -2,7 +2,7 @@ import './base.cy'
 
 describe('change registry details', () => {
     it('registry details', () => {
-      cy.goToConfirmPage('')
+      cy.goToConfirmation('')
       // Change registry details
       cy.visit("registry-details/?change");
       cy.get('#id_registrant_role').clear('');
