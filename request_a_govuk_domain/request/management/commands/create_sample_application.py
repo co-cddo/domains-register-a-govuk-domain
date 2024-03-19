@@ -5,7 +5,7 @@ from request_a_govuk_domain.request import models
 PERSON_NAMES = ["Bob Roberts", "Peter Peters", "Olivia Oliver"]
 
 REGISTRANT_ORG = "Ministry of Domains"
-REGISTRAR = "WeRegister"
+REGISTRAR_NAMES = ["WeRegister", "Registrations R Us", "Fantastic Registrar"]
 
 DOMAIN_NAME = "ministryofdomains.gov.uk"
 DOMAIN_PURPOSE = "Web site"
@@ -17,7 +17,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         persons = [models.Person.objects.create(name=name) for name in PERSON_NAMES]
 
-        registrar = models.Registrar(name=REGISTRAR)
+        registrars = [
+            models.Registrar.objects.create(name=name) for name in REGISTRAR_NAMES
+        ]
+
         registrant = models.Registrant(
             name=REGISTRANT_ORG,
             type=models.RegistrantTypeChoices.central_government,
@@ -29,11 +32,10 @@ class Command(BaseCommand):
             registrant_person=persons[1],
             responsible_person=persons[2],
             registrant_org=registrant,
-            registrar=registrar,
+            registrar=registrars[0],
             written_permission_evidence="",
         )
 
-        registrar.save()
         registrant.save()
         application.save()
 
