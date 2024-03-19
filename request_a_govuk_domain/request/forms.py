@@ -235,8 +235,8 @@ class RegistrantForm(forms.Form):
 
 class WrittenPermissionForm(forms.Form):
     CHOICES = (
-        Choice("Yes", "Yes"),
-        Choice("No", "No"),
+        Choice("yes", "Yes"),
+        Choice("no", "No"),
     )
 
     written_permission = forms.ChoiceField(
@@ -263,7 +263,7 @@ class ExemptionForm(forms.Form):
             agency, they must have an exemption from the Government Digital \
             Service before applying for a new third-level .gov.uk domain \
             name.",
-        choices=(("Yes", "Yes"), ("No", "No")),
+        choices=(("yes", "Yes"), ("no", "No")),
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},
     )
@@ -291,7 +291,7 @@ class MinisterForm(forms.Form):
     minister_radios = forms.ChoiceField(
         label="",
         help_text="""If the requested .gov.uk domain does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.""",
-        choices=(("Yes", "Yes"), ("No", "No")),
+        choices=(("yes", "Yes"), ("no", "No")),
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},
     )

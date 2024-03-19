@@ -40,7 +40,7 @@ def create_summary_list(registration_data):
         },
         {
             "summary_key": "Registrant's written permission",
-            "summary_value": f"{registration_data.get('written_permission', '')}, evidence provided.",
+            "summary_value": f"{registration_data.get('written_permission', '').title()}, evidence provided.",
             "change_url": "written-permission-upload",
         },
         {
@@ -65,8 +65,8 @@ def create_summary_list(registration_data):
             3,
             {
                 "summary_key": "Exemption from GOV.UK website",
-                "summary_value": f"{registration_data.get('exe_radio', '')}, evidence provided."
-                if registration_data["exe_radio"] == "Yes"
+                "summary_value": f"{registration_data.get('exe_radio', '').title()}, evidence provided."
+                if registration_data["exe_radio"] == "yes"
                 else registration_data["exe_radio"],
                 "change_url": "exemption-upload",
             },
@@ -75,7 +75,7 @@ def create_summary_list(registration_data):
             6,
             {
                 "summary_key": "Minister's support",
-                "summary_value": f"{registration_data.get('minister_radios', '')}, evidence provided.",
+                "summary_value": f"{registration_data.get('minister_radios', '').title()}, evidence provided.",
                 "change_url": "minister-upload",
             },
         )

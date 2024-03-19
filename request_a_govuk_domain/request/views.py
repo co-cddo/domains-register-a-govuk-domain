@@ -230,7 +230,7 @@ class WrittenPermissionView(FormView):
             form, self.request, ["written_permission"]
         )
         print(f"{written_permission=}")
-        if written_permission == "No":
+        if written_permission == "no":
             self.success_url = reverse_lazy("written_permission_fail")
         return super().form_valid(form)
 
@@ -344,7 +344,7 @@ class ExemptionView(FormView):
             exe_radio, _ = add_to_session(form, self.request, ["exe_radio"])
             if "cancel" in request.POST:
                 return redirect("confirm")
-            elif exe_radio == "Yes":
+            elif exe_radio == "yes":
                 return redirect("exemption_upload")
             else:
                 return redirect("written_permission")
@@ -360,7 +360,7 @@ class MinisterView(FormView):
         minister_radios = form.cleaned_data["minister_radios"]
         registration_data["minister_radios"] = minister_radios
         self.request.session["registration_data"] = registration_data
-        if minister_radios == "Yes":
+        if minister_radios == "yes":
             self.success_url = reverse_lazy("minister_upload")
         else:
             self.success_url = reverse_lazy("registrant_details")
