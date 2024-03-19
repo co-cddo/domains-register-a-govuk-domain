@@ -1,7 +1,7 @@
 import json
 import random
 import string
-from datetime import datetime
+from django.db import transaction
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -26,6 +26,7 @@ from .forms import (
 
 from django.views.generic.edit import FormView
 
+from .models import Application, Person, Registrant
 from .utils import handle_uploaded_file, add_to_session, is_central_government
 
 """
@@ -199,17 +200,38 @@ class ConfirmView(TemplateView):
         return context
 
 
+@transaction.atomic
+def save_data(reference_number, request):
+    registration_data = request.session.get("registration_data", {})
+    person = Person.objects.create(
+        name=registration_data["applicant_name"],
+        email_address=registration_data["applicant_email"],
+        role=None,
+        phone_number=registration_data["applicant_phone"],
+    )
+    registrant = Registrant.objects.create(
+        name=registration_data["registrant_organisation_name"],
+        type=registration_data["registrant_type"],
+    )
+    Application.objects.create(
+        reference=reference_number,
+        domain_name=registration_data["domain_name"],
+        applicant=person,
+        registrant_org=registrant,
+    )
+
+
 class SuccessView(View):
     def get(self, request):
         # TODO Change when requirements are finalised and add comment accordingly
         reference_number = (
-            "GOVUK"
-            + datetime.today().strftime("%d%m%Y")
+            "UK"
+            # + datetime.today().strftime("%d%m%Y")
             + "".join(random.choice(string.ascii_uppercase) for _ in range(4))
         )
-
+        save_data(reference_number, request)
         # We're finished, so clear the session data
-        request.session.pop("registration_data", None)
+        # request.session.pop("registration_data", None)
         return render(request, "success.html", {"reference_number": reference_number})
 
 
