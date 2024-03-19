@@ -101,7 +101,7 @@ def is_central_government(registrant_type: str) -> bool:
     return registrant_type in ["central_government", "ndpb"]
 
 
-def add_to_session(form, request, field_names: List[str]) -> tuple:
+def add_to_session(form, request, field_names: List[str]) -> dict:
     """
     Common utility method to clean the list of fields and save them in the session. This is to save boilerplate code.
 
@@ -116,7 +116,13 @@ def add_to_session(form, request, field_names: List[str]) -> tuple:
         field_value = form.cleaned_data[field_name]
         registration_data[field_name] = field_value
     request.session["registration_data"] = registration_data
-    return field_value, registration_data
+    return registration_data
+
+
+def add_value_to_session(request, field_name: str, field_value) -> None:
+    registration_data = request.session.get("registration_data", {})
+    registration_data[field_name] = field_value
+    request.session["registration_data"] = registration_data
 
 
 def remove_from_session(session, field_names: List[str]) -> None:
