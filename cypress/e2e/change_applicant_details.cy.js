@@ -9,7 +9,7 @@ describe('change applicant details', () => {
       cy.get('#id_applicant_name').type('Paul Atreides');
 
       // Back to Answers
-      cy.get('#id_cancel').click();
+      cy.get('#id_back_to_answers').click();
       cy.get('.govuk-summary-list__value').should('include.text', 'Paul Atreides')
     })
   })

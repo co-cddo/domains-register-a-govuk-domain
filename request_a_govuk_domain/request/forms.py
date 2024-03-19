@@ -24,7 +24,7 @@ def add_back_to_answers_button(args, field, layout):
     """
     if args and field in args[0]:
         if args[0][field] != "":
-            layout.fields.append(Button.secondary("cancel", "Back to Answers"))
+            layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
 
 
 class DomainForm(forms.Form):

@@ -49,9 +49,8 @@ def create_summary_list(registration_data):
             "change_url": "domain",
         },
     ]
-    if (
-        "registrant_type" in registration_data
-        and registration_data["registrant_type"] == "central_government"
+    if "registrant_type" in registration_data and is_central_government(
+        registration_data["registrant_type"]
     ):
         summary_list.insert(
             2,
@@ -85,7 +84,7 @@ def create_summary_list(registration_data):
 
 class RegistrationDataClass:
     """
-    Registration data dictionary is converted to calss object
+    Registration data dictionary is converted to class object
     with key, value pair for accessing in loop while rendering.
     """
 

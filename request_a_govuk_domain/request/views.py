@@ -68,7 +68,7 @@ class EmailView(FormView):
         form = EmailForm(request.POST)
         if form.is_valid():
             add_to_session(form, request, ["registrant_email_address"])
-            if "cancel" in request.POST:
+            if "back_to_answers" in request.POST:
                 return redirect("confirm")
             else:
                 return redirect("registrant_type")
@@ -88,7 +88,7 @@ class DomainView(FormView):
         form = DomainForm(request.POST)
         if form.is_valid():
             _, registration_data = add_to_session(form, self.request, ["domain_name"])
-            if "cancel" in request.POST:
+            if "back_to_answers" in request.POST:
                 return redirect("confirm")
             elif is_central_government(registration_data["registrant_type"]):
                 return redirect("minister")
@@ -111,12 +111,12 @@ class ApplicantDetailsView(FormView):
     def post(self, request):
         form = ApplicantDetailsForm(request.POST)
         if form.is_valid():
-            registration_data = self.request.session.get("registration_data", {})
-            registration_data["applicant_name"] = form.cleaned_data["applicant_name"]
-            registration_data["applicant_phone"] = form.cleaned_data["applicant_phone"]
-            registration_data["applicant_email"] = form.cleaned_data["applicant_email"]
-            self.request.session["registration_data"] = registration_data
-            if "cancel" in request.POST:
+            _, registration_data = add_to_session(
+                form,
+                self.request,
+                ["applicant_name", "applicant_phone", "applicant_email"],
+            )
+            if "back_to_answers" in request.POST:
                 return redirect("confirm")
             else:
                 return redirect("registrant_details")
@@ -143,7 +143,7 @@ class RegistrantDetailsView(FormView):
                 "registrant_email_address",
             ]
             add_to_session(form, self.request, field_names)
-            if "cancel" in request.POST:
+            if "back_to_answers" in request.POST:
                 return redirect("confirm")
             else:
                 return redirect("registry_details")
@@ -211,7 +211,7 @@ class RegistrantView(FormView):
             _, registration_data = add_to_session(
                 form, self.request, ["registrant_organisation_name"]
             )
-            if "cancel" in request.POST:
+            if "back_to_answers" in request.POST:
                 return redirect("confirm")
             elif is_central_government(registration_data["registrant_type"]):
                 return redirect("domain_purpose")
@@ -229,7 +229,6 @@ class WrittenPermissionView(FormView):
         written_permission, _ = add_to_session(
             form, self.request, ["written_permission"]
         )
-        print(f"{written_permission=}")
         if written_permission == "no":
             self.success_url = reverse_lazy("written_permission_fail")
         return super().form_valid(form)
@@ -342,7 +341,7 @@ class ExemptionView(FormView):
         form = ExemptionForm(request.POST)
         if form.is_valid():
             exe_radio, _ = add_to_session(form, self.request, ["exe_radio"])
-            if "cancel" in request.POST:
+            if "back_to_answers" in request.POST:
                 return redirect("confirm")
             elif exe_radio == "yes":
                 return redirect("exemption_upload")
@@ -356,10 +355,7 @@ class MinisterView(FormView):
     form_class = MinisterForm
 
     def form_valid(self, form):
-        registration_data = self.request.session.get("registration_data", {})
-        minister_radios = form.cleaned_data["minister_radios"]
-        registration_data["minister_radios"] = minister_radios
-        self.request.session["registration_data"] = registration_data
+        minister_radios, _ = add_to_session(form, self.request, ["minister_radios"])
         if minister_radios == "yes":
             self.success_url = reverse_lazy("minister_upload")
         else:
@@ -436,7 +432,7 @@ class RegistrarView(FormView):
         if form.is_valid():
             field_names = ["organisations_choice"]
             add_to_session(form, self.request, field_names)
-            if "cancel" in request.POST:
+            if "back_to_answers" in request.POST:
                 return redirect("confirm")
             else:
                 return redirect("email")

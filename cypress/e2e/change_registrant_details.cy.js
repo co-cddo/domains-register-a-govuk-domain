@@ -9,7 +9,7 @@ describe('change registrant details', () => {
       cy.get('#id_registrant_full_name').type('Leto II Atreides');
 
       // Back to Answers
-      cy.get('#id_cancel').click();
+      cy.get('#id_back_to_answers').click();
       cy.get('.govuk-summary-list__value').should('include.text', 'Leto II Atreides')
     })
   })

@@ -9,7 +9,7 @@ describe('change domain name', () => {
       cy.get('#id_domain_name').type('Arrakis')
 
       // Back to Answers
-      cy.get('#id_cancel').click();
+      cy.get('#id_back_to_answers').click();
       cy.get('.govuk-summary-list__value').should('include.text', 'Arrakis')
     })
   })
