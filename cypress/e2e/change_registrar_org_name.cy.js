@@ -9,6 +9,6 @@ describe('change registrar organisation name', () => {
 
       // Back to Answers
       cy.get('#id_back_to_answers').click();
-      cy.get('.govuk-summary-list__value').should('include.text', 'registrar-1')
+      cy.get('.govuk-summary-list__value').should('include.text', 'WeRegister')
     })
   })

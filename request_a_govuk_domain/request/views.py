@@ -23,7 +23,7 @@ from .forms import (
     RegistryDetailsForm,
     WrittenPermissionForm,
 )
-
+from .models.organisation import Registrar
 from django.views.generic.edit import FormView
 
 from .utils import (
@@ -308,6 +308,12 @@ class ConfirmView(TemplateView):
         registration_data = self.request.session.get("registration_data", {})
         context["registration_data"] = registration_data
         context["registration_objs"] = registration_objs
+
+        # Get the registrar name
+        registrar_id = int(
+            registration_data["organisations_choice"].split("registrar-", 1)[1]
+        )
+        context["registrar_name"] = Registrar.objects.get(id=registrar_id).name
 
         return context
 
