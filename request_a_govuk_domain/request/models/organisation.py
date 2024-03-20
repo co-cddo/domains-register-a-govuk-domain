@@ -2,13 +2,7 @@ from django.db import models
 
 
 class Organisation(models.Model):
-    name = models.CharField()
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        abstract = True
+    name = models.CharField(unique=True)
 
 
 class RegistrantTypeChoices(models.TextChoices):
