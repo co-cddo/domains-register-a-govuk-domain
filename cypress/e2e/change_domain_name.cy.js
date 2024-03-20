@@ -2,7 +2,7 @@ import './base.cy'
 
 describe('change domain name', () => {
     it('correctly changes the domain name when the users goes back to change it', () => {
-      cy.goToConfirmPage('')
+      cy.goToConfirmation('')
       // Change domain name
       cy.visit("/domain/?change");
       cy.get('#id_domain_name').clear('');

@@ -1,10 +1,9 @@
+import './base.cy'
+
 describe('Check if user entered an email', () => {
   it('Complains when no email is entered', () => {
-    cy.visit('http://0.0.0.0:8000/')
 
-    cy.get('h1').should('include.text', 'Which .gov.uk Approved Registrar organisation are you from?')
-    cy.get('#id_organisations_choice').type('WeRegister')
-    cy.get('.govuk-button#id_submit').click()
+    cy.goToRegistrarEmail()
 
     // Don't type anything, just click on the button
     cy.get('.govuk-button#id_submit').click()

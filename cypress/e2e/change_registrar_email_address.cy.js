@@ -2,7 +2,7 @@ import './base.cy'
 
 describe('change Email address', () => {
     it('correctly changes the email address when the users goes back to change it', () => {
-      cy.goToConfirmPage('')
+      cy.goToConfirmation('')
       // Change email
       cy.visit("email/?change")
       cy.get('#id_registrant_email_address').clear();
