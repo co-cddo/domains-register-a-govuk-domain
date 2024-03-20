@@ -4,8 +4,8 @@ from request_a_govuk_domain.request import models
 
 PERSON_NAMES = ["Bob Roberts", "Peter Peters", "Olivia Oliver"]
 
-REGISTRANT_ORG = "Ministry of Domains"
-REGISTRAR_NAMES = ["WeRegister", "Registrations R Us", "Fantastic Registrar"]
+REGISTRANT_NAMES = ["HMRC", "MOD", "MOT", "MOJ"]
+REGISTRAR_NAMES = ["WeRegister", "Registrations R Us", "Fantastic Registrar", "HMRC"]
 
 DOMAIN_NAME = "ministryofdomains.gov.uk"
 DOMAIN_PURPOSE = "Web site"
@@ -29,22 +29,24 @@ class Command(BaseCommand):
             models.Registrar.objects.create(name=name) for name in REGISTRAR_NAMES
         ]
 
-        registrant = models.Registrant(
-            name=REGISTRANT_ORG,
-            type=models.RegistrantTypeChoices.central_government,
-        )
+        registrants = [
+            models.Registrant.objects.create(
+                name=name,
+                type=models.RegistrantTypeChoices.central_government,
+            )
+            for name in REGISTRANT_NAMES
+        ]
 
         application = models.Application(
             domain_name=DOMAIN_NAME,
             applicant=persons[0],
             registrant_person=persons[1],
             responsible_person=persons[2],
-            registrant_org=registrant,
+            registrant_org=registrants[0],
             registrar=registrars[0],
             written_permission_evidence="",
         )
 
-        registrant.save()
         application.save()
 
         models.CentralGovernmentAttributes.objects.create(application=application)
