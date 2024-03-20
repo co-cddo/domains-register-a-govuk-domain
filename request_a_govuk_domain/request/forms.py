@@ -11,12 +11,12 @@ from crispy_forms_gds.layout import (
     Field,
     Fieldset,
     Fluid,
-    HTML,
     Layout,
     Size,
 )
 from typing import Optional
 from .models.organisation import RegistrantTypeChoices, Registrar
+from ..layout.content import DomainsHTML
 
 
 def add_back_to_answers_button(args, field, layout):
@@ -83,15 +83,17 @@ class ApplicantDetailsForm(forms.Form):
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
             Fieldset(
-                HTML('<h2 class="govuk-heading-m">Applicant name</h2>'),
+                DomainsHTML('<h2 class="govuk-heading-m">Applicant name</h2>'),
                 Field.text("applicant_name", field_width=20),
             ),
             Fieldset(
-                HTML('<h2 class="govuk-heading-m">Applicant contact details</h2>'),
+                DomainsHTML(
+                    '<h2 class="govuk-heading-m">Applicant contact details</h2>'
+                ),
                 Field.text("applicant_phone", field_width=20),
                 Field.text("applicant_email"),
             ),
-            HTML(
+            DomainsHTML(
                 """<div class="govuk-inset-text">
             <span class="govuk-hint">An email to confirm your application will be sent to:</span><br>
             <p class="govuk-body govuk-!-font-size-24"></p></div>"""
@@ -121,15 +123,17 @@ class RegistrantDetailsForm(forms.Form):
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
             Fieldset(
-                HTML('<h2 class="govuk-heading-m">Registrant name</h2>'),
+                DomainsHTML('<h2 class="govuk-heading-m">Registrant name</h2>'),
                 Field.text("registrant_full_name", field_width=20),
             ),
             Fieldset(
-                HTML('<h2 class="govuk-heading-m">Registrant contact details</h2>'),
+                DomainsHTML(
+                    '<h2 class="govuk-heading-m">Registrant contact details</h2>'
+                ),
                 Field.text("registrant_phone", field_width=20),
                 Field.text("registrant_email_address"),
             ),
-            HTML(
+            DomainsHTML(
                 """<div class="govuk-inset-text">An email to check identity will be sent to:</div>"""
             ),
             Button("submit", "Continue"),
@@ -158,23 +162,19 @@ class RegistryDetailsForm(forms.Form):
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
             Fieldset(
-                HTML('<h2 class="govuk-heading-m">Registrant role</h2>'),
+                DomainsHTML('<h2 class="govuk-heading-m">Registrant role</h2>'),
                 Field.text("registrant_role", field_width=20),
             ),
             Fieldset(
-                HTML('<h2 class="govuk-heading-m">Registrant contact details</h2>'),
+                DomainsHTML(
+                    '<h2 class="govuk-heading-m">Registrant contact details</h2>'
+                ),
                 Field.text("registrant_contact_phone", field_width=20),
                 Field.text("registrant_contact_email"),
             ),
-            HTML(
-                """<div class="govuk-warning-text">
-                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                <strong class="govuk-warning-text__text">
-                <span class="govuk-visually-hidden">Warning</span>
-                We will show all information collected on this page on the registry,
-                which is open to the general public.
-                </strong>
-                </div>"""
+            DomainsHTML.warning(
+                """We will show all information collected on this page on the registry,
+                which is open to the general public."""
             ),
             Button("submit", "Continue"),
         )
@@ -237,8 +237,8 @@ class RegistrantForm(forms.Form):
             Fieldset(
                 Field.text("registrant_organisation_name"),
             ),
-            HTML.warning(
-                ": The Domains Team will reject applications if the registrant's organisation name does not match \
+            DomainsHTML.warning(
+                "The Domains Team will reject applications if the registrant's organisation name does not match \
                 official records or is spelled incorrectly."
             ),
             Button("submit", "Continue"),
@@ -400,7 +400,7 @@ class RegistrarForm(forms.Form):
             Fieldset(
                 Field.text("organisations_choice"),
             ),
-            HTML.warning(
+            DomainsHTML.warning(
                 """If you are not listed as a .gov.uk Approved Registrar
                 on the registry operator's website, you cannot use
                 this service."""
