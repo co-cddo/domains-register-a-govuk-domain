@@ -15,6 +15,14 @@ class Command(BaseCommand):
     help = "Create a sample application for local testing"
 
     def handle(self, *args, **options):
+        # delete existing data in case this is run multiple times
+        models.Person.objects.all().delete()
+        models.Registrar.objects.all().delete()
+        models.Registrant.objects.all().delete()
+        models.Application.objects.all().delete()
+        models.CentralGovernmentAttributes.objects.all().delete()
+        models.Review.objects.all().delete()
+
         persons = [models.Person.objects.create(name=name) for name in PERSON_NAMES]
 
         registrars = [
