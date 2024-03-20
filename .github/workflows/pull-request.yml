@@ -62,7 +62,7 @@ jobs:
         poetry run ./manage.py migrate --noinput
         poetry run ./manage.py create_reviewer_group
         poetry run ./manage.py loaddata ./seed/users.json
-        poetry run ./manage.py create_sample_application
+        poetry run ./manage.py create_sample_data
 
     - name: Cypress
       uses: cypress-io/github-action@v6
