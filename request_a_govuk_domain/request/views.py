@@ -320,6 +320,9 @@ class ConfirmView(TemplateView):
             RegistrantTypeChoices, registration_data["registrant_type"], ""
         )
 
+        if is_central_government(registration_data["registrant_type"]):
+            context["reason_for_request"] = registration_data["domain_purpose"]
+
         return context
 
 

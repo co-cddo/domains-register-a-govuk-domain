@@ -57,6 +57,25 @@
             {% endgds_summary_list_row_actions %}
           {% endgds_summary_list_row %}
 
+          {###### Reason for request ######}
+
+          {% if reason_for_request %}
+            {% gds_summary_list_row %}
+              {% gds_summary_list_row_key %}Reason for request{% endgds_summary_list_row_key %}
+              {% gds_summary_list_row_value %}
+                {% if reason_for_request == "website-email" %}Website and email{% endif %}
+                {% if reason_for_request == "email-only" %}Email only{% endif %}
+              {% endgds_summary_list_row_value %}
+              {% gds_summary_list_row_actions %}
+                {% gds_summary_list_row_actions_item_inline href="/" %}
+                  <a href="/domain-purpose?change">Change</a>
+                {% endgds_summary_list_row_actions_item %}
+              {% endgds_summary_list_row_actions %}
+            {% endgds_summary_list_row %}
+          {% endif %}
+
+          {###### Everything else ######}
+
           {% for data in registration_objs %}
             {% gds_summary_list_row %}
                 {% gds_summary_list_row_key %}

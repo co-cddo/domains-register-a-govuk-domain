@@ -48,14 +48,6 @@ def create_summary_list(registration_data):
         registration_data["registrant_type"]
     ):
         summary_list.insert(
-            2,
-            {
-                "summary_key": "Reason for request",
-                "summary_value": registration_data.get("domain_purpose", ""),
-                "change_url": "domain-purpose",
-            },
-        )
-        summary_list.insert(
             3,
             {
                 "summary_key": "Exemption from GOV.UK website",
