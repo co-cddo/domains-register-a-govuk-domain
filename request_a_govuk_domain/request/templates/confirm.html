@@ -42,6 +42,21 @@
         {% endgds_summary_list %}
         <h2 class="govuk-heading-m">Registrant details</h2>
         {% gds_summary_list %}
+
+        {###### Registrant type ######}
+
+          {% gds_summary_list_row %}
+            {% gds_summary_list_row_key %}Organisation type{% endgds_summary_list_row_key %}
+            {% gds_summary_list_row_value %}
+              {{ registrant_type }}
+            {% endgds_summary_list_row_value %}
+            {% gds_summary_list_row_actions %}
+              {% gds_summary_list_row_actions_item_inline href="/" %}
+                <a href="/registrant-type?change">Change</a>
+              {% endgds_summary_list_row_actions_item %}
+            {% endgds_summary_list_row_actions %}
+          {% endgds_summary_list_row %}
+
           {% for data in registration_objs %}
             {% gds_summary_list_row %}
                 {% gds_summary_list_row_key %}

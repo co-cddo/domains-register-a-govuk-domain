@@ -29,11 +29,6 @@ def create_summary_list(registration_data):
     """
     summary_list = [
         {
-            "summary_key": "Organisation type",
-            "summary_value": registration_data.get("registrant_type", ""),
-            "change_url": "registrant-type",
-        },
-        {
             "summary_key": "Organisation name",
             "summary_value": registration_data.get("registrant_organisation_name", ""),
             "change_url": "registrant",

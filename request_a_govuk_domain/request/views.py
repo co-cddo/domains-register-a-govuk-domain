@@ -23,7 +23,7 @@ from .forms import (
     RegistryDetailsForm,
     WrittenPermissionForm,
 )
-from .models.organisation import Registrar
+from .models.organisation import Registrar, RegistrantTypeChoices
 from django.views.generic.edit import FormView
 
 from .utils import (
@@ -314,6 +314,11 @@ class ConfirmView(TemplateView):
             registration_data["organisations_choice"].split("registrar-", 1)[1]
         )
         context["registrar_name"] = Registrar.objects.get(id=registrar_id).name
+
+        # Get the registrant type
+        context["registrant_type"] = getattr(
+            RegistrantTypeChoices, registration_data["registrant_type"], ""
+        )
 
         return context
 
