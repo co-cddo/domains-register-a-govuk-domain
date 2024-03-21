@@ -121,4 +121,7 @@ urlpatterns = [
         WrittenPermissionFailView.as_view(),
         name="written_permission_fail",
     ),
+    path(
+        "change-registrar", RegistrarView.as_view(change=True), name="change_registrar"
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

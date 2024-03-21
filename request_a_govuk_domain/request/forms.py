@@ -385,6 +385,7 @@ class RegistrarForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
 
         registrars = [("", "")] + list(
@@ -407,7 +408,10 @@ class RegistrarForm(forms.Form):
             ),
             Button("submit", "Submit"),
         )
-        add_back_to_answers_button(args, "organisations_choice", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to Answers")
+            )
 
 
 class DomainPurposeForm(forms.Form):

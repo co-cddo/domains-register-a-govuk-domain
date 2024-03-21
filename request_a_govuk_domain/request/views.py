@@ -427,23 +427,20 @@ class ExemptionFailView(FormView):
 
 class RegistrarView(FormView):
     template_name = "registrar.html"
+    form_class = RegistrarForm
+    success_url = "email"
+    change = False
 
-    def get(self, request):
-        form = get_registration_data_to_prepopulate(
-            request, ["organisations_choice"], RegistrarForm
-        )
-        return render(request, self.template_name, {"form": form})
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
 
-    def post(self, request):
-        form = RegistrarForm(request.POST)
-        if form.is_valid():
-            field_names = ["organisations_choice"]
-            add_to_session(form, self.request, field_names)
-            if "back_to_answers" in request.POST:
-                return redirect("confirm")
-            else:
-                return redirect("email")
-        return render(request, self.template_name, {"form": form})
+    def form_valid(self, form):
+        add_to_session(form, self.request, ["organisations_choice"])
+        if "back_to_answers" in self.request.POST.keys():
+            self.success_url = "confirm"
+        return super().form_valid(form)
 
 
 class DomainPurposeView(FormView):
