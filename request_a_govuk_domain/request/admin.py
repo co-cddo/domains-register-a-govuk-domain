@@ -3,6 +3,7 @@ from django.contrib.auth.admin import GroupAdmin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
+from django.db.models import FileField
 from django.http import HttpResponse
 from django.urls import path, reverse
 from django.utils.html import format_html
@@ -16,27 +17,33 @@ class ReviewerReadOnlyFieldsMixin:
         if request.user.is_superuser:
             return []
         else:
-            return [
-                field.name
-                for field in self.model._meta.fields
-                if field.name != "written_permission_evidence"
-            ] + ["written_permission"]
+            return self._get_field_names()
 
-    def get_fields(self, request, obj=None):
+    def _get_field_names(self):
         return [
             field.name
             for field in self.model._meta.fields
-            if field.name != "written_permission_evidence"
-        ] + ["written_permission"]
+            if type(field) != FileField
+        ] + ["download_" + field.attname
+             for field in self.model._meta.fields
+             if type(field) == FileField]
 
-    def written_permission(self, obj):
-        link = reverse(
-            "admin:view_permission_evidence",
-            args=[obj.written_permission_evidence.name],
-        )
-        return format_html(
-            '<a href="{}">{}</a>', link, "View written permission evidence"
-        )
+    def get_fields(self, request, obj=None):
+        return self._get_field_names()
+
+
+class DownloadLinkMixin:
+    def generate_download_link(self, file_name):
+        if file_name:
+            link = reverse(
+                "admin:view_permission_evidence",
+                args=[file_name],
+            )
+            return format_html(
+                '<a href="{}">{}</a>', link, "Download File"
+            )
+        else:
+            return "--"
 
 
 class DomainRegistrationUserAdmin(UserAdmin):
@@ -54,11 +61,17 @@ class DomainRegistrationGroupAdmin(GroupAdmin):
 
 
 class CentralGovernmentAttributesInline(
-    ReviewerReadOnlyFieldsMixin, admin.StackedInline
+    ReviewerReadOnlyFieldsMixin, DownloadLinkMixin, admin.StackedInline
 ):
     model = CentralGovernmentAttributes
     can_delete = False
     verbose_name_plural = "Central Government Attributes"
+
+    def download_ministerial_request_evidence(self, obj):
+        return self.generate_download_link(obj.ministerial_request_evidence.name)
+
+    def download_gds_exemption_evidence(self, obj):
+        return self.generate_download_link(obj.gds_exemption_evidence.name)
 
 
 class ReviewInline(admin.StackedInline):
@@ -67,9 +80,12 @@ class ReviewInline(admin.StackedInline):
     verbose_name_plural = "Reviews"
 
 
-class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
+class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, DownloadLinkMixin, admin.ModelAdmin):
     model = Application
     inlines = [CentralGovernmentAttributesInline, ReviewInline]
+
+    def __init__(self, model, admin_site):
+        super().__init__(model, admin_site)
 
     def get_form(self, request, obj=None, **kwargs):
         _form = super().get_form(request, obj, **kwargs)
@@ -90,6 +106,9 @@ class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
 
     def view_permission_evidence(self, request, file_name):
         return HttpResponse(f"Hello from {file_name}")
+
+    def download_written_permission_evidence(self, obj):
+        return self.generate_download_link(obj.written_permission_evidence.name)
 
 
 admin.site.unregister(User)
