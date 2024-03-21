@@ -19,6 +19,8 @@ class FormProgressMiddleware:
             return True
         if path.startswith("/admin"):
             return True
+        if path.startswith("/media"):
+            return True
         return False
 
     def is_valid_progress(self, request):
