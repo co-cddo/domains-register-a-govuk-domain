@@ -28,8 +28,6 @@ from django.views.generic.edit import FormView
 
 from .utils import (
     handle_uploaded_file,
-    create_summary_list,
-    RegistrationDataClass,
     add_to_session,
     remove_from_session,
     is_central_government,
@@ -297,26 +295,25 @@ class ConfirmView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        registration_objs = []
-        for summary_item in create_summary_list(
-            self.request.session["registration_data"]
-        ):
-            registration_obj = RegistrationDataClass(summary_item)
-            registration_objs.append(registration_obj)
-
         # Access session data and include it in the context
         registration_data = self.request.session.get("registration_data", {})
         context["registration_data"] = registration_data
-        context["registration_objs"] = registration_objs
 
-        # Get the registrar name
+        # Registrar name
         registrar_id = int(
             registration_data["organisations_choice"].split("registrar-", 1)[1]
         )
         context["registrar_name"] = Registrar.objects.get(id=registrar_id).name
 
+        # Domain purpose
         if is_central_government(registration_data["registrant_type"]):
             context["reason_for_request"] = registration_data["domain_purpose"]
+
+        # Exemption
+        if "registrant_type" in registration_data and is_central_government(
+            registration_data["registrant_type"]
+        ):
+            context["central_gov"] = True
 
         return context
 
