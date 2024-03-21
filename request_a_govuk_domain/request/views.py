@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import (
-    EmailForm,
+    RegistrarEmailForm,
     ExemptionForm,
     UploadForm,
     RegistrarForm,
@@ -53,9 +53,9 @@ def get_registration_data_to_prepopulate(request, fields, form):
     return form
 
 
-class EmailView(FormView):
+class RegistrarEmailView(FormView):
     template_name = "email.html"
-    form_class = EmailForm
+    form_class = RegistrarEmailForm
     success_url = reverse_lazy("registrant_type")
     change = False
 
@@ -64,8 +64,16 @@ class EmailView(FormView):
         kwargs["change"] = getattr(self, "change")
         return kwargs
 
+    def get_initial(self):
+        initial = super().get_initial()
+        session_data = self.request.session["registration_data"]
+        initial["registrar_email_address"] = session_data.get(
+            "registrar_email_address", ""
+        )
+        return initial
+
     def form_valid(self, form):
-        add_to_session(form, self.request, ["registrant_email_address"])
+        add_to_session(form, self.request, ["registrar_email_address"])
         if "back_to_answers" in self.request.POST.keys():
             self.success_url = "confirm"
         return super().form_valid(form)
@@ -95,79 +103,94 @@ class DomainView(FormView):
 
 class ApplicantDetailsView(FormView):
     template_name = "applicant_details.html"
+    form_class = ApplicantDetailsForm
+    success_url = reverse_lazy("registrant_details")
+    change = False
 
-    def get(self, request):
-        form = get_registration_data_to_prepopulate(
-            request,
-            ["applicant_name", "applicant_phone", "applicant_email"],
-            ApplicantDetailsForm,
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
+
+    def get_initial(self):
+        initial = super().get_initial()
+        session_data = self.request.session["registration_data"]
+        initial["applicant_name"] = session_data.get("applicant_name", "")
+        initial["applicant_phone"] = session_data.get("applicant_phone", "")
+        initial["applicant_email"] = session_data.get("applicant_email", "")
+        return initial
+
+    def form_valid(self, form):
+        add_to_session(
+            form, self.request, ["applicant_name", "applicant_phone", "applicant_email"]
         )
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request):
-        form = ApplicantDetailsForm(request.POST)
-        if form.is_valid():
-            add_to_session(
-                form,
-                self.request,
-                ["applicant_name", "applicant_phone", "applicant_email"],
-            )
-            if "back_to_answers" in request.POST:
-                return redirect("confirm")
-            else:
-                return redirect("registrant_details")
-        return render(request, self.template_name, {"form": form})
+        if "back_to_answers" in self.request.POST.keys():
+            self.success_url = "confirm"
+        return super().form_valid(form)
 
 
 class RegistrantDetailsView(FormView):
     template_name = "registrant_details.html"
+    form_class = RegistrantDetailsForm
+    success_url = reverse_lazy("registry_details")
+    change = False
 
-    def get(self, request):
-        form = get_registration_data_to_prepopulate(
-            request,
-            ["registrant_full_name", "registrant_phone", "registrant_email_address"],
-            RegistrantDetailsForm,
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
+
+    def get_initial(self):
+        initial = super().get_initial()
+        session_data = self.request.session["registration_data"]
+        initial["registrant_full_name"] = session_data.get("registrant_full_name", "")
+        initial["registrant_phone"] = session_data.get("registrant_phone", "")
+        initial["registrant_email_address"] = session_data.get(
+            "registrant_email_address", ""
         )
-        return render(request, self.template_name, {"form": form})
+        return initial
 
-    def post(self, request):
-        form = RegistrantDetailsForm(request.POST)
-        if form.is_valid():
-            field_names = [
-                "registrant_full_name",
-                "registrant_phone",
-                "registrant_email_address",
-            ]
-            add_to_session(form, self.request, field_names)
-            if "back_to_answers" in request.POST:
-                return redirect("confirm")
-            else:
-                return redirect("registry_details")
-        return render(request, self.template_name, {"form": form})
+    def form_valid(self, form):
+        add_to_session(
+            form,
+            self.request,
+            ["registrant_full_name", "registrant_phone", "registrant_email_address"],
+        )
+        if "back_to_answers" in self.request.POST.keys():
+            self.success_url = "confirm"
+        return super().form_valid(form)
 
 
 class RegistryDetailsView(FormView):
     template_name = "registry_details.html"
+    form_class = RegistryDetailsForm
+    success_url = reverse_lazy("confirm")
+    change = False
 
-    def get(self, request):
-        form = get_registration_data_to_prepopulate(
-            request,
-            ["registrant_role", "registrant_contact_phone", "registrant_contact_email"],
-            RegistryDetailsForm,
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
+
+    def get_initial(self):
+        initial = super().get_initial()
+        session_data = self.request.session["registration_data"]
+        initial["registrant_role"] = session_data.get("registrant_role", "")
+        initial["registrant_contact_phone"] = session_data.get(
+            "registrant_contact_phone", ""
         )
-        return render(request, self.template_name, {"form": form})
+        initial["registrant_contact_email"] = session_data.get(
+            "registrant_contact_email", ""
+        )
+        return initial
 
-    def post(self, request):
-        form = RegistryDetailsForm(request.POST)
-        if form.is_valid():
-            field_names = [
-                "registrant_role",
-                "registrant_contact_phone",
-                "registrant_contact_email",
-            ]
-            add_to_session(form, self.request, field_names)
-            return redirect("confirm")
-        return render(request, self.template_name, {"form": form})
+    def form_valid(self, form):
+        add_to_session(
+            form,
+            self.request,
+            ["registrant_role", "registrant_contact_phone", "registrant_contact_email"],
+        )
+        return super().form_valid(form)
 
 
 class RegistrantTypeView(FormView):

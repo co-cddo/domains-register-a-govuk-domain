@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from .request.views import (
-    EmailView,
+    RegistrarEmailView,
     ConfirmView,
     SuccessView,
     ExemptionView,
@@ -49,7 +49,7 @@ from .request.views import (
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", RegistrarView.as_view(), name="start"),
-    path("email/", EmailView.as_view(), name="email"),
+    path("email/", RegistrarEmailView.as_view(), name="email"),
     path("domain/", DomainView.as_view(), name="domain"),
     path("registrant-type/", RegistrantTypeView.as_view(), name="registrant_type"),
     path(
@@ -124,5 +124,20 @@ urlpatterns = [
     path(
         "change-registrar", RegistrarView.as_view(change=True), name="change_registrar"
     ),
-    path("change-email", EmailView.as_view(change=True), name="change_email"),
+    path("change-email", RegistrarEmailView.as_view(change=True), name="change_email"),
+    path(
+        "change-registry-details",
+        RegistryDetailsView.as_view(change=True),
+        name="change_registry_details",
+    ),
+    path(
+        "change-registrant-details",
+        RegistrantDetailsView.as_view(change=True),
+        name="change_registrant_details",
+    ),
+    path(
+        "change-applicant-details",
+        ApplicantDetailsView.as_view(change=True),
+        name="change_applicant_details",
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

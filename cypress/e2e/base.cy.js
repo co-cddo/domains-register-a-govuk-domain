@@ -11,7 +11,7 @@ Cypress.Commands.add('goToRegistrarEmail', () => {
 Cypress.Commands.add('goToRegistrantType', () => {
   cy.goToRegistrarEmail()
 
-  cy.get('.govuk-input').type('something@some.gov.uk')
+  cy.get('.govuk-input').type('weregister@example.com')
   cy.get('.govuk-button#id_submit').click()
   cy.get('h1').should('include.text', 'Which of the following best describes your registrant\'s organisation?')
 })
@@ -120,7 +120,7 @@ Cypress.Commands.add('goToRegistryDetails', () => {
 
 Cypress.Commands.add('goToConfirmation', () => {
   cy.goToRegistryDetails()
-  cy.get('#id_registrant_role').type('Robert Smith')
+  cy.get('#id_registrant_role').type('Clerk')
   cy.get('#id_registrant_contact_phone').type('01225672345')
   cy.get('#id_registrant_contact_email').type('rob@example.com')
   cy.get('.govuk-button#id_submit').click()

@@ -5,23 +5,26 @@ describe('change Email address', () => {
       cy.goToConfirmation('')
       // Change email
       cy.get('a[href="/change-email"]').click()
-      cy.get('#id_registrant_email_address').clear()
-      cy.get('#id_registrant_email_address').type('something1@some.gov.uk')
+
+      // check that existing value is pre-populated
+      cy.get('#id_registrar_email_address').should('have.value', 'weregister@example.com')
+
+      // Change the value
+      cy.get('#id_registrar_email_address').clear()
+      cy.get('#id_registrar_email_address').type('weregister2@example.com')
 
       // click "Back to Answers"
       cy.get('#id_back_to_answers').click()
       cy.get('h1').should('include.text', 'Check your answers')
-      cy.get('.govuk-summary-list__value').should('include.text', 'something1@some.gov.uk')
+      cy.get('.govuk-summary-list__value').should('include.text', 'weregister2@example.com')
 
       // Change email again
       cy.get('a[href="/change-email"]').click()
-      cy.get('#id_registrant_email_address').clear()
-      cy.get('#id_registrant_email_address').type('something2@some.gov.uk')
+      cy.get('#id_registrar_email_address').clear()
+      cy.get('#id_registrar_email_address').type('weregister3@example.com')
 
       // Click submit, so should not go back to answers but instead continue the flow
       cy.get('#id_submit').click()
       cy.get('h1').should('include.text', 'Which of the following')
     })
-
-
   })

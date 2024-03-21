@@ -78,6 +78,7 @@ class ApplicantDetailsForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
@@ -100,7 +101,10 @@ class ApplicantDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "applicant_name", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
 
 
 class RegistrantDetailsForm(forms.Form):
@@ -118,6 +122,7 @@ class RegistrantDetailsForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
@@ -138,7 +143,10 @@ class RegistrantDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "registrant_full_name", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
 
 
 class RegistryDetailsForm(forms.Form):
@@ -157,6 +165,7 @@ class RegistryDetailsForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
@@ -178,11 +187,14 @@ class RegistryDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "registrant_role", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
 
 
-class EmailForm(forms.Form):
-    registrant_email_address = forms.CharField(
+class RegistrarEmailForm(forms.Form):
+    registrar_email_address = forms.CharField(
         label="Email address of the .gov.uk Approved Registrar",
         widget=forms.EmailInput,
         validators=[EmailValidator("Please enter a valid email address")],
@@ -195,7 +207,7 @@ class EmailForm(forms.Form):
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
             Fieldset(
-                Field.text("registrant_email_address", field_width=Fluid.TWO_THIRDS),
+                Field.text("registrar_email_address", field_width=Fluid.TWO_THIRDS),
             ),
             Button("submit", "Continue"),
         )
