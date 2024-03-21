@@ -40,7 +40,7 @@ class DownloadLinkMixin:
                 args=[file_name],
             )
             return format_html(
-                '<a href="{}">{}</a>', link, "Download File"
+                f'<a href="{{}}" download="{file_name}">{{}}</a>', link, "Download File"
             )
         else:
             return "--"
