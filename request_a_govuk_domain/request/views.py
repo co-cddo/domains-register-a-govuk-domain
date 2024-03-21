@@ -370,7 +370,8 @@ class MinisterView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["domain_name"] = self.request.session.get("domain", "")
+        registration_data = self.request.session.get("registration_data", {})
+        context["domain_name"] = registration_data.get("domain_name", "")
         return context
 
 

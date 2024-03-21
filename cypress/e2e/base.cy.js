@@ -81,7 +81,7 @@ Cypress.Commands.add('goToMinister', () => {
   cy.goToDomain()
   cy.get('#id_domain_name').type('foobar')
   cy.get('.govuk-button#id_submit').click()
-  cy.get('h1').should('include.text', 'Has a central government minister requested the domain name?')
+  cy.get('h1').should('include.text', 'Has a central government minister requested the foobar.gov.uk domain name?')
 })
 
 Cypress.Commands.add('goToApplicantDetails', () => {

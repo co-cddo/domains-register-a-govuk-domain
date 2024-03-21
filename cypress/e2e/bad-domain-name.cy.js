@@ -5,21 +5,21 @@ describe('Bad domain names', () => {
     cy.goToDomain('')
     cy.get('#id_domain_name').type('dosac')
     cy.get('.govuk-button#id_submit').click()
-    cy.get('h1').should('include.text', 'Has a central government minister requested the domain name?')
+    cy.get('h1').should('include.text', 'Has a central government minister requested the dosac.gov.uk domain name?')
   })
 
   it('accepts valid domain names with hyphens', () => {
     cy.goToDomain('')
     cy.get('#id_domain_name').type('dos-ac')
     cy.get('.govuk-button#id_submit').click()
-    cy.get('h1').should('include.text', 'Has a central government minister requested the domain name?')
+    cy.get('h1').should('include.text', 'Has a central government minister requested the dos-ac.gov.uk domain name?')
   })
 
   it('accepts valid domain names when user has entered .gov.uk', () => {
     cy.goToDomain('')
     cy.get('#id_domain_name').type('dosac.gov.uk')
     cy.get('.govuk-button#id_submit').click()
-    cy.get('h1').should('include.text', 'Has a central government minister requested the domain name?')
+    cy.get('h1').should('include.text', 'Has a central government minister requested the dosac.gov.uk domain name?')
   })
 
   it('rejects domain names with dots', () => {
@@ -78,7 +78,7 @@ describe('Bad domain names', () => {
     cy.get('h2').should('include.text', 'There is a problem')
     cy.get('#id_domain_name').clear().type('dosac.gov.uk')
     cy.get('.govuk-button#id_submit').click()
-    cy.get('h1').should('include.text', 'Has a central government minister requested the domain name?')
+    cy.get('h1').should('include.text', 'Has a central government minister requested the dosac.gov.uk domain name?')
   })
 
 })
