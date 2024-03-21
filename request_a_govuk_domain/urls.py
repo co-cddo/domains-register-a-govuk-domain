@@ -124,4 +124,5 @@ urlpatterns = [
     path(
         "change-registrar", RegistrarView.as_view(change=True), name="change_registrar"
     ),
+    path("change-email", EmailView.as_view(change=True), name="change_email"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -189,6 +189,7 @@ class EmailForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
@@ -198,7 +199,10 @@ class EmailForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "registrant_email_address", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
 
 
 class RegistrantTypeForm(forms.Form):

@@ -55,22 +55,20 @@ def get_registration_data_to_prepopulate(request, fields, form):
 
 class EmailView(FormView):
     template_name = "email.html"
+    form_class = EmailForm
+    success_url = reverse_lazy("registrant_type")
+    change = False
 
-    def get(self, request):
-        form = get_registration_data_to_prepopulate(
-            request, ["registrant_email_address"], EmailForm
-        )
-        return render(request, self.template_name, {"form": form})
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
 
-    def post(self, request):
-        form = EmailForm(request.POST)
-        if form.is_valid():
-            add_to_session(form, request, ["registrant_email_address"])
-            if "back_to_answers" in request.POST:
-                return redirect("confirm")
-            else:
-                return redirect("registrant_type")
-        return render(request, self.template_name, {"form": form})
+    def form_valid(self, form):
+        add_to_session(form, self.request, ["registrant_email_address"])
+        if "back_to_answers" in self.request.POST.keys():
+            self.success_url = "confirm"
+        return super().form_valid(form)
 
 
 class DomainView(FormView):
@@ -428,7 +426,7 @@ class ExemptionFailView(FormView):
 class RegistrarView(FormView):
     template_name = "registrar.html"
     form_class = RegistrarForm
-    success_url = "email"
+    success_url = reverse_lazy("email")
     change = False
 
     def get_form_kwargs(self):
