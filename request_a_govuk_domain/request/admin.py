@@ -12,6 +12,21 @@ from .models import Application, CentralGovernmentAttributes, Review
 
 
 class ReviewerReadOnlyFieldsMixin:
+    """
+    This will convert any file fields to a link pointing to a view named admin:download_file. Which enables the user
+    to download the file for viewing. This view has to be implemented by the model admin that uses this mixin.
+
+    The ModelAdmin will need to implement a method prefixed with download_<file field attribute>
+    for each file field available in the model and call the generate_download_link function in it.
+    Following code shows how it is done for a model which contains a file field called 'gds_exemption_evidence'
+
+        def download_gds_exemption_evidence(self, obj):
+            return self.generate_download_link(obj.gds_exemption_evidence.name)
+
+        # Set the short description attribute on the method so it will be used as the label in the form
+        download_gds_exemption_evidence.short_description = "GDS exemption evidence"
+
+    """
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
@@ -31,12 +46,10 @@ class ReviewerReadOnlyFieldsMixin:
     def get_fields(self, request, obj=None):
         return self._get_field_names()
 
-
-class DownloadLinkMixin:
     def generate_download_link(self, file_name):
         if file_name:
             link = reverse(
-                "admin:view_permission_evidence",
+                "admin:download_file",
                 args=[file_name],
             )
             return format_html(
@@ -61,7 +74,7 @@ class DomainRegistrationGroupAdmin(GroupAdmin):
 
 
 class CentralGovernmentAttributesInline(
-    ReviewerReadOnlyFieldsMixin, DownloadLinkMixin, admin.StackedInline
+    ReviewerReadOnlyFieldsMixin, admin.StackedInline
 ):
     model = CentralGovernmentAttributes
     can_delete = False
@@ -73,6 +86,9 @@ class CentralGovernmentAttributesInline(
     def download_gds_exemption_evidence(self, obj):
         return self.generate_download_link(obj.gds_exemption_evidence.name)
 
+    download_ministerial_request_evidence.short_description = "Ministerial request evidence"
+    download_gds_exemption_evidence.short_description = "GDS exemption evidence"
+
 
 class ReviewInline(admin.StackedInline):
     model = Review
@@ -80,35 +96,33 @@ class ReviewInline(admin.StackedInline):
     verbose_name_plural = "Reviews"
 
 
-class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, DownloadLinkMixin, admin.ModelAdmin):
+class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
     model = Application
     inlines = [CentralGovernmentAttributesInline, ReviewInline]
 
     def __init__(self, model, admin_site):
         super().__init__(model, admin_site)
 
-    def get_form(self, request, obj=None, **kwargs):
-        _form = super().get_form(request, obj, **kwargs)
-        return _form
-
     def get_urls(self):
         urls = super().get_urls()
         extra_urls = [
             path(
-                "view_permission_evidence/<str:file_name>",
-                self.admin_site.admin_view(self.view_permission_evidence),
-                name="view_permission_evidence",
+                "download_file/<str:file_name>",
+                self.admin_site.admin_view(self.download_file),
+                name="download_file",
             )
         ]
         # NOTE! Our custom urls have to go before the default urls, because they
         # default ones match anything.
         return extra_urls + urls
 
-    def view_permission_evidence(self, request, file_name):
+    def download_file(self, request, file_name):
         return HttpResponse(f"Hello from {file_name}")
 
     def download_written_permission_evidence(self, obj):
         return self.generate_download_link(obj.written_permission_evidence.name)
+
+    download_written_permission_evidence.short_description = "Written permission evidence"
 
 
 admin.site.unregister(User)
