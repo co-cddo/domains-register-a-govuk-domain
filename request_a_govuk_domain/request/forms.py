@@ -372,7 +372,7 @@ class UploadForm(forms.Form):
         file = self.cleaned_data.get("file")
         if (
             file is not None
-            and file.content_type.split("/")[0] in settings.CONTENT_TYPES
+            and file.content_type.split("/")[1] in settings.CONTENT_TYPES
         ):
             if file.size > int(settings.MAX_UPLOAD_SIZE):
                 raise forms.ValidationError(

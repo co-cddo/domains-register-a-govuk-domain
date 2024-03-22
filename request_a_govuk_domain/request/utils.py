@@ -1,7 +1,11 @@
 import os
 import uuid
 from typing import List
+
 from django.conf import settings
+from django.core.exceptions import ValidationError
+
+import clamd
 
 
 def handle_uploaded_file(file):
@@ -19,8 +23,20 @@ def handle_uploaded_file(file):
     with open(file_path, "wb") as destination:
         for chunk in file.chunks():
             destination.write(chunk)
-
     return saved_filename
+
+
+def validate_file_infection(file):
+    """
+    Incoming file is sent to clamd for scanning.
+    Raises a ValidationError
+    """
+
+    cd = clamd.ClamdNetworkSocket(settings.CLAMD_TCP_ADDR, settings.CLAMD_TCP_SOCKET)
+    result = cd.instream(file)
+
+    if result and result["stream"][0] == "FOUND":
+        raise ValidationError("File is infected with malware.", code="infected")
 
 
 def route_number(session_data: dict) -> dict[str, int]:
