@@ -212,6 +212,9 @@ MEDIA_URL = "/media/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # https://djangosnippets.org/snippets/1303/
-CONTENT_TYPES = ["image"]
-# 2.5 MB
-MAX_UPLOAD_SIZE = "2621440"
+CONTENT_TYPES = ["png", "jpeg", "jpg", "pdf"]
+# 10 MB
+MAX_UPLOAD_SIZE = "104857600"
+
+CLAMD_TCP_ADDR = "clamav"
+CLAMD_TCP_SOCKET = 3310
