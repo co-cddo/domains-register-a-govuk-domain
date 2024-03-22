@@ -140,4 +140,9 @@ urlpatterns = [
         ApplicantDetailsView.as_view(change=True),
         name="change_applicant_details",
     ),
+    path(
+        "change-domain",
+        DomainView.as_view(change=True),
+        name="change_domain",
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

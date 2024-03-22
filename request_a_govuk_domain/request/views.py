@@ -81,24 +81,28 @@ class RegistrarEmailView(FormView):
 
 class DomainView(FormView):
     template_name = "domain.html"
+    form_class = DomainForm
+    success_url = reverse_lazy("applicant_details")
+    change = False
 
-    def get(self, request):
-        form = get_registration_data_to_prepopulate(
-            request, ["domain_name"], DomainForm
-        )
-        return render(request, self.template_name, {"form": form})
+    def get_initial(self):
+        initial = super().get_initial()
+        session_data = self.request.session["registration_data"]
+        initial["domain_name"] = session_data.get("domain_name", "")
+        return initial
 
-    def post(self, request):
-        form = DomainForm(request.POST)
-        if form.is_valid():
-            registration_data = add_to_session(form, self.request, ["domain_name"])
-            if "back_to_answers" in request.POST:
-                return redirect("confirm")
-            elif is_central_government(registration_data["registrant_type"]):
-                return redirect("minister")
-            else:
-                return redirect("applicant_details")
-        return render(request, self.template_name, {"form": form})
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
+
+    def form_valid(self, form):
+        registration_data = add_to_session(form, self.request, ["domain_name"])
+        if "back_to_answers" in self.request.POST.keys():
+            self.success_url = reverse_lazy("confirm")
+        elif is_central_government(registration_data["registrant_type"]):
+            self.success_url = reverse_lazy("minister")
+        return super().form_valid(form)
 
 
 class ApplicantDetailsView(FormView):
@@ -460,7 +464,7 @@ class RegistrarView(FormView):
     def form_valid(self, form):
         add_to_session(form, self.request, ["organisations_choice"])
         if "back_to_answers" in self.request.POST.keys():
-            self.success_url = "confirm"
+            self.success_url = reverse_lazy("confirm")
         return super().form_valid(form)
 
 
