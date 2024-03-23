@@ -75,12 +75,19 @@ class ReviewerReadOnlyFieldsMixin:
                 args=[obj.id],
             )
             return format_html(
-                f'<a href="{{}}" download="{field_name}">{{}}</a>', link, "Download File"
+                f'<a href="{{}}" download="{getattr(obj, field_name).name}">{{}}</a>', link, "Download File"
             )
         else:
             return "--"
 
     def download_file(self, request, field_name, object_id):
+        """
+        Override this method in the child class to provide the implementation
+        :param request: Http request
+        :param field_name: Name of the file field
+        :param object_id: object id to retrieve
+        :return:
+        """
         raise NotImplementedError("Override this method in your model admin to get the file")
 
 
@@ -127,9 +134,6 @@ class ReviewInline(admin.StackedInline):
 class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
     model = Application
     inlines = [CentralGovernmentAttributesInline, ReviewInline]
-
-    def __init__(self, model, admin_site):
-        super().__init__(model, admin_site)
 
     def download_written_permission_evidence(self, obj):
         return self.generate_download_link(obj, "download_written_permission_evidence")
