@@ -1,3 +1,5 @@
+from functools import partial
+
 from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin
 from django.contrib.auth.admin import UserAdmin
@@ -46,17 +48,40 @@ class ReviewerReadOnlyFieldsMixin:
     def get_fields(self, request, obj=None):
         return self._get_field_names()
 
-    def generate_download_link(self, file_name):
-        if file_name:
+    def get_urls(self):
+        urls = super().get_urls()
+        all_fields = []
+        all_fields.extend(self.model._meta.fields)
+        for inline in self.inlines:
+            all_fields.extend(inline.model._meta.fields)
+        extra_urls = [
+            path(
+                f"<int:object_id>/download_{field.attname}/",
+                self.admin_site.admin_view(partial(self.download_file, field_name=field.attname)),
+                name="download_" + field.attname,
+            )
+            for field in all_fields
+            if type(field) == FileField
+        ]
+        # NOTE! Our custom urls have to go before the default urls, because they
+        # default ones match anything.
+        return extra_urls + urls
+
+    def generate_download_link(self, obj, field):
+        field_name = field.replace("download_", "")
+        if getattr(obj, field_name):
             link = reverse(
-                "admin:download_file",
-                args=[file_name],
+                f"admin:{field}",
+                args=[obj.id],
             )
             return format_html(
-                f'<a href="{{}}" download="{file_name}">{{}}</a>', link, "Download File"
+                f'<a href="{{}}" download="{field_name}">{{}}</a>', link, "Download File"
             )
         else:
             return "--"
+
+    def download_file(self, request, field_name, object_id):
+        raise NotImplementedError("Override this method in your model admin to get the file")
 
 
 class DomainRegistrationUserAdmin(UserAdmin):
@@ -81,10 +106,13 @@ class CentralGovernmentAttributesInline(
     verbose_name_plural = "Central Government Attributes"
 
     def download_ministerial_request_evidence(self, obj):
-        return self.generate_download_link(obj.ministerial_request_evidence.name)
+        return self.generate_download_link(obj, "download_ministerial_request_evidence")
 
     def download_gds_exemption_evidence(self, obj):
-        return self.generate_download_link(obj.gds_exemption_evidence.name)
+        return self.generate_download_link(obj, "download_gds_exemption_evidence")
+
+    def download_file(self, request, field_name, object_id):
+        return HttpResponse(f"{object_id}- {field_name}")
 
     download_ministerial_request_evidence.short_description = "Ministerial request evidence"
     download_gds_exemption_evidence.short_description = "GDS exemption evidence"
@@ -103,24 +131,11 @@ class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
     def __init__(self, model, admin_site):
         super().__init__(model, admin_site)
 
-    def get_urls(self):
-        urls = super().get_urls()
-        extra_urls = [
-            path(
-                "download_file/<str:file_name>",
-                self.admin_site.admin_view(self.download_file),
-                name="download_file",
-            )
-        ]
-        # NOTE! Our custom urls have to go before the default urls, because they
-        # default ones match anything.
-        return extra_urls + urls
-
-    def download_file(self, request, file_name):
-        return HttpResponse(f"Hello from {file_name}")
-
     def download_written_permission_evidence(self, obj):
-        return self.generate_download_link(obj.written_permission_evidence.name)
+        return self.generate_download_link(obj, "download_written_permission_evidence")
+
+    def download_file(self, request, field_name, object_id):
+        return HttpResponse(f"{object_id}- {field_name}")
 
     download_written_permission_evidence.short_description = "Written permission evidence"
 
