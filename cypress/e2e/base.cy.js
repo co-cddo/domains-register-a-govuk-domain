@@ -47,13 +47,13 @@ Cypress.Commands.add('goToExemption', () => {
 Cypress.Commands.add('goToWrittenPermission', () => {
   cy.goToExemption()
 
-  cy.get('#id_exe_radio_1').click()
+  cy.get('#id_exemption_radios_1').click()
   cy.get('.govuk-button#id_submit').click()
   cy.get('h1').should('include.text', 'Upload evidence of the exemption')
   cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
   cy.get('.govuk-button#id_submit').click()
   cy.get('h1').should('include.text', 'Upload evidence of the exemption')
-  cy.get('a').should('include.text', 'image.png')
+  cy.get('#uploaded-filename').should('include.text', 'image.png')
   cy.get('.govuk-button#button-continue').click()
   cy.get('h1').should('include.text', 'Does your registrant have written permission to apply for a .gov.uk domain name?')
 })
@@ -70,7 +70,7 @@ Cypress.Commands.add('goToDomain', () => {
   cy.get('.govuk-button#id_submit').click()
 
   cy.get('h1').should('include.text', 'Upload evidence of written permission')
-  cy.get('a').should('include.text', 'image.png')
+  cy.get('#uploaded-filename').should('include.text', 'image.png')
   cy.get('.govuk-button#button-continue').click()
 
   cy.get('h1').should('include.text', 'What .gov.uk domain name do you want?')
@@ -92,7 +92,7 @@ Cypress.Commands.add('goToApplicantDetails', () => {
   cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
   cy.get('.govuk-button#id_submit').click()
   cy.get('h1').should('include.text', 'Upload evidence of the minister\'s request')
-  cy.get('a').should('include.text', 'image.png')
+  cy.get('#uploaded-filename').should('include.text', 'image.png')
   cy.get('.govuk-button#button-continue').click()
   cy.get('h1').should('include.text', 'Applicant details')
 })

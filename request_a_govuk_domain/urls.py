@@ -25,6 +25,7 @@ from .request.views import (
     SuccessView,
     ExemptionView,
     ExemptionUploadView,
+    ExemptionUploadConfirmView,
     ExemptionUploadRemoveView,
     WrittenPermissionUploadRemoveView,
     MinisterUploadRemoveView,
@@ -38,11 +39,13 @@ from .request.views import (
     RegistrantView,
     MinisterView,
     MinisterUploadView,
+    MinisterUploadConfirmView,
     ApplicantDetailsView,
     RegistrantDetailsView,
     RegistryDetailsView,
     WrittenPermissionView,
     WrittenPermissionUploadView,
+    WrittenPermissionUploadConfirmView,
     WrittenPermissionFailView,
 )
 
@@ -62,6 +65,11 @@ urlpatterns = [
     path("success/", SuccessView.as_view(), name="success"),
     path("exemption/", ExemptionView.as_view(), name="exemption"),
     path("exemption-upload/", ExemptionUploadView.as_view(), name="exemption_upload"),
+    path(
+        "exemption-upload-confirm/",
+        ExemptionUploadConfirmView.as_view(),
+        name="exemption_upload_confirm",
+    ),
     path(
         "exemption-upload-remove/",
         ExemptionUploadRemoveView.as_view(),
@@ -102,6 +110,11 @@ urlpatterns = [
         name="written_permission_upload",
     ),
     path(
+        "written-permission-upload-confirm/",
+        WrittenPermissionUploadConfirmView.as_view(),
+        name="written_permission_upload_confirm",
+    ),
+    path(
         "written-permission-upload-remove/",
         WrittenPermissionUploadRemoveView.as_view(),
         name="written_permission_upload_remove",
@@ -110,6 +123,11 @@ urlpatterns = [
         "minister-upload/",
         MinisterUploadView.as_view(),
         name="minister_upload",
+    ),
+    path(
+        "minister-upload-confirm/",
+        MinisterUploadConfirmView.as_view(),
+        name="minister_upload_confirm",
     ),
     path(
         "minister-upload-remove/",
@@ -144,5 +162,10 @@ urlpatterns = [
         "change-domain",
         DomainView.as_view(change=True),
         name="change_domain",
+    ),
+    path(
+        "change-written-permission",
+        WrittenPermissionView.as_view(change=True),
+        name="change_written_permission",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

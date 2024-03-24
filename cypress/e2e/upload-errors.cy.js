@@ -25,7 +25,7 @@ const goToUploadExemption = function() {
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'Does your registrant have an exemption from using the GOV.UK website?')
-    cy.get('#id_exe_radio_1').click()
+    cy.get('#id_exemption_radios_1').click()
     cy.get('.govuk-button#id_submit').click()
 
     cy.get('h1').should('include.text', 'Upload evidence of the exemption')

@@ -27,6 +27,7 @@ from .models.organisation import Registrar
 from django.views.generic.edit import FormView
 
 from .utils import (
+    add_value_to_session,
     handle_uploaded_file,
     add_to_session,
     remove_from_session,
@@ -247,9 +248,19 @@ class WrittenPermissionView(FormView):
     template_name = "written_permission.html"
     form_class = WrittenPermissionForm
     success_url = reverse_lazy("written_permission_upload")
+    change = True
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
 
     def form_valid(self, form):
         registration_data = add_to_session(form, self.request, ["written_permission"])
+        # We need to store the fact that we're changing the value,
+        # as we're going to have to add the "Back to the answers"
+        # 2 pages later
+        add_value_to_session(self.request, "change", self.change)
         if registration_data["written_permission"] == "no":
             self.success_url = reverse_lazy("written_permission_fail")
         return super().form_valid(form)
@@ -359,76 +370,71 @@ class SuccessView(View):
 
 class ExemptionView(FormView):
     template_name = "exemption.html"
+    form_class = ExemptionForm
 
-    def get(self, request):
-        form = get_registration_data_to_prepopulate(
-            request, ["exe_radio"], ExemptionForm
-        )
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request):
-        form = ExemptionForm(request.POST)
-        if form.is_valid():
-            registration_data = add_to_session(form, self.request, ["exe_radio"])
-            exe_radio = registration_data["exe_radio"]
-            if "back_to_answers" in request.POST:
-                return redirect("confirm")
-            elif exe_radio == "yes":
-                return redirect("exemption_upload")
-            else:
-                return redirect("written_permission")
-        return render(request, self.template_name, {"form": form})
+    def form_valid(self, form):
+        registration_data = add_to_session(form, self.request, ["exemption_radios"])
+        exemption_radios = registration_data["exemption_radios"]
+        if exemption_radios == "yes":
+            self.success_url = reverse_lazy("exemption_upload")
+        else:
+            self.success_url = reverse_lazy("exemption_fail")
+        return super().form_valid(form)
 
 
 class MinisterView(FormView):
     template_name = "minister.html"
     form_class = MinisterForm
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["registration_data"] = self.request.session.get("registration_data", {})
+        return context
+
     def form_valid(self, form):
         registration_data = add_to_session(form, self.request, ["minister_radios"])
-        minister_radios = registration_data["exe_radio"]
+        minister_radios = registration_data["exemption_radios"]
         if minister_radios == "yes":
             self.success_url = reverse_lazy("minister_upload")
         else:
-            self.success_url = reverse_lazy("registrant_details")
+            self.success_url = reverse_lazy("applicant_details")
         return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        registration_data = self.request.session.get("registration_data", {})
-        context["domain_name"] = registration_data.get("domain_name", "")
-        return context
 
 
 class UploadView(FormView):
     page_type = ""
+    template_name = ""
+    success_url = None
+    form_class = UploadForm
 
-    def get(self, request):
-        form = UploadForm()
-        return render(request, f"{self.page_type}_upload.html", {"form": form})
+    def __init__(self):
+        self.success_url = reverse_lazy(f"{self.page_type}_upload_confirm")
+        self.template_name = f"{self.page_type}_upload.html"
+        return super().__init__()
 
-    def post(self, request):
-        form = UploadForm(request.POST, request.FILES)
+    def form_valid(self, form):
+        saved_filename = handle_uploaded_file(self.request.FILES["file"])
+        registration_data = self.request.session.get("registration_data", {})
+        registration_data[f"{self.page_type}_file_uploaded_filename"] = saved_filename
+        registration_data[
+            f"{self.page_type}_file_original_filename"
+        ] = self.request.FILES["file"].name
+        self.request.session["registration_data"] = registration_data
+        if "back_to_answers" in self.request.POST.keys():
+            self.success_url = reverse_lazy("confirm")
+        return super().form_valid(form)
 
-        if form.is_valid():
-            saved_filename = handle_uploaded_file(request.FILES["file"])
-            registration_data = request.session.get("registration_data", {})
-            registration_data[
-                f"{self.page_type}_file_uploaded_filename"
-            ] = saved_filename
-            registration_data[
-                f"{self.page_type}_file_original_filename"
-            ] = request.FILES["file"].name
-            request.session["registration_data"] = registration_data
-            return render(
-                request,
-                f"{self.page_type}_upload_confirm.html",
-                {
-                    "original_filename": request.FILES["file"].name,
-                    "uploaded_filename": saved_filename,
-                },
-            )
-        return render(request, f"{self.page_type}_upload.html", {"form": form})
+
+class UploadConfirmView(TemplateView):
+    page_type = ""
+    template_name = ""
+    change = False
+
+    def get_context_data(self, **kwargs):
+        self.template_name = f"{self.page_type}_upload_confirm.html"
+        context = super().get_context_data(**kwargs)
+        context["registration_data"] = self.request.session.get("registration_data", {})
+        return context
 
 
 class ExemptionUploadView(UploadView):
@@ -440,6 +446,18 @@ class MinisterUploadView(UploadView):
 
 
 class WrittenPermissionUploadView(UploadView):
+    page_type = "written_permission"
+
+
+class ExemptionUploadConfirmView(UploadConfirmView):
+    page_type = "exemption"
+
+
+class MinisterUploadConfirmView(UploadConfirmView):
+    page_type = "minister"
+
+
+class WrittenPermissionUploadConfirmView(UploadConfirmView):
     page_type = "written_permission"
 
 
