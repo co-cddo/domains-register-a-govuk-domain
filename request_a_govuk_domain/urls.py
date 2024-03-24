@@ -164,6 +164,11 @@ urlpatterns = [
         name="change_domain",
     ),
     path(
+        "change-registrant",
+        RegistrantView.as_view(change=True),
+        name="change_registrant",
+    ),
+    path(
         "change-written-permission",
         WrittenPermissionView.as_view(change=True),
         name="change_written_permission",

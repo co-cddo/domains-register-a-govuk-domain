@@ -5,7 +5,7 @@ import string
 from datetime import datetime
 from django.views.generic import TemplateView, RedirectView
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import (
@@ -200,20 +200,14 @@ class RegistryDetailsView(FormView):
 
 class RegistrantTypeView(FormView):
     template_name = "registrant_type.html"
+    success_url = reverse_lazy("registrant")
+    form_class = RegistrantTypeForm
 
-    def get(self, request):
-        form = RegistrantTypeForm()
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request):
-        form = RegistrantTypeForm(request.POST)
-        if form.is_valid():
-            session_data = add_to_session(form, request, ["registrant_type"])
-            if session_data["registrant_type"] == "none":
-                return redirect("registrant_type_fail")
-            else:
-                return redirect("registrant")
-        return render(request, self.template_name, {"form": form})
+    def form_valid(self, form):
+        session_data = add_to_session(form, self.request, ["registrant_type"])
+        if session_data["registrant_type"] == "none":
+            self.success_url = reverse_lazy("registrant_type_fail")
+        return super().form_valid(form)
 
 
 class RegistrantTypeFailView(TemplateView):
@@ -222,26 +216,24 @@ class RegistrantTypeFailView(TemplateView):
 
 class RegistrantView(FormView):
     template_name = "registrant.html"
+    success_url = reverse_lazy("written_permission")
+    form_class = RegistrantForm
+    change = False
 
-    def get(self, request):
-        form = get_registration_data_to_prepopulate(
-            request, ["registrant_organisation_name"], RegistrantForm
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
+
+    def form_valid(self, form):
+        registration_data = add_to_session(
+            form, self.request, ["registrant_organisation_name"]
         )
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request):
-        form = RegistrantForm(request.POST)
-        if form.is_valid():
-            registration_data = add_to_session(
-                form, self.request, ["registrant_organisation_name"]
-            )
-            if "back_to_answers" in request.POST:
-                return redirect("confirm")
-            elif is_central_government(registration_data["registrant_type"]):
-                return redirect("domain_purpose")
-            else:
-                return redirect("written_permission")
-        return render(request, self.template_name, {"form": form})
+        if "back_to_answers" in self.request.POST.keys():
+            self.success_url = reverse_lazy("confirm")
+        elif is_central_government(registration_data["registrant_type"]):
+            self.success_url = reverse_lazy("domain_purpose")
+        return super().form_valid(form)
 
 
 class WrittenPermissionView(FormView):
