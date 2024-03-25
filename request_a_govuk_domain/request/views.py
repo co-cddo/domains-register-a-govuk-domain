@@ -420,7 +420,6 @@ class UploadView(FormView):
 class UploadConfirmView(TemplateView):
     page_type = ""
     template_name = ""
-    change = False
 
     def get_context_data(self, **kwargs):
         self.template_name = f"{self.page_type}_upload_confirm.html"
