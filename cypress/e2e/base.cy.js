@@ -11,7 +11,7 @@ Cypress.Commands.add('goToRegistrarEmail', () => {
 Cypress.Commands.add('goToRegistrantType', () => {
   cy.goToRegistrarEmail()
 
-  cy.get('.govuk-input').type('something@some.gov.uk')
+  cy.get('.govuk-input').type('weregister@example.com')
   cy.get('.govuk-button#id_submit').click()
   cy.get('h1').should('include.text', 'Which of the following best describes your registrant\'s organisation?')
 })
@@ -47,13 +47,13 @@ Cypress.Commands.add('goToExemption', () => {
 Cypress.Commands.add('goToWrittenPermission', () => {
   cy.goToExemption()
 
-  cy.get('#id_exe_radio_1').click()
+  cy.get('#id_exemption_radios_1').click()
   cy.get('.govuk-button#id_submit').click()
   cy.get('h1').should('include.text', 'Upload evidence of the exemption')
   cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
   cy.get('.govuk-button#id_submit').click()
   cy.get('h1').should('include.text', 'Upload evidence of the exemption')
-  cy.get('a').should('include.text', 'image.png')
+  cy.get('#uploaded-filename').should('include.text', 'image.png')
   cy.get('.govuk-button#button-continue').click()
   cy.get('h1').should('include.text', 'Does your registrant have written permission to apply for a .gov.uk domain name?')
 })
@@ -70,7 +70,7 @@ Cypress.Commands.add('goToDomain', () => {
   cy.get('.govuk-button#id_submit').click()
 
   cy.get('h1').should('include.text', 'Upload evidence of written permission')
-  cy.get('a').should('include.text', 'image.png')
+  cy.get('#uploaded-filename').should('include.text', 'image.png')
   cy.get('.govuk-button#button-continue').click()
 
   cy.get('h1').should('include.text', 'What .gov.uk domain name do you want?')
@@ -81,7 +81,7 @@ Cypress.Commands.add('goToMinister', () => {
   cy.goToDomain()
   cy.get('#id_domain_name').type('foobar')
   cy.get('.govuk-button#id_submit').click()
-  cy.get('h1').should('include.text', 'Has a central government minister requested the domain name?')
+  cy.get('h1').should('include.text', 'Has a central government minister requested the foobar.gov.uk domain name?')
 })
 
 Cypress.Commands.add('goToApplicantDetails', () => {
@@ -92,7 +92,7 @@ Cypress.Commands.add('goToApplicantDetails', () => {
   cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
   cy.get('.govuk-button#id_submit').click()
   cy.get('h1').should('include.text', 'Upload evidence of the minister\'s request')
-  cy.get('a').should('include.text', 'image.png')
+  cy.get('#uploaded-filename').should('include.text', 'image.png')
   cy.get('.govuk-button#button-continue').click()
   cy.get('h1').should('include.text', 'Applicant details')
 })
@@ -120,7 +120,7 @@ Cypress.Commands.add('goToRegistryDetails', () => {
 
 Cypress.Commands.add('goToConfirmation', () => {
   cy.goToRegistryDetails()
-  cy.get('#id_registrant_role').type('Robert Smith')
+  cy.get('#id_registrant_role').type('Clerk')
   cy.get('#id_registrant_contact_phone').type('01225672345')
   cy.get('#id_registrant_contact_email').type('rob@example.com')
   cy.get('.govuk-button#id_submit').click()

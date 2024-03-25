@@ -51,6 +51,7 @@ class DomainForm(forms.Form):
         return domain_typed
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
@@ -60,7 +61,10 @@ class DomainForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "domain_name", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
 
 
 class ApplicantDetailsForm(forms.Form):
@@ -78,6 +82,7 @@ class ApplicantDetailsForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
@@ -100,7 +105,10 @@ class ApplicantDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "applicant_name", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
 
 
 class RegistrantDetailsForm(forms.Form):
@@ -118,6 +126,7 @@ class RegistrantDetailsForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
@@ -138,7 +147,10 @@ class RegistrantDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "registrant_full_name", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
 
 
 class RegistryDetailsForm(forms.Form):
@@ -157,6 +169,7 @@ class RegistryDetailsForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
@@ -178,27 +191,34 @@ class RegistryDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "registrant_role", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
 
 
-class EmailForm(forms.Form):
-    registrant_email_address = forms.CharField(
+class RegistrarEmailForm(forms.Form):
+    registrar_email_address = forms.CharField(
         label="Email address of the .gov.uk Approved Registrar",
         widget=forms.EmailInput,
         validators=[EmailValidator("Please enter a valid email address")],
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
             Fieldset(
-                Field.text("registrant_email_address", field_width=Fluid.TWO_THIRDS),
+                Field.text("registrar_email_address", field_width=Fluid.TWO_THIRDS),
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "registrant_email_address", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
 
 
 class RegistrantTypeForm(forms.Form):
@@ -230,6 +250,7 @@ class RegistrantForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
@@ -243,9 +264,10 @@ class RegistrantForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(
-            args, "registrant_organisation_name", self.helper.layout
-        )
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
 
 
 class WrittenPermissionForm(forms.Form):
@@ -263,6 +285,7 @@ class WrittenPermissionForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -272,7 +295,7 @@ class WrittenPermissionForm(forms.Form):
 
 
 class ExemptionForm(forms.Form):
-    exe_radio = forms.ChoiceField(
+    exemption_radios = forms.ChoiceField(
         label="",
         help_text="If your registrant is a central government department or \
             agency, they must have an exemption from the Government Digital \
@@ -288,14 +311,14 @@ class ExemptionForm(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field.radios(
-                "exe_radio",
+                "exemption_radios",
                 legend_size=Size.MEDIUM,
                 legend_tag="h1",
                 inline=True,
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "exe_radio", self.helper.layout)
+        add_back_to_answers_button(args, "exemption_radios", self.helper.layout)
 
     def get_choice(self, field):
         value = self.cleaned_data[field]
@@ -385,6 +408,7 @@ class RegistrarForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
 
         registrars = [("", "")] + list(
@@ -407,7 +431,10 @@ class RegistrarForm(forms.Form):
             ),
             Button("submit", "Submit"),
         )
-        add_back_to_answers_button(args, "organisations_choice", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to Answers")
+            )
 
 
 class DomainPurposeForm(forms.Form):

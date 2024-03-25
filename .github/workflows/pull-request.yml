@@ -70,7 +70,8 @@ jobs:
         SECRET_KEY: blah
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
       with:
-        start: poetry run ./manage.py runserver
+        start: |
+          poetry run ./manage.py runserver --verbosity 0 --noreload
     - name: Run Unit Tests
       env:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain

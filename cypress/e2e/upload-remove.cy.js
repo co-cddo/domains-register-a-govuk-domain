@@ -25,7 +25,7 @@ const goToUploadedExemption = function() {
   cy.get('.govuk-button#id_submit').click()
 
   cy.get('h1').should('include.text', 'Does your registrant have an exemption from using the GOV.UK website?')
-  cy.get('#id_exe_radio_1').click()
+  cy.get('#id_exemption_radios_1').click()
   cy.get('.govuk-button#id_submit').click()
 
   cy.get('input[type=file]').selectFile('cypress/fixtures/image.png')
@@ -115,7 +115,7 @@ describe('Errors when uploading files', () => {
     cy.get('.govuk-button#id_submit').click()
 
     // Minister
-    cy.get('h1').should('include.text', 'Has a central government minister requested the domain name?')
+    cy.get('h1').should('include.text', 'Has a central government minister requested the foobar.gov.uk domain name?')
     cy.get('#id_minister_radios_1').click()
     cy.get('.govuk-button#id_submit').click()
 
