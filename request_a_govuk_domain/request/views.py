@@ -240,7 +240,7 @@ class WrittenPermissionView(FormView):
     template_name = "written_permission.html"
     form_class = WrittenPermissionForm
     success_url = reverse_lazy("written_permission_upload")
-    change = True
+    change = False
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
