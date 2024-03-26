@@ -10,14 +10,14 @@ describe('change domain name', () => {
 
       // Back to Answers
       cy.get('#id_back_to_answers').click()
-      cy.get('h1').should('include.text', 'Check your answers')
+      cy.checkPageTitleIncludes('Check your answers')
       cy.get('.govuk-summary-list__value').should('include.text', 'arrakis')
 
       // Pressing continue instead. Should move ahead to minister
       cy.get("a[href='/change-domain']").click()
       cy.get('#id_domain_name').clear('').type('harkonnen');
       cy.get('#id_submit').click();
-      cy.get('h1').should('include.text', 'Has a central government minister')
+      cy.checkPageTitleIncludes('Has a central government minister')
 
     })
   })

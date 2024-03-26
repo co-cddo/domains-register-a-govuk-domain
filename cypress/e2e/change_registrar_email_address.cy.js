@@ -15,7 +15,7 @@ describe('change Email address', () => {
 
       // click "Back to Answers"
       cy.get('#id_back_to_answers').click()
-      cy.get('h1').should('include.text', 'Check your answers')
+      cy.checkPageTitleIncludes('Check your answers')
       cy.get('.govuk-summary-list__value').should('include.text', 'weregister2@example.com')
 
       // Change email again
@@ -25,6 +25,6 @@ describe('change Email address', () => {
 
       // Click submit, so should not go back to answers but instead continue the flow
       cy.get('#id_submit').click()
-      cy.get('h1').should('include.text', 'Which of the following')
+      cy.checkPageTitleIncludes('Which of the following')
     })
   })

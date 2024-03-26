@@ -2,15 +2,15 @@ describe('Email format verification', () => {
   it('Should give an error if the text entered isn\'t a valid email', () => {
     cy.visit('http://0.0.0.0:8000/')
 
-    cy.get('h1').should('include.text', 'Which .gov.uk Approved Registrar organisation are you from?')
+    cy.checkPageTitleIncludes('Which .gov.uk Approved Registrar organisation are you from?')
     cy.get('#id_organisations_choice').type('WeRegister')
     cy.get('.govuk-button#id_submit').click()
 
-    cy.get('h1').should('include.text', 'What is your email address?')
+    cy.checkPageTitleIncludes('What is your email address?')
 
     cy.get('.govuk-input').type('a@b.com')
     cy.get('.govuk-button#id_submit').click()
-    cy.get('h1').should('include.text', 'Which of the following best describes your registrant\'s organisation?')
+    cy.checkPageTitleIncludes('Which of the following best describes your registrant\'s organisation?')
 
     cy.get('.govuk-button#id_submit').click()
 
@@ -22,6 +22,6 @@ describe('Email format verification', () => {
     cy.get('#id_registrant_type_5').click()
     cy.get('.govuk-button#id_submit').click()
 
-    cy.get('h1').should('include.text', 'What is your registrant’s organisation name?')
+    cy.checkPageTitleIncludes('What is your registrant’s organisation name?')
   })
 })

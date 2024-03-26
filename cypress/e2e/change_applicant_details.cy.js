@@ -16,6 +16,6 @@ describe('change applicant details', () => {
 
       // Click continue
       cy.get('#id_submit').click();
-      cy.get('h1').should('include.text', 'Registrant details')
+      cy.checkPageTitleIncludes('Registrant details')
     })
   })

@@ -17,7 +17,7 @@ describe('change registrant details', () => {
 
       // Click continue
       cy.get('#id_submit').click();
-      cy.get('h1').should('include.text', 'Registrant details for publishing to the registry')
+      cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
     })
 
 

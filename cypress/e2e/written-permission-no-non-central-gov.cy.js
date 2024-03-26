@@ -2,26 +2,26 @@ describe('Non-central-gov registrant scenario - Traverses to Written Permission 
     it('Non-central-gov registrant scenario - Traverses to Written Permission page and selects No', () => {
         cy.visit('http://0.0.0.0:8000/')
 
-        cy.get('h1').should('include.text', 'Which .gov.uk Approved Registrar organisation are you from?')
+        cy.checkPageTitleIncludes('Which .gov.uk Approved Registrar organisation are you from?')
         cy.get('select.govuk-select').should('exist')
 
         cy.get('#id_organisations_choice').type('WeRegister')
 
         cy.get('.govuk-button#id_submit').click()
 
-        cy.get('h1').should('include.text', 'What is your email address?')
+        cy.checkPageTitleIncludes('What is your email address?')
         cy.get('.govuk-input').type('something@some.gov.uk')
         cy.get('.govuk-button#id_submit').click()
 
-        cy.get('h1').should('include.text', 'Which of the following best describes your registrant\'s organisation?')
+        cy.checkPageTitleIncludes('Which of the following best describes your registrant\'s organisation?')
         cy.get('#id_registrant_type_3').click()
         cy.get('.govuk-button#id_submit').click()
 
-        cy.get('h1').should('include.text', 'What is your registrant’s organisation name?')
+        cy.checkPageTitleIncludes('What is your registrant’s organisation name?')
         cy.get('.govuk-input').type('HMRC')
         cy.get('.govuk-button#id_submit').click()
 
-        cy.get('h1').should('include.text', 'Does your registrant have written permission to apply for a .gov.uk domain name?')
+        cy.checkPageTitleIncludes('Does your registrant have written permission to apply for a .gov.uk domain name?')
         cy.get('#id_written_permission_2').click()
         cy.get('.govuk-button#id_submit').click()
 
