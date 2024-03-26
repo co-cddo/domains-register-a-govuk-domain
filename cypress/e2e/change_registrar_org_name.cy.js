@@ -5,7 +5,7 @@ describe('change registrar organisation name', () => {
       cy.goToConfirmation('')
       // Change registrar organisation name
       cy.get('a[href="/change-registrar"]').click()
-      cy.get('#id_organisations_choice').type('Fantastic Registrar')
+      cy.get('#id_organisations_choice').clear().type('Fantastic Registrar')
 
       // Back to Answers
       cy.get('#id_back_to_answers').click();
@@ -16,7 +16,7 @@ describe('change registrar organisation name', () => {
       cy.goToConfirmation('')
       // Change registrar organisation name
       cy.get('a[href="/change-registrar"]').click()
-      cy.get('#id_organisations_choice').type('Fantastic Registrar')
+      cy.get('#id_organisations_choice').clear().type('Fantastic Registrar')
 
       // Continue
       cy.get('#id_submit').click();

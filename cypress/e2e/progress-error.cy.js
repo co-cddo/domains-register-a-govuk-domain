@@ -1,3 +1,5 @@
+import './base.cy'
+
 describe('Don\'t allow breaking the flow', () => {
 
   it('Sends you to the start if you join in the middle', () => {

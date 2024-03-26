@@ -5,7 +5,7 @@ describe('change registry details', () => {
       cy.goToConfirmation('')
       // Change registry details
       cy.get("a[href='/change-registry-details']").click()
-      cy.get('#id_registrant_role').clear('').type('Ghanima Atreides');
+      cy.get('#id_registrant_role').clear().type('Ghanima Atreides');
 
       // Back to Answers
       cy.get('#id_back_to_answers').click();
@@ -14,7 +14,7 @@ describe('change registry details', () => {
 
       // Pressing continue instead. Should also go back to confirm
       cy.get("a[href='/change-registry-details']").click()
-      cy.get('#id_registrant_role').clear('').type('Steve Atreides');
+      cy.get('#id_registrant_role').clear().type('Steve Atreides');
       cy.get('#id_submit').click();
       cy.checkPageTitleIncludes('Check your answers')
     })

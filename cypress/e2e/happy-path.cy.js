@@ -1,3 +1,5 @@
+import './base.cy'
+
 describe('Happy passes', () => {
   it('performs a full transaction', () => {
     cy.visit('http://0.0.0.0:8000/')

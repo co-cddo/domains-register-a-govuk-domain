@@ -7,12 +7,8 @@ describe('change registrant details', () => {
 
     cy.get("a[href='/change-written-permission']").click()
     cy.checkPageTitleIncludes('Does your registrant have written permission')
-
-    cy.get('#id_written_permission_1').click()
-    cy.get('.govuk-button#id_submit').click()
-    cy.checkPageTitleIncludes('Upload evidence of written permission')
-    cy.get('input[type=file]').selectFile('cypress/fixtures/new-image.png')
-    cy.get('.govuk-button#id_submit').click()
+    cy.selectYesOrNo('written_permission', 'yes')
+    cy.uploadDocument('new-image.png')
     cy.checkPageTitleIncludes('Upload evidence of written permission')
     cy.get('#uploaded-filename').should('include.text', 'new-image.png')
     cy.get('#id_back_to_answers').click();
@@ -25,12 +21,8 @@ describe('change registrant details', () => {
     // Again, but pressing Continue should take you to Registry details
     cy.get("a[href='/change-written-permission']").click()
     cy.checkPageTitleIncludes('Does your registrant have written permission')
-
-    cy.get('#id_written_permission_1').click()
-    cy.get('.govuk-button#id_submit').click()
-    cy.checkPageTitleIncludes('Upload evidence of written permission')
-    cy.get('input[type=file]').selectFile('cypress/fixtures/new-image.png')
-    cy.get('.govuk-button#id_submit').click()
+    cy.selectYesOrNo('written_permission', 'yes')
+    cy.uploadDocument('new-image.png')
     cy.checkPageTitleIncludes('Upload evidence of written permission')
     cy.get('#button-continue').click()
     cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')

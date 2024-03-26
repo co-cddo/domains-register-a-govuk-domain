@@ -4,7 +4,21 @@ Cypress.Commands.add('checkPageTitleIncludes', expectedTitle => {
   return cy.get('h1').should('include.text', expectedTitle)
 })
 
+
+Cypress.Commands.add('confirmProblem', (errorMessage) => {
+  cy.get('#error-summary-title').should('exist')
+  cy.get('h2').should('include.text', 'There is a problem')
+  if (errorMessage) {
+    cy.get('.govuk-error-summary__list').should('include.text', errorMessage)
+  }
+})
+
 //============= Form user actions =================
+
+Cypress.Commands.add('enterDomainName', name => {
+  cy.get('#id_domain_name').clear().type(name)
+  cy.get('.govuk-button#id_submit').click()
+})
 
 Cypress.Commands.add('fillOutApplicantDetails', (name, phone, email) => {
   cy.get('#id_applicant_name').type(name)
@@ -37,7 +51,7 @@ Cypress.Commands.add('chooseRegistrar', typedName => {
 
 
 Cypress.Commands.add('typeInEmail', typedAddress => {
-  cy.get('.govuk-input').type(typedAddress)
+  cy.get('.govuk-input').clear().type(typedAddress)
   cy.get('.govuk-button#id_submit').click()
 })
 
@@ -49,7 +63,7 @@ Cypress.Commands.add('chooseRegistrantType', index => {
 
 
 Cypress.Commands.add('typeInRegistrant', index => {
-  cy.get('.govuk-input').type('HMRC')
+  cy.get('.govuk-input').clear().type('HMRC')
   cy.get('.govuk-button#id_submit').click()
 })
 
@@ -70,14 +84,15 @@ Cypress.Commands.add('selectYesOrNo', (page, yesOrNo) => {
 })
 
 
-Cypress.Commands.add('uploadDocument', path => {
-  cy.get('input[type=file]').selectFile(path)
+Cypress.Commands.add('uploadDocument', filename => {
+  cy.get('input[type=file]').selectFile(`cypress/fixtures/${filename}`)
   cy.get('.govuk-button#id_submit').click()
 })
 
 
-Cypress.Commands.add('confirmUpload', fileName => {
-  cy.get('#uploaded-filename').should('include.text', 'image.png')
+Cypress.Commands.add('confirmUpload', filename => {
+  cy.get('#uploaded-filename').should('include.text', filename)
+  cy.get('.govuk-tag').should('include.text', 'uploaded')
   cy.get('.govuk-button').should('not.include.text', 'Back to answers')
   cy.get('.govuk-button#button-continue').click()
 })
@@ -85,9 +100,14 @@ Cypress.Commands.add('confirmUpload', fileName => {
 
 //============= Routes ============================
 
-Cypress.Commands.add('goToRegistrarEmail', () => {
+Cypress.Commands.add('goToRegistrar', () => {
   cy.visit('http://0.0.0.0:8000/')
   cy.checkPageTitleIncludes('Which .gov.uk Approved Registrar organisation are you from?')
+})
+
+
+Cypress.Commands.add('goToRegistrarEmail', () => {
+  cy.goToRegistrar()
   cy.chooseRegistrar('WeRegister')
   cy.checkPageTitleIncludes('What is your email address?')
 })
@@ -121,23 +141,43 @@ Cypress.Commands.add('goToExemption', () => {
 })
 
 
-Cypress.Commands.add('goToWrittenPermission', () => {
+Cypress.Commands.add('goToExemptionUpload', () => {
   cy.goToExemption()
   cy.selectYesOrNo('exemption', 'yes')
   cy.checkPageTitleIncludes('Upload evidence of the exemption')
-  cy.uploadDocument('cypress/fixtures/image.png')
+})
+
+
+Cypress.Commands.add('goToExemptionUploadConfirm', filename => {
+  cy.goToExemptionUpload()
+  cy.uploadDocument(filename)
   cy.checkPageTitleIncludes('Upload evidence of the exemption')
+})
+
+
+Cypress.Commands.add('goToWrittenPermission', () => {
+  cy.goToExemptionUploadConfirm('image.png')
   cy.confirmUpload('image.png')
   cy.checkPageTitleIncludes('Does your registrant have written permission to apply for a .gov.uk domain name?')
 })
 
 
-Cypress.Commands.add('goToDomain', () => {
+Cypress.Commands.add('goToWrittenPermissionUpload', filename => {
   cy.goToWrittenPermission()
   cy.selectYesOrNo('written_permission', 'yes')
   cy.checkPageTitleIncludes('Upload evidence of written permission')
-  cy.uploadDocument('cypress/fixtures/image.png')
+})
+
+
+Cypress.Commands.add('goToWrittenPermissionUploadConfirm', filename => {
+  cy.goToWrittenPermissionUpload()
+  cy.uploadDocument(filename)
   cy.checkPageTitleIncludes('Upload evidence of written permission')
+})
+
+
+Cypress.Commands.add('goToDomain', () => {
+  cy.goToWrittenPermissionUploadConfirm('image.png')
   cy.confirmUpload('image.png')
   cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
 })
@@ -145,18 +185,25 @@ Cypress.Commands.add('goToDomain', () => {
 
 Cypress.Commands.add('goToMinister', () => {
   cy.goToDomain()
-
-  cy.get('#id_domain_name').type('foobar')
-  cy.get('.govuk-button#id_submit').click()
+  cy.enterDomainName('foobar')
   cy.checkPageTitleIncludes('Has a central government minister requested the foobar.gov.uk domain name?')
 })
 
-Cypress.Commands.add('goToApplicantDetails', () => {
+Cypress.Commands.add('goToMinisterUpload', filename => {
   cy.goToMinister()
   cy.selectYesOrNo('minister', 'yes')
   cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
-  cy.uploadDocument('cypress/fixtures/image.png')
+})
+
+Cypress.Commands.add('goToMinisterUploadConfirm', filename => {
+  cy.goToMinisterUpload()
+  cy.uploadDocument(filename)
   cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
+})
+
+
+Cypress.Commands.add('goToApplicantDetails', () => {
+  cy.goToMinisterUploadConfirm('image.png')
   cy.confirmUpload('image.png')
   cy.checkPageTitleIncludes('Applicant details')
 })
