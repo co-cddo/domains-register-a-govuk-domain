@@ -295,7 +295,7 @@ class WrittenPermissionForm(forms.Form):
 
 
 class ExemptionForm(forms.Form):
-    exemption_radios = forms.ChoiceField(
+    exemption = forms.ChoiceField(
         label="",
         help_text="If your registrant is a central government department or \
             agency, they must have an exemption from the Government Digital \
@@ -311,14 +311,14 @@ class ExemptionForm(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field.radios(
-                "exemption_radios",
+                "exemption",
                 legend_size=Size.MEDIUM,
                 legend_tag="h1",
                 inline=True,
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "exemption_radios", self.helper.layout)
+        add_back_to_answers_button(args, "exemption", self.helper.layout)
 
     def get_choice(self, field):
         value = self.cleaned_data[field]
@@ -326,7 +326,7 @@ class ExemptionForm(forms.Form):
 
 
 class MinisterForm(forms.Form):
-    minister_radios = forms.ChoiceField(
+    minister = forms.ChoiceField(
         label="",
         help_text="""If the requested .gov.uk domain does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.""",
         choices=(("yes", "Yes"), ("no", "No")),
@@ -339,14 +339,14 @@ class MinisterForm(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field.radios(
-                "minister_radios",
+                "minister",
                 legend_size=Size.MEDIUM,
                 legend_tag="h1",
                 inline=True,
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "minister_radios", self.helper.layout)
+        add_back_to_answers_button(args, "minister", self.helper.layout)
 
     def get_choice(self, field):
         value = self.cleaned_data[field]
