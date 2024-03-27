@@ -19,7 +19,7 @@ from .forms import (
     DomainForm,
     MinisterForm,
     ApplicantDetailsForm,
-    RegistrantDetailsNonCentralGovForm,
+    RegistrantDetailsForm,
     RegistryDetailsForm,
     WrittenPermissionForm,
 )
@@ -93,11 +93,9 @@ class DomainView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        registration_data = add_to_session(form, self.request, ["domain_name"])
+        add_to_session(form, self.request, ["domain_name"])
         if "back_to_answers" in self.request.POST.keys():
             self.success_url = reverse_lazy("confirm")
-        elif is_central_government(registration_data["registrant_type"]):
-            self.success_url = reverse_lazy("minister")
         return super().form_valid(form)
 
 
@@ -114,7 +112,7 @@ class DomainConfirmationView(FormView):
         if form.cleaned_data["domain_confirmation"] == "yes":
             route = route_number(self.request.session["registration_data"])
             if route == "1" or route == "3":
-                self.success_url = reverse_lazy("registrant_details_non_central_gov")
+                self.success_url = reverse_lazy("registrant_details")
             else:
                 self.success_url = reverse_lazy("minister")
         else:
@@ -122,9 +120,9 @@ class DomainConfirmationView(FormView):
         return super().form_valid(form)
 
 
-class RegistrantDetailsNonCentralGovView(FormView):
-    template_name = "registrant_details_non_central_gov.html"
-    form_class = RegistrantDetailsNonCentralGovForm
+class RegistrantDetailsView(FormView):
+    template_name = "registrant_details.html"
+    form_class = RegistrantDetailsForm
     success_url = reverse_lazy("registry_details")
     change = False
 
@@ -132,6 +130,12 @@ class RegistrantDetailsNonCentralGovView(FormView):
         kwargs = super().get_form_kwargs()
         kwargs["change"] = getattr(self, "change")
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        registration_data = self.request.session.get("registration_data", {})
+        context["route"] = route_number(registration_data)
+        return context
 
     def get_initial(self):
         initial = super().get_initial()
@@ -263,6 +267,12 @@ class WrittenPermissionView(FormView):
         kwargs = super().get_form_kwargs()
         kwargs["change"] = getattr(self, "change")
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        registration_data = self.request.session.get("registration_data", {})
+        context["route"] = route_number(registration_data)
+        return context
 
     def form_valid(self, form):
         registration_data = add_to_session(form, self.request, ["written_permission"])
@@ -406,7 +416,7 @@ class MinisterView(FormView):
         if minister == "yes":
             self.success_url = reverse_lazy("minister_upload")
         else:
-            self.success_url = reverse_lazy("applicant_details")
+            self.success_url = reverse_lazy("registrant_details")
         return super().form_valid(form)
 
 

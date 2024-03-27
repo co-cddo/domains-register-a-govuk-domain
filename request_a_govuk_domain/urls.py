@@ -25,7 +25,7 @@ from .request.views import (
     RegistrantTypeView,
     DomainView,
     DomainConfirmationView,
-    RegistrantDetailsNonCentralGovView,
+    RegistrantDetailsView,
     RegistryDetailsView,
     # v1
     RegistrarEmailView,
@@ -67,14 +67,14 @@ urlpatterns = [
         name="domain_confirmation",
     ),
     path(
-        "registrant-details-non-central-gov/",
-        RegistrantDetailsNonCentralGovView.as_view(),
-        name="registrant_details_non_central_gov",
+        "registrant-details/",
+        RegistrantDetailsView.as_view(),
+        name="registrant_details",
     ),
     path(
-        "change-registrant-details-non-central-gov/",
-        RegistrantDetailsNonCentralGovView.as_view(change=True),
-        name="change_registrant_details_non_central_gov",
+        "change-registrant-details/",
+        RegistrantDetailsView.as_view(change=True),
+        name="change_registrant_details",
     ),
     path(
         "registry-details/",

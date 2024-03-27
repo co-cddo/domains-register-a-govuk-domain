@@ -167,7 +167,7 @@ class DomainConfirmationForm(forms.Form):
         return dict(self.fields[field].choices).get(value)
 
 
-class RegistrantDetailsNonCentralGovForm(forms.Form):
+class RegistrantDetailsForm(forms.Form):
     registrant_organisation = forms.CharField(
         label="You must provide the formal legal name of your registrant’s organisation. the Domains Team will reject applications if the registrant's organisation name does not match official records or is spelled incorrectly.",
     )
@@ -318,8 +318,6 @@ class WrittenPermissionForm(forms.Form):
     written_permission = forms.ChoiceField(
         choices=CHOICES,
         widget=forms.RadioSelect,
-        label="Your registrant must get written permission from a Chief Information Officer or equivalent you're \
-        applying on behalf of a central government department or agency.",
         error_messages={"required": "Please answer Yes or No"},
     )
 

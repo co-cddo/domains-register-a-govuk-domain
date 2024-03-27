@@ -71,7 +71,7 @@ Cypress.Commands.add('typeInRegistrant', index => {
 
 
 Cypress.Commands.add('chooseDomainPurpose', index => {
-  cy.get('#id_domain_purpose_1').click()
+  cy.get(`#id_domain_purpose_${index}`).click()
   cy.get('.govuk-button#id_submit').click()
 })
 
