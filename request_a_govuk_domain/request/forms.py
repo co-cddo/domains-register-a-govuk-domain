@@ -103,22 +103,9 @@ class RegistrantTypeForm(forms.Form):
         )
 
 
-# ========== V1 ==========
-
-
-def add_back_to_answers_button(args, field, layout):
-    """
-    Add the back button when coming to chnage the answer.
-    """
-    if args and field in args[0]:
-        if args[0][field] != "":
-            layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
-
-
 class DomainForm(forms.Form):
     domain_name = forms.CharField(
-        label="Domain name",
-        help_text="Enter the .gov.uk domain name you want to get approval for",
+        label="Enter the .gov.uk domain name",
     )
     domain_input_regexp = re.compile(
         "^[a-z][a-z0-9-]+[a-z0-9](\\.gov\\.uk)?$"
@@ -152,6 +139,18 @@ class DomainForm(forms.Form):
             self.helper.layout.fields.append(
                 Button.secondary("back_to_answers", "Back to answers")
             )
+
+
+# ========== V1 ==========
+
+
+def add_back_to_answers_button(args, field, layout):
+    """
+    Add the back button when coming to chnage the answer.
+    """
+    if args and field in args[0]:
+        if args[0][field] != "":
+            layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
 
 
 class ApplicantDetailsForm(forms.Form):

@@ -22,25 +22,20 @@
           What .gov.uk domain name do you want?
         </h1>
 
-        <div id="domain-hint">
-          <p class="govuk-body govuk-hint">A .gov.uk domain name must clearly describe your registrant’s organisation or government initiative. For example a:
-          </p>
-          <ul class="govuk-list govuk-list--bullet govuk-hint">
-            <li>central department can use <code class="govspeak-code">hmrc.gov.uk</code></li>
-            <li>county council can use <code class="govspeak-code">northamptonshire.gov.uk</code></li>
-            <li>town council can use <code class="govspeak-code">biggleswadetowncouncil.gov.uk</code>or <code class="govspeak-code">biggleswadetown.gov.uk</code></li>
-            <li>parish councils can use <code class="govspeak-code">bonbyparishcouncil.gov.uk</code>, <code class="govspeak-code">bonbyparish.gov.uk</code> or <code class="govspeak-code">bonby-pc.gov.uk</code></li>
-          </ul>
-        </div>
-
         <p class="govuk-body">
-          <a href="https://www.gov.uk/guidance/choose-your-govuk-domain-name" class="govuk-link" target="new">Follow rules on how to choose a .gov.uk domain name (opens in a new tab)</a>.
+          We approve domains on a first-come first-served basis. You must check if the proposed .gov.uk domain name is available using an EPP check command, the Nominet portal or the <a href="" target="_blank">Nominet lookup tool (opens in a new tab)</a>.
         </p>
-        <div class="govuk-inset-text">
-          We approve domains on a first-come first-served basis so you may need to use a geographic identifier for your organisation.
-        </div>
-
+        <p class="govuk-body">
+          <a href="https://www.gov.uk/guidance/choose-your-govuk-domain-name" target="_blank">Follow rules on how to choose a .gov.uk domain name (opens in a new tab)</a>.
+        </p>
         {% crispy form %}
+        <div class="govuk-warning-text">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <strong class="govuk-warning-text__text">
+            <span class="govuk-visually-hidden">Warning</span>
+            The .gov.uk domain name you submit will be subject to approval from the Domains Team.
+          </strong>
+        </div>
       </div>
     </div>
   {% endblock %}
