@@ -20,39 +20,34 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from .request.views import (
-    # v2
     RegistrarDetailsView,
     RegistrantTypeView,
     DomainView,
     DomainConfirmationView,
     RegistrantDetailsView,
     RegistryDetailsView,
-    # v1
-    RegistrarEmailView,
-    ConfirmView,
-    SuccessView,
-    ExemptionView,
-    ExemptionUploadView,
-    ExemptionUploadConfirmView,
+    RegistrantTypeFailView,
+    WrittenPermissionView,
+    WrittenPermissionFailView,
     ExemptionUploadRemoveView,
     WrittenPermissionUploadRemoveView,
     MinisterUploadRemoveView,
+    ConfirmView,
+    SuccessView,
+    ExemptionView,
+    MinisterView,
+    ExemptionUploadView,
+    MinisterUploadView,
+    WrittenPermissionUploadView,
+    ExemptionUploadConfirmView,
+    MinisterUploadConfirmView,
+    WrittenPermissionUploadConfirmView,
     ExemptionFailView,
-    RegistrantTypeFailView,
     DomainPurposeView,
     DomainPurposeFailView,
-    MinisterView,
-    MinisterUploadView,
-    MinisterUploadConfirmView,
-    ApplicantDetailsView,
-    WrittenPermissionView,
-    WrittenPermissionUploadView,
-    WrittenPermissionUploadConfirmView,
-    WrittenPermissionFailView,
 )
 
 urlpatterns = [
-    # V2
     path("", RegistrarDetailsView.as_view(), name="registrar_details"),
     path(
         "change-registrar",
@@ -114,9 +109,7 @@ urlpatterns = [
         WrittenPermissionUploadConfirmView.as_view(),
         name="written_permission_upload_confirm",
     ),
-    # V1
     path("admin/", admin.site.urls),
-    path("email/", RegistrarEmailView.as_view(), name="email"),
     path(
         "registrant-type-fail/",
         RegistrantTypeFailView.as_view(),
@@ -134,11 +127,6 @@ urlpatterns = [
         "registrar_details/", RegistrarDetailsView.as_view(), name="registrar_details"
     ),
     path("minister/", MinisterView.as_view(), name="minister"),
-    path(
-        "applicant-details/",
-        ApplicantDetailsView.as_view(),
-        name="applicant_details",
-    ),
     path(
         "written-permission-upload-remove/",
         WrittenPermissionUploadRemoveView.as_view(),
@@ -163,12 +151,6 @@ urlpatterns = [
         "written-permission-fail/",
         WrittenPermissionFailView.as_view(),
         name="written_permission_fail",
-    ),
-    path("change-email", RegistrarEmailView.as_view(change=True), name="change_email"),
-    path(
-        "change-applicant-details",
-        ApplicantDetailsView.as_view(change=True),
-        name="change_applicant_details",
     ),
     path(
         "change-domain",

@@ -10,7 +10,6 @@ from django.urls import reverse_lazy
 from django.views import View
 from .forms import (
     DomainConfirmationForm,
-    RegistrarEmailForm,
     ExemptionForm,
     UploadForm,
     RegistrarDetailsForm,
@@ -18,7 +17,6 @@ from .forms import (
     DomainPurposeForm,
     DomainForm,
     MinisterForm,
-    ApplicantDetailsForm,
     RegistrantDetailsForm,
     RegistryDetailsForm,
     WrittenPermissionForm,
@@ -34,8 +32,6 @@ from .utils import (
     is_central_government,
     route_number,
 )
-
-# ==== V2 ===
 
 
 class RegistrarDetailsView(FormView):
@@ -190,63 +186,6 @@ class RegistryDetailsView(FormView):
             self.request,
             ["registrant_role", "registrant_contact_email"],
         )
-        return super().form_valid(form)
-
-
-# ==== V1 ===
-
-
-class RegistrarEmailView(FormView):
-    template_name = "email.html"
-    form_class = RegistrarEmailForm
-    success_url = reverse_lazy("registrant_type")
-    change = False
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["change"] = getattr(self, "change")
-        return kwargs
-
-    def get_initial(self):
-        initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
-        initial["registrar_email_address"] = session_data.get(
-            "registrar_email_address", ""
-        )
-        return initial
-
-    def form_valid(self, form):
-        add_to_session(form, self.request, ["registrar_email_address"])
-        if "back_to_answers" in self.request.POST.keys():
-            self.success_url = "confirm"
-        return super().form_valid(form)
-
-
-class ApplicantDetailsView(FormView):
-    template_name = "applicant_details.html"
-    form_class = ApplicantDetailsForm
-    success_url = reverse_lazy("registrant_details")
-    change = False
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["change"] = getattr(self, "change")
-        return kwargs
-
-    def get_initial(self):
-        initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
-        initial["applicant_name"] = session_data.get("applicant_name", "")
-        initial["applicant_phone"] = session_data.get("applicant_phone", "")
-        initial["applicant_email"] = session_data.get("applicant_email", "")
-        return initial
-
-    def form_valid(self, form):
-        add_to_session(
-            form, self.request, ["applicant_name", "applicant_phone", "applicant_email"]
-        )
-        if "back_to_answers" in self.request.POST.keys():
-            self.success_url = "confirm"
         return super().form_valid(form)
 
 

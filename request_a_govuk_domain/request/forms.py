@@ -1,6 +1,5 @@
 import re
 from django import forms
-from django.core.validators import EmailValidator
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 from crispy_forms_gds.choices import Choice
@@ -19,7 +18,13 @@ from .models.organisation import RegistrantTypeChoices, Registrar
 from ..layout.content import DomainsHTML
 
 
-# ========== V2 ==========
+def add_back_to_answers_button(args, field, layout):
+    """
+    Add the back button when coming to chnage the answer.
+    """
+    if args and field in args[0]:
+        if args[0][field] != "":
+            layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
 
 
 class RegistrarDetailsForm(forms.Form):
@@ -234,62 +239,6 @@ class RegistryDetailsForm(forms.Form):
                     '<h2 class="govuk-heading-m">Registrant contact details</h2>'
                 ),
                 Field.text("registrant_contact_email"),
-            ),
-            Button("submit", "Continue"),
-        )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to answers")
-            )
-
-
-# ========== V1 ==========
-
-
-def add_back_to_answers_button(args, field, layout):
-    """
-    Add the back button when coming to chnage the answer.
-    """
-    if args and field in args[0]:
-        if args[0][field] != "":
-            layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
-
-
-class ApplicantDetailsForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        self.change = kwargs.pop("change", None)
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.label_size = Size.SMALL
-        self.helper.layout = Layout(
-            DomainsHTML(
-                """<div class="govuk-inset-text">
-            <span class="govuk-hint">An email to confirm your application will be sent to:</span><br>
-            <p class="govuk-body govuk-!-font-size-24"></p></div>"""
-            ),
-            Button("submit", "Continue"),
-        )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to answers")
-            )
-
-
-class RegistrarEmailForm(forms.Form):
-    registrar_email_address = forms.CharField(
-        label="Email address of the .gov.uk Approved Registrar",
-        widget=forms.EmailInput,
-        validators=[EmailValidator("Please enter a valid email address")],
-    )
-
-    def __init__(self, *args, **kwargs):
-        self.change = kwargs.pop("change", None)
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.label_size = Size.SMALL
-        self.helper.layout = Layout(
-            Fieldset(
-                Field.text("registrar_email_address", field_width=Fluid.TWO_THIRDS),
             ),
             Button("submit", "Continue"),
         )
