@@ -1,6 +1,6 @@
 import './base.cy'
 
-describe('Happy path - route 2 - 5', () => {
+describe('Happy path - route 2-7', () => {
   it('performs a full transaction', () => {
     cy.goToRegistrarDetails()
     cy.fillOutRegistrarDetails('WeRegister', 'Joe Bloggs', '01225672345', 'joe@example.org')
@@ -21,6 +21,7 @@ describe('Happy path - route 2 - 5', () => {
     cy.confirmUpload('image.png')
 
     cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
+    cy.get('p').should('include.text', 'chief executive')
     cy.selectYesOrNo('written_permission', 'yes')
 
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
@@ -45,6 +46,7 @@ describe('Happy path - route 2 - 5', () => {
     cy.confirmUpload('image.png')
 
     cy.checkPageTitleIncludes('Registrant details')
+    cy.get('p').should('not.include.text', 'the registrant must be the Clerk.')
     cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
 
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')

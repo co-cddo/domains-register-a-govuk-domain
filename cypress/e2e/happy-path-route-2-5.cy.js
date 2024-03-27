@@ -1,6 +1,6 @@
 import './base.cy'
 
-describe('Happy path - route 2 - 5', () => {
+describe('Happy path - route 2-5', () => {
   it('performs a full transaction', () => {
     cy.goToRegistrarDetails()
     cy.fillOutRegistrarDetails('WeRegister', 'Joe Bloggs', '01225672345', 'joe@example.org')

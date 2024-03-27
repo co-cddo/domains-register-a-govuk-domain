@@ -1,6 +1,6 @@
 import './base.cy'
 
-describe('Happy path - route 2 - 5', () => {
+describe('Happy path - route 2-5-8', () => {
   it('performs a full transaction', () => {
     cy.goToRegistrarDetails()
     cy.fillOutRegistrarDetails('WeRegister', 'Joe Bloggs', '01225672345', 'joe@example.org')
@@ -12,6 +12,7 @@ describe('Happy path - route 2 - 5', () => {
     cy.chooseDomainPurpose(2) // Email address only -> Route 5
 
     cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
+    cy.get('p').should('include.text', 'chief executive')
     cy.selectYesOrNo('written_permission', 'yes')
 
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
@@ -27,15 +28,10 @@ describe('Happy path - route 2 - 5', () => {
     cy.selectYesOrNo('domain_confirmation', 'yes')
 
     cy.checkPageTitleIncludes('Has a central government minister requested the something-pc.gov.uk domain name?')
-    cy.selectYesOrNo('minister', 'yes')
-
-    cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
-    cy.uploadDocument("image.png")
-
-    cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
-    cy.confirmUpload('image.png')
+    cy.selectYesOrNo('minister', 'no')
 
     cy.checkPageTitleIncludes('Registrant details')
+    cy.get('p').should('not.include.text', 'the registrant must be the Clerk.')
     cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
 
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
