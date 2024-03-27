@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags crispy_forms_gds %}
+{% load govuk_frontend_django %}
+
+
+{% block title %}Registrar details{% endblock %}
+
+{% block main %}
+
+  {% block content %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {% error_summary form %}
+        <h1 class="govuk-heading-l">
+          Registrar details
+        </h1>
+
+        <p class="govuk-body">
+          You must be listed as a .gov.uk Approved Registrar on Nominet's website,
+          otherwise you cannot use this service.
+        </p>
+
+        <p class="govuk-body">
+          Email <code>support@domains.gov.uk</code> for more information
+        </p>
+
+        {% crispy form %}
+      </div>
+    </div>
+  {% endblock %}
+{% endblock %}
+
+{% block bottomjs %}
+  <script type="text/javascript" src="{% static 'accessible-autocomplete.min.js' %}"></script>
+  <script>
+   accessibleAutocomplete.enhanceSelectElement({
+     selectElement: document.querySelector('#id_registrar_organisation'),
+     menuClasses: "govuk-list"
+   })
+  </script>
+{% endblock %}
+
+{% block extra_stylesheets %}
+  <link rel="stylesheet" href="{% static 'accessible-autocomplete.min.css' %}">
+{% endblock %}

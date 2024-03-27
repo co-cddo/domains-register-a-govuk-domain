@@ -1,6 +1,5 @@
 import re
 from django import forms
-from django.core.validators import EmailValidator
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 from crispy_forms_gds.choices import Choice
@@ -28,10 +27,90 @@ def add_back_to_answers_button(args, field, layout):
             layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
 
 
+class RegistrarDetailsForm(forms.Form):
+    """
+    Registrar Form with organisations choice fields
+    """
+
+    registrar_organisation = forms.ChoiceField(
+        label="Select your organisation from the list",
+        choices=[],
+        widget=forms.Select(attrs={"class": "govuk-select"}),
+        required=True,
+    )
+
+    registrar_name = forms.CharField(
+        label="Full name",
+    )
+
+    registrar_phone = forms.CharField(
+        label="Telephone number",
+        help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
+    )
+
+    registrar_email = forms.CharField(
+        label="Email address",
+        help_text="We will use this email address to confirm your application",
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
+        super().__init__(*args, **kwargs)
+
+        registrar_organisations = [("", "")] + list(
+            (f"registrar-{registrar.id}", registrar.name)
+            for registrar in Registrar.objects.all()
+        )
+
+        self.fields["registrar_organisation"].choices = registrar_organisations
+
+        self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Fieldset(
+                DomainsHTML('<h2 class="govuk-heading-m">Organisation name</h2>'),
+                Field.text("registrar_organisation"),
+            ),
+            Fieldset(
+                DomainsHTML('<h2 class="govuk-heading-m">Contact details</h2>'),
+                Field.text("registrar_name", field_width=20),
+                Field.text("registrar_phone", field_width=20),
+                Field.text("registrar_email"),
+            ),
+            Button("submit", "Submit"),
+        )
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to Answers")
+            )
+
+
+class RegistrantTypeForm(forms.Form):
+    registrant_types = [
+        Choice(*item) for item in RegistrantTypeChoices.__members__.items()
+    ]
+    registrant_types[-1].divider = "Or"
+    registrant_types.append(Choice("none", "None of the above"))
+
+    registrant_type = forms.ChoiceField(
+        choices=registrant_types,
+        widget=forms.RadioSelect,
+        label="Your registrant must be from an eligible organisation to get a .gov.uk domain name.",
+        error_messages={"required": "Please select from one of the choices"},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field.radios("registrant_type", legend_size=Size.SMALL),
+            Button("submit", "Continue"),
+        )
+
+
 class DomainForm(forms.Form):
     domain_name = forms.CharField(
-        label="Domain name",
-        help_text="Enter the .gov.uk domain name you want to get approval for",
+        label="Enter the .gov.uk domain name",
     )
     domain_input_regexp = re.compile(
         "^[a-z][a-z0-9-]+[a-z0-9](\\.gov\\.uk)?$"
@@ -67,62 +146,48 @@ class DomainForm(forms.Form):
             )
 
 
-class ApplicantDetailsForm(forms.Form):
-    applicant_name = forms.CharField(
-        label="Full name",
-    )
-
-    applicant_phone = forms.CharField(
-        label="Telephone number",
-        help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
-    )
-
-    applicant_email = forms.CharField(
-        label="Email address",
+class DomainConfirmationForm(forms.Form):
+    domain_confirmation = forms.ChoiceField(
+        label="The Domains Team will review the domain name and make a decision on whether to approve or reject it",
+        choices=(("yes", "Yes, I confirm"), ("no", "No, I want to change it")),
+        widget=forms.RadioSelect,
+        error_messages={"required": "Please answer Yes or No"},
     )
 
     def __init__(self, *args, **kwargs):
-        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
-            Fieldset(
-                DomainsHTML('<h2 class="govuk-heading-m">Applicant name</h2>'),
-                Field.text("applicant_name", field_width=20),
-            ),
-            Fieldset(
-                DomainsHTML(
-                    '<h2 class="govuk-heading-m">Applicant contact details</h2>'
-                ),
-                Field.text("applicant_phone", field_width=20),
-                Field.text("applicant_email"),
-            ),
-            DomainsHTML(
-                """<div class="govuk-inset-text">
-            <span class="govuk-hint">An email to confirm your application will be sent to:</span><br>
-            <p class="govuk-body govuk-!-font-size-24"></p></div>"""
+            Field.radios(
+                "domain_confirmation",
+                legend_size=Size.MEDIUM,
+                legend_tag="h1",
+                inline=False,
             ),
             Button("submit", "Continue"),
         )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to answers")
-            )
+
+    def get_choice(self, field):
+        value = self.cleaned_data[field]
+        return dict(self.fields[field].choices).get(value)
 
 
 class RegistrantDetailsForm(forms.Form):
+    registrant_organisation = forms.CharField(
+        label="You must provide the formal legal name of your registrant’s organisation. the Domains Team will reject applications if the registrant's organisation name does not match official records or is spelled incorrectly.",
+    )
+
     registrant_full_name = forms.CharField(
         label="Full name",
     )
 
     registrant_phone = forms.CharField(
         label="Telephone number",
-        help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
     )
 
-    registrant_email_address = forms.CharField(
+    registrant_email = forms.CharField(
         label="Email address",
+        help_text="We may use this email to contact the registrant to confirm their identity",
     )
 
     def __init__(self, *args, **kwargs):
@@ -132,18 +197,14 @@ class RegistrantDetailsForm(forms.Form):
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
             Fieldset(
-                DomainsHTML('<h2 class="govuk-heading-m">Registrant name</h2>'),
-                Field.text("registrant_full_name", field_width=20),
+                DomainsHTML('<h2 class="govuk-heading-m">Organisation name</h2>'),
+                Field.text("registrant_organisation"),
             ),
             Fieldset(
-                DomainsHTML(
-                    '<h2 class="govuk-heading-m">Registrant contact details</h2>'
-                ),
+                DomainsHTML('<h2 class="govuk-heading-m">Contact details</h2>'),
+                Field.text("registrant_full_name", field_width=20),
                 Field.text("registrant_phone", field_width=20),
-                Field.text("registrant_email_address"),
-            ),
-            DomainsHTML(
-                """<div class="govuk-inset-text">An email to check identity will be sent to:</div>"""
+                Field.text("registrant_email"),
             ),
             Button("submit", "Continue"),
         )
@@ -156,11 +217,6 @@ class RegistrantDetailsForm(forms.Form):
 class RegistryDetailsForm(forms.Form):
     registrant_role = forms.CharField(
         label="Role name",
-    )
-
-    registrant_contact_phone = forms.CharField(
-        label="Telephone number",
-        help_text="Give a business telephone number and don't use personal",
     )
 
     registrant_contact_email = forms.CharField(
@@ -182,85 +238,7 @@ class RegistryDetailsForm(forms.Form):
                 DomainsHTML(
                     '<h2 class="govuk-heading-m">Registrant contact details</h2>'
                 ),
-                Field.text("registrant_contact_phone", field_width=20),
                 Field.text("registrant_contact_email"),
-            ),
-            DomainsHTML.warning(
-                """We will show all information collected on this page on the registry,
-                which is open to the general public."""
-            ),
-            Button("submit", "Continue"),
-        )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to answers")
-            )
-
-
-class RegistrarEmailForm(forms.Form):
-    registrar_email_address = forms.CharField(
-        label="Email address of the .gov.uk Approved Registrar",
-        widget=forms.EmailInput,
-        validators=[EmailValidator("Please enter a valid email address")],
-    )
-
-    def __init__(self, *args, **kwargs):
-        self.change = kwargs.pop("change", None)
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.label_size = Size.SMALL
-        self.helper.layout = Layout(
-            Fieldset(
-                Field.text("registrar_email_address", field_width=Fluid.TWO_THIRDS),
-            ),
-            Button("submit", "Continue"),
-        )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to answers")
-            )
-
-
-class RegistrantTypeForm(forms.Form):
-    registrant_types = [
-        Choice(*item) for item in RegistrantTypeChoices.__members__.items()
-    ]
-    registrant_types[-1].divider = "Or"
-    registrant_types.append(Choice("none", "None of the above"))
-
-    registrant_type = forms.ChoiceField(
-        choices=registrant_types,
-        widget=forms.RadioSelect,
-        label="Your registrant must be from an eligible organisation to get a .gov.uk domain name.",
-        error_messages={"required": "Please select from one of the choices"},
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Field.radios("registrant_type", legend_size=Size.SMALL),
-            Button("submit", "Continue"),
-        )
-
-
-class RegistrantForm(forms.Form):
-    registrant_organisation_name = forms.CharField(
-        label="You must provide the formal legal name of your registrant’s organisation.",
-    )
-
-    def __init__(self, *args, **kwargs):
-        self.change = kwargs.pop("change", None)
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.label_size = Size.SMALL
-        self.helper.layout = Layout(
-            Fieldset(
-                Field.text("registrant_organisation_name"),
-            ),
-            DomainsHTML.warning(
-                "The Domains Team will reject applications if the registrant's organisation name does not match \
-                official records or is spelled incorrectly."
             ),
             Button("submit", "Continue"),
         )
@@ -279,8 +257,6 @@ class WrittenPermissionForm(forms.Form):
     written_permission = forms.ChoiceField(
         choices=CHOICES,
         widget=forms.RadioSelect,
-        label="Your registrant must get written permission from a Chief Information Officer or equivalent you're \
-        applying on behalf of a central government department or agency.",
         error_messages={"required": "Please answer Yes or No"},
     )
 
@@ -393,48 +369,6 @@ class UploadForm(forms.Form):
             raise forms.ValidationError("Wrong file format. Please upload an image.")
 
         return file
-
-
-class RegistrarForm(forms.Form):
-    """
-    Registrar Form with organisations choice fields
-    """
-
-    organisations_choice = forms.ChoiceField(
-        label="Choose your organisation",
-        choices=[],
-        widget=forms.Select(attrs={"class": "govuk-select"}),
-        required=True,
-    )
-
-    def __init__(self, *args, **kwargs):
-        self.change = kwargs.pop("change", None)
-        super().__init__(*args, **kwargs)
-
-        registrars = [("", "")] + list(
-            (f"registrar-{registrar.id}", registrar.name)
-            for registrar in Registrar.objects.all()
-        )
-
-        self.fields["organisations_choice"].choices = registrars
-
-        self.helper = FormHelper()
-        self.helper.label_size = Size.SMALL
-        self.helper.layout = Layout(
-            Fieldset(
-                Field.text("organisations_choice"),
-            ),
-            DomainsHTML.warning(
-                """If you are not listed as a .gov.uk Approved Registrar
-                on the registry operator's website, you cannot use
-                this service."""
-            ),
-            Button("submit", "Submit"),
-        )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to Answers")
-            )
 
 
 class DomainPurposeForm(forms.Form):

@@ -20,25 +20,26 @@ Cypress.Commands.add('enterDomainName', name => {
   cy.get('.govuk-button#id_submit').click()
 })
 
-Cypress.Commands.add('fillOutApplicantDetails', (name, phone, email) => {
-  cy.get('#id_applicant_name').type(name)
-  cy.get('#id_applicant_phone').type(phone)
-  cy.get('#id_applicant_email').type(email)
+Cypress.Commands.add('fillOutRegistrarDetails', (org, name, phone, email) => {
+  cy.get('#id_registrar_organisation').type('WeRegister')
+  cy.get('#id_registrar_name').type(name)
+  cy.get('#id_registrar_phone').type(phone)
+  cy.get('#id_registrar_email').type(email)
   cy.get('.govuk-button#id_submit').click()
 })
 
 
-Cypress.Commands.add('fillOutRegistrantDetails', (name, phone, email) => {
+Cypress.Commands.add('fillOutRegistrantDetails', (org, name, phone, email) => {
+  cy.get('#id_registrant_organisation').type(name)
   cy.get('#id_registrant_full_name').type(name)
   cy.get('#id_registrant_phone').type(phone)
-  cy.get('#id_registrant_email_address').type(email)
+  cy.get('#id_registrant_email').type(email)
   cy.get('.govuk-button#id_submit').click()
 })
 
 
-Cypress.Commands.add('fillOutRegistryDetails', (name, phone, email) => {
+Cypress.Commands.add('fillOutRegistryDetails', (name, email) => {
   cy.get('#id_registrant_role').type(name)
-  cy.get('#id_registrant_contact_phone').type(phone)
   cy.get('#id_registrant_contact_email').type(email)
   cy.get('.govuk-button#id_submit').click()
 })
@@ -69,7 +70,7 @@ Cypress.Commands.add('typeInRegistrant', index => {
 
 
 Cypress.Commands.add('chooseDomainPurpose', index => {
-  cy.get('#id_domain_purpose_1').click()
+  cy.get(`#id_domain_purpose_${index}`).click()
   cy.get('.govuk-button#id_submit').click()
 })
 
@@ -100,9 +101,9 @@ Cypress.Commands.add('confirmUpload', filename => {
 
 //============= Routes ============================
 
-Cypress.Commands.add('goToRegistrar', () => {
+Cypress.Commands.add('goToRegistrarDetails', () => {
   cy.visit('http://0.0.0.0:8000/')
-  cy.checkPageTitleIncludes('Which .gov.uk Approved Registrar organisation are you from?')
+  cy.checkPageTitleIncludes('Registrar details')
 })
 
 
