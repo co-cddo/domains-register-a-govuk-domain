@@ -1,5 +1,5 @@
 from django.db import models
-from .person import Person
+from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
 from .organisation import Registrant, Registrar
 
 REF_NUM_LENGTH = 6
@@ -13,7 +13,7 @@ class ApplicationStatus(models.TextChoices):
 
 class Application(models.Model):
     id = models.BigAutoField(primary_key=True)
-    reference = models.CharField(max_length=REF_NUM_LENGTH, blank=True)
+    reference = models.CharField(max_length=REF_NUM_LENGTH)
     status = models.CharField(
         choices=ApplicationStatus.choices,
         default=ApplicationStatus.pending,
@@ -24,18 +24,22 @@ class Application(models.Model):
     # enable users to select e.g. a registrant from a previous record so
     # perhaps we do nothing.
     domain_name = models.CharField(max_length=253)
-    applicant = models.OneToOneField(
-        Person, on_delete=models.CASCADE, related_name="applicant_application"
+    registrar_person = models.OneToOneField(
+        RegistrarPerson, on_delete=models.CASCADE, related_name="registrar_application"
     )
     registrant_person = models.OneToOneField(
-        Person, on_delete=models.CASCADE, related_name="registrant_application"
+        RegistrantPerson,
+        on_delete=models.CASCADE,
+        related_name="registrant_application",
     )
-    responsible_person = models.OneToOneField(
-        Person, on_delete=models.CASCADE, related_name="responsible_application"
+    registry_published_person = models.OneToOneField(
+        RegistryPublishedPerson,
+        on_delete=models.CASCADE,
+        related_name="registry_published_application",
     )
     registrant_org = models.OneToOneField(Registrant, on_delete=models.CASCADE)
-    registrar = models.ForeignKey(Registrar, on_delete=models.CASCADE)
-    written_permission_evidence = models.FileField(null=True, blank=True)
+    registrar_org = models.ForeignKey(Registrar, on_delete=models.CASCADE)
+    written_permission_evidence = models.FileField()
 
     # Pending research on the GOV.UK standard for creating reference numbers
     def save(self, *args, **kwargs):
