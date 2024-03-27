@@ -86,43 +86,18 @@ urlpatterns = [
         RegistryDetailsView.as_view(change=True),
         name="change_registry_details",
     ),
-    # V1
-    path("admin/", admin.site.urls),
-    path("email/", RegistrarEmailView.as_view(), name="email"),
-    path(
-        "registrant-type-fail/",
-        RegistrantTypeFailView.as_view(),
-        name="registrant_type_fail",
-    ),
-    path("confirm/", ConfirmView.as_view(), name="confirm"),
-    path("success/", SuccessView.as_view(), name="success"),
-    path("exemption/", ExemptionView.as_view(), name="exemption"),
-    path("exemption-upload/", ExemptionUploadView.as_view(), name="exemption_upload"),
-    path(
-        "exemption-upload-confirm/",
-        ExemptionUploadConfirmView.as_view(),
-        name="exemption_upload_confirm",
-    ),
-    path(
-        "exemption-upload-remove/",
-        ExemptionUploadRemoveView.as_view(),
-        name="exemption_upload_remove",
-    ),
-    path("exemption_fail/", ExemptionFailView.as_view(), name="exemption_fail"),
-    path(
-        "registrar_details/", RegistrarDetailsView.as_view(), name="registrar_details"
-    ),
     path("domain-purpose/", DomainPurposeView.as_view(), name="domain_purpose"),
     path(
         "domain-purpose-fail/",
         DomainPurposeFailView.as_view(),
         name="domain_purpose_fail",
     ),
-    path("minister/", MinisterView.as_view(), name="minister"),
+    path("exemption/", ExemptionView.as_view(), name="exemption"),
+    path("exemption-upload/", ExemptionUploadView.as_view(), name="exemption_upload"),
     path(
-        "applicant-details/",
-        ApplicantDetailsView.as_view(),
-        name="applicant_details",
+        "exemption-upload-confirm/",
+        ExemptionUploadConfirmView.as_view(),
+        name="exemption_upload_confirm",
     ),
     path(
         "written-permission/",
@@ -138,6 +113,31 @@ urlpatterns = [
         "written-permission-upload-confirm/",
         WrittenPermissionUploadConfirmView.as_view(),
         name="written_permission_upload_confirm",
+    ),
+    # V1
+    path("admin/", admin.site.urls),
+    path("email/", RegistrarEmailView.as_view(), name="email"),
+    path(
+        "registrant-type-fail/",
+        RegistrantTypeFailView.as_view(),
+        name="registrant_type_fail",
+    ),
+    path("confirm/", ConfirmView.as_view(), name="confirm"),
+    path("success/", SuccessView.as_view(), name="success"),
+    path(
+        "exemption-upload-remove/",
+        ExemptionUploadRemoveView.as_view(),
+        name="exemption_upload_remove",
+    ),
+    path("exemption_fail/", ExemptionFailView.as_view(), name="exemption_fail"),
+    path(
+        "registrar_details/", RegistrarDetailsView.as_view(), name="registrar_details"
+    ),
+    path("minister/", MinisterView.as_view(), name="minister"),
+    path(
+        "applicant-details/",
+        ApplicantDetailsView.as_view(),
+        name="applicant_details",
     ),
     path(
         "written-permission-upload-remove/",
