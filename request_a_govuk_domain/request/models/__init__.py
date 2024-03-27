@@ -1,6 +1,6 @@
 from .application import Application, ApplicationStatus, CentralGovernmentAttributes
-from .organisation import Organisation, Registrant, Registrar, RegistrantTypeChoices
-from .person import Person
+from .organisation import Registrant, Registrar, RegistrantTypeChoices
+from .person import Person, RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
 from .review import Review
 
 __all__ = [
@@ -12,5 +12,8 @@ __all__ = [
     "Registrar",
     "RegistrantTypeChoices",
     "Person",
+    "RegistryPublishedPerson",
+    "RegistrantPerson",
+    "RegistrarPerson",
     "Review",
 ]

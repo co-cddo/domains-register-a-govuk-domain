@@ -1,16 +1,6 @@
 from django.db import models
 
 
-class Organisation(models.Model):
-    name = models.CharField(unique=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        abstract = True
-
-
 class RegistrantTypeChoices(models.TextChoices):
     central_government = "Central government department or agency"
     ndpb = "Non-departmental body - also known as an arm's length body"
@@ -28,9 +18,16 @@ class RegistrantTypeChoices(models.TextChoices):
     )
 
 
-class Registrant(Organisation):
+class Registrant(models.Model):
+    name = models.CharField()
     type = models.CharField(choices=RegistrantTypeChoices.choices, max_length=100)
 
+    def __str__(self):
+        return self.name
 
-class Registrar(Organisation):
-    email_address = models.EmailField(max_length=320)
+
+class Registrar(models.Model):
+    name = models.CharField(unique=True)
+
+    def __str__(self):
+        return self.name
