@@ -13,7 +13,7 @@ class ApplicationStatus(models.TextChoices):
 
 class Application(models.Model):
     id = models.BigAutoField(primary_key=True)
-    reference = models.CharField(max_length=REF_NUM_LENGTH, blank=True)
+    reference = models.CharField(max_length=REF_NUM_LENGTH)
     status = models.CharField(
         choices=ApplicationStatus.choices,
         default=ApplicationStatus.pending,
@@ -35,14 +35,7 @@ class Application(models.Model):
     )
     registrant_org = models.OneToOneField(Registrant, on_delete=models.CASCADE)
     registrar = models.ForeignKey(Registrar, on_delete=models.CASCADE)
-    written_permission_evidence = models.FileField(null=True, blank=True)
-
-    # Pending research on the GOV.UK standard for creating reference numbers
-    def save(self, *args, **kwargs):
-        if not self.id:
-            super().save(*args, **kwargs)
-            self.reference = hex(self.id)[2:].upper().zfill(REF_NUM_LENGTH)
-        return super().save(*args, **kwargs)
+    written_permission_evidence = models.FileField()
 
     def __str__(self):
         reference = self.reference if self.reference else "No ref."

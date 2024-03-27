@@ -47,6 +47,7 @@ from .request.views import (
     WrittenPermissionUploadView,
     WrittenPermissionUploadConfirmView,
     WrittenPermissionFailView,
+    FailureView,
 )
 
 urlpatterns = [
@@ -172,5 +173,10 @@ urlpatterns = [
         "change-written-permission",
         WrittenPermissionView.as_view(change=True),
         name="change_written_permission",
+    ),
+    path(
+        "failure/",
+        FailureView.as_view(),
+        name="failure",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

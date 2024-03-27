@@ -1,8 +1,11 @@
 import json
+import logging
 import os
 import random
 import string
-from datetime import datetime
+
+from django.db import transaction
+from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, RedirectView
 from django.conf import settings
 from django.shortcuts import render
@@ -23,7 +26,8 @@ from .forms import (
     RegistryDetailsForm,
     WrittenPermissionForm,
 )
-from .models.organisation import Registrar
+from .models import Person, Application, CentralGovernmentAttributes
+from .models.organisation import Registrar, Registrant
 from django.views.generic.edit import FormView
 
 from .utils import (
@@ -33,6 +37,8 @@ from .utils import (
     remove_from_session,
     is_central_government,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def get_registration_data_to_prepopulate(request, fields, form):
@@ -346,18 +352,96 @@ class ConfirmView(TemplateView):
         return context
 
 
+def save_data_in_database(reference_number, request):
+    registration_data = request.session.get("registration_data", {})
+    try:
+        with transaction.atomic():
+            person = Person.objects.create(
+                name=registration_data["applicant_name"],
+                email_address=registration_data["applicant_email"],
+                role=None,
+                phone_number=registration_data["applicant_phone"],
+            )
+            registrant = Registrant.objects.create(
+                name=registration_data["registrant_organisation_name"],
+                type=registration_data["registrant_type"],
+            )
+            registrant_person = Person.objects.create(
+                email_address=registration_data["registrant_contact_email"],
+                role=registration_data["registrant_role"],
+                phone_number=registration_data["registrant_contact_phone"],
+            )
+            responsible_person = Person.objects.create(
+                name=registration_data["registrant_full_name"],
+                email_address=registration_data["registrant_email_address"],
+                role=None,
+                phone_number=registration_data["registrant_phone"],
+            )
+            # TODO Registrar data should be created, rather than updated, discuss about data model first
+            # registrar = Registrar.objects.create(email_address=registration_data['registrar_email_address'],
+            #                                      name=registration_data['organisations_choice'])
+            registrar = Registrar.objects.get(
+                id=int(registration_data["organisations_choice"].split("-")[1])
+            )
+            setattr(
+                registrar, "email_address", registration_data["registrar_email_address"]
+            )
+            registrar.save()
+            application = Application.objects.create(
+                reference=reference_number,
+                domain_name=registration_data["domain_name"],
+                applicant=person,
+                registrant_person=registrant_person,
+                responsible_person=responsible_person,
+                registrant_org=registrant,
+                registrar=registrar,
+                written_permission_evidence=registration_data[
+                    "written_permission_file_uploaded_filename"
+                ],
+            )
+            if is_central_government(registration_data["registrant_type"]):
+                CentralGovernmentAttributes.objects.create(
+                    application=application,
+                    domain_purpose=registration_data["domain_purpose"],
+                    ministerial_request_evidence=registration_data.get(
+                        "minister_file_uploaded_filename", None
+                    ),
+                    gds_exemption_evidence=registration_data.get(
+                        "exemption_file_uploaded_filename", None
+                    ),
+                )
+
+    except Exception as e:
+        logger.error(
+            f"Exception while saving data. Exception: {type(e).__name__} - {str(e)} , Registration data: {registration_data}"
+        )
+
+        raise e
+
+
 class SuccessView(View):
+    failure_url = reverse_lazy("failure")
+
     def get(self, request):
         # TODO Change when requirements are finalised and add comment accordingly
+        # TODO temporarily changed to fit 6 letters, change after model is changed
         reference_number = (
-            "GOVUK"
-            + datetime.today().strftime("%d%m%Y")
+            "UK"
+            # + datetime.today().strftime("%d%m%Y")
             + "".join(random.choice(string.ascii_uppercase) for _ in range(4))
         )
+        try:
+            save_data_in_database(reference_number, request)
+        except Exception:
+            return HttpResponseRedirect(self.failure_url)
 
         # We're finished, so clear the session data
         request.session.pop("registration_data", None)
         return render(request, "success.html", {"reference_number": reference_number})
+
+
+class FailureView(TemplateView):
+    template_name = "failure.html"
 
 
 class ExemptionView(FormView):
