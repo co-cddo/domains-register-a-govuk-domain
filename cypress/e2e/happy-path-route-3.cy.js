@@ -9,7 +9,7 @@ describe('Happy path - route 3', () => {
     cy.chooseRegistrantType(5) // Fire service -> Route 3
 
     cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
-    cy.get('p').should('include.text', 'chief information officer')
+    cy.get('p').should('include.text', 'chief executive')
     cy.selectYesOrNo('written_permission', 'yes')
 
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')

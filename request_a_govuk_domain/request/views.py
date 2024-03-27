@@ -287,14 +287,8 @@ class WrittenPermissionFailView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         registration_data = self.request.session.get("registration_data", {})
-
-        # Set is_central_government in the context, which is used to display the relevant message
-        # on the written_permission_fail.html page
-        context["is_central_government"] = is_central_government(
-            registration_data["registrant_type"]
-        )
+        context["route"] = route_number(registration_data)
         return context
 
 
