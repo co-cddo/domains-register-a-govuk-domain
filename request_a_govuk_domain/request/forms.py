@@ -214,11 +214,6 @@ class RegistryDetailsForm(forms.Form):
         label="Role name",
     )
 
-    registrant_contact_phone = forms.CharField(
-        label="Telephone number",
-        help_text="Give a business telephone number and don't use personal",
-    )
-
     registrant_contact_email = forms.CharField(
         label="Email address",
         help_text="Use a role-based email address, like support@romseyparishcouncil.gov.uk",
@@ -238,12 +233,7 @@ class RegistryDetailsForm(forms.Form):
                 DomainsHTML(
                     '<h2 class="govuk-heading-m">Registrant contact details</h2>'
                 ),
-                Field.text("registrant_contact_phone", field_width=20),
                 Field.text("registrant_contact_email"),
-            ),
-            DomainsHTML.warning(
-                """We will show all information collected on this page on the registry,
-                which is open to the general public."""
             ),
             Button("submit", "Continue"),
         )

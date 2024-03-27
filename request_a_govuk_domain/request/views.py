@@ -179,9 +179,6 @@ class RegistryDetailsView(FormView):
         initial = super().get_initial()
         session_data = self.request.session["registration_data"]
         initial["registrant_role"] = session_data.get("registrant_role", "")
-        initial["registrant_contact_phone"] = session_data.get(
-            "registrant_contact_phone", ""
-        )
         initial["registrant_contact_email"] = session_data.get(
             "registrant_contact_email", ""
         )
@@ -191,7 +188,7 @@ class RegistryDetailsView(FormView):
         add_to_session(
             form,
             self.request,
-            ["registrant_role", "registrant_contact_phone", "registrant_contact_email"],
+            ["registrant_role", "registrant_contact_email"],
         )
         return super().form_valid(form)
 

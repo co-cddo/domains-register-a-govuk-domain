@@ -38,9 +38,8 @@ Cypress.Commands.add('fillOutRegistrantDetails', (org, name, phone, email) => {
 })
 
 
-Cypress.Commands.add('fillOutRegistryDetails', (name, phone, email) => {
+Cypress.Commands.add('fillOutRegistryDetails', (name, email) => {
   cy.get('#id_registrant_role').type(name)
-  cy.get('#id_registrant_contact_phone').type(phone)
   cy.get('#id_registrant_contact_email').type(email)
   cy.get('.govuk-button#id_submit').click()
 })
