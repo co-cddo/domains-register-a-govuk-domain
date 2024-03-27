@@ -15,7 +15,7 @@ describe('Don\'t allow breaking the flow', () => {
         url: "http://0.0.0.0:8000/email",
         method: "POST",
         body: {
-          registrant_email_address: "example@example.com"
+          registrant_email: "example@example.com"
           // No CSRF token
         }
     });
@@ -30,7 +30,7 @@ describe('Don\'t allow breaking the flow', () => {
         url: "http://0.0.0.0:8000/email",
         method: "POST",
         body: {
-          registrant_email_address: "example@example.com",
+          registrant_email: "example@example.com",
           csrfmiddlewaretoken: "eLqwO7i5BCusJsqUD7EWkkGKSt8Ztu63X8Lkf0x5OF8a3xAh8Dpr0joJsuELlX0i" // pragma: allowlist secret
         }
     });

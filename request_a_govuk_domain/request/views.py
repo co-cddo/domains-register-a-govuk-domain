@@ -16,11 +16,10 @@ from .forms import (
     RegistrarDetailsForm,
     RegistrantTypeForm,
     DomainPurposeForm,
-    RegistrantForm,
     DomainForm,
     MinisterForm,
     ApplicantDetailsForm,
-    RegistrantDetailsForm,
+    RegistrantDetailsNonCentralGovForm,
     RegistryDetailsForm,
     WrittenPermissionForm,
 )
@@ -123,6 +122,44 @@ class DomainConfirmationView(FormView):
         return super().form_valid(form)
 
 
+class RegistrantDetailsNonCentralGovView(FormView):
+    template_name = "registrant_details_non_central_gov.html"
+    form_class = RegistrantDetailsNonCentralGovForm
+    success_url = reverse_lazy("registry_details")
+    change = False
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
+
+    def get_initial(self):
+        initial = super().get_initial()
+        session_data = self.request.session["registration_data"]
+        initial["registrant_organisation"] = session_data.get(
+            "registrant_organisation", ""
+        )
+        initial["registrant_full_name"] = session_data.get("registrant_full_name", "")
+        initial["registrant_phone"] = session_data.get("registrant_phone", "")
+        initial["registrant_email"] = session_data.get("registrant_email", "")
+        return initial
+
+    def form_valid(self, form):
+        add_to_session(
+            form,
+            self.request,
+            [
+                "registrant_organisation",
+                "registrant_full_name",
+                "registrant_phone",
+                "registrant_email",
+            ],
+        )
+        if "back_to_answers" in self.request.POST.keys():
+            self.success_url = "confirm"
+        return super().form_valid(form)
+
+
 # ==== V2 ===
 
 
@@ -180,38 +217,6 @@ class ApplicantDetailsView(FormView):
         return super().form_valid(form)
 
 
-class RegistrantDetailsView(FormView):
-    template_name = "registrant_details.html"
-    form_class = RegistrantDetailsForm
-    success_url = reverse_lazy("registry_details")
-    change = False
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["change"] = getattr(self, "change")
-        return kwargs
-
-    def get_initial(self):
-        initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
-        initial["registrant_full_name"] = session_data.get("registrant_full_name", "")
-        initial["registrant_phone"] = session_data.get("registrant_phone", "")
-        initial["registrant_email_address"] = session_data.get(
-            "registrant_email_address", ""
-        )
-        return initial
-
-    def form_valid(self, form):
-        add_to_session(
-            form,
-            self.request,
-            ["registrant_full_name", "registrant_phone", "registrant_email_address"],
-        )
-        if "back_to_answers" in self.request.POST.keys():
-            self.success_url = "confirm"
-        return super().form_valid(form)
-
-
 class RegistryDetailsView(FormView):
     template_name = "registry_details.html"
     form_class = RegistryDetailsForm
@@ -246,28 +251,6 @@ class RegistryDetailsView(FormView):
 
 class RegistrantTypeFailView(TemplateView):
     template_name = "registrant_type_fail.html"
-
-
-class RegistrantView(FormView):
-    template_name = "registrant.html"
-    success_url = reverse_lazy("written_permission")
-    form_class = RegistrantForm
-    change = False
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["change"] = getattr(self, "change")
-        return kwargs
-
-    def form_valid(self, form):
-        registration_data = add_to_session(
-            form, self.request, ["registrant_organisation_name"]
-        )
-        if "back_to_answers" in self.request.POST.keys():
-            self.success_url = reverse_lazy("confirm")
-        elif is_central_government(registration_data["registrant_type"]):
-            self.success_url = reverse_lazy("domain_purpose")
-        return super().form_valid(form)
 
 
 class WrittenPermissionView(FormView):

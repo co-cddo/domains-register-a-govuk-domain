@@ -25,6 +25,7 @@ from .request.views import (
     RegistrantTypeView,
     DomainView,
     DomainConfirmationView,
+    RegistrantDetailsNonCentralGovView,
     # v1
     RegistrarEmailView,
     ConfirmView,
@@ -39,12 +40,10 @@ from .request.views import (
     RegistrantTypeFailView,
     DomainPurposeView,
     DomainPurposeFailView,
-    RegistrantView,
     MinisterView,
     MinisterUploadView,
     MinisterUploadConfirmView,
     ApplicantDetailsView,
-    RegistrantDetailsView,
     RegistryDetailsView,
     WrittenPermissionView,
     WrittenPermissionUploadView,
@@ -67,6 +66,16 @@ urlpatterns = [
         DomainConfirmationView.as_view(),
         name="domain_confirmation",
     ),
+    path(
+        "registrant-details-non-central-gov/",
+        RegistrantDetailsNonCentralGovView.as_view(),
+        name="registrant_details_non_central_gov",
+    ),
+    path(
+        "change-registrant-details-non-central-gov/",
+        RegistrantDetailsNonCentralGovView.as_view(change=True),
+        name="change_registrant_details_non_central_gov",
+    ),
     # V1
     path("admin/", admin.site.urls),
     path("email/", RegistrarEmailView.as_view(), name="email"),
@@ -75,7 +84,6 @@ urlpatterns = [
         RegistrantTypeFailView.as_view(),
         name="registrant_type_fail",
     ),
-    path("registrant/", RegistrantView.as_view(), name="registrant"),
     path("confirm/", ConfirmView.as_view(), name="confirm"),
     path("success/", SuccessView.as_view(), name="success"),
     path("exemption/", ExemptionView.as_view(), name="exemption"),
@@ -105,11 +113,6 @@ urlpatterns = [
         "applicant-details/",
         ApplicantDetailsView.as_view(),
         name="applicant_details",
-    ),
-    path(
-        "registrant-details/",
-        RegistrantDetailsView.as_view(),
-        name="registrant_details",
     ),
     path(
         "registry-details/",
@@ -163,11 +166,6 @@ urlpatterns = [
         name="change_registry_details",
     ),
     path(
-        "change-registrant-details",
-        RegistrantDetailsView.as_view(change=True),
-        name="change_registrant_details",
-    ),
-    path(
         "change-applicant-details",
         ApplicantDetailsView.as_view(change=True),
         name="change_applicant_details",
@@ -176,11 +174,6 @@ urlpatterns = [
         "change-domain",
         DomainView.as_view(change=True),
         name="change_domain",
-    ),
-    path(
-        "change-registrant",
-        RegistrantView.as_view(change=True),
-        name="change_registrant",
     ),
     path(
         "change-written-permission",
