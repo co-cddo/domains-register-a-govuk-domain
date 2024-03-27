@@ -69,7 +69,7 @@ class RegistrantTypeView(FormView):
         elif route == "2":
             self.success_url = reverse_lazy("domain_purpose")
         elif route == "3":
-            self.success_url = reverse_lazy("written_permission_local_gov")
+            self.success_url = reverse_lazy("written_permission")
         elif route == "4":
             self.success_url = reverse_lazy("registrant_type_fail")
         return super().form_valid(form)
