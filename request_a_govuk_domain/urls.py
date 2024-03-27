@@ -20,6 +20,9 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from .request.views import (
+    # v2
+    RegistrarDetailsView,
+    # v1
     RegistrarEmailView,
     ConfirmView,
     SuccessView,
@@ -30,7 +33,6 @@ from .request.views import (
     WrittenPermissionUploadRemoveView,
     MinisterUploadRemoveView,
     ExemptionFailView,
-    RegistrarView,
     RegistrantTypeView,
     RegistrantTypeFailView,
     DomainView,
@@ -50,8 +52,15 @@ from .request.views import (
 )
 
 urlpatterns = [
+    # V2
+    path("", RegistrarDetailsView.as_view(), name="registrar_details"),
+    path(
+        "change-registrar",
+        RegistrarDetailsView.as_view(change=True),
+        name="change_registrar_details",
+    ),
+    # V1
     path("admin/", admin.site.urls),
-    path("", RegistrarView.as_view(), name="start"),
     path("email/", RegistrarEmailView.as_view(), name="email"),
     path("domain/", DomainView.as_view(), name="domain"),
     path("registrant-type/", RegistrantTypeView.as_view(), name="registrant_type"),
@@ -76,7 +85,9 @@ urlpatterns = [
         name="exemption_upload_remove",
     ),
     path("exemption_fail/", ExemptionFailView.as_view(), name="exemption_fail"),
-    path("registrar/", RegistrarView.as_view(), name="registrar"),
+    path(
+        "registrar_details/", RegistrarDetailsView.as_view(), name="registrar_details"
+    ),
     path("domain-purpose/", DomainPurposeView.as_view(), name="domain_purpose"),
     path(
         "domain-purpose-fail/",
@@ -138,9 +149,6 @@ urlpatterns = [
         "written-permission-fail/",
         WrittenPermissionFailView.as_view(),
         name="written_permission_fail",
-    ),
-    path(
-        "change-registrar", RegistrarView.as_view(change=True), name="change_registrar"
     ),
     path("change-email", RegistrarEmailView.as_view(change=True), name="change_email"),
     path(

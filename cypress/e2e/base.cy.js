@@ -20,10 +20,11 @@ Cypress.Commands.add('enterDomainName', name => {
   cy.get('.govuk-button#id_submit').click()
 })
 
-Cypress.Commands.add('fillOutApplicantDetails', (name, phone, email) => {
-  cy.get('#id_applicant_name').type(name)
-  cy.get('#id_applicant_phone').type(phone)
-  cy.get('#id_applicant_email').type(email)
+Cypress.Commands.add('fillOutRegistrarDetails', (org, name, phone, email) => {
+  cy.get('#id_registrar_org').type('WeRegister')
+  cy.get('#id_registrar_name').type(name)
+  cy.get('#id_registrar_phone').type(phone)
+  cy.get('#id_registrar_email').type(email)
   cy.get('.govuk-button#id_submit').click()
 })
 
@@ -100,9 +101,9 @@ Cypress.Commands.add('confirmUpload', filename => {
 
 //============= Routes ============================
 
-Cypress.Commands.add('goToRegistrar', () => {
+Cypress.Commands.add('goToRegistrarDetails', () => {
   cy.visit('http://0.0.0.0:8000/')
-  cy.checkPageTitleIncludes('Which .gov.uk Approved Registrar organisation are you from?')
+  cy.checkPageTitleIncludes('Registrar details')
 })
 
 

@@ -12,7 +12,7 @@ from .forms import (
     RegistrarEmailForm,
     ExemptionForm,
     UploadForm,
-    RegistrarForm,
+    RegistrarDetailsForm,
     RegistrantTypeForm,
     DomainPurposeForm,
     RegistrantForm,
@@ -459,9 +459,9 @@ class ExemptionFailView(FormView):
         return render(request, self.template_name)
 
 
-class RegistrarView(FormView):
-    template_name = "registrar.html"
-    form_class = RegistrarForm
+class RegistrarDetailsView(FormView):
+    template_name = "registrar_details.html"
+    form_class = RegistrarDetailsForm
     success_url = reverse_lazy("email")
     change = False
 
@@ -471,7 +471,7 @@ class RegistrarView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        add_to_session(form, self.request, ["organisations_choice"])
+        add_to_session(form, self.request, ["registrar_org"])
         if "back_to_answers" in self.request.POST.keys():
             self.success_url = reverse_lazy("confirm")
         return super().form_valid(form)

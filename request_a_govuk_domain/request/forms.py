@@ -19,6 +19,70 @@ from .models.organisation import RegistrantTypeChoices, Registrar
 from ..layout.content import DomainsHTML
 
 
+# ========== V2 ==========
+
+
+class RegistrarDetailsForm(forms.Form):
+    """
+    Registrar Form with organisations choice fields
+    """
+
+    registrar_org = forms.ChoiceField(
+        label="Select your organisation from the list",
+        choices=[],
+        widget=forms.Select(attrs={"class": "govuk-select"}),
+        required=True,
+    )
+
+    registrar_name = forms.CharField(
+        label="Full name",
+    )
+
+    registrar_phone = forms.CharField(
+        label="Telephone number",
+        help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
+    )
+
+    registrar_email = forms.CharField(
+        label="Email address",
+        help_text="We will use this email address to confirm your application",
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
+        super().__init__(*args, **kwargs)
+
+        registrar_orgs = [("", "")] + list(
+            (f"registrar-{registrar.id}", registrar.name)
+            for registrar in Registrar.objects.all()
+        )
+
+        self.fields["registrar_org"].choices = registrar_orgs
+
+        self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Fieldset(
+                DomainsHTML('<h2 class="govuk-heading-m">Organisation name</h2>'),
+                Field.text("registrar_org"),
+            ),
+            Fieldset(
+                DomainsHTML('<h2 class="govuk-heading-m">Contact details</h2>'),
+                Field.text("registrar_name", field_width=20),
+                Field.text("registrar_phone", field_width=20),
+                Field.text("registrar_email"),
+            ),
+            Button("submit", "Submit"),
+        )
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to Answers")
+            )
+
+
+# ========== V1 ==========
+
+
 def add_back_to_answers_button(args, field, layout):
     """
     Add the back button when coming to chnage the answer.
@@ -68,36 +132,12 @@ class DomainForm(forms.Form):
 
 
 class ApplicantDetailsForm(forms.Form):
-    applicant_name = forms.CharField(
-        label="Full name",
-    )
-
-    applicant_phone = forms.CharField(
-        label="Telephone number",
-        help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
-    )
-
-    applicant_email = forms.CharField(
-        label="Email address",
-    )
-
     def __init__(self, *args, **kwargs):
         self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
-            Fieldset(
-                DomainsHTML('<h2 class="govuk-heading-m">Applicant name</h2>'),
-                Field.text("applicant_name", field_width=20),
-            ),
-            Fieldset(
-                DomainsHTML(
-                    '<h2 class="govuk-heading-m">Applicant contact details</h2>'
-                ),
-                Field.text("applicant_phone", field_width=20),
-                Field.text("applicant_email"),
-            ),
             DomainsHTML(
                 """<div class="govuk-inset-text">
             <span class="govuk-hint">An email to confirm your application will be sent to:</span><br>
@@ -393,48 +433,6 @@ class UploadForm(forms.Form):
             raise forms.ValidationError("Wrong file format. Please upload an image.")
 
         return file
-
-
-class RegistrarForm(forms.Form):
-    """
-    Registrar Form with organisations choice fields
-    """
-
-    organisations_choice = forms.ChoiceField(
-        label="Choose your organisation",
-        choices=[],
-        widget=forms.Select(attrs={"class": "govuk-select"}),
-        required=True,
-    )
-
-    def __init__(self, *args, **kwargs):
-        self.change = kwargs.pop("change", None)
-        super().__init__(*args, **kwargs)
-
-        registrars = [("", "")] + list(
-            (f"registrar-{registrar.id}", registrar.name)
-            for registrar in Registrar.objects.all()
-        )
-
-        self.fields["organisations_choice"].choices = registrars
-
-        self.helper = FormHelper()
-        self.helper.label_size = Size.SMALL
-        self.helper.layout = Layout(
-            Fieldset(
-                Field.text("organisations_choice"),
-            ),
-            DomainsHTML.warning(
-                """If you are not listed as a .gov.uk Approved Registrar
-                on the registry operator's website, you cannot use
-                this service."""
-            ),
-            Button("submit", "Submit"),
-        )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to Answers")
-            )
 
 
 class DomainPurposeForm(forms.Form):

@@ -12,10 +12,12 @@ class FormProgressMiddleware:
             return response
         if self.is_valid_progress(request):
             return response
-        return redirect("start")  # Redirect to start page if progress is invalid
+        return redirect(
+            "registrar_details"
+        )  # Redirect to start page if progress is invalid
 
     def is_valid_start_path(self, path: str):
-        if path == reverse("start"):
+        if path == reverse("registrar_details"):
             return True
         if path.startswith("/admin"):
             return True
