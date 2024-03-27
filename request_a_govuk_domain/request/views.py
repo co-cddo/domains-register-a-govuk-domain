@@ -365,9 +365,9 @@ class ExemptionView(FormView):
     form_class = ExemptionForm
 
     def form_valid(self, form):
-        registration_data = add_to_session(form, self.request, ["exemption_radios"])
-        exemption_radios = registration_data["exemption_radios"]
-        if exemption_radios == "yes":
+        registration_data = add_to_session(form, self.request, ["exemption"])
+        exemption = registration_data["exemption"]
+        if exemption == "yes":
             self.success_url = reverse_lazy("exemption_upload")
         else:
             self.success_url = reverse_lazy("exemption_fail")
@@ -384,9 +384,9 @@ class MinisterView(FormView):
         return context
 
     def form_valid(self, form):
-        registration_data = add_to_session(form, self.request, ["minister_radios"])
-        minister_radios = registration_data["exemption_radios"]
-        if minister_radios == "yes":
+        registration_data = add_to_session(form, self.request, ["minister"])
+        minister = registration_data["minister"]
+        if minister == "yes":
             self.success_url = reverse_lazy("minister_upload")
         else:
             self.success_url = reverse_lazy("applicant_details")

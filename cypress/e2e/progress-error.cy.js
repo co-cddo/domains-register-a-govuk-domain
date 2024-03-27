@@ -1,9 +1,11 @@
+import './base.cy'
+
 describe('Don\'t allow breaking the flow', () => {
 
   it('Sends you to the start if you join in the middle', () => {
     cy.visit('http://0.0.0.0:8000/registrant_type_fail')
 
-    cy.get('h1').should('include.text', 'Which .gov.uk Approved Registrar organisation are you from?')
+    cy.checkPageTitleIncludes('Which .gov.uk Approved Registrar organisation are you from?')
     cy.url().should('be.equal', 'http://0.0.0.0:8000/')
   })
 
@@ -18,7 +20,7 @@ describe('Don\'t allow breaking the flow', () => {
         }
     });
 
-    cy.get('h1').should('include.text', 'Which .gov.uk Approved Registrar organisation are you from?')
+    cy.checkPageTitleIncludes('Which .gov.uk Approved Registrar organisation are you from?')
     cy.url().should('be.equal', 'http://0.0.0.0:8000/')
   })
 
@@ -33,7 +35,7 @@ describe('Don\'t allow breaking the flow', () => {
         }
     });
 
-    cy.get('h1').should('include.text', 'Which .gov.uk Approved Registrar organisation are you from?')
+    cy.checkPageTitleIncludes('Which .gov.uk Approved Registrar organisation are you from?')
     cy.url().should('be.equal', 'http://0.0.0.0:8000/')
   })
 

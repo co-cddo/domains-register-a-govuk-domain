@@ -10,12 +10,13 @@ describe('change applicant details', () => {
       // Back to Answers
       cy.get('#id_back_to_answers').click();
       cy.get('.govuk-summary-list__value').should('include.text', 'Paul Atreides')
+
       // Again, but pressing Continue should take you to the next step, not the confirm page
       cy.get("a[href='/change-applicant-details']").click()
       cy.get('#id_applicant_name').clear().type('Paul Atreides');
 
-      // Click continue
+      // Clicking continue goes to the next page in the flow
       cy.get('#id_submit').click();
-      cy.get('h1').should('include.text', 'Registrant details')
+      cy.checkPageTitleIncludes('Registrant details')
     })
   })

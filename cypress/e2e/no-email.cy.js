@@ -9,15 +9,12 @@ describe('Check if user entered an email', () => {
     cy.get('.govuk-button#id_submit').click()
 
     // There should be an error
-    cy.get('#error-summary-title').should('exist')
-    cy.get('#error-summary-title').should('include.text', 'There is a problem')
-    cy.get('.govuk-error-summary__list').should('include.text', 'This field is required')
+    cy.confirmProblem('This field is required')
 
     // Retrying with a correct email
-    cy.get('.govuk-input').type('something@some.gov.uk')
-    cy.get('.govuk-button#id_submit').click()
+    cy.typeInEmail('something@some.gov.uk')
 
-    // No error message this time
-    cy.get('#error-summary-title').should('not.exist')
+    // No errors, move to next page
+    cy.checkPageTitleIncludes('Which of the following best describes your registrant\'s organisation?')
   })
 })
