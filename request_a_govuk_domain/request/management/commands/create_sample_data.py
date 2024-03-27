@@ -49,6 +49,7 @@ class Command(BaseCommand):
         ]
 
         application = models.Application(
+            reference="GOVUK20240327ABCD",
             domain_name=DOMAIN_NAME,
             registrant_person=registrant_person,
             registrar_person=registrar_person,
