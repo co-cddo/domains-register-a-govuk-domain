@@ -15,6 +15,7 @@ def handle_uploaded_file(file):
     :param file: a File object
     :return: the name of the file as store on the server
     """
+
     _, file_extension = os.path.splitext(file.name)
 
     saved_filename = f"{uuid.uuid4()}{file_extension}"
