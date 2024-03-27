@@ -32,26 +32,76 @@ from .utils import (
     add_to_session,
     remove_from_session,
     is_central_government,
+    route_number,
 )
 
+# ==== V2 ===
 
-def get_registration_data_to_prepopulate(request, fields, form):
-    """
-    Based on request we figure out if we are coming to this view
-    from summary list.
-    1. If coming from summary list we display back to button.
-    2. We pre populate the data from registration_data dict.
-    """
-    params = {}
-    if "change" in request.GET:
-        for field in fields:
-            registration_data = request.session["registration_data"]
-            if registration_data:
-                params[field] = registration_data.get(field, "")
-        form = form(params)
-    else:
-        form = form()
-    return form
+
+class RegistrarDetailsView(FormView):
+    template_name = "registrar_details.html"
+    form_class = RegistrarDetailsForm
+    success_url = reverse_lazy("registrant_type")
+    change = False
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
+
+    def form_valid(self, form):
+        add_to_session(form, self.request, ["registrar_org"])
+        if "back_to_answers" in self.request.POST.keys():
+            self.success_url = reverse_lazy("confirm")
+        return super().form_valid(form)
+
+
+class RegistrantTypeView(FormView):
+    template_name = "registrant_type.html"
+    success_url = reverse_lazy("domain")  # TODO: by default should be an error page
+    form_class = RegistrantTypeForm
+
+    def form_valid(self, form):
+        session_data = add_to_session(form, self.request, ["registrant_type"])
+        route = route_number(session_data)
+        if route == "1":
+            self.success_url = reverse_lazy("domain")
+        elif route == "2":
+            self.success_url = reverse_lazy("domain_purpose")
+        elif route == "3":
+            self.success_url = reverse_lazy("written_permission_local_gov")
+        elif route == "4":
+            self.success_url = reverse_lazy("registrant_type_fail")
+        return super().form_valid(form)
+
+
+class DomainView(FormView):
+    template_name = "domain.html"
+    form_class = DomainForm
+    success_url = reverse_lazy("domain_confirmation")
+    change = False
+
+    def get_initial(self):
+        initial = super().get_initial()
+        session_data = self.request.session["registration_data"]
+        initial["domain_name"] = session_data.get("domain_name", "")
+        return initial
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
+
+    def form_valid(self, form):
+        registration_data = add_to_session(form, self.request, ["domain_name"])
+        if "back_to_answers" in self.request.POST.keys():
+            self.success_url = reverse_lazy("confirm")
+        elif is_central_government(registration_data["registrant_type"]):
+            self.success_url = reverse_lazy("minister")
+        return super().form_valid(form)
+
+
+# ==== V2 ===
 
 
 class RegistrarEmailView(FormView):
@@ -77,32 +127,6 @@ class RegistrarEmailView(FormView):
         add_to_session(form, self.request, ["registrar_email_address"])
         if "back_to_answers" in self.request.POST.keys():
             self.success_url = "confirm"
-        return super().form_valid(form)
-
-
-class DomainView(FormView):
-    template_name = "domain.html"
-    form_class = DomainForm
-    success_url = reverse_lazy("applicant_details")
-    change = False
-
-    def get_initial(self):
-        initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
-        initial["domain_name"] = session_data.get("domain_name", "")
-        return initial
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["change"] = getattr(self, "change")
-        return kwargs
-
-    def form_valid(self, form):
-        registration_data = add_to_session(form, self.request, ["domain_name"])
-        if "back_to_answers" in self.request.POST.keys():
-            self.success_url = reverse_lazy("confirm")
-        elif is_central_government(registration_data["registrant_type"]):
-            self.success_url = reverse_lazy("minister")
         return super().form_valid(form)
 
 
@@ -195,18 +219,6 @@ class RegistryDetailsView(FormView):
             self.request,
             ["registrant_role", "registrant_contact_phone", "registrant_contact_email"],
         )
-        return super().form_valid(form)
-
-
-class RegistrantTypeView(FormView):
-    template_name = "registrant_type.html"
-    success_url = reverse_lazy("registrant")
-    form_class = RegistrantTypeForm
-
-    def form_valid(self, form):
-        session_data = add_to_session(form, self.request, ["registrant_type"])
-        if session_data["registrant_type"] == "none":
-            self.success_url = reverse_lazy("registrant_type_fail")
         return super().form_valid(form)
 
 
@@ -457,24 +469,6 @@ class ExemptionFailView(FormView):
 
     def get(self, request):
         return render(request, self.template_name)
-
-
-class RegistrarDetailsView(FormView):
-    template_name = "registrar_details.html"
-    form_class = RegistrarDetailsForm
-    success_url = reverse_lazy("email")
-    change = False
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["change"] = getattr(self, "change")
-        return kwargs
-
-    def form_valid(self, form):
-        add_to_session(form, self.request, ["registrar_org"])
-        if "back_to_answers" in self.request.POST.keys():
-            self.success_url = reverse_lazy("confirm")
-        return super().form_valid(form)
 
 
 class DomainPurposeView(FormView):

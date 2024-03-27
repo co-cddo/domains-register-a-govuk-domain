@@ -14,15 +14,18 @@ class Organisation(models.Model):
 class RegistrantTypeChoices(models.TextChoices):
     central_government = "Central government department or agency"
     ndpb = "Non-departmental body - also known as an arm's length body"
+    parish_council = "Parish or community council"
+    local_authority = "Town, county, borough, metropolitan or district council"
     fire_service = "Fire Service"
-    local_authority = "County, borough, metropolitan or district council"
-    parish_council = "Parish, town or community council"
     village_council = "Neighbourhood or village council"
     combined_authority = "Combined or unitary authority"
     pcc = "Police and Crime Commissioner"
     joint_authority = "Joint Authority"
     joint_committee = "Joint Committee"
-    representative = "Representing public sector bodies"
+    representing_psb = "Organisation representing a group of public sector bodies"
+    representing_profession = (
+        "Organisation representing a profession across public sector bodies"
+    )
 
 
 class Registrant(Organisation):

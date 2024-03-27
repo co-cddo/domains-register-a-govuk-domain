@@ -22,6 +22,8 @@ from django.conf import settings
 from .request.views import (
     # v2
     RegistrarDetailsView,
+    RegistrantTypeView,
+    DomainView,
     # v1
     RegistrarEmailView,
     ConfirmView,
@@ -33,9 +35,7 @@ from .request.views import (
     WrittenPermissionUploadRemoveView,
     MinisterUploadRemoveView,
     ExemptionFailView,
-    RegistrantTypeView,
     RegistrantTypeFailView,
-    DomainView,
     DomainPurposeView,
     DomainPurposeFailView,
     RegistrantView,
@@ -59,11 +59,11 @@ urlpatterns = [
         RegistrarDetailsView.as_view(change=True),
         name="change_registrar_details",
     ),
+    path("registrant-type/", RegistrantTypeView.as_view(), name="registrant_type"),
+    path("domain/", DomainView.as_view(), name="domain"),
     # V1
     path("admin/", admin.site.urls),
     path("email/", RegistrarEmailView.as_view(), name="email"),
-    path("domain/", DomainView.as_view(), name="domain"),
-    path("registrant-type/", RegistrantTypeView.as_view(), name="registrant_type"),
     path(
         "registrant-type-fail/",
         RegistrantTypeFailView.as_view(),

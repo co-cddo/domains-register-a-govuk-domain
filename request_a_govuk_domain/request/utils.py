@@ -23,6 +23,25 @@ def handle_uploaded_file(file):
     return saved_filename
 
 
+def route_number(session_data: dict) -> str:
+    routing_table = {
+        "parish_council": "1",
+        "village_council": "1",
+        "central_government": "2",
+        "ndpb": "2",
+        "local_authority": "3",
+        "fire_service": "3",
+        "combined_authority": "3",
+        "pcc": "3",
+        "joint_authority": "3",
+        "joint_committee": "3",
+        "representing_psb": "3",
+        "representing_profession": "3",
+        "none": "4",
+    }
+    return routing_table[session_data["registrant_type"]]
+
+
 def is_central_government(registrant_type: str) -> bool:
     """
     Check if the registrant type is Central Government or Non-departmental body

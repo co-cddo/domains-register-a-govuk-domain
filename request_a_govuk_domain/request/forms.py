@@ -80,6 +80,29 @@ class RegistrarDetailsForm(forms.Form):
             )
 
 
+class RegistrantTypeForm(forms.Form):
+    registrant_types = [
+        Choice(*item) for item in RegistrantTypeChoices.__members__.items()
+    ]
+    registrant_types[-1].divider = "Or"
+    registrant_types.append(Choice("none", "None of the above"))
+
+    registrant_type = forms.ChoiceField(
+        choices=registrant_types,
+        widget=forms.RadioSelect,
+        label="Your registrant must be from an eligible organisation to get a .gov.uk domain name.",
+        error_messages={"required": "Please select from one of the choices"},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field.radios("registrant_type", legend_size=Size.SMALL),
+            Button("submit", "Continue"),
+        )
+
+
 # ========== V1 ==========
 
 
@@ -259,29 +282,6 @@ class RegistrarEmailForm(forms.Form):
             self.helper.layout.fields.append(
                 Button.secondary("back_to_answers", "Back to answers")
             )
-
-
-class RegistrantTypeForm(forms.Form):
-    registrant_types = [
-        Choice(*item) for item in RegistrantTypeChoices.__members__.items()
-    ]
-    registrant_types[-1].divider = "Or"
-    registrant_types.append(Choice("none", "None of the above"))
-
-    registrant_type = forms.ChoiceField(
-        choices=registrant_types,
-        widget=forms.RadioSelect,
-        label="Your registrant must be from an eligible organisation to get a .gov.uk domain name.",
-        error_messages={"required": "Please select from one of the choices"},
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Field.radios("registrant_type", legend_size=Size.SMALL),
-            Button("submit", "Continue"),
-        )
 
 
 class RegistrantForm(forms.Form):
