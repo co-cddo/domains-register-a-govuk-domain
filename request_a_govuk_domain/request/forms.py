@@ -27,7 +27,7 @@ class RegistrarDetailsForm(forms.Form):
     Registrar Form with organisations choice fields
     """
 
-    registrar_org = forms.ChoiceField(
+    registrar_organisation = forms.ChoiceField(
         label="Select your organisation from the list",
         choices=[],
         widget=forms.Select(attrs={"class": "govuk-select"}),
@@ -52,19 +52,19 @@ class RegistrarDetailsForm(forms.Form):
         self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
 
-        registrar_orgs = [("", "")] + list(
+        registrar_organisations = [("", "")] + list(
             (f"registrar-{registrar.id}", registrar.name)
             for registrar in Registrar.objects.all()
         )
 
-        self.fields["registrar_org"].choices = registrar_orgs
+        self.fields["registrar_organisation"].choices = registrar_organisations
 
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
             Fieldset(
                 DomainsHTML('<h2 class="govuk-heading-m">Organisation name</h2>'),
-                Field.text("registrar_org"),
+                Field.text("registrar_organisation"),
             ),
             Fieldset(
                 DomainsHTML('<h2 class="govuk-heading-m">Contact details</h2>'),
@@ -209,38 +209,6 @@ class RegistrantDetailsNonCentralGovForm(forms.Form):
             )
 
 
-# ========== V1 ==========
-
-
-def add_back_to_answers_button(args, field, layout):
-    """
-    Add the back button when coming to chnage the answer.
-    """
-    if args and field in args[0]:
-        if args[0][field] != "":
-            layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
-
-
-class ApplicantDetailsForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        self.change = kwargs.pop("change", None)
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.label_size = Size.SMALL
-        self.helper.layout = Layout(
-            DomainsHTML(
-                """<div class="govuk-inset-text">
-            <span class="govuk-hint">An email to confirm your application will be sent to:</span><br>
-            <p class="govuk-body govuk-!-font-size-24"></p></div>"""
-            ),
-            Button("submit", "Continue"),
-        )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to answers")
-            )
-
-
 class RegistryDetailsForm(forms.Form):
     registrant_role = forms.CharField(
         label="Role name",
@@ -276,6 +244,38 @@ class RegistryDetailsForm(forms.Form):
             DomainsHTML.warning(
                 """We will show all information collected on this page on the registry,
                 which is open to the general public."""
+            ),
+            Button("submit", "Continue"),
+        )
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to answers")
+            )
+
+
+# ========== V1 ==========
+
+
+def add_back_to_answers_button(args, field, layout):
+    """
+    Add the back button when coming to chnage the answer.
+    """
+    if args and field in args[0]:
+        if args[0][field] != "":
+            layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
+
+
+class ApplicantDetailsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            DomainsHTML(
+                """<div class="govuk-inset-text">
+            <span class="govuk-hint">An email to confirm your application will be sent to:</span><br>
+            <p class="govuk-body govuk-!-font-size-24"></p></div>"""
             ),
             Button("submit", "Continue"),
         )

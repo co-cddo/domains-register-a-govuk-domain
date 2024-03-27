@@ -21,7 +21,7 @@ Cypress.Commands.add('enterDomainName', name => {
 })
 
 Cypress.Commands.add('fillOutRegistrarDetails', (org, name, phone, email) => {
-  cy.get('#id_registrar_org').type('WeRegister')
+  cy.get('#id_registrar_organisation').type('WeRegister')
   cy.get('#id_registrar_name').type(name)
   cy.get('#id_registrar_phone').type(phone)
   cy.get('#id_registrar_email').type(email)

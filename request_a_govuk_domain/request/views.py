@@ -50,7 +50,7 @@ class RegistrarDetailsView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        add_to_session(form, self.request, ["registrar_org"])
+        add_to_session(form, self.request, ["registrar_organisation"])
         if "back_to_answers" in self.request.POST.keys():
             self.success_url = reverse_lazy("confirm")
         return super().form_valid(form)
@@ -160,7 +160,39 @@ class RegistrantDetailsNonCentralGovView(FormView):
         return super().form_valid(form)
 
 
-# ==== V2 ===
+class RegistryDetailsView(FormView):
+    template_name = "registry_details.html"
+    form_class = RegistryDetailsForm
+    success_url = reverse_lazy("confirm")
+    change = False
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["change"] = getattr(self, "change")
+        return kwargs
+
+    def get_initial(self):
+        initial = super().get_initial()
+        session_data = self.request.session["registration_data"]
+        initial["registrant_role"] = session_data.get("registrant_role", "")
+        initial["registrant_contact_phone"] = session_data.get(
+            "registrant_contact_phone", ""
+        )
+        initial["registrant_contact_email"] = session_data.get(
+            "registrant_contact_email", ""
+        )
+        return initial
+
+    def form_valid(self, form):
+        add_to_session(
+            form,
+            self.request,
+            ["registrant_role", "registrant_contact_phone", "registrant_contact_email"],
+        )
+        return super().form_valid(form)
+
+
+# ==== V1 ===
 
 
 class RegistrarEmailView(FormView):
@@ -214,38 +246,6 @@ class ApplicantDetailsView(FormView):
         )
         if "back_to_answers" in self.request.POST.keys():
             self.success_url = "confirm"
-        return super().form_valid(form)
-
-
-class RegistryDetailsView(FormView):
-    template_name = "registry_details.html"
-    form_class = RegistryDetailsForm
-    success_url = reverse_lazy("confirm")
-    change = False
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["change"] = getattr(self, "change")
-        return kwargs
-
-    def get_initial(self):
-        initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
-        initial["registrant_role"] = session_data.get("registrant_role", "")
-        initial["registrant_contact_phone"] = session_data.get(
-            "registrant_contact_phone", ""
-        )
-        initial["registrant_contact_email"] = session_data.get(
-            "registrant_contact_email", ""
-        )
-        return initial
-
-    def form_valid(self, form):
-        add_to_session(
-            form,
-            self.request,
-            ["registrant_role", "registrant_contact_phone", "registrant_contact_email"],
-        )
         return super().form_valid(form)
 
 
@@ -344,9 +344,9 @@ class ConfirmView(TemplateView):
         registration_data = self.request.session.get("registration_data", {})
         context["registration_data"] = registration_data
 
-        # Registrar name
+        # Registrar organisation name
         registrar_id = int(
-            registration_data["organisations_choice"].split("registrar-", 1)[1]
+            registration_data["registrar_organisation"].split("registrar-", 1)[1]
         )
         context["registrar_name"] = Registrar.objects.get(id=registrar_id).name
 

@@ -26,6 +26,7 @@ from .request.views import (
     DomainView,
     DomainConfirmationView,
     RegistrantDetailsNonCentralGovView,
+    RegistryDetailsView,
     # v1
     RegistrarEmailView,
     ConfirmView,
@@ -44,7 +45,6 @@ from .request.views import (
     MinisterUploadView,
     MinisterUploadConfirmView,
     ApplicantDetailsView,
-    RegistryDetailsView,
     WrittenPermissionView,
     WrittenPermissionUploadView,
     WrittenPermissionUploadConfirmView,
@@ -75,6 +75,16 @@ urlpatterns = [
         "change-registrant-details-non-central-gov/",
         RegistrantDetailsNonCentralGovView.as_view(change=True),
         name="change_registrant_details_non_central_gov",
+    ),
+    path(
+        "registry-details/",
+        RegistryDetailsView.as_view(),
+        name="registry_details",
+    ),
+    path(
+        "change-registry-details",
+        RegistryDetailsView.as_view(change=True),
+        name="change_registry_details",
     ),
     # V1
     path("admin/", admin.site.urls),
@@ -113,11 +123,6 @@ urlpatterns = [
         "applicant-details/",
         ApplicantDetailsView.as_view(),
         name="applicant_details",
-    ),
-    path(
-        "registry-details/",
-        RegistryDetailsView.as_view(),
-        name="registry_details",
     ),
     path(
         "written-permission/",
@@ -160,11 +165,6 @@ urlpatterns = [
         name="written_permission_fail",
     ),
     path("change-email", RegistrarEmailView.as_view(change=True), name="change_email"),
-    path(
-        "change-registry-details",
-        RegistryDetailsView.as_view(change=True),
-        name="change_registry_details",
-    ),
     path(
         "change-applicant-details",
         ApplicantDetailsView.as_view(change=True),
