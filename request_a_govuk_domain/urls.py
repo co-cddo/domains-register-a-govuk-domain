@@ -24,6 +24,7 @@ from .request.views import (
     RegistrarDetailsView,
     RegistrantTypeView,
     DomainView,
+    DomainConfirmationView,
     # v1
     RegistrarEmailView,
     ConfirmView,
@@ -61,6 +62,11 @@ urlpatterns = [
     ),
     path("registrant-type/", RegistrantTypeView.as_view(), name="registrant_type"),
     path("domain/", DomainView.as_view(), name="domain"),
+    path(
+        "domain-confirmation/",
+        DomainConfirmationView.as_view(),
+        name="domain_confirmation",
+    ),
     # V1
     path("admin/", admin.site.urls),
     path("email/", RegistrarEmailView.as_view(), name="email"),

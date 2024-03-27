@@ -9,6 +9,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import (
+    DomainConfirmationForm,
     RegistrarEmailForm,
     ExemptionForm,
     UploadForm,
@@ -62,8 +63,8 @@ class RegistrantTypeView(FormView):
     form_class = RegistrantTypeForm
 
     def form_valid(self, form):
-        session_data = add_to_session(form, self.request, ["registrant_type"])
-        route = route_number(session_data)
+        registration_data = add_to_session(form, self.request, ["registrant_type"])
+        route = route_number(registration_data)
         if route == "1":
             self.success_url = reverse_lazy("domain")
         elif route == "2":
@@ -98,6 +99,27 @@ class DomainView(FormView):
             self.success_url = reverse_lazy("confirm")
         elif is_central_government(registration_data["registrant_type"]):
             self.success_url = reverse_lazy("minister")
+        return super().form_valid(form)
+
+
+class DomainConfirmationView(FormView):
+    template_name = "domain_confirmation.html"
+    form_class = DomainConfirmationForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["registration_data"] = self.request.session.get("registration_data", {})
+        return context
+
+    def form_valid(self, form):
+        if form.cleaned_data["domain_confirmation"] == "yes":
+            route = route_number(self.request.session["registration_data"])
+            if route == "1" or route == "3":
+                self.success_url = reverse_lazy("registrant_details_non_central_gov")
+            else:
+                self.success_url = reverse_lazy("minister")
+        else:
+            self.success_url = reverse_lazy("domain")  # Route 12
         return super().form_valid(form)
 
 

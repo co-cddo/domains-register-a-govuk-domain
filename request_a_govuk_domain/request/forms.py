@@ -141,6 +141,32 @@ class DomainForm(forms.Form):
             )
 
 
+class DomainConfirmationForm(forms.Form):
+    domain_confirmation = forms.ChoiceField(
+        label="The Domains Team will review the domain name and make a decision on whether to approve or reject it",
+        choices=(("yes", "Yes, I confirm"), ("no", "No, I want to change it")),
+        widget=forms.RadioSelect,
+        error_messages={"required": "Please answer Yes or No"},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field.radios(
+                "domain_confirmation",
+                legend_size=Size.MEDIUM,
+                legend_tag="h1",
+                inline=False,
+            ),
+            Button("submit", "Continue"),
+        )
+
+    def get_choice(self, field):
+        value = self.cleaned_data[field]
+        return dict(self.fields[field].choices).get(value)
+
+
 # ========== V1 ==========
 
 
