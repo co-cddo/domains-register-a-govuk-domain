@@ -39,7 +39,9 @@ jobs:
       env:
         CLAMD_TCP_ADDR: 127.0.0.1
       run: |
+        sudo /etc/init.d/clamav-freshclam stop
         sudo freshclam
+        sudo /etc/init.d/clamav-freshclam start
         sudo service --status-all
         sudo systemctl restart clamav-daemon.service
         sudo systemctl status clamav-daemon.service
