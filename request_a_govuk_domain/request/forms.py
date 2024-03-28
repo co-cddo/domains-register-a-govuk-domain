@@ -53,6 +53,9 @@ class RegistrarDetailsForm(forms.Form):
         help_text="We will use this email address to confirm your application",
     )
 
+    phone_number_pattern = re.compile(r"^\s*\d(?:\s*\d){10}\s*$")
+    email_address_pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
+
     def __init__(self, *args, **kwargs):
         self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
@@ -83,6 +86,16 @@ class RegistrarDetailsForm(forms.Form):
             self.helper.layout.fields.append(
                 Button.secondary("back_to_answers", "Back to Answers")
             )
+
+    def clean_registrar_phone(self):
+        number_typed = self.cleaned_data["registrar_phone"]
+        if re.fullmatch(self.phone_number_pattern, number_typed) is None:
+            raise ValidationError("Invalid phone number entered")
+
+    def clean_registrar_email(self):
+        email_typed = self.cleaned_data["registrar_email"]
+        if re.fullmatch(self.email_address_pattern, email_typed) is None:
+            raise ValidationError("Invalid email address entered")
 
 
 class RegistrantTypeForm(forms.Form):
