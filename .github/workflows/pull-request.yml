@@ -39,9 +39,6 @@ jobs:
       env:
         CLAMD_TCP_ADDR: 127.0.0.1
       run: |
-        sudo /etc/init.d/clamav-freshclam stop
-        sudo freshclam
-        sudo /etc/init.d/clamav-freshclam start
         systemctl status clamav-daemon
     - name: Install pyenv and Python
       run: |
