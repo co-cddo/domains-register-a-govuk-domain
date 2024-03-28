@@ -78,6 +78,7 @@ jobs:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
       with:
         start: |
+          service --status-all
           poetry run ./manage.py runserver --verbosity 0 --noreload
     - name: Run Unit Tests
       env:
