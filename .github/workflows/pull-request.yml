@@ -34,15 +34,12 @@ jobs:
         sudo apt-get update &&
         sudo apt-get -y install libcurl4-nss-dev curl git make build-essential libssl-dev zlib1g-dev libbz2-dev \
         libreadline-dev libsqlite3-dev wget ca-certificates libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
-        libffi-dev liblzma-dev mecab-ipadic-utf8 unzip clamav clamav-daemon --fix-missing
+        libffi-dev liblzma-dev mecab-ipadic-utf8 unzip clamav clamav-daemon clamav-freshclam --fix-missing
     - name: Run freshclam to update virus database
       env:
         CLAMD_TCP_ADDR: 127.0.0.1
       run: |
-        sudo rm -rf /var/lib/clamav/main.cvd || echo "no file"
-        sudo rm -rf /var/lib/clamav/daily.cvd || echo "no file"
-        sudo curl https://database.clamav.net/main.cvd -o /var/lib/clamav/main.cvd
-        sudo curl https://database.clamav.net/daily.cvd -o /var/lib/clamav/daily.cvd
+        sudo freshclam
         sudo service --status-all
         sudo systemctl restart clamav-daemon.service
         sudo systemctl status clamav-daemon.service
