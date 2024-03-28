@@ -101,8 +101,15 @@ Cypress.Commands.add('confirmUpload', filename => {
 
 //============= Routes ============================
 
-Cypress.Commands.add('goToRegistrarDetails', () => {
+Cypress.Commands.add('start', () => {
   cy.visit('http://0.0.0.0:8000/')
+  cy.checkPageTitleIncludes('Get approval to use a .gov.uk domain name')
+})
+
+
+Cypress.Commands.add('goToRegistrarDetails', () => {
+  cy.start()
+  cy.get('a.govuk-button--start').click()
   cy.checkPageTitleIncludes('Registrar details')
 })
 
