@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from .request.views import (
+    StartView,
     RegistrarDetailsView,
     RegistrantTypeView,
     DomainView,
@@ -48,9 +49,12 @@ from .request.views import (
 )
 
 urlpatterns = [
-    path("", RegistrarDetailsView.as_view(), name="registrar_details"),
+    path("", StartView.as_view(), name="start"),
     path(
-        "change-registrar",
+        "registrar-details/", RegistrarDetailsView.as_view(), name="registrar_details"
+    ),
+    path(
+        "change-registrar-details/",
         RegistrarDetailsView.as_view(change=True),
         name="change_registrar_details",
     ),
@@ -123,9 +127,6 @@ urlpatterns = [
         name="exemption_upload_remove",
     ),
     path("exemption_fail/", ExemptionFailView.as_view(), name="exemption_fail"),
-    path(
-        "registrar_details/", RegistrarDetailsView.as_view(), name="registrar_details"
-    ),
     path("minister/", MinisterView.as_view(), name="minister"),
     path(
         "written-permission-upload-remove/",

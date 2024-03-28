@@ -34,6 +34,10 @@ from .utils import (
 )
 
 
+class StartView(TemplateView):
+    template_name = "start.html"
+
+
 class RegistrarDetailsView(FormView):
     template_name = "registrar_details.html"
     form_class = RegistrarDetailsForm
