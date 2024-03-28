@@ -20,7 +20,7 @@ describe('Error messages for registrar details', () => {
 
     // enter a bad phone number
     cy.fillOutRegistrarDetails('WeRegister', 'Joe', '01 2', 'joe@example.com')
-    cy.confirmProblem('Invalid phone number entered')
+    cy.confirmProblem('Please enter a valid phone number')
 
     // enter a bad email address
     cy.fillOutRegistrarDetails('WeRegister', 'Joe', '01225123334', 'a@b.c')

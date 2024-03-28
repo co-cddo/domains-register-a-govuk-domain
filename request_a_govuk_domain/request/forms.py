@@ -19,6 +19,17 @@ from .models.organisation import RegistrantTypeChoices, Registrar
 from ..layout.content import DomainsHTML
 
 
+class PhoneNumberValidator:
+    phone_number_pattern = re.compile(r"^\s*\d(?:\s*\d){10}\s*$")
+
+    def __init__(self, error_message=None):
+        self.error_message = error_message or "Invalid phone number format"
+
+    def __call__(self, phone_number):
+        if re.fullmatch(self.phone_number_pattern, phone_number) is None:
+            raise ValidationError(self.error_message)
+
+
 def add_back_to_answers_button(args, field, layout):
     """
     Add the back button when coming to chnage the answer.
@@ -47,6 +58,7 @@ class RegistrarDetailsForm(forms.Form):
     registrar_phone = forms.CharField(
         label="Telephone number",
         help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
+        validators=[PhoneNumberValidator("Please enter a valid phone number")],
     )
 
     registrar_email = forms.CharField(
@@ -54,9 +66,6 @@ class RegistrarDetailsForm(forms.Form):
         help_text="We will use this email address to confirm your application",
         validators=[EmailValidator("Please enter a valid email address")],
     )
-
-    phone_number_pattern = re.compile(r"^\s*\d(?:\s*\d){10}\s*$")
-    email_address_pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
 
     def __init__(self, *args, **kwargs):
         self.change = kwargs.pop("change", None)
@@ -88,11 +97,6 @@ class RegistrarDetailsForm(forms.Form):
             self.helper.layout.fields.append(
                 Button.secondary("back_to_answers", "Back to Answers")
             )
-
-    def clean_registrar_phone(self):
-        number_typed = self.cleaned_data["registrar_phone"]
-        if re.fullmatch(self.phone_number_pattern, number_typed) is None:
-            raise ValidationError("Invalid phone number entered")
 
 
 class RegistrantTypeForm(forms.Form):
