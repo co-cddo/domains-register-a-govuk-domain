@@ -12,7 +12,7 @@ describe('Happy path - route 2-5', () => {
     cy.chooseDomainPurpose(2) // Email address only -> Route 5
 
     cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
-    // TODO: will need to check it's the central gov version of the written-permission page
+    cy.get('p').should('include.text', 'chief information officer')
     cy.selectYesOrNo('written_permission', 'yes')
 
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
