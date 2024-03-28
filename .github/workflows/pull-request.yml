@@ -40,8 +40,8 @@ jobs:
         CLAMD_TCP_ADDR: 127.0.0.1
       run: |
         sudo service --status-all
-        systemctl restart clamav-daemon.service
-        systemctl status clamav-daemon.service
+        sudo systemctl restart clamav-daemon.service
+        sudo systemctl status clamav-daemon.service
     - name: Install pyenv and Python
       run: |
         curl https://pyenv.run | bash && \
