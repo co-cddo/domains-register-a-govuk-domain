@@ -42,6 +42,7 @@ jobs:
         sudo /etc/init.d/clamav-freshclam stop
         sudo freshclam
         sudo /etc/init.d/clamav-freshclam start
+        systemctl status clamav-daemon
     - name: Install pyenv and Python
       run: |
         curl https://pyenv.run | bash && \
@@ -78,8 +79,6 @@ jobs:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
       with:
         start: |
-          cat /var/log/clamav/clamav.log
-          systemctl status clamav-daemon
           poetry run ./manage.py runserver --verbosity 0 --noreload
     - name: Run Unit Tests
       env:
