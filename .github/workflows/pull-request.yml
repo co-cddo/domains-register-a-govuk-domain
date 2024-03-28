@@ -42,13 +42,10 @@ jobs:
         sudo /etc/init.d/clamav-freshclam stop
         sudo freshclam
         sudo /etc/init.d/clamav-freshclam start
-        sudo service --status-all
         sudo systemctl stop clamav-daemon.service
         sudo sed -i -e $'$a\\\TCPAddr 127.0.0.1' /etc/clamav/clamd.conf
         sudo sed -i -e $'$a\\\nTCPSocket 3310' /etc/clamav/clamd.conf
-        sudo cat /etc/clamav/clamd.conf
         sudo systemctl start clamav-daemon.service
-        sudo lsof -i -n -P
     - name: Install pyenv and Python
       run: |
         curl https://pyenv.run | bash && \
