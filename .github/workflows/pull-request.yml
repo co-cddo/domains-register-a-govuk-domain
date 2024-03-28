@@ -78,7 +78,8 @@ jobs:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
       with:
         start: |
-          service --status-all
+          cat /var/log/clamav/clamav.log
+          systemctl status clamav-daemon
           poetry run ./manage.py runserver --verbosity 0 --noreload
     - name: Run Unit Tests
       env:
