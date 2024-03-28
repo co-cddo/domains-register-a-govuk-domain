@@ -39,6 +39,8 @@ jobs:
       env:
         CLAMD_TCP_ADDR: 127.0.0.1
       run: |
+        sudo rm -rf /var/lib/clamav/main.cvd || echo "no file"
+        sudo rm -rf /var/lib/clamav/daily.cvd || echo "no file"
         sudo curl https://database.clamav.net/main.cvd -o /var/lib/clamav/main.cvd
         sudo curl https://database.clamav.net/daily.cvd -o /var/lib/clamav/daily.cvd
         sudo service --status-all
