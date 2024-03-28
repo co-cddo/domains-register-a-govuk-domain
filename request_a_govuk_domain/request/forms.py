@@ -4,6 +4,7 @@ from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 from crispy_forms_gds.choices import Choice
 from django.core.exceptions import ValidationError
+from django.core.validators import EmailValidator
 from crispy_forms_gds.helper import FormHelper
 from crispy_forms_gds.layout import (
     Button,
@@ -16,6 +17,17 @@ from crispy_forms_gds.layout import (
 from typing import Optional
 from .models.organisation import RegistrantTypeChoices, Registrar
 from ..layout.content import DomainsHTML
+
+
+class PhoneNumberValidator:
+    phone_number_pattern = re.compile(r"^\s*\d(?:\s*\d){10}\s*$")
+
+    def __init__(self, error_message=None):
+        self.error_message = error_message or "Invalid phone number format"
+
+    def __call__(self, phone_number):
+        if re.fullmatch(self.phone_number_pattern, phone_number) is None:
+            raise ValidationError(self.error_message)
 
 
 def add_back_to_answers_button(args, field, layout):
@@ -46,11 +58,13 @@ class RegistrarDetailsForm(forms.Form):
     registrar_phone = forms.CharField(
         label="Telephone number",
         help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
+        validators=[PhoneNumberValidator("Please enter a valid phone number")],
     )
 
     registrar_email = forms.CharField(
         label="Email address",
         help_text="We will use this email address to confirm your application",
+        validators=[EmailValidator("Please enter a valid email address")],
     )
 
     def __init__(self, *args, **kwargs):
@@ -183,11 +197,13 @@ class RegistrantDetailsForm(forms.Form):
 
     registrant_phone = forms.CharField(
         label="Telephone number",
+        validators=[PhoneNumberValidator("Please enter a valid phone number")],
     )
 
     registrant_email = forms.CharField(
         label="Email address",
         help_text="We may use this email to contact the registrant to confirm their identity",
+        validators=[EmailValidator("Please enter a valid email address")],
     )
 
     def __init__(self, *args, **kwargs):
@@ -222,6 +238,7 @@ class RegistryDetailsForm(forms.Form):
     registrant_contact_email = forms.CharField(
         label="Email address",
         help_text="Use a role-based email address, like support@romseyparishcouncil.gov.uk",
+        validators=[EmailValidator("Please enter a valid email address")],
     )
 
     def __init__(self, *args, **kwargs):

@@ -35,7 +35,7 @@ describe('Happy path - route 2-5-8', () => {
     cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
 
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
-    cy.fillOutRegistryDetails('Clerk', '01225672736', 'clerk@example.org')
+    cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
 
     cy.checkPageTitleIncludes('Check your answers')
     cy.get('#button-continue').click()

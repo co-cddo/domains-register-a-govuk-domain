@@ -12,7 +12,7 @@ describe('Happy path - route 2-5', () => {
     cy.chooseDomainPurpose(2) // Email address only -> Route 5
 
     cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
-    // TODO: will need to check it's the central gov version of the written-permission page
+    cy.get('p').should('include.text', 'chief information officer')
     cy.selectYesOrNo('written_permission', 'yes')
 
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
@@ -41,7 +41,7 @@ describe('Happy path - route 2-5', () => {
     cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
 
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
-    cy.fillOutRegistryDetails('Clerk', '01225672736', 'clerk@example.org')
+    cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
 
     cy.checkPageTitleIncludes('Check your answers')
     cy.get('#button-continue').click()

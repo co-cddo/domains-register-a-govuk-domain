@@ -5,9 +5,16 @@ Cypress.Commands.add('checkPageTitleIncludes', expectedTitle => {
 })
 
 
-Cypress.Commands.add('confirmProblem', (errorMessage) => {
+Cypress.Commands.add('confirmProblem', (errorMessage, nb_errors = 1) => {
   cy.get('#error-summary-title').should('exist')
+
+  // count the number of errors
+  cy.get('.govuk-error-summary__list li').should('have.length', nb_errors)
+
+  // check the error box title
   cy.get('h2').should('include.text', 'There is a problem')
+
+  // check the error is display
   if (errorMessage) {
     cy.get('.govuk-error-summary__list').should('include.text', errorMessage)
   }
@@ -21,32 +28,32 @@ Cypress.Commands.add('enterDomainName', name => {
 })
 
 Cypress.Commands.add('fillOutRegistrarDetails', (org, name, phone, email) => {
-  cy.get('#id_registrar_organisation').type('WeRegister')
-  cy.get('#id_registrar_name').type(name)
-  cy.get('#id_registrar_phone').type(phone)
-  cy.get('#id_registrar_email').type(email)
+  cy.get('#id_registrar_organisation').clear().type('WeRegister')
+  cy.get('#id_registrar_name').clear().type(name)
+  cy.get('#id_registrar_phone').clear().type(phone)
+  cy.get('#id_registrar_email').clear().type(email)
   cy.get('.govuk-button#id_submit').click()
 })
 
 
 Cypress.Commands.add('fillOutRegistrantDetails', (org, name, phone, email) => {
-  cy.get('#id_registrant_organisation').type(name)
-  cy.get('#id_registrant_full_name').type(name)
-  cy.get('#id_registrant_phone').type(phone)
-  cy.get('#id_registrant_email').type(email)
+  cy.get('#id_registrant_organisation').clear().type(name)
+  cy.get('#id_registrant_full_name').clear().type(name)
+  cy.get('#id_registrant_phone').clear().type(phone)
+  cy.get('#id_registrant_email').clear().type(email)
   cy.get('.govuk-button#id_submit').click()
 })
 
 
 Cypress.Commands.add('fillOutRegistryDetails', (name, email) => {
-  cy.get('#id_registrant_role').type(name)
-  cy.get('#id_registrant_contact_email').type(email)
+  cy.get('#id_registrant_role').clear().type(name)
+  cy.get('#id_registrant_contact_email').clear().type(email)
   cy.get('.govuk-button#id_submit').click()
 })
 
 
 Cypress.Commands.add('chooseRegistrar', typedName => {
-  cy.get('#id_organisations_choice').type('WeRegister')
+  cy.get('#id_organisations_choice').clear().type('WeRegister')
   cy.get('.govuk-button#id_submit').click()
 })
 
@@ -233,6 +240,6 @@ Cypress.Commands.add('goToRegistryDetails', () => {
 
 Cypress.Commands.add('goToConfirmation', () => {
   cy.goToRegistryDetails()
-  cy.fillOutRegistryDetails('Clerk', '01225672345', 'rob@example.com')
+  cy.fillOutRegistryDetails('Clerk', 'rob@example.com')
   cy.checkPageTitleIncludes('Check your answers')
 })
