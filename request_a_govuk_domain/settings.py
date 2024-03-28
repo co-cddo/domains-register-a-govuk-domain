@@ -216,5 +216,5 @@ CONTENT_TYPES = ["png", "jpeg", "jpg", "pdf"]
 # 10 MB
 MAX_UPLOAD_SIZE = "10485760"
 
-CLAMD_TCP_ADDR = "clamav"
+CLAMD_TCP_ADDR = "127.0.0.1"
 CLAMD_TCP_SOCKET = 3310
