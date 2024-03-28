@@ -24,7 +24,7 @@ describe('Error messages for registrar details', () => {
 
     // enter a bad email address
     cy.fillOutRegistrarDetails('WeRegister', 'Joe', '01225123334', 'a@b.c')
-    cy.confirmProblem('Invalid email address entered')
+    cy.confirmProblem('Please enter a valid email address')
 
     // enter valid details
     cy.fillOutRegistrarDetails('WeRegister', 'Joe', '01225123334', 'a@b.com')

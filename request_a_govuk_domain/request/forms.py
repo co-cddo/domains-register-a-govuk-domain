@@ -4,6 +4,7 @@ from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 from crispy_forms_gds.choices import Choice
 from django.core.exceptions import ValidationError
+from django.core.validators import EmailValidator
 from crispy_forms_gds.helper import FormHelper
 from crispy_forms_gds.layout import (
     Button,
@@ -51,6 +52,7 @@ class RegistrarDetailsForm(forms.Form):
     registrar_email = forms.CharField(
         label="Email address",
         help_text="We will use this email address to confirm your application",
+        validators=[EmailValidator("Please enter a valid email address")],
     )
 
     phone_number_pattern = re.compile(r"^\s*\d(?:\s*\d){10}\s*$")
@@ -91,11 +93,6 @@ class RegistrarDetailsForm(forms.Form):
         number_typed = self.cleaned_data["registrar_phone"]
         if re.fullmatch(self.phone_number_pattern, number_typed) is None:
             raise ValidationError("Invalid phone number entered")
-
-    def clean_registrar_email(self):
-        email_typed = self.cleaned_data["registrar_email"]
-        if re.fullmatch(self.email_address_pattern, email_typed) is None:
-            raise ValidationError("Invalid email address entered")
 
 
 class RegistrantTypeForm(forms.Form):
