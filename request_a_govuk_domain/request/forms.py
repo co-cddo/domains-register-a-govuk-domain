@@ -197,11 +197,13 @@ class RegistrantDetailsForm(forms.Form):
 
     registrant_phone = forms.CharField(
         label="Telephone number",
+        validators=[PhoneNumberValidator("Please enter a valid phone number")],
     )
 
     registrant_email = forms.CharField(
         label="Email address",
         help_text="We may use this email to contact the registrant to confirm their identity",
+        validators=[EmailValidator("Please enter a valid email address")],
     )
 
     def __init__(self, *args, **kwargs):
@@ -236,6 +238,7 @@ class RegistryDetailsForm(forms.Form):
     registrant_contact_email = forms.CharField(
         label="Email address",
         help_text="Use a role-based email address, like support@romseyparishcouncil.gov.uk",
+        validators=[EmailValidator("Please enter a valid email address")],
     )
 
     def __init__(self, *args, **kwargs):
