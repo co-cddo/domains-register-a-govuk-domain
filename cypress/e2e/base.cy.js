@@ -240,6 +240,6 @@ Cypress.Commands.add('goToRegistryDetails', () => {
 
 Cypress.Commands.add('goToConfirmation', () => {
   cy.goToRegistryDetails()
-  cy.fillOutRegistryDetails('Clerk', '01225672345', 'rob@example.com')
+  cy.fillOutRegistryDetails('Clerk', 'rob@example.com')
   cy.checkPageTitleIncludes('Check your answers')
 })
