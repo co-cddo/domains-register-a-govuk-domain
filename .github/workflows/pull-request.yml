@@ -41,6 +41,8 @@ jobs:
       run: |
         sudo service --status-all
         sudo service clamav-daemon status
+        systemctl restart clamav-daemon.service
+        systemctl status clamav-daemon.service
     - name: Install pyenv and Python
       run: |
         curl https://pyenv.run | bash && \
