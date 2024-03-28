@@ -64,7 +64,7 @@ class CentralGovernmentAttributes(models.Model):
     application = models.OneToOneField(Application, on_delete=models.CASCADE)
     domain_purpose = models.CharField()
     ministerial_request_evidence = models.FileField(null=True, blank=True)
-    gds_exemption_evidence = models.FileField(null=True, blank=True)
+    policy_exemption_evidence = models.FileField(null=True, blank=True)
 
     def __str__(self):
         return str(self.application)

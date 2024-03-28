@@ -80,7 +80,7 @@ class Command(BaseCommand):
         models.CentralGovernmentAttributes.objects.create(
             application=application,
             ministerial_request_evidence=MINISTERIAL_REQUEST_FN,
-            gds_exemption_evidence=POLICY_TEAM_EXEMPTION_FN,
+            policy_exemption_evidence=POLICY_TEAM_EXEMPTION_FN,
         )
 
         models.Review.objects.create(application=application)

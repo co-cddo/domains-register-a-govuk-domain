@@ -127,13 +127,15 @@ class CentralGovernmentAttributesInline(
     def download_ministerial_request_evidence(self, obj):
         return self.generate_download_link(obj, "download_ministerial_request_evidence")
 
-    def download_gds_exemption_evidence(self, obj):
-        return self.generate_download_link(obj, "download_gds_exemption_evidence")
+    def download_policy_exemption_evidence(self, obj):
+        return self.generate_download_link(obj, "download_policy_exemption_evidence")
 
     download_ministerial_request_evidence.short_description = (
         "Ministerial request evidence"
     )
-    download_gds_exemption_evidence.short_description = "GDS exemption evidence"
+    download_policy_exemption_evidence.short_description = (
+        "Naming policy exemption evidence"
+    )
 
 
 class ReviewInline(admin.StackedInline):
