@@ -19,6 +19,10 @@ class RegistrantTypeChoices(models.TextChoices):
 
 
 class Registrant(models.Model):
+    """
+    An organisation seeking to register a new .gov.uk domain
+    """
+
     name = models.CharField()
     type = models.CharField(choices=RegistrantTypeChoices.choices, max_length=100)
 
@@ -27,6 +31,14 @@ class Registrant(models.Model):
 
 
 class Registrar(models.Model):
+    """
+    An organisation which carries out the work to regsiter a new .gov.uk
+    domain on behalf of a Registrant. The end-user flow is completed by
+    an employee of the Registrar organisation in each case. Unlike
+    Registrants, the list of possible Registrars is limited and approved
+    in advance.
+    """
+
     name = models.CharField(unique=True)
 
     def __str__(self):

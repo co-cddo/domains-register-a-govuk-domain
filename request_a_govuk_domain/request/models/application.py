@@ -6,12 +6,21 @@ REF_NUM_LENGTH = 17
 
 
 class ApplicationStatus(models.TextChoices):
+    # We're likely to have to add to this with (at least) an
+    # "Appealed to NAC" status.
     approved = "Approved"
     rejected = "Rejected"
     pending = "Pending"
 
 
 class Application(models.Model):
+    """
+    The core model for the service, to which all other models in some way
+    relate. An Application instance is created at the conclusion of the
+    end-user journey. Additional attributes are then added (via the Review
+    class) by the reviewer team.
+    """
+
     id = models.BigAutoField(primary_key=True)
     reference = models.CharField(max_length=REF_NUM_LENGTH, null=False)
     status = models.CharField(
@@ -46,6 +55,12 @@ class Application(models.Model):
 
 
 class CentralGovernmentAttributes(models.Model):
+    """
+    An extension to the Application class (uses a one-to-one) relationship
+    to avoid adding attributes which are relevant to only a small proportion
+    of applications to all instances.
+    """
+
     application = models.OneToOneField(Application, on_delete=models.CASCADE)
     domain_purpose = models.CharField()
     ministerial_request_evidence = models.FileField(null=True, blank=True)
