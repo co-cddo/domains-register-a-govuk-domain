@@ -16,18 +16,29 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # delete existing data in case this is run multiple times
-        models.Person.objects.all().delete()
+        models.RegistryPublishedPerson.objects.all().delete()
+        models.RegistrarPerson.objects.all().delete()
         models.Registrar.objects.all().delete()
         models.Registrant.objects.all().delete()
         models.Application.objects.all().delete()
         models.CentralGovernmentAttributes.objects.all().delete()
         models.Review.objects.all().delete()
 
-        persons = [models.Person.objects.create(name=name) for name in PERSON_NAMES]
+        registrant_person = models.RegistrantPerson.objects.create(name=PERSON_NAMES[0])
+
+        registry_published_person = models.RegistryPublishedPerson.objects.create(
+            name=PERSON_NAMES[2]
+        )
 
         registrars = [
             models.Registrar.objects.create(name=name) for name in REGISTRAR_NAMES
         ]
+
+        application_registrar = registrars[0]
+
+        registrar_person = models.RegistrarPerson.objects.create(
+            name=PERSON_NAMES[1], registrar=application_registrar
+        )
 
         registrants = [
             models.Registrant.objects.create(
@@ -39,12 +50,12 @@ class Command(BaseCommand):
 
         application = models.Application(
             domain_name=DOMAIN_NAME,
-            applicant=persons[0],
-            registrant_person=persons[1],
-            responsible_person=persons[2],
+            registrant_person=registrant_person,
+            registrar_person=registrar_person,
+            registry_published_person=registry_published_person,
             registrant_org=registrants[0],
-            registrar=registrars[0],
-            written_permission_evidence="",
+            registrar_org=application_registrar,
+            written_permission_evidence="something",
         )
 
         application.save()
