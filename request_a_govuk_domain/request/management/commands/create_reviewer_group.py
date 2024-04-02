@@ -6,9 +6,11 @@ from request_a_govuk_domain.request import models
 VIEWABLE_MODELS = [
     models.Application,
     models.CentralGovernmentAttributes,
-    models.Person,
     models.Registrant,
     models.Registrar,
+    models.RegistrantPerson,
+    models.RegistrarPerson,
+    models.RegistryPublishedPerson,
 ]
 EDITABLE_MODELS = [models.Review]
 

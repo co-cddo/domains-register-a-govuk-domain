@@ -5,7 +5,16 @@ from .application import Application
 NOTES_MAX_LENGTH = 500
 
 
+# We've added simple-history to the dependencies but need to implement it,
+# principally for this this class.
 class Review(models.Model):
+    """
+    An extension of the Application class (has a one-to-one) relationship
+    to hold details of the review carried out by the reviewing team. Each
+    pair of Boolean/TextField fields represents something the reviewing
+    team have to check or confirm before making a decision on the application.
+    """
+
     application = models.OneToOneField(Application, on_delete=models.CASCADE)
 
     registrant_org_exists = models.BooleanField(default=False)

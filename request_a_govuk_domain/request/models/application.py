@@ -1,19 +1,28 @@
 from django.db import models
-from .person import Person
+from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
 from .organisation import Registrant, Registrar
 
-REF_NUM_LENGTH = 6
+REF_NUM_LENGTH = 17
 
 
 class ApplicationStatus(models.TextChoices):
+    # We're likely to have to add to this with (at least) an
+    # "Appealed to NAC" status.
     approved = "Approved"
     rejected = "Rejected"
     pending = "Pending"
 
 
 class Application(models.Model):
+    """
+    The core model for the service, to which all other models in some way
+    relate. An Application instance is created at the conclusion of the
+    end-user journey. Additional attributes are then added (via the Review
+    class) by the reviewer team.
+    """
+
     id = models.BigAutoField(primary_key=True)
-    reference = models.CharField(max_length=REF_NUM_LENGTH, blank=True)
+    reference = models.CharField(max_length=REF_NUM_LENGTH, null=False)
     status = models.CharField(
         choices=ApplicationStatus.choices,
         default=ApplicationStatus.pending,
@@ -24,32 +33,34 @@ class Application(models.Model):
     # enable users to select e.g. a registrant from a previous record so
     # perhaps we do nothing.
     domain_name = models.CharField(max_length=253)
-    applicant = models.OneToOneField(
-        Person, on_delete=models.CASCADE, related_name="applicant_application"
+    registrar_person = models.OneToOneField(
+        RegistrarPerson, on_delete=models.CASCADE, related_name="registrar_application"
     )
     registrant_person = models.OneToOneField(
-        Person, on_delete=models.CASCADE, related_name="registrant_application"
+        RegistrantPerson,
+        on_delete=models.CASCADE,
+        related_name="registrant_application",
     )
-    responsible_person = models.OneToOneField(
-        Person, on_delete=models.CASCADE, related_name="responsible_application"
+    registry_published_person = models.OneToOneField(
+        RegistryPublishedPerson,
+        on_delete=models.CASCADE,
+        related_name="registry_published_application",
     )
     registrant_org = models.OneToOneField(Registrant, on_delete=models.CASCADE)
-    registrar = models.ForeignKey(Registrar, on_delete=models.CASCADE)
-    written_permission_evidence = models.FileField(null=True, blank=True)
-
-    # Pending research on the GOV.UK standard for creating reference numbers
-    def save(self, *args, **kwargs):
-        if not self.id:
-            super().save(*args, **kwargs)
-            self.reference = hex(self.id)[2:].upper().zfill(REF_NUM_LENGTH)
-        return super().save(*args, **kwargs)
+    registrar_org = models.ForeignKey(Registrar, on_delete=models.CASCADE)
+    written_permission_evidence = models.FileField()
 
     def __str__(self):
-        reference = self.reference if self.reference else "No ref."
-        return f"{reference} - {self.domain_name}"
+        return f"{self.reference} - {self.domain_name}"
 
 
 class CentralGovernmentAttributes(models.Model):
+    """
+    An extension to the Application class (uses a one-to-one) relationship
+    to avoid adding attributes which are relevant to only a small proportion
+    of applications to all instances.
+    """
+
     application = models.OneToOneField(Application, on_delete=models.CASCADE)
     domain_purpose = models.CharField()
     ministerial_request_evidence = models.FileField(null=True, blank=True)
