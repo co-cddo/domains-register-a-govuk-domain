@@ -23,8 +23,17 @@ describe('Happy path - route 1', () => {
     cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
 
     cy.checkPageTitleIncludes('Check your answers')
-    cy.get('#button-continue').click()
 
+    cy.summaryShouldHave(0, 'WeRegister')
+    cy.summaryShouldHave(1, ['Joe Bloggs', '01225672345', 'joe@example.org'])
+    cy.summaryShouldHave(2, 'Parish')
+    cy.summaryShouldHave(3, 'something-pc.gov.uk')
+    cy.summaryShouldHave(4, 'HMRC')
+    cy.summaryShouldHave(5, ['Rob Roberts', '01225672344', 'rob@example.org'])
+    cy.summaryShouldHave(6, ['Clerk', 'clerk@example.org'])
+    cy.summaryShouldNotHave(['Reason for request', 'Minister', 'Permission', 'Exemption'])
+
+    cy.get('#button-continue').click()
     cy.checkPageTitleIncludes('Application submitted')
   })
 })
