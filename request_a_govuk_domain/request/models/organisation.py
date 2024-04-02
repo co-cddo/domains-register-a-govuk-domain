@@ -16,7 +16,7 @@ class RegistrantTypeChoices(models.TextChoices):
     ndpb = "Non-departmental body - also known as an arm's length body"
     parish_council = "Parish or community council"
     local_authority = "Town, county, borough, metropolitan or district council"
-    fire_service = "Fire Service"
+    fire_service = "Fire service"
     village_council = "Neighbourhood or village council"
     combined_authority = "Combined or unitary authority"
     pcc = "Police and Crime Commissioner"

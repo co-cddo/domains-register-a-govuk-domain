@@ -37,7 +37,7 @@ Cypress.Commands.add('fillOutRegistrarDetails', (org, name, phone, email) => {
 
 
 Cypress.Commands.add('fillOutRegistrantDetails', (org, name, phone, email) => {
-  cy.get('#id_registrant_organisation').clear().type(name)
+  cy.get('#id_registrant_organisation').clear().type(org)
   cy.get('#id_registrant_full_name').clear().type(name)
   cy.get('#id_registrant_phone').clear().type(phone)
   cy.get('#id_registrant_email').clear().type(email)
