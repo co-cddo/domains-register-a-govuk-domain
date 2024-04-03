@@ -96,11 +96,12 @@ def add_value_to_session(request, field_name: str, field_value) -> None:
     request.session["registration_data"] = registration_data
 
 
-def remove_from_session(session, field_names: List[str]) -> None:
+def remove_from_session(session, field_names: List[str]) -> dict:
     """
     Remove fields from a session, for instance when an uploaded
     file is removed
     """
     for field_name in field_names:
         if session["registration_data"].get(field_name) is not None:
-            session["registration_data"][field_name] = None
+            del session["registration_data"][field_name]
+    return session["registration_data"]
