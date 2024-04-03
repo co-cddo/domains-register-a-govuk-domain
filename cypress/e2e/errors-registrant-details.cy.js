@@ -30,7 +30,7 @@ describe('Error messages for registrant details', () => {
     // enter valid details
     cy.fillOutRegistrantDetails('Littleton PC', 'Joe', '01225998877', 'joe@example.com')
 
-    // No error, we've moved on to the next page
+    // // No error, we've moved on to the next page
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
   })
 })

@@ -2,29 +2,29 @@ import './base.cy'
 
 describe('Error messages for domain form', () => {
   it('accepts valid domain names', () => {
-    cy.goToDomain()
+    cy.goToDomainViaRoute(3)
     cy.enterDomainName('dosac')
-    cy.checkPageTitleIncludes('Can you confirm if the dosac.gov.uk domain name is correct?')
+    cy.checkPageTitleIncludes('Is dosac.gov.uk the correct domain name?')
   })
 
   it('accepts valid domain names with hyphens', () => {
-    cy.goToDomain()
+    cy.goToDomainViaRoute(3)
     cy.enterDomainName('dos-ac')
-    cy.checkPageTitleIncludes('Can you confirm if the dos-ac.gov.uk domain name is correct?')
+    cy.checkPageTitleIncludes('Is dos-ac.gov.uk the correct domain name?')
   })
 
   it('accepts valid domain names when user has entered .gov.uk', () => {
-    cy.goToDomain()
+    cy.goToDomainViaRoute(3)
     cy.enterDomainName('dosac.gov.uk')
-    cy.checkPageTitleIncludes('Can you confirm if the dosac.gov.uk domain name is correct?')
+    cy.checkPageTitleIncludes('Is dosac.gov.uk the correct domain name?')
   })
 
   it('rejects invalid domain names', () => {
-    cy.goToDomain()
+    cy.goToDomainViaRoute(3)
     cy.get('.govuk-button#id_submit').click()
     cy.confirmProblem('This field is required')
 
-    cy.goToDomain()
+    cy.goToDomainViaRoute(3)
     cy.enterDomainName('dos.ac')
     cy.confirmProblem('Please enter a valid domain name')
 
@@ -48,10 +48,10 @@ describe('Error messages for domain form', () => {
   })
 
   it('rejects bad domain names but accepts valid retry', () => {
-    cy.goToDomain()
+    cy.goToDomainViaRoute(3)
     cy.enterDomainName('DoSAC.gov.uk')
     cy.confirmProblem('Please enter a valid domain name')
     cy.enterDomainName('dosac.gov.uk')
-    cy.checkPageTitleIncludes('Can you confirm if the dosac.gov.uk domain name is correct?')
+    cy.checkPageTitleIncludes('Is dosac.gov.uk the correct domain name?')
   })
 })

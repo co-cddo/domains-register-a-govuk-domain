@@ -387,7 +387,7 @@ class UploadForm(forms.Form):
                 )
         else:
             raise forms.ValidationError(
-                "Wrong file format. Please upload an image or pdf."
+                "Wrong file format. Please upload an image or PDF."
             )
 
         return file

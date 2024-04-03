@@ -204,7 +204,7 @@ Cypress.Commands.add('goToWrittenPermissionUploadConfirm', filename => {
 
 
 Cypress.Commands.add('goToDomainConfirmation', (via_route = 1) => {
-  cy.goToDomain(via_route)
+  cy.goToDomainViaRoute(via_route)
   cy.enterDomainName('something-pc')
 })
 
@@ -228,6 +228,10 @@ Cypress.Commands.add('goToDomainViaRoute', route => {
     cy.uploadDocument('permission.png')
     cy.checkPageTitleIncludes('Upload evidence of permission')
     cy.confirmUpload('permission.png')
+    cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
+  } else if (route === 1) {
+    cy.goToRegistrantType()
+    cy.chooseRegistrantType(3) // Parish -> route 1
     cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
   }
 })

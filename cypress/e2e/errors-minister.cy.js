@@ -8,7 +8,7 @@ describe('Error messages for the Minister form', () => {
     cy.get('#id_submit').click()
 
     // page shouldn't change
-    cy.checkPageTitleIncludes('Has a central government minister requested the something-pc.gov.uk domain name?')
+    cy.checkPageTitleIncludes('Has a central government minister requested the foobar.gov.uk domain name?')
 
     // but display errors
     cy.confirmProblem('Please answer Yes or No')
