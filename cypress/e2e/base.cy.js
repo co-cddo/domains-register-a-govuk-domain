@@ -150,15 +150,21 @@ Cypress.Commands.add('goToRegistrantType', () => {
 
 Cypress.Commands.add('goToDomainPurpose', () => {
   cy.goToRegistrantType()
-  cy.chooseRegistrantType(1) // Route 2
+  cy.chooseRegistrantType(1) // Central-gov -> route 2
   cy.checkPageTitleIncludes('Why do you want a .gov.uk domain name?')
 })
 
 
 Cypress.Commands.add('goToExemption', () => {
   cy.goToDomainPurpose()
-  cy.chooseDomainPurpose(1)
+  cy.chooseDomainPurpose(1) // Website -> route 7
   cy.checkPageTitleIncludes('Does your registrant have an exemption from using the GOV.UK website?')
+})
+
+Cypress.Commands.add('goToWrittenPermission', () => {
+  cy.goToRegistrantType()
+  cy.chooseRegistrantType(3) // Fire service -> route 3
+  cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
 })
 
 
@@ -186,14 +192,20 @@ Cypress.Commands.add('goToWrittenPermission', () => {
 Cypress.Commands.add('goToWrittenPermissionUpload', filename => {
   cy.goToWrittenPermission()
   cy.selectYesOrNo('written_permission', 'yes')
-  cy.checkPageTitleIncludes('Upload evidence of permission')
+  cy.checkPageTitleIncludes('Upload evidence of permission to apply')
 })
 
 
 Cypress.Commands.add('goToWrittenPermissionUploadConfirm', filename => {
   cy.goToWrittenPermissionUpload()
   cy.uploadDocument(filename)
-  cy.checkPageTitleIncludes('Upload evidence of permission')
+  cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+})
+
+
+Cypress.Commands.add('goToDomainConfirmation', (via_route = 1) => {
+  cy.goToDomainViaRoute(via_route)
+  cy.enterDomainName('something-pc')
 })
 
 
@@ -217,13 +229,17 @@ Cypress.Commands.add('goToDomainViaRoute', route => {
     cy.checkPageTitleIncludes('Upload evidence of permission')
     cy.confirmUpload('permission.png')
     cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
+  } else if (route === 1) {
+    cy.goToRegistrantType()
+    cy.chooseRegistrantType(3) // Parish -> route 1
+    cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
   }
 })
 
 Cypress.Commands.add('goToMinister', () => {
   cy.goToDomainViaRoute(2)
   cy.enterDomainName('foobar')
-  cy.checkPageTitleIncludes('Can you confirm if the foobar.gov.uk domain name is correct?')
+  cy.checkPageTitleIncludes('Is foobar.gov.uk the correct domain name?')
   cy.selectYesOrNo('domain_confirmation', 'yes')
   cy.checkPageTitleIncludes('Has a central government minister requested the foobar.gov.uk domain name?')
 })
@@ -241,23 +257,16 @@ Cypress.Commands.add('goToMinisterUploadConfirm', filename => {
 })
 
 
-Cypress.Commands.add('goToApplicantDetails', () => {
-  cy.goToMinisterUploadConfirm('minister.png')
-  cy.confirmUpload('minister.png')
-  cy.checkPageTitleIncludes('Applicant details')
-})
-
-
 Cypress.Commands.add('goToRegistrantDetails', () => {
-  cy.goToApplicantDetails()
-  cy.fillOutApplicantDetails('Joe Bloggs', '01225672736', 'joe@example.com')
+  cy.goToDomainConfirmation()
+  cy.selectYesOrNo('domain_confirmation', 'yes')
   cy.checkPageTitleIncludes('Registrant details')
 })
 
 
 Cypress.Commands.add('goToRegistryDetails', () => {
   cy.goToRegistrantDetails()
-  cy.fillOutRegistrantDetails('Robert Smith', '01225672345', 'rob@example.com')
+  cy.fillOutRegistrantDetails('Littleton PC', 'Robert Smith', '01225672345', 'rob@example.com')
   cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
 })
 

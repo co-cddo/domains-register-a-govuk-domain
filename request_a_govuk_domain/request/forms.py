@@ -140,7 +140,7 @@ class DomainForm(forms.Form):
             if ".gov.uk" not in domain_typed:
                 domain_typed = domain_typed + ".gov.uk"
         else:
-            raise ValidationError("Invalid domain name entered")
+            raise ValidationError("Please enter a valid domain name")
 
         return domain_typed
 
@@ -387,7 +387,7 @@ class UploadForm(forms.Form):
                 )
         else:
             raise forms.ValidationError(
-                "Wrong file format. Please upload an image or pdf."
+                "Wrong file format. Please upload an image or PDF."
             )
 
         return file
