@@ -1,7 +1,11 @@
 import os
 import uuid
 from typing import List
+
 from django.conf import settings
+from django.core.exceptions import ValidationError
+
+import clamd
 
 
 def handle_uploaded_file(file):
@@ -11,6 +15,7 @@ def handle_uploaded_file(file):
     :param file: a File object
     :return: the name of the file as store on the server
     """
+
     _, file_extension = os.path.splitext(file.name)
 
     saved_filename = f"{uuid.uuid4()}{file_extension}"
@@ -19,27 +24,61 @@ def handle_uploaded_file(file):
     with open(file_path, "wb") as destination:
         for chunk in file.chunks():
             destination.write(chunk)
-
     return saved_filename
 
 
-def route_number(session_data: dict) -> str:
-    routing_table = {
-        "parish_council": "1",
-        "village_council": "1",
-        "central_government": "2",
-        "ndpb": "2",
-        "local_authority": "3",
-        "fire_service": "3",
-        "combined_authority": "3",
-        "pcc": "3",
-        "joint_authority": "3",
-        "joint_committee": "3",
-        "representing_psb": "3",
-        "representing_profession": "3",
-        "none": "4",
-    }
-    return routing_table[session_data["registrant_type"]]
+def validate_file_infection(file):
+    """
+    Incoming file is sent to clamd for scanning.
+    Raises a ValidationError
+    """
+
+    cd = clamd.ClamdNetworkSocket(settings.CLAMD_TCP_ADDR, settings.CLAMD_TCP_SOCKET)
+    result = cd.instream(file)
+
+    if result and result["stream"][0] == "FOUND":
+        raise ValidationError("File is infected with malware.", code="infected")
+
+
+def route_number(session_data: dict) -> dict[str, int]:
+    route = {}
+    registrant_type = session_data.get("registrant_type")
+    if registrant_type is not None:
+        if registrant_type in ["parish_council", "village_council"]:
+            route["primary"] = 1
+            if session_data.get("domain_confirmation") == "no":
+                route["secondary"] = 12
+        elif registrant_type in ["central_government", "ndpb"]:
+            route["primary"] = 2
+            domain_purpose = session_data.get("domain_purpose")
+            if domain_purpose is not None:
+                if domain_purpose in ["email-only"]:
+                    route["secondary"] = 5
+                    if session_data.get("minister") == "no":
+                        route["tertiary"] = 8
+                elif domain_purpose in ["website-email"]:
+                    route["secondary"] = 7
+                else:
+                    route["secondary"] = 6
+                    if session_data.get("written_permission") == "no":
+                        route["tertiary"] = 9
+        elif registrant_type in [
+            "local_authority",
+            "fire_service",
+            "combined_authority",
+            "pcc",
+            "joint_authority",
+            "joint_committee",
+            "representing_psb",
+            "representing_profession",
+        ]:
+            route["primary"] = 3
+            if session_data.get("written_permission") == "no":
+                route["secondary"] = 10
+        else:
+            route["primary"] = 4
+
+    return route
 
 
 def is_central_government(registrant_type: str) -> bool:
@@ -74,11 +113,12 @@ def add_value_to_session(request, field_name: str, field_value) -> None:
     request.session["registration_data"] = registration_data
 
 
-def remove_from_session(session, field_names: List[str]) -> None:
+def remove_from_session(session, field_names: List[str]) -> dict:
     """
     Remove fields from a session, for instance when an uploaded
     file is removed
     """
     for field_name in field_names:
         if session["registration_data"].get(field_name) is not None:
-            session["registration_data"][field_name] = None
+            del session["registration_data"][field_name]
+    return session["registration_data"]

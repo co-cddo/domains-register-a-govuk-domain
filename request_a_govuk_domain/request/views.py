@@ -29,7 +29,6 @@ from .utils import (
     handle_uploaded_file,
     add_to_session,
     remove_from_session,
-    is_central_government,
     route_number,
 )
 
@@ -50,7 +49,16 @@ class RegistrarDetailsView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        add_to_session(form, self.request, ["registrar_organisation"])
+        add_to_session(
+            form,
+            self.request,
+            [
+                "registrar_organisation",
+                "registrar_name",
+                "registrar_phone",
+                "registrar_email",
+            ],
+        )
         if "back_to_answers" in self.request.POST.keys():
             self.success_url = reverse_lazy("confirm")
         return super().form_valid(form)
@@ -63,14 +71,14 @@ class RegistrantTypeView(FormView):
 
     def form_valid(self, form):
         registration_data = add_to_session(form, self.request, ["registrant_type"])
-        route = route_number(registration_data)
-        if route == "1":
+        route = route_number(registration_data).get("primary")
+        if route == 1:
             self.success_url = reverse_lazy("domain")
-        elif route == "2":
+        elif route == 2:
             self.success_url = reverse_lazy("domain_purpose")
-        elif route == "3":
+        elif route == 3:
             self.success_url = reverse_lazy("written_permission")
-        elif route == "4":
+        elif route == 4:
             self.success_url = reverse_lazy("registrant_type_fail")
         return super().form_valid(form)
 
@@ -109,14 +117,15 @@ class DomainConfirmationView(FormView):
         return context
 
     def form_valid(self, form):
-        if form.cleaned_data["domain_confirmation"] == "yes":
-            route = route_number(self.request.session["registration_data"])
-            if route == "1" or route == "3":
-                self.success_url = reverse_lazy("registrant_details")
-            else:
-                self.success_url = reverse_lazy("minister")
+        session_data = add_to_session(form, self.request, ["domain_confirmation"])
+        route = route_number(session_data)
+        if route.get("secondary") == 12:
+            self.success_url = reverse_lazy("domain")
+        elif route.get("primary") == 1 or route.get("primary") == 3:
+            self.success_url = reverse_lazy("registrant_details")
         else:
-            self.success_url = reverse_lazy("domain")  # Route 12
+            self.success_url = reverse_lazy("minister")
+
         return super().form_valid(form)
 
 
@@ -252,14 +261,13 @@ class UploadRemoveView(RedirectView):
                 os.remove(file_path)
 
         # delete the filenames from the session data
-        remove_from_session(
+        self.request.session["registration_data"] = remove_from_session(
             self.request.session,
             [
                 self.page_type + "_file_uploaded_filename",
                 self.page_type + "_file_original_filename",
             ],
         )
-
         return super().get_redirect_url(*args, **kwargs)
 
 
@@ -288,21 +296,14 @@ class ConfirmView(TemplateView):
         registration_data = self.request.session.get("registration_data", {})
         context["registration_data"] = registration_data
 
-        # Registrar organisation name
+        # Registrar organisation name: need to look up real name
         registrar_id = int(
             registration_data["registrar_organisation"].split("registrar-", 1)[1]
         )
         context["registrar_name"] = Registrar.objects.get(id=registrar_id).name
 
-        # Domain purpose
-        if is_central_government(registration_data["registrant_type"]):
-            context["reason_for_request"] = registration_data["domain_purpose"]
-
-        # Exemption
-        if "registrant_type" in registration_data and is_central_government(
-            registration_data["registrant_type"]
-        ):
-            context["central_gov"] = True
+        # Pass the route number as what's on the page depends on it
+        context["route"] = route_number(self.request.session.get("registration_data"))
 
         return context
 

@@ -15,20 +15,20 @@ describe('Happy path - route 2-7', () => {
     cy.selectYesOrNo('exemption', 'yes')
 
     cy.checkPageTitleIncludes('Upload evidence of the exemption')
-    cy.uploadDocument("image.png")
+    cy.uploadDocument("exemption.png")
 
     cy.checkPageTitleIncludes('Upload evidence of the exemption')
-    cy.confirmUpload('image.png')
+    cy.confirmUpload('exemption.png')
 
     cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
     cy.get('p').should('include.text', 'chief information officer')
     cy.selectYesOrNo('written_permission', 'yes')
 
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
-    cy.uploadDocument("image.png")
+    cy.uploadDocument("permission.png")
 
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
-    cy.confirmUpload('image.png')
+    cy.confirmUpload('permission.png')
 
     cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
     cy.enterDomainName('something-pc')
@@ -40,10 +40,10 @@ describe('Happy path - route 2-7', () => {
     cy.selectYesOrNo('minister', 'yes')
 
     cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
-    cy.uploadDocument("image.png")
+    cy.uploadDocument("minister.png")
 
     cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
-    cy.confirmUpload('image.png')
+    cy.confirmUpload('minister.png')
 
     cy.checkPageTitleIncludes('Registrant details')
     cy.get('p').should('not.include.text', 'the registrant must be the Clerk.')
@@ -53,6 +53,20 @@ describe('Happy path - route 2-7', () => {
     cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
 
     cy.checkPageTitleIncludes('Check your answers')
+
+    cy.summaryShouldHave(0, 'WeRegister')
+    cy.summaryShouldHave(1, ['Joe Bloggs', '01225672345', 'joe@example.org'])
+    cy.summaryShouldHave(2, 'Central Government')
+    cy.summaryShouldHave(3, 'Website (may include email)')
+    cy.summaryShouldHave(4, ['Yes, evidence provided:', 'exemption.png'])
+    cy.summaryShouldHave(5, ['Yes, evidence provided:', 'permission.png'])
+    cy.summaryShouldHave(6, 'something-pc.gov.uk')
+    cy.summaryShouldHave(7, ['Yes, evidence provided:', 'minister.png'])
+    cy.summaryShouldHave(8, 'HMRC')
+    cy.summaryShouldHave(9, ['Rob Roberts', '01225672344', 'rob@example.org'])
+    cy.summaryShouldHave(10, ['Clerk', 'clerk@example.org'])
+
+
     cy.get('#button-continue').click()
 
     cy.checkPageTitleIncludes('Application submitted')

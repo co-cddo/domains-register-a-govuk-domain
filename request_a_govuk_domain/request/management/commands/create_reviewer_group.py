@@ -4,13 +4,14 @@ from django.contrib.contenttypes.models import ContentType
 from request_a_govuk_domain.request import models
 
 VIEWABLE_MODELS = [
-    models.Application,
     models.CentralGovernmentAttributes,
-    models.Person,
     models.Registrant,
     models.Registrar,
+    models.RegistrantPerson,
+    models.RegistrarPerson,
+    models.RegistryPublishedPerson,
 ]
-EDITABLE_MODELS = [models.Review]
+EDITABLE_MODELS = [models.Review, models.Application]
 
 
 class Command(BaseCommand):

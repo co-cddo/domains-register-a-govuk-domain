@@ -20,6 +20,26 @@ Cypress.Commands.add('confirmProblem', (errorMessage, nb_errors = 1) => {
   }
 })
 
+Cypress.Commands.add('summaryShouldHave', (index, value)  => {
+  if (typeof value === 'string') {
+    // if a string is passed check that it's at the required index
+    cy.get('.govuk-summary-list__value').eq(index).should('include.text', value)
+  } else if (Array.isArray(value)) {
+      // if an array strings is passed check that all are included at the required index
+    for (const subvalue of value) {
+      cy.get('.govuk-summary-list__value').eq(index).should('include.text', subvalue)
+    }
+  }
+})
+
+Cypress.Commands.add('summaryShouldNotHave', keys => {
+  // Make sure the passed keys are not in the summary
+  for (const key in keys) {
+    cy.get('.govuk-summary-list__key').should('not.include.text', key)
+  }
+})
+
+
 //============= Form user actions =================
 
 Cypress.Commands.add('enterDomainName', name => {
@@ -37,7 +57,7 @@ Cypress.Commands.add('fillOutRegistrarDetails', (org, name, phone, email) => {
 
 
 Cypress.Commands.add('fillOutRegistrantDetails', (org, name, phone, email) => {
-  cy.get('#id_registrant_organisation').clear().type(name)
+  cy.get('#id_registrant_organisation').clear().type(org)
   cy.get('#id_registrant_full_name').clear().type(name)
   cy.get('#id_registrant_phone').clear().type(phone)
   cy.get('#id_registrant_email').clear().type(email)
@@ -163,8 +183,8 @@ Cypress.Commands.add('goToExemptionUploadConfirm', filename => {
 
 
 Cypress.Commands.add('goToWrittenPermission', () => {
-  cy.goToExemptionUploadConfirm('image.png')
-  cy.confirmUpload('image.png')
+  cy.goToRegistrantType()
+  cy.chooseRegistrantType(4) // Route 3
   cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
 })
 
@@ -183,30 +203,41 @@ Cypress.Commands.add('goToWrittenPermissionUploadConfirm', filename => {
 })
 
 
-Cypress.Commands.add('goToDomain', (via_route = 1) => {
-  cy.goToRegistrantType()
-  if (via_route == 1) {
-    // Parish or community council -> route 1
-    cy.chooseRegistrantType(3)
-  } else {
-    // all other routes
-    cy.goToWrittenPermissionUploadConfirm('image.png')
-    cy.confirmUpload('image.png')
-  }
-  cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
-})
-
-
 Cypress.Commands.add('goToDomainConfirmation', (via_route = 1) => {
   cy.goToDomain(via_route)
   cy.enterDomainName('something-pc')
 })
 
 
+Cypress.Commands.add('goToDomainViaRoute', route => {
+  if (route === 3) {
+    cy.goToWrittenPermissionUploadConfirm('permission.png')
+    cy.confirmUpload('permission.png')
+    cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
+  } else if (route === 2) {
+    cy.goToDomainPurpose()
+    cy.chooseDomainPurpose(1) // Route 5
+    cy.checkPageTitleIncludes('Does your registrant have an exemption from using the GOV.UK website?')
+    cy.selectYesOrNo('exemption', 'yes')
+    cy.checkPageTitleIncludes('Upload evidence of the exemption')
+    cy.uploadDocument('exemption.png')
+    cy.confirmUpload('exemption.png')
+    cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
+    cy.selectYesOrNo('written_permission', 'yes')
+    cy.checkPageTitleIncludes('Upload evidence of permission')
+    cy.uploadDocument('permission.png')
+    cy.checkPageTitleIncludes('Upload evidence of permission')
+    cy.confirmUpload('permission.png')
+    cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
+  }
+})
+
 Cypress.Commands.add('goToMinister', () => {
-  cy.goToDomainConfirmation(2)
+  cy.goToDomainViaRoute(2)
+  cy.enterDomainName('foobar')
+  cy.checkPageTitleIncludes('Can you confirm if the foobar.gov.uk domain name is correct?')
   cy.selectYesOrNo('domain_confirmation', 'yes')
-  cy.checkPageTitleIncludes('Has a central government minister requested the something-pc.gov.uk domain name?')
+  cy.checkPageTitleIncludes('Has a central government minister requested the foobar.gov.uk domain name?')
 })
 
 Cypress.Commands.add('goToMinisterUpload', filename => {

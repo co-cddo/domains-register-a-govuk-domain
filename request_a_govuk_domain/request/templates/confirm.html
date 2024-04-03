@@ -9,231 +9,237 @@
   {% endblock %}
 
   {% block content %}
-  <h1 class="govuk-heading-l">Check your answers</h1>
-  <div id="checkanswers-hint" class="govuk-hint">
-    Make sure your answers are complete and correct. If you need to change any of your details, change them at this stage.
-  </div>
-  <h2 class="govuk-heading-m">Registrar details</h2>
-        {% gds_summary_list %}
-            {% gds_summary_list_row %}
-                {% gds_summary_list_row_key %}
-                    Organisation name
-                {% endgds_summary_list_row_key %}
-                {% gds_summary_list_row_value %}
-                    {{ registrar_name }}
-                {% endgds_summary_list_row_value %}
-                {% gds_summary_list_row_actions %}
-                  {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registrar" %}
-                {% endgds_summary_list_row_actions %}
-            {% endgds_summary_list_row %}
-        {% endgds_summary_list %}
-        {% gds_summary_list %}
-            {% gds_summary_list_row %}
-                {% gds_summary_list_row_key %}
-                    Email address
-                {% endgds_summary_list_row_key %}
-                {% gds_summary_list_row_value %}
-                    {{ registration_data.registrar_email_address }}
-                {% endgds_summary_list_row_value %}
-                {% gds_summary_list_row_actions %}
-                    {% gds_summary_list_row_actions_item_inline text="Change" href="/change-email" %}
-                {% endgds_summary_list_row_actions %}
-            {% endgds_summary_list_row %}
-        {% endgds_summary_list %}
-        <h2 class="govuk-heading-m">Registrant details</h2>
-        {% gds_summary_list %}
-
-        {###### Registrant type ######}
-
-          {% gds_summary_list_row %}
-            {% gds_summary_list_row_key %}Organisation type{% endgds_summary_list_row_key %}
-            {% gds_summary_list_row_value %}
-              {% if registration_data.registrant_type == 'central_government' %}Central Government department or agency{% endif %}
-              {% if registration_data.registrant_type == 'ndpb' %}Non-departmental body / ALB{% endif %}
-              {% if registration_data.registrant_type == 'fire_service' %}Fire Service{% endif %}
-              {% if registration_data.registrant_type == 'local_authority' %}County, borough, metropolitan or district council{% endif %}
-              {% if registration_data.registrant_type == 'parish_council' %}Parish, town or community council{% endif %}
-              {% if registration_data.registrant_type == 'village_council' %}Neighbourhood or village council{% endif %}
-              {% if registration_data.registrant_type == 'combined_authority' %}Combined or unitary authority{% endif %}
-              {% if registration_data.registrant_type == 'pcc' %}Police and Crime Commissioner{% endif %}
-              {% if registration_data.registrant_type == 'joint_authority' %}Joint Authority{% endif %}
-              {% if registration_data.registrant_type == 'joint_committee' %}Joint Committee{% endif %}
-              {% if registration_data.registrant_type == 'representative' %}Representing public sector bodies{% endif %}
-            {% endgds_summary_list_row_value %}
-            {% gds_summary_list_row_actions %}
-              {% gds_summary_list_row_actions_item_inline href="/" %}
-                <a href="/registrant-type?change">Change</a>
-              {% endgds_summary_list_row_actions_item %}
-            {% endgds_summary_list_row_actions %}
-          {% endgds_summary_list_row %}
-
-          {###### Organisation name ######}
-
-          {% gds_summary_list_row %}
-            {% gds_summary_list_row_key %}Organisation name{% endgds_summary_list_row_key %}
-            {% gds_summary_list_row_value %}{{ registration_data.registrant_organisation }}{% endgds_summary_list_row_value %}
-            {% gds_summary_list_row_actions %}
-              {% gds_summary_list_row_actions_item_inline href="/" %}
-                <a href="/change-registrant">Change</a>
-              {% endgds_summary_list_row_actions_item %}
-            {% endgds_summary_list_row_actions %}
-          {% endgds_summary_list_row %}
+    <h1 class="govuk-heading-l">Check your answers</h1>
+    <div id="checkanswers-hint" class="govuk-hint">
+      Make sure your answers are complete and correct. If you need to change any of your details, change them at this stage.
+    </div>
 
 
-          {###### Reason for request ######}
-
-          {% if reason_for_request %}
-            {% gds_summary_list_row %}
-              {% gds_summary_list_row_key %}Reason for request{% endgds_summary_list_row_key %}
-              {% gds_summary_list_row_value %}
-                {% if reason_for_request == "website-email" %}Website and email address{% endif %}
-                {% if reason_for_request == "email-only" %}Email only{% endif %}
-              {% endgds_summary_list_row_value %}
-              {% gds_summary_list_row_actions %}
-                {% gds_summary_list_row_actions_item_inline href="/" %}
-                  <a href="/domain-purpose?change">Change</a>
-                {% endgds_summary_list_row_actions_item %}
-              {% endgds_summary_list_row_actions %}
-            {% endgds_summary_list_row %}
-          {% endif %}
+    <h2 class="govuk-heading-m">Registrar details</h2>
 
 
-          {###### Exemption ######}
+    {#### Registrar organisation ####}
 
-          {% if central_gov %}
-            {% gds_summary_list_row %}
-              {% gds_summary_list_row_key %}Exemption from GOV.UK website{% endgds_summary_list_row_key %}
-              {% gds_summary_list_row_value %}
-                <a href="/media/{{ registration_data.exemption_file_uploaded_filename }}" target="_blank">{{ registration_data.exemption_file_original_filename }}</a>
-              {% endgds_summary_list_row_value %}
-              {% gds_summary_list_row_actions %}
-                {% gds_summary_list_row_actions_item_inline href="/" %}
-                  <a href="/exemption?change">Change</a>
-                {% endgds_summary_list_row_actions_item %}
-              {% endgds_summary_list_row_actions %}
-            {% endgds_summary_list_row %}
-          {% endif %}
+    {% gds_summary_list %}
+      {% gds_summary_list_row %}
+        {% gds_summary_list_row_key %}
+          Organisation name
+        {% endgds_summary_list_row_key %}
+        {% gds_summary_list_row_value %}
+          {{ registrar_name }}
+        {% endgds_summary_list_row_value %}
+        {% gds_summary_list_row_actions %}
+          {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registrar" %}
+        {% endgds_summary_list_row_actions %}
+      {% endgds_summary_list_row %}
+    {% endgds_summary_list %}
+
+    {#### Registrar contact details ####}
+    {% gds_summary_list %}
+      {% gds_summary_list_row %}
+        {% gds_summary_list_row_key %}
+          Contact details
+        {% endgds_summary_list_row_key %}
+        {% gds_summary_list_row_value %}
+          {{ registration_data.registrar_name }}
+          <br/>
+          {{ registration_data.registrar_phone }}
+          <br/>
+          {{ registration_data.registrar_email }}
+        {% endgds_summary_list_row_value %}
+        {% gds_summary_list_row_actions %}
+        {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registrar-details" %}
+        {% endgds_summary_list_row_actions %}
+      {% endgds_summary_list_row %}
+    {% endgds_summary_list %}
 
 
-          {###### Written permission ######}
+    <h2 class="govuk-heading-m">Domain request details</h2>
 
-          {% gds_summary_list_row %}
-            {% gds_summary_list_row_key %}Registrant's written permission{% endgds_summary_list_row_key %}
-            {% gds_summary_list_row_value %}
+
+    {% gds_summary_list %}
+
+      {#### Registrant Organisation type ####}
+
+      {% gds_summary_list_row %}
+        {% gds_summary_list_row_key %}Organisation type{% endgds_summary_list_row_key %}
+        {% gds_summary_list_row_value %}
+          {% if registration_data.registrant_type == 'central_government' %}Central Government department or agency{% endif %}
+          {% if registration_data.registrant_type == 'ndpb' %}Non-departmental body / ALB{% endif %}
+          {% if registration_data.registrant_type == 'fire_service' %}Fire service{% endif %}
+          {% if registration_data.registrant_type == 'local_authority' %}County, borough, metropolitan or district council{% endif %}
+          {% if registration_data.registrant_type == 'parish_council' %}Parish, town or community council{% endif %}
+          {% if registration_data.registrant_type == 'village_council' %}Neighbourhood or village council{% endif %}
+          {% if registration_data.registrant_type == 'combined_authority' %}Combined or unitary authority{% endif %}
+          {% if registration_data.registrant_type == 'pcc' %}Police and Crime Commissioner{% endif %}
+          {% if registration_data.registrant_type == 'joint_authority' %}Joint Authority{% endif %}
+          {% if registration_data.registrant_type == 'joint_committee' %}Joint Committee{% endif %}
+          {% if registration_data.registrant_type == 'representative' %}Representing public sector bodies{% endif %}
+        {% endgds_summary_list_row_value %}
+        {% gds_summary_list_row_actions %}
+           {% gds_summary_list_row_actions_item_inline href="/" %}
+             <a href="/registrant-details-type?change">Change</a>
+           {% endgds_summary_list_row_actions_item %}
+        {% endgds_summary_list_row_actions %}
+      {% endgds_summary_list_row %}
+
+      {###### Reason for request ######}
+      {% if route.primary == 2 %}
+        {% gds_summary_list_row %}
+          {% gds_summary_list_row_key %}Reason for request{% endgds_summary_list_row_key %}
+          {% gds_summary_list_row_value %}
+            {% if registration_data.domain_purpose == "website-email" %}Website (may include email){% endif %}
+            {% if registration_data.domain_purpose == "email-only" %}Email only{% endif %}
+          {% endgds_summary_list_row_value %}
+          {% gds_summary_list_row_actions %}
+            {% gds_summary_list_row_actions_item_inline href="/" %}
+              <a href="/change-domain-purpose">Change</a>
+            {% endgds_summary_list_row_actions_item %}
+          {% endgds_summary_list_row_actions %}
+        {% endgds_summary_list_row %}
+      {% endif %}
+
+
+      {###### Exemption ######}
+
+      {% if route.primary == 2 and route.secondary == 7 %}
+        {% gds_summary_list_row %}
+          {% gds_summary_list_row_key %}Exemption from GOV.UK website{% endgds_summary_list_row_key %}
+          {% gds_summary_list_row_value %}
+            {% if registration_data.written_permission == "yes" %}
+              Yes, evidence provided:<br/>
+              <a href="/media/{{ registration_data.exemption_file_uploaded_filename }}" target="_blank">{{ registration_data.exemption_file_original_filename }}</a>
+            {% endif %}
+          {% endgds_summary_list_row_value %}
+          {% gds_summary_list_row_actions %}
+            {% gds_summary_list_row_actions_item_inline href="/" %}
+              <a href="/exemption?change">Change</a>
+            {% endgds_summary_list_row_actions_item %}
+          {% endgds_summary_list_row_actions %}
+        {% endgds_summary_list_row %}
+      {% endif %}
+
+
+      {###### Written permission ######}
+
+      {% if route.primary == 2 or route.primary == 3 %}
+        {% gds_summary_list_row %}
+          {% gds_summary_list_row_key %}Permission to apply{% endgds_summary_list_row_key %}
+          {% gds_summary_list_row_value %}
+            {% if registration_data.written_permission == "yes" %}
+              Yes, evidence provided:<br/>
               <a href="/media/{{ registration_data.written_permission_file_uploaded_filename }}" target="_blank">{{ registration_data.written_permission_file_original_filename }}</a>
-            {% endgds_summary_list_row_value %}
-            {% gds_summary_list_row_actions %}
-              {% gds_summary_list_row_actions_item_inline href="/" %}
-                <a href="/change-written-permission">Change</a>
-              {% endgds_summary_list_row_actions_item %}
-            {% endgds_summary_list_row_actions %}
-          {% endgds_summary_list_row %}
+            {% else %}
+              No {# This shouldn't normally happen #}
+            {% endif %}
+          {% endgds_summary_list_row_value %}
+          {% gds_summary_list_row_actions %}
+            {% gds_summary_list_row_actions_item_inline href="/" %}
+              <a href="/change-written-permission">Change</a>
+            {% endgds_summary_list_row_actions_item %}
+          {% endgds_summary_list_row_actions %}
+        {% endgds_summary_list_row %}
+      {% endif %}
 
-          {###### Domain name ######}
 
-          {% gds_summary_list_row %}
-            {% gds_summary_list_row_key %}Domain name{% endgds_summary_list_row_key %}
-            {% gds_summary_list_row_value %}{{ registration_data.domain_name }}{% endgds_summary_list_row_value %}
-            {% gds_summary_list_row_actions %}
-              {% gds_summary_list_row_actions_item_inline href="/" %}
-                <a href="/change-domain">Change</a>
-              {% endgds_summary_list_row_actions_item %}
-            {% endgds_summary_list_row_actions %}
-          {% endgds_summary_list_row %}
+      {###### Domain name ######}
 
-          {###### Minister's support ######}
 
-          {% if central_gov %}
-            {% gds_summary_list_row %}
-              {% gds_summary_list_row_key %}Minister's support{% endgds_summary_list_row_key %}
-              {% gds_summary_list_row_value %}
-                <a href="/media/{{ registration_data.minister_file_uploaded_filename }}" target="_blank">{{ registration_data.minister_file_original_filename }}</a>
-              {% endgds_summary_list_row_value %}
-              {% gds_summary_list_row_actions %}
-                {% gds_summary_list_row_actions_item_inline href="/" %}
-                  <a href="/minister?change">Change</a>
-                {% endgds_summary_list_row_actions_item %}
-              {% endgds_summary_list_row_actions %}
-            {% endgds_summary_list_row %}
-          {% endif %}
+      {% gds_summary_list_row %}
+        {% gds_summary_list_row_key %}Domain name{% endgds_summary_list_row_key %}
+        {% gds_summary_list_row_value %}{{ registration_data.domain_name }}{% endgds_summary_list_row_value %}
+        {% gds_summary_list_row_actions %}
+          {% gds_summary_list_row_actions_item_inline href="/" %}
+            <a href="/change-domain">Change</a>
+          {% endgds_summary_list_row_actions_item %}
+        {% endgds_summary_list_row_actions %}
+      {% endgds_summary_list_row %}
 
-          {###### Everything else ######}
 
-          {% for data in registration_objs %}
-            {% gds_summary_list_row %}
-                {% gds_summary_list_row_key %}
-                  {{ data.summary_key }}
-                {% endgds_summary_list_row_key %}
-                {% gds_summary_list_row_value %}
-                  {{ data.summary_value }}
-                {% endgds_summary_list_row_value %}
-                  {% gds_summary_list_row_actions %}
-                    {% gds_summary_list_row_actions_item_inline href="/" %}
-                      <a href="/{{ data.change_url }}/?change">Change</a>
-                    {% endgds_summary_list_row_actions_item %}
-                  {% endgds_summary_list_row_actions %}
-            {% endgds_summary_list_row %}
-          {% endfor %}
-        {% endgds_summary_list %}
-        <h2 class="govuk-heading-m">Contact details</h2>
-        {% gds_summary_list %}
-            {% gds_summary_list_row %}
-                {% gds_summary_list_row_key %}
-                  Applicant
-                {% endgds_summary_list_row_key %}
-                {% gds_summary_list_row_value %}
-                  {{ registration_data.applicant_name }}
-                  <br>
-                  {{ registration_data.applicant_phone }}
-                  <br>
-                  {{ registration_data.applicant_email }}
-                {% endgds_summary_list_row_value %}
-                {% gds_summary_list_row_actions %}
-                    {% gds_summary_list_row_actions_item_inline text="Change" href="/change-applicant-details" %}
-                {% endgds_summary_list_row_actions %}
-            {% endgds_summary_list_row %}
-        {% endgds_summary_list %}
-        {% gds_summary_list %}
-            {% gds_summary_list_row %}
-                {% gds_summary_list_row_key %}
-                  Registrant
-                {% endgds_summary_list_row_key %}
-                {% gds_summary_list_row_value %}
-                  {{ registration_data.registrant_full_name }}
-                  <br>
-                  {{ registration_data.registrant_phone }}
-                  <br>
-                  {{ registration_data.registrant_email }}
-                {% endgds_summary_list_row_value %}
-                {% gds_summary_list_row_actions %}
-                    {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registrant-details" %}
-                {% endgds_summary_list_row_actions %}
-            {% endgds_summary_list_row %}
-        {% endgds_summary_list %}
-        {% gds_summary_list %}
-            {% gds_summary_list_row %}
-                {% gds_summary_list_row_key %}
-                  Registry (public information)
-                {% endgds_summary_list_row_key %}
-                {% gds_summary_list_row_value %}
-                  {{ registration_data.registrant_role }}
-                  <br>
-                  {{ registration_data.registrant_contact_email }}
-                {% endgds_summary_list_row_value %}
-                {% gds_summary_list_row_actions %}
-                    {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registry-details" %}
-                {% endgds_summary_list_row_actions %}
-            {% endgds_summary_list_row %}
-        {% endgds_summary_list %}
-        <h2 class="govuk-heading-m">
-          Now send your registrant's application
-        </h2>
-        <div id="checkanswers-hint" class="govuk-hint">
-          By submitting this application you are confirming the details you are providing are correct to the best of your knowledge.
-        </div>
-        <a class="govuk-button" id="button-continue" href="{% url "success" %}">
-          Accept and send
-        </a>
-  </form>
+      {###### Minister's support ######}
+
+      {% if route.primary == 2 %}
+        {% gds_summary_list_row %}
+          {% gds_summary_list_row_key %}Minister's support{% endgds_summary_list_row_key %}
+          {% gds_summary_list_row_value %}
+            {% if route.tertiary == 8 %}
+              No evidence provided
+            {% else %}
+              Yes, evidence provided:<br/>
+              <a href="/media/{{ registration_data.minister_file_uploaded_filename }}" target="_blank">{{ registration_data.minister_file_original_filename }}</a>
+            {% endif %}
+          {% endgds_summary_list_row_value %}
+          {% gds_summary_list_row_actions %}
+            {% gds_summary_list_row_actions_item_inline href="/" %}
+              <a href="/change-minister">Change</a>
+            {% endgds_summary_list_row_actions_item %}
+          {% endgds_summary_list_row_actions %}
+        {% endgds_summary_list_row %}
+      {% endif %}
+
+    {% endgds_summary_list %}
+
+
+    <h2 class="govuk-heading-m">Registrant details</h2>
+
+
+    {% gds_summary_list %}
+
+      {###### Organisation name ######}
+
+      {% gds_summary_list_row %}
+        {% gds_summary_list_row_key %}Organisation name{% endgds_summary_list_row_key %}
+        {% gds_summary_list_row_value %}{{ registration_data.registrant_organisation }}{% endgds_summary_list_row_value %}
+        {% gds_summary_list_row_actions %}
+          {% gds_summary_list_row_actions_item_inline href="/" %}
+            <a href="/change-registrant">Change</a>
+          {% endgds_summary_list_row_actions_item %}
+        {% endgds_summary_list_row_actions %}
+      {% endgds_summary_list_row %}
+
+      {###### Organisation contact details ######}
+
+      {% gds_summary_list_row %}
+        {% gds_summary_list_row_key %}
+          Contact details
+        {% endgds_summary_list_row_key %}
+        {% gds_summary_list_row_value %}
+          {{ registration_data.registrant_full_name }}
+          <br>
+          {{ registration_data.registrant_phone }}
+          <br>
+          {{ registration_data.registrant_email }}
+        {% endgds_summary_list_row_value %}
+        {% gds_summary_list_row_actions %}
+          {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registrant-details" %}
+        {% endgds_summary_list_row_actions %}
+      {% endgds_summary_list_row %}
+
+      {##### Registry details #####}
+
+      {% gds_summary_list_row %}
+        {% gds_summary_list_row_key %}
+          Registry (public information)
+        {% endgds_summary_list_row_key %}
+        {% gds_summary_list_row_value %}
+          {{ registration_data.registrant_role }}
+          <br>
+          {{ registration_data.registrant_contact_email }}
+        {% endgds_summary_list_row_value %}
+        {% gds_summary_list_row_actions %}
+          {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registry-details" %}
+        {% endgds_summary_list_row_actions %}
+      {% endgds_summary_list_row %}
+    {% endgds_summary_list %}
+
+    <h2 class="govuk-heading-m">
+      Now send your registrant's application
+    </h2>
+    <div id="checkanswers-hint" class="govuk-hint">
+      By submitting this application you are confirming the details you are providing are correct to the best of your knowledge.
+    </div>
+    <a class="govuk-button" id="button-continue" href="{% url "success" %}">
+      Accept and send
+    </a>
   {% endblock %}
 {% endblock %}
