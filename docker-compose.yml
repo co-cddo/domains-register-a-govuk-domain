@@ -31,6 +31,10 @@ services:
           condition: service_healthy
       init:
         condition: service_completed_successfully
+      clamav:
+        condition: service_started
+    networks:
+      - clam-net
 
   postgres:
     platform: linux/amd64
@@ -49,6 +53,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - clam-net
+
+  clamav:
+    platform: linux/amd64
+    image: clamav/clamav:latest
+    restart: unless-stopped
+    ports:
+      - "3310:3310"
+    networks:
+      - clam-net
 
   init:
     <<: *api-base
@@ -61,8 +76,13 @@ services:
     depends_on:
       postgres:
           condition: service_healthy
+    networks:
+      - clam-net
 
 
 volumes:
   postgres-data: { }
   govuk_domain_home: { }
+
+networks:
+  clam-net:

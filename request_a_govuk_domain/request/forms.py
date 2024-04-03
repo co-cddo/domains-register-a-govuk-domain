@@ -17,6 +17,7 @@ from crispy_forms_gds.layout import (
 from typing import Optional
 from .models.organisation import RegistrantTypeChoices, Registrar
 from ..layout.content import DomainsHTML
+from .utils import validate_file_infection
 
 
 class PhoneNumberValidator:
@@ -349,8 +350,10 @@ class MinisterForm(forms.Form):
 class UploadForm(forms.Form):
     file = forms.FileField(
         label="Upload a file",
-        help_text="Support file is .jpeg or .png and the maximum size is 2.5 MB.",
+        help_text="Support file is .jpeg or .png and the maximum size is %s."
+        % filesizeformat(settings.MAX_UPLOAD_SIZE),
         error_messages={"required": "Choose the file you want to upload."},
+        validators=[validate_file_infection],
     )
 
     def __init__(self, *args, **kwargs):
@@ -372,7 +375,7 @@ class UploadForm(forms.Form):
         file = self.cleaned_data.get("file")
         if (
             file is not None
-            and file.content_type.split("/")[0] in settings.CONTENT_TYPES
+            and file.content_type.split("/")[1] in settings.CONTENT_TYPES
         ):
             if file.size > int(settings.MAX_UPLOAD_SIZE):
                 raise forms.ValidationError(
@@ -383,7 +386,9 @@ class UploadForm(forms.Form):
                     )
                 )
         else:
-            raise forms.ValidationError("Wrong file format. Please upload an image.")
+            raise forms.ValidationError(
+                "Wrong file format. Please upload an image or pdf."
+            )
 
         return file
 
