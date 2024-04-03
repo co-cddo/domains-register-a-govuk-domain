@@ -11,13 +11,13 @@ describe('Happy path - route 1-12', () => {
     cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
     cy.enterDomainName('something-pc')
 
-    cy.checkPageTitleIncludes('Can you confirm if the something-pc.gov.uk domain name is correct?')
+    cy.checkPageTitleIncludes('Is something-pc.gov.uk the correct domain name?')
     cy.selectYesOrNo('domain_confirmation', 'no')
 
     cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
     cy.enterDomainName('somethingelse-pc')
 
-    cy.checkPageTitleIncludes('Can you confirm if the somethingelse-pc.gov.uk domain name is correct?')
+    cy.checkPageTitleIncludes('Is somethingelse-pc.gov.uk the correct domain name?')
     cy.selectYesOrNo('domain_confirmation', 'yes')
 
     cy.checkPageTitleIncludes('Registrant details')

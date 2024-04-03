@@ -21,7 +21,7 @@ describe('Happy path - route 3', () => {
     cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
     cy.enterDomainName('something-pc')
 
-    cy.checkPageTitleIncludes('Can you confirm if the something-pc.gov.uk domain name is correct?')
+    cy.checkPageTitleIncludes('Is something-pc.gov.uk the correct domain name?')
     cy.selectYesOrNo('domain_confirmation', 'yes')
 
     cy.checkPageTitleIncludes('Registrant details')

@@ -235,7 +235,7 @@ Cypress.Commands.add('goToDomainViaRoute', route => {
 Cypress.Commands.add('goToMinister', () => {
   cy.goToDomainViaRoute(2)
   cy.enterDomainName('foobar')
-  cy.checkPageTitleIncludes('Can you confirm if the foobar.gov.uk domain name is correct?')
+  cy.checkPageTitleIncludes('Is foobar.gov.uk the correct domain name?')
   cy.selectYesOrNo('domain_confirmation', 'yes')
   cy.checkPageTitleIncludes('Has a central government minister requested the foobar.gov.uk domain name?')
 })
