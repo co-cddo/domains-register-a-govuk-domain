@@ -48,6 +48,18 @@ class RegistrarDetailsView(FormView):
         kwargs["change"] = getattr(self, "change")
         return kwargs
 
+    def get_initial(self):
+        initial = super().get_initial()
+        session_data = self.request.session.get("registration_data")
+        if session_data is not None:
+            initial["registrar_organisation"] = session_data.get(
+                "registrar_organisation", ""
+            )
+            initial["registrar_name"] = session_data.get("registrar_name", "")
+            initial["registrar_phone"] = session_data.get("registrar_phone", "")
+            initial["registrar_email"] = session_data.get("registrar_email", "")
+        return initial
+
     def form_valid(self, form):
         add_to_session(
             form,
