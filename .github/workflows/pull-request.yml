@@ -35,6 +35,8 @@ jobs:
         sudo apt-get -y install libcurl4-nss-dev curl git make build-essential libssl-dev zlib1g-dev libbz2-dev \
         libreadline-dev libsqlite3-dev wget ca-certificates libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
         libffi-dev liblzma-dev mecab-ipadic-utf8 unzip clamav clamav-daemon clamav-freshclam --fix-missing
+    # When we deploy in prod we will have a clamav installed and we will do below to update the clamav database
+    # and expose the clamav-deamon on tcp host and port with "clamav" as alias.
     - name: Run freshclam to update virus database
       run: |
         sudo /etc/init.d/clamav-freshclam stop

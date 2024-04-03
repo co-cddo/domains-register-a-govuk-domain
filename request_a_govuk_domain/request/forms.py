@@ -350,7 +350,8 @@ class MinisterForm(forms.Form):
 class UploadForm(forms.Form):
     file = forms.FileField(
         label="Upload a file",
-        help_text="Support file is .jpeg or .png and the maximum size is 2.5 MB.",
+        help_text="Support file is .jpeg or .png and the maximum size is %s."
+        % filesizeformat(settings.MAX_UPLOAD_SIZE),
         error_messages={"required": "Choose the file you want to upload."},
         validators=[validate_file_infection],
     )
