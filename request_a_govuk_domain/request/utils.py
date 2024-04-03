@@ -23,23 +23,45 @@ def handle_uploaded_file(file):
     return saved_filename
 
 
-def route_number(session_data: dict) -> str:
-    routing_table = {
-        "parish_council": "1",
-        "village_council": "1",
-        "central_government": "2",
-        "ndpb": "2",
-        "local_authority": "3",
-        "fire_service": "3",
-        "combined_authority": "3",
-        "pcc": "3",
-        "joint_authority": "3",
-        "joint_committee": "3",
-        "representing_psb": "3",
-        "representing_profession": "3",
-        "none": "4",
-    }
-    return routing_table[session_data["registrant_type"]]
+def route_number(session_data: dict) -> dict[str, int]:
+    route = {}
+    registrant_type = session_data.get("registrant_type")
+    if registrant_type is not None:
+        if registrant_type in ["parish_council", "village_council"]:
+            route["primary"] = 1
+            if session_data.get("domain_confirmation") == "no":
+                route["secondary"] = 12
+        elif registrant_type in ["central_government", "ndpb"]:
+            route["primary"] = 2
+            domain_purpose = session_data.get("domain_purpose")
+            if domain_purpose is not None:
+                if domain_purpose in ["email-only"]:
+                    route["secondary"] = 5
+                    if session_data.get("minister") == "no":
+                        route["tertiary"] = 8
+                elif domain_purpose in ["website-email"]:
+                    route["secondary"] = 7
+                else:
+                    route["secondary"] = 6
+                    if session_data.get("written_permission") == "no":
+                        route["tertiary"] = 9
+        elif registrant_type in [
+            "local_authority",
+            "fire_service",
+            "combined_authority",
+            "pcc",
+            "joint_authority",
+            "joint_committee",
+            "representing_psb",
+            "representing_profession",
+        ]:
+            route["primary"] = 3
+            if session_data.get("written_permission") == "no":
+                route["secondary"] = 10
+        else:
+            route["primary"] = 4
+
+    return route
 
 
 def is_central_government(registrant_type: str) -> bool:

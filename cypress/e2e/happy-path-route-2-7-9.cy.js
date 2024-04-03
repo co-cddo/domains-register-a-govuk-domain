@@ -15,10 +15,10 @@ describe('Happy path - route 2-7-10', () => {
     cy.selectYesOrNo('exemption', 'yes')
 
     cy.checkPageTitleIncludes('Upload evidence of the exemption')
-    cy.uploadDocument("image.png")
+    cy.uploadDocument("exemption.png")
 
     cy.checkPageTitleIncludes('Upload evidence of the exemption')
-    cy.confirmUpload('image.png')
+    cy.confirmUpload('exemption.png')
 
     cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
     cy.get('p').should('include.text', 'chief information officer')

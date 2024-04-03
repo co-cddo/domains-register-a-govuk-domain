@@ -20,6 +20,26 @@ Cypress.Commands.add('confirmProblem', (errorMessage, nb_errors = 1) => {
   }
 })
 
+Cypress.Commands.add('summaryShouldHave', (index, value)  => {
+  if (typeof value === 'string') {
+    // if a string is passed check that it's at the required index
+    cy.get('.govuk-summary-list__value').eq(index).should('include.text', value)
+  } else if (Array.isArray(value)) {
+      // if an array strings is passed check that all are included at the required index
+    for (const subvalue of value) {
+      cy.get('.govuk-summary-list__value').eq(index).should('include.text', subvalue)
+    }
+  }
+})
+
+Cypress.Commands.add('summaryShouldNotHave', keys => {
+  // Make sure the passed keys are not in the summary
+  for (const key in keys) {
+    cy.get('.govuk-summary-list__key').should('not.include.text', key)
+  }
+})
+
+
 //============= Form user actions =================
 
 Cypress.Commands.add('enterDomainName', name => {
@@ -37,7 +57,7 @@ Cypress.Commands.add('fillOutRegistrarDetails', (org, name, phone, email) => {
 
 
 Cypress.Commands.add('fillOutRegistrantDetails', (org, name, phone, email) => {
-  cy.get('#id_registrant_organisation').clear().type(name)
+  cy.get('#id_registrant_organisation').clear().type(org)
   cy.get('#id_registrant_full_name').clear().type(name)
   cy.get('#id_registrant_phone').clear().type(phone)
   cy.get('#id_registrant_email').clear().type(email)
@@ -171,8 +191,8 @@ Cypress.Commands.add('goToExemptionUploadConfirm', filename => {
 
 
 Cypress.Commands.add('goToWrittenPermission', () => {
-  cy.goToExemptionUploadConfirm('image.png')
-  cy.confirmUpload('image.png')
+  cy.goToExemptionUploadConfirm('permission.png')
+  cy.confirmUpload('permission.png')
   cy.checkPageTitleIncludes('Does your registrant have written permission to apply for a .gov.uk domain name?')
 })
 
@@ -192,8 +212,8 @@ Cypress.Commands.add('goToWrittenPermissionUploadConfirm', filename => {
 
 
 Cypress.Commands.add('goToDomain', () => {
-  cy.goToWrittenPermissionUploadConfirm('image.png')
-  cy.confirmUpload('image.png')
+  cy.goToWrittenPermissionUploadConfirm('permission.png')
+  cy.confirmUpload('permission.png')
   cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
 })
 
@@ -218,8 +238,8 @@ Cypress.Commands.add('goToMinisterUploadConfirm', filename => {
 
 
 Cypress.Commands.add('goToApplicantDetails', () => {
-  cy.goToMinisterUploadConfirm('image.png')
-  cy.confirmUpload('image.png')
+  cy.goToMinisterUploadConfirm('minister.png')
+  cy.confirmUpload('minister.png')
   cy.checkPageTitleIncludes('Applicant details')
 })
 

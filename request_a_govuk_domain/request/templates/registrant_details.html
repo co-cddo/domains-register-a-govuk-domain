@@ -30,7 +30,7 @@
           <li>choose a .gov.uk Approved registrar</li>
         </ul>
 
-        {% if route == "1" or route == "3" %}
+        {% if route.primary == 1 or route.primary == 3 %}
           <p class="govuk-body">
             For example, for Parish Councils the registrant must be the Clerk.
           </p>

@@ -13,10 +13,10 @@ describe('Happy path - route 3', () => {
     cy.selectYesOrNo('written_permission', 'yes')
 
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
-    cy.uploadDocument('image.png')
+    cy.uploadDocument('permission.png')
 
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
-    cy.confirmUpload('image.png')
+    cy.confirmUpload('permission.png')
 
     cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
     cy.enterDomainName('something-pc')
@@ -32,6 +32,16 @@ describe('Happy path - route 3', () => {
     cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
 
     cy.checkPageTitleIncludes('Check your answers')
+
+    cy.summaryShouldHave(0, 'WeRegister')
+    cy.summaryShouldHave(1, ['Joe Bloggs', '01225672345', 'joe@example.org'])
+    cy.summaryShouldHave(2, 'Fire service')
+    cy.summaryShouldHave(3, ['Yes, evidence provided:', 'permission.png'])
+    cy.summaryShouldHave(4, 'something-pc.gov.uk')
+    cy.summaryShouldHave(5, 'HMRC')
+    cy.summaryShouldHave(6, ['Rob Roberts', '01225672344', 'rob@example.org'])
+    cy.summaryShouldHave(7, ['Clerk', 'clerk@example.org'])
+
     cy.get('#button-continue').click()
 
     cy.checkPageTitleIncludes('Application submitted')
