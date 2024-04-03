@@ -261,14 +261,13 @@ class UploadRemoveView(RedirectView):
                 os.remove(file_path)
 
         # delete the filenames from the session data
-        remove_from_session(
+        self.request.session["registration_data"] = remove_from_session(
             self.request.session,
             [
                 self.page_type + "_file_uploaded_filename",
                 self.page_type + "_file_original_filename",
             ],
         )
-
         return super().get_redirect_url(*args, **kwargs)
 
 
