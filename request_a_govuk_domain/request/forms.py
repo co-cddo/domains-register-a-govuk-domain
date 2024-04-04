@@ -286,6 +286,10 @@ class WrittenPermissionForm(forms.Form):
             Field.radios("written_permission", legend_size=Size.SMALL, inline=True),
             Button("submit", "Continue"),
         )
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to Answers")
+            )
 
 
 class ExemptionForm(forms.Form):
@@ -301,6 +305,7 @@ class ExemptionForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -312,7 +317,10 @@ class ExemptionForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "exemption", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to Answers")
+            )
 
     def get_choice(self, field):
         value = self.cleaned_data[field]
@@ -329,6 +337,7 @@ class MinisterForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -340,7 +349,10 @@ class MinisterForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        add_back_to_answers_button(args, "minister", self.helper.layout)
+        if self.change:
+            self.helper.layout.fields.append(
+                Button.secondary("back_to_answers", "Back to Answers")
+            )
 
     def get_choice(self, field):
         value = self.cleaned_data[field]

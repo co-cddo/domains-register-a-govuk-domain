@@ -120,5 +120,13 @@ def remove_from_session(session, field_names: List[str]) -> dict:
     """
     for field_name in field_names:
         if session["registration_data"].get(field_name) is not None:
+            if field_name.endswith("uploaded_filename"):
+                # remove the file associated
+                file_path = os.path.join(
+                    settings.MEDIA_ROOT, session["registration_data"].get(field_name)
+                )
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
             del session["registration_data"][field_name]
+
     return session["registration_data"]
