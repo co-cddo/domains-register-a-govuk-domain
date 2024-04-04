@@ -47,9 +47,6 @@ class ReviewerReadOnlyFieldsMixin:
             if isinstance(field, FileField)
         ]
 
-    def get_fields(self, request, obj=None):
-        return self._get_field_names()
-
     def get_urls(self):
         urls = super().get_urls()
         all_fields = []
