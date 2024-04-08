@@ -9,7 +9,7 @@ class Person(models.Model):
     """
 
     name = models.CharField()  # We don't need to set a max under Django 4.2
-    email_address = models.EmailField(max_length=320)
+    email_address = models.EmailField(max_length=320, unique=True)
     phone_number = PhoneNumberField(blank=True)
 
     def __str__(self):
