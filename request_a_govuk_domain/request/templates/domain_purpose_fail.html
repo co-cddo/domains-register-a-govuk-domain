@@ -1,36 +1,31 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags crispy_forms_gds %}
-{% load govuk_frontend_django %}
+{% load crispy_forms_gds %}
 
 {% block title %}Domain purpose fail{% endblock %}
 
+{% block before_main %}
+  {% url 'domain_purpose' as back_url %}
+  {% back_link back_url %}
+{% endblock %}
+
 {% block main %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        Your registrant cannot get approval for a .gov.uk domain name
+      </h1>
+      <p class="govuk-body">Your registrant cannot get approval, because the purpose of the .gov.uk domain name is other than a website or email address.</p>
+      <p class="govuk-body">Follow the appropriate application process if you need a domain name for:
+      </p>
 
-  {% block beforeContent %}
-    {% url 'domain_purpose' as back_url %}
-    {% back_link back_url %}
-  {% endblock %}
-
-  {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">
-          Your registrant cannot get approval for a .gov.uk domain name
-        </h1>
-        <p class="govuk-body">Your registrant cannot get approval, because the purpose of the .gov.uk domain name is other than a website or email address.</p>
-        <p class="govuk-body">Follow the appropriate application process if you need a domain name for:
-        </p>
-
-        <ul class="govuk-list govuk-list--bullet">
-          <li><a class="govuk-link" href="https://www.gov.uk/guidance/get-an-api-domain-on-govuk">an API</a></li>
-          <li><a class="govuk-link" href="https://www.gov.uk/service-manual/technology/get-a-domain-name">a service</a></li>
-          <li><a class="govuk-link" href="https://www.gov.uk/guidance/content-design/campaigns-on-gov-uk-standards-and-guidelines">a campaign</a></li>
-          <li><a class="govuk-link" href="https://www.gov.uk/government/publications/govuk-proposition/govuk-proposition">an independent inquiry</a></li>
-          <li><a class="govuk-link" href="https://insidegovuk.blog.gov.uk/2013/05/24/gov-uk-blogs-how-to-get-one/">a blog</a></li>
-          <li><a class="govuk-link" href="https://guidance.data.gov.uk/publish_and_manage_data/#publish-and-manage-datasets">publishing a government dataset.</a></li>
-        </ul>
-      </div>
+      <ul class="govuk-list govuk-list--bullet">
+        <li><a class="govuk-link" href="https://www.gov.uk/guidance/get-an-api-domain-on-govuk">an API</a></li>
+        <li><a class="govuk-link" href="https://www.gov.uk/service-manual/technology/get-a-domain-name">a service</a></li>
+        <li><a class="govuk-link" href="https://www.gov.uk/guidance/content-design/campaigns-on-gov-uk-standards-and-guidelines">a campaign</a></li>
+        <li><a class="govuk-link" href="https://www.gov.uk/government/publications/govuk-proposition/govuk-proposition">an independent inquiry</a></li>
+        <li><a class="govuk-link" href="https://insidegovuk.blog.gov.uk/2013/05/24/gov-uk-blogs-how-to-get-one/">a blog</a></li>
+        <li><a class="govuk-link" href="https://guidance.data.gov.uk/publish_and_manage_data/#publish-and-manage-datasets">publishing a government dataset.</a></li>
+      </ul>
     </div>
-  {% endblock %}
-
+  </div>
 {% endblock %}

@@ -1,56 +1,49 @@
-@@ -1,15 +1,8 @@
 {% extends "base.html" %}
+
 {% block main %}
-
-    {% block content %}
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-
-
-                <div class="govuk-panel govuk-panel--confirmation">
-                    <h1 class="govuk-panel__title">
-                        Application submitted
-                    </h1>
-                    <div class="govuk-panel__body">
-                        Your reference number<br><strong>{{ reference_number }}</strong>
-                    </div>
-                </div>
-
-                <p class="govuk-body">
-                    We have sent you a confirmation email with a record of your answers.
-                </p>
-
-                <h2 class="govuk-heading-m">
-                    What happens next
-                </h2>
-
-                <ol class="govuk-list govuk-list--number govuk-list--spaced">
-                    <li>We will contact you within 5 working days to confirm approval, reject the application or to ask
-                        for more information.
-                    </li>
-                    <li>Once approved, a .gov.uk domain must be registered with the registry operator (Nominet). We will
-                        send you a unique code, which you must use to complete this registration.
-                    </li>
-                </ol>
-
-                <div class="govuk-inset-text">
-                    If you have any questions you can email <code class="govspeak-code">approvals@domains.gov.uk</code>.
-                </div>
-
-                <h2 class="govuk-heading-s">How appeals work</h2>
-                <p class="govuk-body">If the Domains Team rejects an application you can appeal on behalf of your
-                    registrant by emailing
-                    <code class="govspeak-code">appeals@domains.gov.uk</code>. <br><br>
-                    We will forward this appeal with any additional information we request or your registrant wants to
-                    provide to the <a href="https://www.gov.uk/government/groups/naming-and-approvals-committee-nac"
-                                      class="govuk-link">Naming and Approvals Committee (NAC)</a> and keep you
-                    up-to-date with progress.
-                </p>
-                <p class="govuk-body">The NAC will make a final decision and will give its reasoning.</p>
-
-            </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+          Application submitted
+        </h1>
+        <div class="govuk-panel__body">
+          Your reference number<br><strong>{{ reference_number }}</strong>
         </div>
+      </div>
 
-    {% endblock %}
+      <p class="govuk-body">
+        We have sent you a confirmation email with a record of your answers.
+      </p>
 
+      <h2 class="govuk-heading-m">
+        What happens next
+      </h2>
+
+      <ol class="govuk-list govuk-list--number govuk-list--spaced">
+        <li>We will contact you within 5 working days to confirm approval, reject the application or to ask
+          for more information.
+        </li>
+        <li>Once approved, a .gov.uk domain must be registered with the registry operator (Nominet). We will
+          send you a unique code, which you must use to complete this registration.
+        </li>
+      </ol>
+
+      <div class="govuk-inset-text">
+        If you have any questions you can email <code class="govspeak-code">approvals@domains.gov.uk</code>.
+      </div>
+
+      <h2 class="govuk-heading-s">How appeals work</h2>
+      <p class="govuk-body">If the Domains Team rejects an application you can appeal on behalf of your
+        registrant by emailing
+        <code class="govspeak-code">appeals@domains.gov.uk</code>. <br><br>
+        We will forward this appeal with any additional information we request or your registrant wants to
+        provide to the <a href="https://www.gov.uk/government/groups/naming-and-approvals-committee-nac"
+                         class="govuk-link">Naming and Approvals Committee (NAC)</a> and keep you
+        up-to-date with progress.
+      </p>
+      <p class="govuk-body">The NAC will make a final decision and will give its reasoning.</p>
+
+    </div>
+  </div>
 {% endblock %}

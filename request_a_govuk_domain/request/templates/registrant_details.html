@@ -3,42 +3,38 @@
 
 {% block title %}Registrant details{% endblock %}
 
+{% block before_main %}
+  {% url "domain_confirm" as back_url %}
+  {% back_link back_url %}
+{% endblock %}
+
 {% block main %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-  {% block beforeContent %}
-    {% url "domain_confirm" as back_url %}
-    {% back_link back_url %}
-  {% endblock %}
+      {% error_summary form %}
 
-  {% block content %}
+      <h1 class="govuk-heading-l">
+        Registrant details
+      </h1>
 
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        We are collecting Registrant details as we may need to contact them to confirm their identity. The registrant must be a civil or a public servant, and be the person to:
+      </p>
 
-        {% error_summary form %}
+      <ul class="govuk-list govuk-list--bullet">
+        <li>get permission to apply for the .gov.uk domain name</li>
+        <li>choose a .gov.uk Approved registrar</li>
+      </ul>
 
-        <h1 class="govuk-heading-l">
-          Registrant details
-        </h1>
-
+      {% if route.primary == 1 or route.primary == 3 %}
         <p class="govuk-body">
-          We are collecting Registrant details as we may need to contact them to confirm their identity. The registrant must be a civil or a public servant, and be the person to:
+          For example, for Parish Councils the registrant must be the Clerk.
         </p>
+      {% endif %}
 
-        <ul class="govuk-list govuk-list--bullet">
-          <li>get permission to apply for the .gov.uk domain name</li>
-          <li>choose a .gov.uk Approved registrar</li>
-        </ul>
+      {% crispy form %}
 
-        {% if route.primary == 1 or route.primary == 3 %}
-          <p class="govuk-body">
-            For example, for Parish Councils the registrant must be the Clerk.
-          </p>
-        {% endif %}
-
-        {% crispy form %}
-
-      </div>
     </div>
-  {% endblock %}
+  </div>
 {% endblock %}

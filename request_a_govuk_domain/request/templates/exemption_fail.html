@@ -1,31 +1,26 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags crispy_forms_gds %}
-{% load govuk_frontend_django %}
+{% load static crispy_forms_gds %}
 
 {% block title %}Written permission elimination{% endblock %}
 
+{% block before_main %}
+  {% url 'exemption' as back_url %}
+  {% back_link back_url %}
+{% endblock %}
+
 {% block main %}
-
-  {% block beforeContent %}
-    {% url 'exemption' as back_url %}
-    {% back_link back_url %}
-  {% endblock %}
-
-  {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">
-          Your registrant cannot get approval for a .gov.uk domain name
-        </h1>
-        <p class="govuk-body">Your registrant cannot get approval for a .gov.uk domain name because they cannot prove its exemption from using the GOV.UK website.</p>
-        <div class="govuk-inset-text">
-          Central government organisations are expected to use the GOV.UK website for their publishing, unless there's a good reason not to.
-        </div>
-        <p class="govuk-body"></p>
-        <p class="govuk-body">
-          <a href="https://www.gov.uk/guidance/request-an-exemption-from-using-the-govuk-website" class="govuk-link">Check if your registrant can request an exemption from using the GOV.UK website</a>
-        </p>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        Your registrant cannot get approval for a .gov.uk domain name
+      </h1>
+      <p class="govuk-body">Your registrant cannot get approval for a .gov.uk domain name because they cannot prove its exemption from using the GOV.UK website.</p>
+      <div class="govuk-inset-text">
+        Central government organisations are expected to use the GOV.UK website for their publishing, unless there's a good reason not to.
       </div>
+      <p class="govuk-body">
+        <a href="https://www.gov.uk/guidance/request-an-exemption-from-using-the-govuk-website" class="govuk-link">Check if your registrant can request an exemption from using the GOV.UK website</a>
+      </p>
     </div>
-  {% endblock %}
+  </div>
 {% endblock %}

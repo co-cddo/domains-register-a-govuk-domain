@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags crispy_forms_gds %}
 
+{% block title %}Registrant type{% endblock %}
+
+{% block before_main %}
+  {% url "registrant_details" as back_url %}
+  {% back_link back_url %}
+{% endblock %}
+
+
 {% block main %}
-
-  {% block beforeContent %}
-    {% url "registrant_details" as back_url %}
-    {% back_link back_url %}
-  {% endblock %}
-
   {% block content %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
+        {% error_summary form %}
         <h1 class="govuk-heading-l">
           Who is this domain name for?
         </h1>
-        {% error_summary form %}
-
         <p class="govuk-body">Your registrant must be from an eligible organisation to get a .gov.uk domain name.</p>
-
         {% crispy form %}
       </div>
     </div>
