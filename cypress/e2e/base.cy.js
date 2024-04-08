@@ -271,8 +271,47 @@ Cypress.Commands.add('goToRegistryDetails', () => {
 })
 
 
-Cypress.Commands.add('goToConfirmation', () => {
-  cy.goToRegistryDetails()
-  cy.fillOutRegistryDetails('Clerk', 'rob@example.com')
-  cy.checkPageTitleIncludes('Check your answers')
+Cypress.Commands.add('goToConfirmation', (route=1) => {
+  if (route === 1) {
+    cy.goToRegistryDetails()
+    cy.fillOutRegistryDetails('Clerk', 'rob@example.com')
+    cy.checkPageTitleIncludes('Check your answers')
+  } else if (route === 7) {
+    cy.goToExemptionUploadConfirm('exemption.png')
+    cy.confirmUpload('exemption.png')
+
+    cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
+    cy.get('p').should('include.text', 'chief information officer')
+    cy.selectYesOrNo('written_permission', 'yes')
+
+    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.uploadDocument("permission.png")
+
+    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.confirmUpload('permission.png')
+
+    cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
+    cy.enterDomainName('something-pc')
+
+    cy.checkPageTitleIncludes('Is something-pc.gov.uk the correct domain name?')
+    cy.selectYesOrNo('domain_confirmation', 'yes')
+
+    cy.checkPageTitleIncludes('Has a central government minister requested the something-pc.gov.uk domain name?')
+    cy.selectYesOrNo('minister', 'yes')
+
+    cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
+    cy.uploadDocument("minister.png")
+
+    cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
+    cy.confirmUpload('minister.png')
+
+    cy.checkPageTitleIncludes('Registrant details')
+    cy.get('p').should('not.include.text', 'the registrant must be the Clerk.')
+    cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
+
+    cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
+    cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
+
+    cy.checkPageTitleIncludes('Check your answers')
+  }
 })

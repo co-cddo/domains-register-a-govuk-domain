@@ -159,6 +159,16 @@ urlpatterns = [
         name="change_domain",
     ),
     path(
+        "change-exemption",
+        ExemptionView.as_view(change=True),
+        name="change_exemption",
+    ),
+    path(
+        "change-minister",
+        MinisterView.as_view(change=True),
+        name="change_minister",
+    ),
+    path(
         "change-written-permission",
         WrittenPermissionView.as_view(change=True),
         name="change_written_permission",
