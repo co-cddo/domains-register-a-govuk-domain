@@ -33,20 +33,20 @@ class Application(models.Model):
     # enable users to select e.g. a registrant from a previous record so
     # perhaps we do nothing.
     domain_name = models.CharField(max_length=253)
-    registrar_person = models.OneToOneField(
+    registrar_person = models.ForeignKey(
         RegistrarPerson, on_delete=models.CASCADE, related_name="registrar_application"
     )
-    registrant_person = models.OneToOneField(
+    registrant_person = models.ForeignKey(
         RegistrantPerson,
         on_delete=models.CASCADE,
         related_name="registrant_application",
     )
-    registry_published_person = models.OneToOneField(
+    registry_published_person = models.ForeignKey(
         RegistryPublishedPerson,
         on_delete=models.CASCADE,
         related_name="registry_published_application",
     )
-    registrant_org = models.OneToOneField(Registrant, on_delete=models.CASCADE)
+    registrant_org = models.ForeignKey(Registrant, on_delete=models.CASCADE)
     registrar_org = models.ForeignKey(Registrar, on_delete=models.CASCADE)
     written_permission_evidence = models.FileField()
 

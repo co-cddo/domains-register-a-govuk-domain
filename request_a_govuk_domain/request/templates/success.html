@@ -1,6 +1,7 @@
-@@ -1,15 +1,8 @@
 {% extends "base.html" %}
 {% block main %}
+
+    {% block title %}Application submitted{% endblock %}
 
     {% block content %}
         <div class="govuk-grid-row">
@@ -12,7 +13,7 @@
                         Application submitted
                     </h1>
                     <div class="govuk-panel__body">
-                        Your reference number<br><strong>{{ reference_number }}</strong>
+                        Your reference number<br><strong>{{ reference }}</strong>
                     </div>
                 </div>
 

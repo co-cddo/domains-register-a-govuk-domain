@@ -6,6 +6,8 @@ from django.views.generic import TemplateView, RedirectView
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
+
+from .db import save_data_in_database
 from .forms import (
     DomainConfirmationForm,
     ExemptionForm,
@@ -347,18 +349,32 @@ class ConfirmView(TemplateView):
         return context
 
 
+def generate_reference() -> str:
+    """
+    Generate application reference with the following format:
+    GOVUK + date in DDMMYYYY + random 4 letter alphabetical characters ( which don't have vowels and Y )
+    e.g. 'GOVUK12042024TRFT'
+
+    Returns:
+        str: application reference.
+    """
+
+    random_letters = [
+        letter for letter in string.ascii_uppercase if letter not in "AEIOUY"
+    ]
+    random_string = "".join(random.choices(random_letters, k=4))
+
+    return "GOVUK" + datetime.today().strftime("%d%m%Y") + random_string
+
+
 class SuccessView(View):
     def get(self, request):
-        # TODO Change when requirements are finalised and add comment accordingly
-        reference_number = (
-            "GOVUK"
-            + datetime.today().strftime("%d%m%Y")
-            + "".join(random.choice(string.ascii_uppercase) for _ in range(4))
-        )
+        reference = generate_reference()
+        save_data_in_database(generate_reference(), request)
 
         # We're finished, so clear the session data
         request.session.pop("registration_data", None)
-        return render(request, "success.html", {"reference_number": reference_number})
+        return render(request, "success.html", {"reference": reference})
 
 
 class ExemptionView(FormView):
