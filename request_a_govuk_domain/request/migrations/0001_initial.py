@@ -24,9 +24,9 @@ class Migration(migrations.Migration):
                     "status",
                     models.CharField(
                         choices=[
-                            ("Approved", "Approved"),
-                            ("Rejected", "Rejected"),
-                            ("Pending", "Pending"),
+                            ("approved", "Approved"),
+                            ("rejected", "Rejected"),
+                            ("pending", "Pending"),
                         ],
                         default="Pending",
                         max_length=8,
@@ -206,31 +206,31 @@ class Migration(migrations.Migration):
                     models.CharField(
                         choices=[
                             (
+                                "central-gov",
                                 "Central government department or agency",
-                                "Central Government",
                             ),
                             (
+                                "alb",
                                 "Non-departmental body - also known as an arm's length body",
-                                "Ndpb",
                             ),
-                            ("Parish or community council", "Parish Council"),
+                            ("parish-council", "Parish council"),
                             (
+                                "local-authority",
                                 "Town, county, borough, metropolitan or district council",
-                                "Local Authority",
                             ),
-                            ("Fire service", "Fire Service"),
-                            ("Neighbourhood or village council", "Village Council"),
-                            ("Combined or unitary authority", "Combined Authority"),
-                            ("Police and Crime Commissioner", "Pcc"),
-                            ("Joint Authority", "Joint Authority"),
-                            ("Joint Committee", "Joint Committee"),
+                            ("fire-service", "Fire service"),
+                            ("village-council", "Neighbourhood or village council"),
+                            ("combined-authority", "Combined or unitary authority"),
+                            ("pcc", "Police and crime commissioner"),
+                            ("joint-authority", "Joint authority"),
+                            ("Joint-committee", "Joint committee"),
                             (
+                                "psb-group",
                                 "Organisation representing a group of public sector bodies",
-                                "Representing Psb",
                             ),
                             (
+                                "psb-profession",
                                 "Organisation representing a profession across public sector bodies",
-                                "Representing Profession",
                             ),
                         ],
                         max_length=100,
