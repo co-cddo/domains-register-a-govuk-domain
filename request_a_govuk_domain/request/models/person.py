@@ -28,6 +28,9 @@ class RegistrantPerson(Person):
 
     pass
 
+    class Meta:
+        unique_together = ("name", "email_address", "phone_number")
+
 
 class RegistrarPerson(Person):
     """
@@ -39,6 +42,9 @@ class RegistrarPerson(Person):
 
     registrar = models.ForeignKey("request.Registrar", on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = ("name", "email_address", "phone_number", "registrar")
+
 
 class RegistryPublishedPerson(Person):
     """
@@ -49,3 +55,6 @@ class RegistryPublishedPerson(Person):
     """
 
     role = models.CharField()
+
+    class Meta:
+        unique_together = ("email_address", "role")
