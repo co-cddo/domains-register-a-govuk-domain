@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django.db import models
+from django.contrib.auth.models import User
 from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
 from .organisation import Registrant, Registrar
 
@@ -24,6 +25,9 @@ class Application(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     reference = models.CharField(max_length=REF_NUM_LENGTH, null=False)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    time_submitted = models.DateTimeField(auto_now_add=True)
+    time_decided = models.DateTimeField(null=True)
     status = models.CharField(
         choices=ApplicationStatus.choices,
         default=ApplicationStatus.PENDING,
