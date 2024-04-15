@@ -3,37 +3,33 @@
 
 {% block title %}Written Permission fail{% endblock %}
 
-{% block main %}
+{% block beforeContent %}
+  {% url 'written_permission' as back_url %}
+  {% back_link back_url %}
+{% endblock %}
 
-    {% block beforeContent %}
-        {% url 'written_permission' as back_url %}
-        {% back_link back_url %}
-    {% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        Your registrant does not have the evidence required to get a .gov.uk domain name
+      </h1>
 
-    {% block content %}
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-l">
-                    Your registrant does not have the evidence required to get a .gov.uk domain name
-                </h1>
+      {% if route.primary == 3 %}
+        <p class="govuk-body">
+          Your registrant must get permission to apply for a .gov.uk domain name from the chief executive or equivalent if you're applying on behalf of any other public sector organisation.
+        </p>
+      {% else %}
+        <p class="govuk-body">
+          Your registrant must get permission to apply for a .gov.uk domain name from the chief information officer or equivalent if you're applying on behalf of a central government department or agency.
+        </p>
+      {% endif %}
 
-
-                {% if route.primary == 3 %}
-                  <p class="govuk-body">
-                    Your registrant must get permission to apply for a .gov.uk domain name from the chief executive or equivalent if you're applying on behalf of any other public sector organisation.
-                  </p>
-                {% else %}
-                  <p class="govuk-body">
-                    Your registrant must get permission to apply for a .gov.uk domain name from the chief information officer or equivalent if you're applying on behalf of a central government department or agency.
-                  </p>
-                {% endif %}
-
-                <p class="govuk-body">
-                    <a href="https://www.gov.uk/guidance/get-permission-to-apply-for-a-govuk-domain-name"
-                       class="govuk-link">Your registrant must get permission to apply
-                    </a>.
-                </p>
-            </div>
-        </div>
-    {% endblock %}
+      <p class="govuk-body">
+        <a href="https://www.gov.uk/guidance/get-permission-to-apply-for-a-govuk-domain-name"
+          class="govuk-link">Your registrant must get permission to apply
+        </a>.
+      </p>
+    </div>
+  </div>
 {% endblock %}

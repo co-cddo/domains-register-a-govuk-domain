@@ -6,19 +6,16 @@
 
 {% block title %}Registrar organisation{% endblock %}
 
-{% block main %}
-
-  {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        {% error_summary form %}
-        <h1 class="govuk-heading-l">
-          Which .gov.uk Approved Registrar organisation are you from?
-        </h1>
-        {% crispy form %}
-      </div>
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% error_summary form %}
+      <h1 class="govuk-heading-l">
+        Which .gov.uk Approved Registrar organisation are you from?
+      </h1>
+      {% crispy form %}
     </div>
-  {% endblock %}
+  </div>
 {% endblock %}
 
 {% block bottomjs %}

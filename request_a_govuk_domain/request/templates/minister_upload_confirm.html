@@ -4,18 +4,16 @@
 
 {% block title %}Minister upload confirm{% endblock %}
 
-{% block main %}
+{% block beforeContent %}
+  {% url "minister_upload" as back_url %}
+  {% back_link back_url %}
+{% endblock %}
 
-  {% block beforeContent %}
-    {% url "minister_upload" as back_url %}
-    {% back_link back_url %}
-  {% endblock %}
-
-  {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">
-          Upload evidence of the minister's request
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        Upload evidence of the minister's request
       </h2>
       <div class="govuk-hint">
         Support file is .jpeg or .png and the maximum size is 10MB.
@@ -46,7 +44,6 @@
           Back to answers
         </a>
       {% endif %}
-      </div>
     </div>
-  {% endblock %}
+  </div>
 {% endblock %}

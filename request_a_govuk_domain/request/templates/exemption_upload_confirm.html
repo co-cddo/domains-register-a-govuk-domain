@@ -4,49 +4,46 @@
 
 {% block title %}Exemption upload confirmation{% endblock %}
 
-{% block main %}
+{% block beforeContent %}
+  {% url "exemption_upload" as back_url %}
+  {% back_link back_url %}
+{% endblock %}
 
-  {% block beforeContent %}
-    {% url "exemption_upload" as back_url %}
-    {% back_link back_url %}
-  {% endblock %}
-
-  {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">
-          Upload evidence of the exemption
-      </h2>
-      <div class="govuk-hint">
-        Support file is .jpeg or .png and the maximum size is 10MB.
-      </div>
-
-      <dl class="govuk-summary-list govuk-summary-list--long-key">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">
-            <a class="govuk-link" id="uploaded-filename" href="/media/{{ registration_data.exemption_file_uploaded_filename }}" target="_blank">{{ registration_data.exemption_file_original_filename }}</a>
-          </dt>
-          <dd class="govuk-summary-list__value">
-            <strong class="govuk-tag govuk-tag--green">
-              uploaded
-            </strong>
-          </dd>
-          <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" id="remove-link" href="{% url "exemption_upload_remove" %}">
-              Remove<span class="govuk-visually-hidden"> {{ registration_data.original_filename }}</span>
-            </a>
-          </dd>
-        </div>
-      </dl>
-      <a class="govuk-button" id="button-continue" href="{% url "written_permission" %}">
-        Continue
-      </a>
-      {% if registration_data.change %}
-        <a class="govuk-button govuk-button--secondary" id="id_back_to_answers" href="{% url "confirm" %}">
-          Back to answers
-        </a>
-      {% endif %}
-      </div>
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        Upload evidence of the exemption
+    </h2>
+    <div class="govuk-hint">
+      Support file is .jpeg or .png and the maximum size is 10MB.
     </div>
-  {% endblock %}
+
+    <dl class="govuk-summary-list govuk-summary-list--long-key">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <a class="govuk-link" id="uploaded-filename" href="/media/{{ registration_data.exemption_file_uploaded_filename }}" target="_blank">{{ registration_data.exemption_file_original_filename }}</a>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <strong class="govuk-tag govuk-tag--green">
+            uploaded
+          </strong>
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" id="remove-link" href="{% url "exemption_upload_remove" %}">
+            Remove<span class="govuk-visually-hidden"> {{ registration_data.original_filename }}</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
+    <a class="govuk-button" id="button-continue" href="{% url "written_permission" %}">
+      Continue
+    </a>
+    {% if registration_data.change %}
+      <a class="govuk-button govuk-button--secondary" id="id_back_to_answers" href="{% url "confirm" %}">
+        Back to answers
+      </a>
+    {% endif %}
+    </div>
+  </div>
 {% endblock %}

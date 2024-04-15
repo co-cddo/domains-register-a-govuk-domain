@@ -3,37 +3,33 @@
 
 {% block title %}Written Permission{% endblock %}
 
-{% block main %}
+{% block beforeContent %}
+  {% url "registrant" as back_url %}
+  {% back_link back_url %}
+{% endblock %}
 
-    {% block beforeContent %}
-        {% url "registrant" as back_url %}
-        {% back_link back_url %}
-    {% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% error_summary form %}
+      <h1 class="govuk-heading-l">
+        Does your registrant have proof of permission to apply for a .gov.uk domain name?
+      </h1>
 
-    {% block content %}
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                {% error_summary form %}
-              <h1 class="govuk-heading-l">
-                Does your registrant have proof of permission to apply for a .gov.uk domain name?
-              </h1>
+      {% if route.primary == 2 %}
+        <p class="govuk-body">
+          Your registrant must get permission to apply from the chief information officer or equivalent if you're applying on behalf of a central government of agency.
+        </p>
+      {% else %}
+        <p class="govuk-body">
+          Your registrant must get written permission from the chief executive or equivalent if you're applying on behalf of a other public sector organisations.
+        </p>
+      {% endif %}
+      <p class="govuk-body">
+        Acceptable proof can be a screenshot of an email or a PDF file, which includes approval from the person who has authority to request the domain name. This person's work email address must be visible.
+      </p>
 
-              {% if route.primary == 2 %}
-                <p class="govuk-body">
-                  Your registrant must get permission to apply from the chief information officer or equivalent if you're applying on behalf of a central government of agency.
-                </p>
-              {% else %}
-                <p class="govuk-body">
-                  Your registrant must get written permission from the chief executive or equivalent if you're applying on behalf of a other public sector organisations.
-                </p>
-              {% endif %}
-              <p class="govuk-body">
-                Acceptable proof can be a screenshot of an email or a PDF file, which includes approval from the person who has authority to request the domain name. This person's work email address must be visible.
-              </p>
-
-              {% crispy form %}
-            </div>
-        </div>
-    {% endblock %}
-
+      {% crispy form %}
+    </div>
+  </div>
 {% endblock %}
