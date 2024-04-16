@@ -47,7 +47,7 @@ describe('Happy path - route 2-5', () => {
 
     cy.summaryShouldHave(0, 'WeRegister')
     cy.summaryShouldHave(1, ['Joe Bloggs', '01225672345', 'joe@example.org'])
-    cy.summaryShouldHave(2, 'Central Government')
+    cy.summaryShouldHave(2, 'Central government')
     cy.summaryShouldHave(3, 'Email only')
     cy.summaryShouldHave(4, ['Yes, evidence provided:', 'permission.png'])
     cy.summaryShouldHave(5, 'something-pc.gov.uk')

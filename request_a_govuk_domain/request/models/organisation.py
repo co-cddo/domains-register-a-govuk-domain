@@ -1,19 +1,26 @@
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 
 
 class RegistrantTypeChoices(models.TextChoices):
-    central_government = "Central government department or agency"
-    ndpb = "Non-departmental body - also known as an arm's length body"
-    parish_council = "Parish or community council"
-    local_authority = "Town, county, borough, metropolitan or district council"
-    fire_service = "Fire service"
-    village_council = "Neighbourhood or village council"
-    combined_authority = "Combined or unitary authority"
-    pcc = "Police and Crime Commissioner"
-    joint_authority = "Joint Authority"
-    joint_committee = "Joint Committee"
-    representing_psb = "Organisation representing a group of public sector bodies"
-    representing_profession = (
+    CENTRAL_GOVERNMENT = "central_government", _(
+        "Central government department or agency"
+    )
+    ALB = "alb", _("Non-departmental body - also known as an arm's length body")
+    PARISH_COUNCIL = "parish_council", _("Parish or community council")
+    LOCAL_AUTHORITY = "local_authority", _(
+        "Town, county, borough, metropolitan or district council"
+    )
+    FIRE_SERVICE = "fire_service", _("Fire service")
+    VILLAGE_COUNCIL = "village_council", _("Neighbourhood or village council")
+    COMBINED_AUTHORITY = "combined_authority", _("Combined or unitary authority")
+    PCC = "pcc", _("Police and Crime Commissioner")
+    JOINT_AUTHORITY = "joint_authority", _("Joint Authority")
+    JOINT_COMMITTEE = "joint_committee", _("Joint Committee")
+    PSB_GROUP = "psb_group", _(
+        "Organisation representing a group of public sector bodies"
+    )
+    PSB_PROFESSION = "psb_profession", _(
         "Organisation representing a profession across public sector bodies"
     )
 

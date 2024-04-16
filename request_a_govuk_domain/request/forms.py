@@ -100,9 +100,7 @@ class RegistrarDetailsForm(forms.Form):
 
 
 class RegistrantTypeForm(forms.Form):
-    registrant_types = [
-        Choice(*item) for item in RegistrantTypeChoices.__members__.items()
-    ]
+    registrant_types = [Choice(*item) for item in RegistrantTypeChoices.choices]
     registrant_types[-1].divider = "Or"
     registrant_types.append(Choice("none", "None of the above"))
 
