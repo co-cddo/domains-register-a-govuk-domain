@@ -1,12 +1,16 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags crispy_forms_gds %}
+{% load govuk_frontend_django %}
+
+{% block title %}Application submitted{% endblock %}
+
 {% block main %}
 
-    {% block title %}Application submitted{% endblock %}
-
     {% block content %}
+
+
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-
 
                 <div class="govuk-panel govuk-panel--confirmation">
                     <h1 class="govuk-panel__title">
@@ -18,7 +22,7 @@
                 </div>
 
                 <p class="govuk-body">
-                    We have sent you a confirmation email with a record of your answers.
+                    We have sent you a confirmation email.
                 </p>
 
                 <h2 class="govuk-heading-m">
@@ -26,12 +30,13 @@
                 </h2>
 
                 <ol class="govuk-list govuk-list--number govuk-list--spaced">
-                    <li>We will contact you within 5 working days to confirm approval, reject the application or to ask
-                        for more information.
+                    <li>We will contact you within 5 working days to confirm whether your application has been
+                        successful. If we need more information we will contact you.
                     </li>
-                    <li>Once approved, a .gov.uk domain must be registered with the registry operator (Nominet). We will
-                        send you a unique code, which you must use to complete this registration.
+                    <li>Once approved, we will send you a registration Membership Token which is valid for 60 calendar
+                        days.
                     </li>
+                    <li>You must use the Membership Token to create the domain in the Nominet registry.</li>
                 </ol>
 
                 <div class="govuk-inset-text">
@@ -39,15 +44,14 @@
                 </div>
 
                 <h2 class="govuk-heading-s">How appeals work</h2>
-                <p class="govuk-body">If the Domains Team rejects an application you can appeal on behalf of your
-                    registrant by emailing
-                    <code class="govspeak-code">appeals@domains.gov.uk</code>. <br><br>
-                    We will forward this appeal with any additional information we request or your registrant wants to
-                    provide to the <a href="https://www.gov.uk/government/groups/naming-and-approvals-committee-nac"
-                                      class="govuk-link">Naming and Approvals Committee (NAC)</a> and keep you
-                    up-to-date with progress.
+                <p class="govuk-body">If your domain application is rejected we will send you further instructions on how to
+                    appeal.<br><br>
+                    All appeals are handled by the <a
+                            href="https://www.gov.uk/government/groups/naming-and-approvals-committee-nac"
+                            class="govuk-link govuk-link--no-visited-state">Naming and Approvals Committee</a>, which is
+                    an independent body subject to these terms of reference.
                 </p>
-                <p class="govuk-body">The NAC will make a final decision and will give its reasoning.</p>
+
 
             </div>
         </div>
