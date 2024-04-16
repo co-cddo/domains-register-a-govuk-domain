@@ -29,4 +29,4 @@ RUN mkdir /home/govuk_domain && \
 
 USER govuk_domain
 
-EXPOSE 8000
+EXPOSE 8010
