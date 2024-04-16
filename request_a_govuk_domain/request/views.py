@@ -21,7 +21,7 @@ from .forms import (
     RegistryDetailsForm,
     WrittenPermissionForm,
 )
-from .models.organisation import Registrar
+from .models.organisation import Registrar, RegistrantTypeChoices
 from django.views.generic.edit import FormView
 
 from .utils import (
@@ -343,6 +343,13 @@ class ConfirmView(TemplateView):
         )
         context["registrar_name"] = Registrar.objects.get(id=registrar_id).name
 
+        # Registrant type human-readable name
+        registrant_types = {
+            code: label for code, label in RegistrantTypeChoices.choices
+        }
+        context["registrant_type"] = registrant_types[
+            registration_data["registrant_type"]
+        ]
         # Pass the route number as what's on the page depends on it
         context["route"] = route_number(self.request.session.get("registration_data"))
 
