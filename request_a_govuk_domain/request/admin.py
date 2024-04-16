@@ -34,18 +34,10 @@ class ReviewerReadOnlyFieldsMixin:
         if request.user.is_superuser:
             return []
         else:
-            return self._get_field_names()
+            return self._get_field_names(not request.user.is_superuser)
 
-    def _get_field_names(self):
-        return [
-            field.name
-            for field in self.model._meta.fields
-            if not isinstance(field, FileField)
-        ] + [
-            "download_" + field.attname
-            for field in self.model._meta.fields
-            if isinstance(field, FileField)
-        ]
+    def get_fields(self, request, obj=None):
+        return self._get_field_names(not request.user.is_superuser)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -97,6 +89,33 @@ class ReviewerReadOnlyFieldsMixin:
         """
         raise NotImplementedError(
             "Override this method in your model admin to get the file"
+        )
+
+    def _get_field_names(self, add_download_fields=False):
+        """
+        Get the list of field names to show on the admin screen depending on the flag provided.
+        This will add extra attribute starting with "download_" replacing any FileFields
+        that exist in the model if add_add_download_fields set to true. Will return unmodified
+        list of field names (excluding the id) if the flag is set to false.
+        :param add_download_fields: set to true if the FileFields should be replaced with download links
+        :return: list of field names applicable for the current view.
+        """
+        return [
+            field.name
+            for field in self.model._meta.fields
+            if not isinstance(field, FileField) and field.name != "id"
+        ] + (
+            [
+                "download_" + field.attname
+                for field in self.model._meta.fields
+                if isinstance(field, FileField)
+            ]
+            if add_download_fields
+            else [
+                field.name
+                for field in self.model._meta.fields
+                if isinstance(field, FileField)
+            ]
         )
 
 
