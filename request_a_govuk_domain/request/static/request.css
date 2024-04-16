@@ -3,3 +3,7 @@ code {
   color: rgb(209, 49, 24);
   font-size: 16px;
 }
+
+.govuk-list > li.autocomplete__option {
+  margin-bottom: 0;
+}
