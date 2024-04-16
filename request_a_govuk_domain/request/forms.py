@@ -58,7 +58,6 @@ class RegistrarDetailsForm(forms.Form):
 
     registrar_phone = forms.CharField(
         label="Telephone number",
-        help_text="Your telephone number should be 11 digits. For example, 01632 660 001",
         validators=[PhoneNumberValidator("Please enter a valid phone number")],
     )
 
