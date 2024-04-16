@@ -4,23 +4,19 @@
 
 {% block title %}Exemption{% endblock %}
 
-{% block main %}
+{% block beforeContent %}
+  {% url "domain_purpose" as back_url %}
+  {% back_link back_url %}
+{% endblock %}
 
-  {% block beforeContent %}
-    {% url "domain_purpose" as back_url %}
-    {% back_link back_url %}
-  {% endblock %}
-
-  {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        {% error_summary form %}
-        <h1 class="govuk-heading-l">
-          Does your registrant have an exemption from using the GOV.UK website?
-        </h1>
-        {% crispy form %}
-      </div>
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% error_summary form %}
+      <h1 class="govuk-heading-l">
+        Does your registrant have an exemption from using the GOV.UK website?
+      </h1>
+      {% crispy form %}
     </div>
-  {% endblock %}
-
+  </div>
 {% endblock %}

@@ -3,29 +3,26 @@
 
 {% block title %}Registry details{% endblock %}
 
-{% block main %}
+{% block beforeContent %}
+  {% url "registrant_details" as back_url %}
+  {% back_link back_url %}
+{% endblock %}
 
-  {% block beforeContent %}
-    {% url "registrant_details" as back_url %}
-    {% back_link back_url %}
-  {% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-  {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
+      {% error_summary form %}
 
-        {% error_summary form %}
+      <h1 class="govuk-heading-l">
+        Registrant details for publishing to the registry
+      </h1>
 
-        <h1 class="govuk-heading-l">
-          Registrant details for publishing to the registry
-        </h1>
+      <p class="govuk-body">
+        You must make sure the Registrant provides the appropriate contact details to publish in the Registry. The details on this page must match the details you give to Nominet when creating the domain name.
+      </p>
 
-        <p class="govuk-body">
-          You must make sure the Registrant provides the appropriate contact details to publish in the Registry. The details on this page must match the details you give to Nominet when creating the domain name.
-        </p>
-
-        {% crispy form %}
-      </div>
+      {% crispy form %}
     </div>
-  {% endblock %}
+  </div>
 {% endblock %}

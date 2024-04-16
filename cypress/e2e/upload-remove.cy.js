@@ -15,7 +15,7 @@ describe('Errors when uploading files', () => {
       })
 
       cy.request({
-        url: 'http://0.0.0.0:8000' + uploadedFilename,
+        url: '/' + uploadedFilename,
         failOnStatusCode: false
       }).then(response => {
         expect(response.status).to.eq(404)
@@ -37,7 +37,7 @@ describe('Errors when uploading files', () => {
       })
 
       cy.request({
-        url: 'http://0.0.0.0:8000' + uploadedFilename,
+        url: '/' + uploadedFilename,
         failOnStatusCode: false
       }).then(response => {
         expect(response.status).to.eq(404)
@@ -59,7 +59,7 @@ describe('Errors when uploading files', () => {
       })
 
       cy.request({
-        url: 'http://0.0.0.0:8000' + uploadedFilename,
+        url: '/' + uploadedFilename,
         failOnStatusCode: false
       }).then(response => {
         expect(response.status).to.eq(404)

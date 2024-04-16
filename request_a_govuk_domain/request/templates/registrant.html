@@ -1,23 +1,19 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags crispy_forms_gds %}
 
-{% block main %}
+{% block beforeContent %}
+  {% url "registrant_type" as back_url %}
+  {% back_link back_url %}
+{% endblock %}
 
-    {% block beforeContent %}
-        {% url "registrant_type" as back_url %}
-        {% back_link back_url %}
-    {% endblock %}
-
-    {% block content %}
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-l">
-                    What is your registrant’s organisation name?
-                </h1>
-                {% error_summary form %}
-                {% crispy form %}
-            </div>
-        </div>
-    {% endblock %}
-
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        What is your registrant’s organisation name?
+      </h1>
+      {% error_summary form %}
+      {% crispy form %}
+    </div>
+  </div>
 {% endblock %}

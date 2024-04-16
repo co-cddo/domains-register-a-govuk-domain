@@ -18,7 +18,7 @@ services:
     platform: linux/amd64
     <<: *api-base
     ports:
-      - "8000:8000"
+      - "8010:8000"
     #Added the reload flag so the application will be reloaded when the source is modified.
     entrypoint: [ "/usr/local/bin/gunicorn", "request_a_govuk_domain.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "120", "--access-logfile", "-", "--reload" ]
     environment:
@@ -40,7 +40,7 @@ services:
     platform: linux/amd64
     image: postgres
     ports:
-      - 54320:5432
+      - 54321:5432
     environment:
       POSTGRES_USER: govuk_domain
       POSTGRES_PASSWORD: govuk_domain  # pragma: allowlist secret

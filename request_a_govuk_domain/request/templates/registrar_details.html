@@ -6,32 +6,34 @@
 
 {% block title %}Registrar details{% endblock %}
 
-{% block main %}
-
-  {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        {% error_summary form %}
-        <h1 class="govuk-heading-l">
-          Registrar details
-        </h1>
-
-        <p class="govuk-body">
-          You must be listed as a .gov.uk Approved Registrar on Nominet's website,
-          otherwise you cannot use this service.
-        </p>
-
-        <p class="govuk-body">
-          Email <code>support@domains.gov.uk</code> for more information
-        </p>
-
-        {% crispy form %}
-      </div>
-    </div>
-  {% endblock %}
+{% block beforeContent %}
+  {% url "start" as back_url %}
+  {% back_link back_url %}
 {% endblock %}
 
-{% block bottomjs %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% error_summary form %}
+      <h1 class="govuk-heading-l">
+        Registrar details
+      </h1>
+
+      <p class="govuk-body">
+        You must be listed as a .gov.uk Approved Registrar on Nominet's website,
+        otherwise you cannot use this service.
+      </p>
+
+      <p class="govuk-body">
+        Email <code>support@domains.gov.uk</code> for more information
+      </p>
+
+      {% crispy form %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_script %}
   <script type="text/javascript" src="{% static 'accessible-autocomplete.min.js' %}"></script>
   <script>
    accessibleAutocomplete.enhanceSelectElement({

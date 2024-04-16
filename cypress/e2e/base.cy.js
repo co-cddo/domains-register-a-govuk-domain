@@ -129,7 +129,7 @@ Cypress.Commands.add('confirmUpload', filename => {
 //============= Routes ============================
 
 Cypress.Commands.add('start', () => {
-  cy.visit('http://0.0.0.0:8000/')
+  cy.visit('/')
   cy.checkPageTitleIncludes('Get approval to use a .gov.uk domain name')
 })
 

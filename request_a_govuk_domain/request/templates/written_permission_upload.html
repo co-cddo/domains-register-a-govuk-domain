@@ -4,24 +4,21 @@
 
 {% block title %}Written permission upload{% endblock %}
 
-{% block main %}
+{% block beforeContent %}
+  {% url "written_permission" as back_url %}
+  {% back_link back_url %}
+{% endblock %}
 
-  {% block beforeContent %}
-    {% url "written_permission" as back_url %}
-    {% back_link back_url %}
-  {% endblock %}
-
-  {% block content %}
-    {% error_summary form %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">
-          Upload evidence of permission to apply
-        </h1>
-        <form method="post" action="{% url 'written_permission_upload' %}" enctype="multipart/form-data">
-          {% crispy form %}
-        </form>
-      </div>
+{% block content %}
+  {% error_summary form %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        Upload evidence of permission to apply
+      </h1>
+      <form method="post" action="{% url 'written_permission_upload' %}" enctype="multipart/form-data">
+        {% crispy form %}
+      </form>
     </div>
-  {% endblock %}
+  </div>
 {% endblock %}
