@@ -370,7 +370,7 @@ def generate_reference() -> str:
 class SuccessView(View):
     def get(self, request):
         reference = generate_reference()
-        save_data_in_database(generate_reference(), request)
+        save_data_in_database(reference, request)
 
         # We're finished, so clear the session data
         request.session.pop("registration_data", None)
