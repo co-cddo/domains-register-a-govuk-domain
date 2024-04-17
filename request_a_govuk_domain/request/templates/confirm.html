@@ -63,17 +63,7 @@
     {% gds_summary_list_row %}
       {% gds_summary_list_row_key %}Organisation type{% endgds_summary_list_row_key %}
       {% gds_summary_list_row_value %}
-        {% if registration_data.registrant_type == 'central_government' %}Central Government department or agency{% endif %}
-        {% if registration_data.registrant_type == 'ndpb' %}Non-departmental body / ALB{% endif %}
-        {% if registration_data.registrant_type == 'fire_service' %}Fire service{% endif %}
-        {% if registration_data.registrant_type == 'local_authority' %}County, borough, metropolitan or district council{% endif %}
-        {% if registration_data.registrant_type == 'parish_council' %}Parish, town or community council{% endif %}
-        {% if registration_data.registrant_type == 'village_council' %}Neighbourhood or village council{% endif %}
-        {% if registration_data.registrant_type == 'combined_authority' %}Combined or unitary authority{% endif %}
-        {% if registration_data.registrant_type == 'pcc' %}Police and Crime Commissioner{% endif %}
-        {% if registration_data.registrant_type == 'joint_authority' %}Joint Authority{% endif %}
-        {% if registration_data.registrant_type == 'joint_committee' %}Joint Committee{% endif %}
-        {% if registration_data.registrant_type == 'representative' %}Representing public sector bodies{% endif %}
+        {{ registrant_type }}
       {% endgds_summary_list_row_value %}
       {% gds_summary_list_row_actions %}
          {% gds_summary_list_row_actions_item_inline href="/" %}

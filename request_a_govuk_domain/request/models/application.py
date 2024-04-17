@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
 from .organisation import Registrant, Registrar
@@ -8,9 +9,9 @@ REF_NUM_LENGTH = 17
 class ApplicationStatus(models.TextChoices):
     # We're likely to have to add to this with (at least) an
     # "Appealed to NAC" status.
-    approved = "Approved"
-    rejected = "Rejected"
-    pending = "Pending"
+    APPROVED = "approved", _("Approved")
+    REJECTED = "rejected", _("Rejected")
+    PENDING = "pending", _("Pending")
 
 
 class Application(models.Model):
@@ -25,7 +26,7 @@ class Application(models.Model):
     reference = models.CharField(max_length=REF_NUM_LENGTH, null=False)
     status = models.CharField(
         choices=ApplicationStatus.choices,
-        default=ApplicationStatus.pending,
+        default=ApplicationStatus.PENDING,
         max_length=8,
     )
     # This is going to lead to duplicate persons and organisations. It's fine

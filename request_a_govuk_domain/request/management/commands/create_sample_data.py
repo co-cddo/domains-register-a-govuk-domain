@@ -59,7 +59,7 @@ class Command(BaseCommand):
         registrants = [
             models.Registrant.objects.create(
                 name=name,
-                type=models.RegistrantTypeChoices.central_government,
+                type=models.RegistrantTypeChoices.CENTRAL_GOVERNMENT,
             )
             for name in REGISTRANT_NAMES
         ]
