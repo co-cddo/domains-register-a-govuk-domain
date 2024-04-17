@@ -270,6 +270,7 @@ class WrittenPermissionForm(forms.Form):
     )
 
     written_permission = forms.ChoiceField(
+        label="",
         choices=CHOICES,
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},
