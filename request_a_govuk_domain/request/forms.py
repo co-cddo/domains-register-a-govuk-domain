@@ -170,7 +170,7 @@ class DomainForm(forms.Form):
 
 class DomainConfirmationForm(forms.Form):
     domain_confirmation = forms.ChoiceField(
-        label="The Domains Team will review the domain name and make a decision on whether to approve or reject it",
+        label="",
         choices=(("yes", "Yes, I confirm"), ("no", "No, I want to change it")),
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},
@@ -196,7 +196,11 @@ class DomainConfirmationForm(forms.Form):
 
 class RegistrantDetailsForm(forms.Form):
     registrant_organisation = forms.CharField(
-        label="You must provide the formal legal name of your registrant’s organisation. the Domains Team will reject applications if the registrant's organisation name does not match official records or is spelled incorrectly.",
+        label="",
+        help_text="""You must provide the formal legal name of your registrant’s
+        organisation. the Domains Team will reject applications if the
+        registrant’s organisation name does not match official records or is
+        spelled incorrectly.""",
     )
 
     registrant_full_name = forms.CharField(
@@ -210,7 +214,6 @@ class RegistrantDetailsForm(forms.Form):
 
     registrant_email = forms.CharField(
         label="Email address",
-        help_text="We may use this email to contact the registrant to confirm their identity",
         validators=[EmailValidator("Please enter a valid email address")],
     )
 
@@ -226,9 +229,21 @@ class RegistrantDetailsForm(forms.Form):
             ),
             Fieldset(
                 DomainsHTML('<h2 class="govuk-heading-m">Contact details</h2>'),
+                DomainsHTML(
+                    '<p class="govuk-body">We are collecting the registrant’s personal contact details to confirm their identity.</h2>'
+                ),
                 Field.text("registrant_full_name", field_width=20),
                 Field.text("registrant_phone", field_width=20),
                 Field.text("registrant_email"),
+                DomainsHTML(
+                    """<div class="govuk-warning-text">
+                  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                  <strong class="govuk-warning-text__text">
+                    <span class="govuk-visually-hidden">Warning</span>
+                    You must not publish personal contact details on the registry.
+                  </strong>
+                </div>"""
+                ),
             ),
             Button("submit", "Continue"),
         )
@@ -245,7 +260,7 @@ class RegistryDetailsForm(forms.Form):
 
     registrant_contact_email = forms.CharField(
         label="Email address",
-        help_text="Use a role-based email address, like support@romseyparishcouncil.gov.uk",
+        help_text="Use a role-based email address, like clerk@[yourorganisation].gov.uk",
         validators=[EmailValidator("Please enter a valid email address")],
     )
 
@@ -338,7 +353,6 @@ class ExemptionForm(forms.Form):
 class MinisterForm(forms.Form):
     minister = forms.ChoiceField(
         label="",
-        help_text="""If the requested .gov.uk domain does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.""",
         choices=(("yes", "Yes"), ("no", "No")),
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},

@@ -11,6 +11,6 @@ describe('Happy path - route 2-6', () => {
     cy.checkPageTitleIncludes('Why do you want a .gov.uk domain name?')
     cy.chooseDomainPurpose(3) // API -> Route 6
 
-    cy.checkPageTitleIncludes('Your registrant cannot get approval for a .gov.uk domain name')
+    cy.checkPageTitleIncludes('Your registrant does not need a new third-level.gov.uk domain name')
   })
 })
