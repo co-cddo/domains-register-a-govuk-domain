@@ -120,7 +120,7 @@ Cypress.Commands.add('uploadDocument', filename => {
 
 Cypress.Commands.add('confirmUpload', filename => {
   cy.get('#uploaded-filename').should('include.text', filename)
-  cy.get('.govuk-tag').should('include.text', 'uploaded')
+  cy.get('.govuk-tag').should('include.text', 'Uploaded')
   cy.get('.govuk-button').should('not.include.text', 'Back to answers')
   cy.get('.govuk-button#button-continue').click()
 })
