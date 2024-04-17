@@ -149,6 +149,16 @@ class DomainForm(forms.Form):
         self.helper.layout = Layout(
             Fieldset(
                 Field.text("domain_name"),
+                DomainsHTML(
+                    """
+                  <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                      <span class="govuk-visually-hidden">Warning</span>
+                      The .gov.uk domain name you submit will be subject to approval from the Domains Team.
+                    </strong>
+                  </div>"""
+                ),
             ),
             Button("submit", "Continue"),
         )
