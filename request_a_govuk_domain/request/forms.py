@@ -149,15 +149,8 @@ class DomainForm(forms.Form):
         self.helper.layout = Layout(
             Fieldset(
                 Field.text("domain_name"),
-                DomainsHTML(
-                    """
-                  <div class="govuk-warning-text">
-                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                    <strong class="govuk-warning-text__text">
-                      <span class="govuk-visually-hidden">Warning</span>
-                      The .gov.uk domain name you submit will be subject to approval from the Domains Team.
-                    </strong>
-                  </div>"""
+                DomainsHTML.warning(
+                    "The .gov.uk domain name you submit will be subject to approval from the Domains Team."
                 ),
             ),
             Button("submit", "Continue"),
@@ -229,20 +222,14 @@ class RegistrantDetailsForm(forms.Form):
             ),
             Fieldset(
                 DomainsHTML('<h2 class="govuk-heading-m">Contact details</h2>'),
-                DomainsHTML(
-                    '<p class="govuk-body">We are collecting the registrant’s personal contact details to confirm their identity.</h2>'
+                DomainsHTML.p(
+                    "We are collecting the registrant’s personal contact details to confirm their identity."
                 ),
                 Field.text("registrant_full_name", field_width=20),
                 Field.text("registrant_phone", field_width=20),
                 Field.text("registrant_email"),
-                DomainsHTML(
-                    """<div class="govuk-warning-text">
-                  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                  <strong class="govuk-warning-text__text">
-                    <span class="govuk-visually-hidden">Warning</span>
-                    You must not publish personal contact details on the registry.
-                  </strong>
-                </div>"""
+                DomainsHTML.warning(
+                    "You must not publish personal contact details on the registry."
                 ),
             ),
             Button("submit", "Continue"),
