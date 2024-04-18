@@ -149,6 +149,9 @@ class DomainForm(forms.Form):
         self.helper.layout = Layout(
             Fieldset(
                 Field.text("domain_name"),
+                DomainsHTML.warning(
+                    "The .gov.uk domain name you submit will be subject to approval from the Domains Team."
+                ),
             ),
             Button("submit", "Continue"),
         )
@@ -160,7 +163,7 @@ class DomainForm(forms.Form):
 
 class DomainConfirmationForm(forms.Form):
     domain_confirmation = forms.ChoiceField(
-        label="The Domains Team will review the domain name and make a decision on whether to approve or reject it",
+        label="",
         choices=(("yes", "Yes, I confirm"), ("no", "No, I want to change it")),
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},
@@ -186,7 +189,11 @@ class DomainConfirmationForm(forms.Form):
 
 class RegistrantDetailsForm(forms.Form):
     registrant_organisation = forms.CharField(
-        label="You must provide the formal legal name of your registrant’s organisation. the Domains Team will reject applications if the registrant's organisation name does not match official records or is spelled incorrectly.",
+        label="",
+        help_text="""You must provide the formal legal name of your registrant’s
+        organisation. the Domains Team will reject applications if the
+        registrant’s organisation name does not match official records or is
+        spelled incorrectly.""",
     )
 
     registrant_full_name = forms.CharField(
@@ -200,7 +207,6 @@ class RegistrantDetailsForm(forms.Form):
 
     registrant_email = forms.CharField(
         label="Email address",
-        help_text="We may use this email to contact the registrant to confirm their identity",
         validators=[EmailValidator("Please enter a valid email address")],
     )
 
@@ -216,9 +222,15 @@ class RegistrantDetailsForm(forms.Form):
             ),
             Fieldset(
                 DomainsHTML('<h2 class="govuk-heading-m">Contact details</h2>'),
+                DomainsHTML.p(
+                    "We are collecting the registrant’s personal contact details to confirm their identity."
+                ),
                 Field.text("registrant_full_name", field_width=20),
                 Field.text("registrant_phone", field_width=20),
                 Field.text("registrant_email"),
+                DomainsHTML.warning(
+                    "You must not publish personal contact details on the registry."
+                ),
             ),
             Button("submit", "Continue"),
         )
@@ -235,7 +247,7 @@ class RegistryDetailsForm(forms.Form):
 
     registrant_contact_email = forms.CharField(
         label="Email address",
-        help_text="Use a role-based email address, like support@romseyparishcouncil.gov.uk",
+        help_text="Use a role-based email address, like clerk@[yourorganisation].gov.uk",
         validators=[EmailValidator("Please enter a valid email address")],
     )
 
@@ -270,6 +282,7 @@ class WrittenPermissionForm(forms.Form):
     )
 
     written_permission = forms.ChoiceField(
+        label="",
         choices=CHOICES,
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},
@@ -327,7 +340,6 @@ class ExemptionForm(forms.Form):
 class MinisterForm(forms.Form):
     minister = forms.ChoiceField(
         label="",
-        help_text="""If the requested .gov.uk domain does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.""",
         choices=(("yes", "Yes"), ("no", "No")),
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},
@@ -359,7 +371,7 @@ class MinisterForm(forms.Form):
 class UploadForm(forms.Form):
     file = forms.FileField(
         label="Upload a file",
-        help_text="Support file is .jpeg or .png and the maximum size is %s."
+        help_text="We support JPEG, PNG or PDF files. The maximum upload size is %s."
         % filesizeformat(settings.MAX_UPLOAD_SIZE),
         error_messages={"required": "Choose the file you want to upload."},
         validators=[validate_file_infection],

@@ -120,7 +120,7 @@ Cypress.Commands.add('uploadDocument', filename => {
 
 Cypress.Commands.add('confirmUpload', filename => {
   cy.get('#uploaded-filename').should('include.text', filename)
-  cy.get('.govuk-tag').should('include.text', 'uploaded')
+  cy.get('.govuk-tag').should('include.text', 'Uploaded')
   cy.get('.govuk-button').should('not.include.text', 'Back to answers')
   cy.get('.govuk-button#button-continue').click()
 })
@@ -213,7 +213,7 @@ Cypress.Commands.add('goToDomainViaRoute', route => {
   if (route === 3) {
     cy.goToWrittenPermissionUploadConfirm('permission.png')
     cy.confirmUpload('permission.png')
-    cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
+    cy.checkPageTitleIncludes('Choose a .gov.uk domain name?')
   } else if (route === 2) {
     cy.goToDomainPurpose()
     cy.chooseDomainPurpose(1) // Route 5
@@ -228,11 +228,11 @@ Cypress.Commands.add('goToDomainViaRoute', route => {
     cy.uploadDocument('permission.png')
     cy.checkPageTitleIncludes('Upload evidence of permission')
     cy.confirmUpload('permission.png')
-    cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
+    cy.checkPageTitleIncludes('Choose a .gov.uk domain name?')
   } else if (route === 1) {
     cy.goToRegistrantType()
     cy.chooseRegistrantType(3) // Parish -> route 1
-    cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
+    cy.checkPageTitleIncludes('Choose a .gov.uk domain name?')
   }
 })
 
@@ -290,7 +290,7 @@ Cypress.Commands.add('goToConfirmation', (route=1) => {
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
     cy.confirmUpload('permission.png')
 
-    cy.checkPageTitleIncludes('What .gov.uk domain name do you want?')
+    cy.checkPageTitleIncludes('Choose a .gov.uk domain name?')
     cy.enterDomainName('something-pc')
 
     cy.checkPageTitleIncludes('Is something-pc.gov.uk the correct domain name?')

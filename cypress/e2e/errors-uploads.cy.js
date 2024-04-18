@@ -22,7 +22,7 @@ describe('Errors when uploading files', () => {
     // do it right this time
     cy.uploadDocument('exemption.png')
     cy.checkPageTitleIncludes('Upload evidence of the exemption')
-    cy.get('.govuk-tag').should('include.text', 'uploaded')
+    cy.get('.govuk-tag').should('include.text', 'Uploaded')
   })
 
   it('Complains when the permission file has a problem', () => {
@@ -46,7 +46,7 @@ describe('Errors when uploading files', () => {
     // do it right this time
     cy.uploadDocument('permission.png')
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
-    cy.get('.govuk-tag').should('include.text', 'uploaded')
+    cy.get('.govuk-tag').should('include.text', 'Uploaded')
   })
 
   it('Complains when the minister file has a problem', () => {
@@ -70,7 +70,7 @@ describe('Errors when uploading files', () => {
     // do it right this time
     cy.uploadDocument('minister.png')
     cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
-    cy.get('.govuk-tag').should('include.text', 'uploaded')
+    cy.get('.govuk-tag').should('include.text', 'Uploaded')
   })
 
 })
