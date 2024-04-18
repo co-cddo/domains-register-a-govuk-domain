@@ -34,6 +34,7 @@ class Command(BaseCommand):
         # delete existing data in case this is run multiple times
         models.RegistryPublishedPerson.objects.all().delete()
         models.RegistrarPerson.objects.all().delete()
+        models.RegistrantPerson.objects.all().delete()
         models.Registrar.objects.all().delete()
         models.Registrant.objects.all().delete()
         models.Application.objects.all().delete()
