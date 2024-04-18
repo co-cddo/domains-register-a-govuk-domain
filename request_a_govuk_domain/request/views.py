@@ -30,6 +30,8 @@ from .utils import (
     add_to_session,
     remove_from_session,
     route_number,
+    send_email,
+    get_env_variable,
 )
 
 
@@ -374,10 +376,31 @@ def generate_reference() -> str:
     return "GOVUK" + datetime.today().strftime("%d%m%Y") + random_string
 
 
+def send_confirmation_email(request) -> None:
+    """
+    Method to send Confirmation email
+
+    It gets the required personalisation data from request and calls send_email to send the confirmation email
+
+    :param request: request object
+    """
+    registration_data = request.session.get("registration_data", {})
+    personalisation = {
+        "first_name": registration_data["registrar_name"],
+    }
+    send_email(
+        email_address=registration_data["registrar_email"],
+        template_id="d749d1a5-366c-4c0b-8e96-488150a62205",  # Notify API template id of Confirmation email
+        personalisation=personalisation,
+    )
+
+
 class SuccessView(View):
     def get(self, request):
         reference = generate_reference()
         save_data_in_database(reference, request)
+        if get_env_variable("SEND_EMAIL", "False") == "True":
+            send_confirmation_email(request)
 
         # We're finished, so clear the session data
         request.session.pop("registration_data", None)

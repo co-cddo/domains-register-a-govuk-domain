@@ -3,7 +3,7 @@ import './base.cy'
 describe('Happy path - route 2-6', () => {
   it('performs a full transaction', () => {
     cy.goToRegistrarDetails()
-    cy.fillOutRegistrarDetails('WeRegister', 'Joe Bloggs', '01225672345', 'joe@example.org')
+    cy.fillOutRegistrarDetails('WeRegister', 'Joe Bloggs', '01225672345', 'simulate-delivered@notifications.service.gov.uk')
 
     cy.checkPageTitleIncludes('Who is this domain name for?')
     cy.chooseRegistrantType(1) // Central government -> Route 2
