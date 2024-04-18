@@ -162,6 +162,17 @@ class ReviewInline(admin.StackedInline):
 
 class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
     model = Application
+    # Add dates to list_display once changes to model merged
+    list_display = [
+        "reference",
+        "domain_name",
+        "status",
+        "registrar_org",
+        "registrant_org",
+        "time_submitted",
+        "owner",
+    ]
+    list_filter = ["status", "registrar_org", "registrant_org"]
     inlines = [CentralGovernmentAttributesInline, ReviewInline]
 
     def download_written_permission_evidence(self, obj):
