@@ -3,7 +3,7 @@ import './base.cy'
 describe('Happy path - route 1', () => {
   it('performs a full transaction', () => {
     cy.goToRegistrarDetails()
-    cy.fillOutRegistrarDetails('WeRegister', 'Joe Bloggs', '01225672345', 'joe@example.org')
+    cy.fillOutRegistrarDetails('WeRegister', 'Joe Bloggs', '01225672345', 'simulate-delivered@notifications.service.gov.uk')
 
     cy.checkPageTitleIncludes('Who is this domain name for?')
     cy.chooseRegistrantType(3) // Parish or community council -> route 1
@@ -25,7 +25,7 @@ describe('Happy path - route 1', () => {
     cy.checkPageTitleIncludes('Check your answers')
 
     cy.summaryShouldHave(0, 'WeRegister')
-    cy.summaryShouldHave(1, ['Joe Bloggs', '01225672345', 'joe@example.org'])
+    cy.summaryShouldHave(1, ['Joe Bloggs', '01225672345', 'simulate-delivered@notifications.service.gov.uk'])
     cy.summaryShouldHave(2, 'Parish')
     cy.summaryShouldHave(3, 'something-pc.gov.uk')
     cy.summaryShouldHave(4, 'HMRC')

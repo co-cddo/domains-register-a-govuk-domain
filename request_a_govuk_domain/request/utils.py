@@ -6,6 +6,11 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 
 import clamd
+from dotenv import load_dotenv
+from notifications_python_client import NotificationsAPIClient
+
+# Load environment values from .env file
+load_dotenv()
 
 
 def handle_uploaded_file(file):
@@ -130,3 +135,33 @@ def remove_from_session(session, field_names: List[str]) -> dict:
             del session["registration_data"][field_name]
 
     return session["registration_data"]
+
+
+def get_env_variable(key: str, default=None) -> str:
+    """
+    Utility to get the environment variable
+
+    param: key - environment variable name in .env file
+    param: default - default value if environment variable not found
+
+    :return: value - environment variable value
+    """
+    return os.getenv(key, default)
+
+
+def send_email(email_address: str, template_id: str, personalisation: dict) -> None:
+    """
+    Method to send email using Notify API
+
+    param: email_address: Email address of the recipient
+    param: template_id: Template id of the Email Template
+    param: personalisation: Dictionary of Personalisation data
+    """
+    # TODO Change this to get notify_api_key from aws later on
+    notify_api_key = get_env_variable("NOTIFY_API_KEY")
+    notifications_client = NotificationsAPIClient(notify_api_key)
+    notifications_client.send_email_notification(
+        email_address=email_address,
+        template_id=template_id,
+        personalisation=personalisation,
+    )
