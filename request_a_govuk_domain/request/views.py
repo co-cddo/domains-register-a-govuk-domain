@@ -4,7 +4,6 @@ import random
 import string
 from datetime import datetime
 
-from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, RedirectView
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -401,8 +400,6 @@ def send_confirmation_email(request) -> None:
 
 
 class SuccessView(View):
-    failure_url = reverse_lazy("service_failure")
-
     def get(self, request):
         reference = generate_reference()
         try:
@@ -420,16 +417,12 @@ class SuccessView(View):
                 f"""Exception at Application submitted stage. Exception: {type(e).__name__} - {str(e)} ,
                          Registration data: {registration_data}"""
             )
-            return HttpResponseRedirect(self.failure_url)
+            raise e
         finally:
             # We're finished, so clear the session data
             request.session.pop("registration_data", None)
 
         return render(request, "success.html", {"reference": reference})
-
-
-class ServiceFailureView(TemplateView):
-    template_name = "service_failure.html"
 
 
 class ExemptionView(FormView):
@@ -630,3 +623,7 @@ def answers_context_processor(request):
     answers = request.session.get("registration_data", {})
     answers_json = json.dumps(answers, indent=4)
     return {"answers": answers_json}
+
+
+def service_failure_view(request):
+    return render(request, "service_failure.html", status=500)

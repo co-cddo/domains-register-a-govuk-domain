@@ -27,7 +27,6 @@ class FormProgressMiddleware:
         if request.path in [
             reverse("success"),
             reverse("registrar_details"),
-            reverse("service_failure"),
         ]:
             return True
         if request.session.get("registration_data") is None:
