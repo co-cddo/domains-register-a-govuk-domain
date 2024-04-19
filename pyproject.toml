@@ -21,6 +21,7 @@ pre-commit = "^3.6.2"
 clamd = "^1.0.2"
 notifications-python-client = "^9.0.0"
 python-dotenv = "^1.0.1"
+django-grappelli = "^3.0.8"
 
 
 [tool.poetry.group.dev.dependencies]
