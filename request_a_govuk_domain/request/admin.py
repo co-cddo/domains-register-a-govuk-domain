@@ -34,7 +34,9 @@ class ReviewerReadOnlyFieldsMixin:
         if request.user.is_superuser:
             return []
         else:
-            return self._get_field_names(not request.user.is_superuser)
+            return self._get_field_names(not request.user.is_superuser) + [
+                "time_decided"
+            ]
 
     def get_fields(self, request, obj=None):
         return self._get_field_names(not request.user.is_superuser)
@@ -189,6 +191,9 @@ class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
     download_written_permission_evidence.short_description = (
         "Written permission evidence"
     )
+
+    def get_readonly_fields(self, request, obj=None):
+        return super().get_readonly_fields(request, obj) + ["time_submitted"]
 
 
 admin.site.unregister(User)
