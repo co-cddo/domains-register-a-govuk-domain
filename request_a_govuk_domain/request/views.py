@@ -407,6 +407,11 @@ class SuccessView(View):
         reference = generate_reference()
         try:
             save_data_in_database(reference, request)
+
+            # NOTIFY_API_KEY is essential for Notify API to send email, which at the moment is being read from .env file
+            # Since all environment may not have .env file, and hence it will cause error if we try to send email,
+            # SEND_EMAIL has been added as a temporary flag, to not send email as default behaviour
+            # Once we get NOTIFY_API_KEY from AWS, then this flag should be removed
             if get_env_variable("SEND_EMAIL", "False") == "True":
                 send_confirmation_email(request)
         except Exception as e:
