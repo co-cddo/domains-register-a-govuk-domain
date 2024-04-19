@@ -141,6 +141,7 @@ class CentralGovernmentAttributesInline(
     model = CentralGovernmentAttributes
     can_delete = False
     verbose_name_plural = "Central Government Attributes"
+    inline_classes = ("grp-collapse grp-open",)
 
     def download_ministerial_request_evidence(self, obj):
         return self.generate_download_link(obj, "download_ministerial_request_evidence")
@@ -160,6 +161,7 @@ class ReviewInline(admin.StackedInline):
     model = Review
     can_delete = False
     verbose_name_plural = "Reviews"
+    inline_classes = ("grp-collapse grp-open",)
 
 
 class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
@@ -176,6 +178,7 @@ class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
     ]
     list_filter = ["status", "registrar_org", "registrant_org"]
     inlines = [CentralGovernmentAttributesInline, ReviewInline]
+    change_list_template = "admin/change_list_filter_sidebar.html"
 
     def download_written_permission_evidence(self, obj):
         return self.generate_download_link(obj, "download_written_permission_evidence")

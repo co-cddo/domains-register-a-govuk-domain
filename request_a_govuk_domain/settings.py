@@ -40,6 +40,7 @@ ENVIRONMENT = env.str("ENVIRONMENT", default=None)
 # Application definition
 
 INSTALLED_APPS = [
+    "request_a_govuk_domain.request",
     "grappelli",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -47,7 +48,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "request_a_govuk_domain.request",
     "django.contrib.postgres",
     "psqlextra",
     "govuk_frontend_django",
@@ -219,3 +219,5 @@ MAX_UPLOAD_SIZE = "10485760"
 
 CLAMD_TCP_ADDR = "clamav"
 CLAMD_TCP_SOCKET = 3310
+
+GRAPPELLI_ADMIN_TITLE = "Registration Application Admin"
