@@ -1,7 +1,10 @@
 import json
+import logging
 import random
 import string
 from datetime import datetime
+
+from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, RedirectView
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -33,6 +36,8 @@ from .utils import (
     send_email,
     get_env_variable,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class StartView(TemplateView):
@@ -396,15 +401,30 @@ def send_confirmation_email(request) -> None:
 
 
 class SuccessView(View):
+    failure_url = reverse_lazy("service_failure")
+
     def get(self, request):
         reference = generate_reference()
-        save_data_in_database(reference, request)
-        if get_env_variable("SEND_EMAIL", "False") == "True":
-            send_confirmation_email(request)
+        try:
+            save_data_in_database(reference, request)
+            if get_env_variable("SEND_EMAIL", "False") == "True":
+                send_confirmation_email(request)
+        except Exception as e:
+            registration_data = request.session.get("registration_data", {})
+            logger.error(
+                f"""Exception at Application submitted stage. Exception: {type(e).__name__} - {str(e)} ,
+                         Registration data: {registration_data}"""
+            )
+            return HttpResponseRedirect(self.failure_url)
+        finally:
+            # We're finished, so clear the session data
+            request.session.pop("registration_data", None)
 
-        # We're finished, so clear the session data
-        request.session.pop("registration_data", None)
         return render(request, "success.html", {"reference": reference})
+
+
+class ServiceFailureView(TemplateView):
+    template_name = "service_failure.html"
 
 
 class ExemptionView(FormView):
