@@ -59,6 +59,28 @@ class Review(models.Model):
 
     history = HistoricalRecords()
 
+    def is_approvable(self) -> bool:
+        if self.nac_appeal_validated:
+            return True
+        if all(
+            (
+                self.registrant_org_exists,
+                self.registrant_org_eligible,
+                self.registrant_person_id_confirmed,
+                self.permission_signatory_role_confirmed,
+                self.domain_name_validated,
+            )
+        ):
+            return True
+        return False
+
+    def is_rejectable(self):
+        # This logic needs some thought. That isn't to suggest the
+        # logic above doesn't
+        if self.nac_appeal_validated:
+            return False
+        return True
+
     def __str__(self):
         return str(self.application)
 

@@ -1,16 +1,21 @@
 from functools import partial
 
-from django.contrib import admin
-from django.contrib.auth.admin import GroupAdmin
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import Group
-from django.contrib.auth.models import User
+from django.views import View
+from django.contrib import admin, messages
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.contrib.auth.models import Group, User
 from django.db.models import FileField
-from django.http import FileResponse
+from django.http import HttpResponseRedirect, FileResponse
+from django.shortcuts import render
 from django.urls import path, reverse
+from django.utils import timezone
 from django.utils.html import format_html
+from django.utils.decorators import method_decorator
+from django.contrib.admin.views.decorators import staff_member_required
 
-from .models import Application, CentralGovernmentAttributes, Review
+
+# from .utils import send_email
+from .models import Application, ApplicationStatus, CentralGovernmentAttributes, Review
 
 
 class ReviewerReadOnlyFieldsMixin:
@@ -162,9 +167,46 @@ class ReviewInline(admin.StackedInline):
     verbose_name_plural = "Reviews"
 
 
+class DecisionConfirmationView(View, admin.ModelAdmin):
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request):
+        obj = Application.objects.get(pk=request.GET.get("obj_id"))
+        context = {"obj": obj, "action": request.GET.get("action")}
+        return render(request, "admin/application_decision_confirmation.html", context)
+
+    def _set_application_status(self, request):
+        obj = Application.objects.get(pk=request.POST.get("obj_id"))
+        if request.POST.get("action") == "approval":
+            obj.status = ApplicationStatus.APPROVED
+        elif request.POST.get("action") == "rejection":
+            obj.status = ApplicationStatus.REJECTED
+        obj.time_decided = timezone.now()
+        obj.save()
+
+    def post(self, request):
+        if "_confirm" in request.POST:
+            try:
+                # send email
+                self._set_application_status(request)
+                self.message_user(request, "Confirmation email sent", messages.SUCCESS)
+                return HttpResponseRedirect(
+                    reverse("admin:request_application_changelist")
+                )
+            except Exception as e:
+                self.message_user(request, f"Email send failed: {e}", messages.ERROR)
+        return HttpResponseRedirect(
+            reverse(
+                "admin:request_application_change", args=[request.POST.get("obj_id")]
+            )
+        )
+
+
 class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
     model = Application
-    # Add dates to list_display once changes to model merged
+    change_form_template = "admin/application_change_form.html"
     list_display = [
         "reference",
         "domain_name",
@@ -194,6 +236,33 @@ class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         return super().get_readonly_fields(request, obj) + ["time_submitted"]
+
+    def response_change(self, request, obj):
+        if "_approve" in request.POST:
+            if obj.review.is_approvable():
+                return HttpResponseRedirect(
+                    f"{reverse('application_confirm')}?obj_id={obj.id}&action=approval"
+                )
+            else:
+                self.message_user(
+                    request, "This application can't be approved!", messages.ERROR
+                )
+                return HttpResponseRedirect(
+                    reverse("admin:request_application_change", args=[obj.id])
+                )
+        if "_reject" in request.POST:
+            if obj.review.is_rejectable():
+                return HttpResponseRedirect(
+                    f"{reverse('application_confirm')}?obj_id={obj.id}&action=rejection"
+                )
+            else:
+                self.message_user(
+                    request, "This application can't be rejected!", messages.ERROR
+                )
+                return HttpResponseRedirect(
+                    reverse("admin:request_application_change", args=[obj.id])
+                )
+        return super().response_change(request, obj)
 
 
 admin.site.unregister(User)
