@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="submit-row">
+    <h1>Confirm application {{ action }}</h1>
+    <div>Confirming the {{ action }} will:</div>
+    <ul>
+        <li>Send an email confirming the {{ action }} to {{ obj.registrar_person.email_address }}</li>
+        <li>Mark the application as closed</li>
+    </ul>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="{{ action }}">
+        <input type="hidden" name="obj_id" value="{{ obj.id }}">
+        <input type="submit" value="Confirm" class="default" name="_confirm">
+        <input type="submit" value="Cancel" class="default" name="_cancel">
+    </form>
+</div>
+{% endblock %}
