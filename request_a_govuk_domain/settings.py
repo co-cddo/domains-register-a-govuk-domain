@@ -40,13 +40,15 @@ ENVIRONMENT = env.str("ENVIRONMENT", default=None)
 # Application definition
 
 INSTALLED_APPS = [
+    "request_a_govuk_domain.request",
+    "admin_interface",
+    "colorfield",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "request_a_govuk_domain.request",
     "django.contrib.postgres",
     "psqlextra",
     "govuk_frontend_django",
