@@ -21,6 +21,7 @@ pre-commit = "^3.6.2"
 clamd = "^1.0.2"
 notifications-python-client = "^9.0.0"
 python-dotenv = "^1.0.1"
+django-admin-interface = "^0.28.6"
 
 
 [tool.poetry.group.dev.dependencies]
