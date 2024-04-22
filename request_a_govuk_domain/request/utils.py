@@ -1,3 +1,4 @@
+import logging
 import os
 import uuid
 from typing import List
@@ -8,6 +9,8 @@ from django.core.exceptions import ValidationError
 import clamd
 from dotenv import load_dotenv
 from notifications_python_client import NotificationsAPIClient
+
+logger = logging.getLogger(__name__)
 
 # Load environment values from .env file
 load_dotenv()
@@ -157,11 +160,14 @@ def send_email(email_address: str, template_id: str, personalisation: dict) -> N
     param: template_id: Template id of the Email Template
     param: personalisation: Dictionary of Personalisation data
     """
-    # TODO Change this to get notify_api_key from aws later on
     notify_api_key = get_env_variable("NOTIFY_API_KEY")
-    notifications_client = NotificationsAPIClient(notify_api_key)
-    notifications_client.send_email_notification(
-        email_address=email_address,
-        template_id=template_id,
-        personalisation=personalisation,
-    )
+    # If api key is found then send email, else log that it was not found
+    if notify_api_key:
+        notifications_client = NotificationsAPIClient(notify_api_key)
+        notifications_client.send_email_notification(
+            email_address=email_address,
+            template_id=template_id,
+            personalisation=personalisation,
+        )
+    else:
+        logger.info("Not sending email as Notify API key not found")
