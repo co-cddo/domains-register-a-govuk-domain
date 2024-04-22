@@ -11,7 +11,6 @@ MEDIA_ROOT_PATH = os.path.join(SCRIPT_PATH, "..", "..", "..", "media")
 PERSON_NAMES = ["Bob Roberts", "Peter Peters", "Olivia Oliver"]
 
 REGISTRANT_NAMES = ["HMRC", "MOD", "MOT", "MOJ"]
-REGISTRAR_NAMES = ["WeRegister", "Registrations R Us", "Fantastic Registrar", "HMRC"]
 
 DOMAIN_NAME = "ministryofdomains.gov.uk"
 DOMAIN_PURPOSE = "Web site"
@@ -35,7 +34,6 @@ class Command(BaseCommand):
         models.RegistryPublishedPerson.objects.all().delete()
         models.RegistrarPerson.objects.all().delete()
         models.RegistrantPerson.objects.all().delete()
-        models.Registrar.objects.all().delete()
         models.Registrant.objects.all().delete()
         models.Application.objects.all().delete()
         models.CentralGovernmentAttributes.objects.all().delete()
@@ -47,11 +45,7 @@ class Command(BaseCommand):
             name=PERSON_NAMES[2]
         )
 
-        registrars = [
-            models.Registrar.objects.create(name=name) for name in REGISTRAR_NAMES
-        ]
-
-        application_registrar = registrars[0]
+        application_registrar = models.Registrar.objects.create(name="WeRegister")
 
         registrar_person = models.RegistrarPerson.objects.create(
             name=PERSON_NAMES[1], registrar=application_registrar
