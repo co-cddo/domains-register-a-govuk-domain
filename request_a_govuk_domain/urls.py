@@ -48,6 +48,8 @@ from .request.views import (
     DomainPurposeFailView,
 )
 
+from .request.admin import DecisionConfirmationView
+
 urlpatterns = [
     path("", StartView.as_view(), name="start"),
     path(
@@ -112,6 +114,11 @@ urlpatterns = [
         "written-permission-upload-confirm/",
         WrittenPermissionUploadConfirmView.as_view(),
         name="written_permission_upload_confirm",
+    ),
+    path(
+        "admin/application_confirm/",
+        DecisionConfirmationView.as_view(),
+        name="application_confirm",
     ),
     path("admin/", admin.site.urls),
     path(

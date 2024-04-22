@@ -1,0 +1,8 @@
+{% extends "admin/change_form.html" %}
+{% block submit_buttons_bottom %}
+    {% if is_superuser %}
+        {% include "admin/submit_line.html" %}
+    {% else %}
+        {% include "admin/reviewer_application_submit_line.html" %}
+    {% endif %}
+{% endblock %}
