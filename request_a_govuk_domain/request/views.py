@@ -31,7 +31,6 @@ from .utils import (
     remove_from_session,
     route_number,
     send_email,
-    get_env_variable,
 )
 
 
@@ -399,8 +398,7 @@ class SuccessView(View):
     def get(self, request):
         reference = generate_reference()
         save_data_in_database(reference, request)
-        if get_env_variable("SEND_EMAIL", "False") == "True":
-            send_confirmation_email(request)
+        send_confirmation_email(request)
 
         # We're finished, so clear the session data
         request.session.pop("registration_data", None)
