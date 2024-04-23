@@ -46,6 +46,7 @@ from .request.views import (
     ExemptionFailView,
     DomainPurposeView,
     DomainPurposeFailView,
+    service_failure_view,
 )
 
 from .request.admin import DecisionConfirmationView
@@ -181,3 +182,6 @@ urlpatterns = [
         name="change_written_permission",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+handler500 = service_failure_view

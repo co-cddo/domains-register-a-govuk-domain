@@ -1,5 +1,6 @@
 import random
 import string
+import logging
 from datetime import datetime
 from django.views.generic import TemplateView, RedirectView
 from django.shortcuts import render
@@ -31,6 +32,8 @@ from .utils import (
     route_number,
     send_email,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class StartView(TemplateView):
@@ -594,3 +597,8 @@ class DomainPurposeFailView(FormView):
 
     def get(self, request):
         return render(request, self.template_name)
+
+
+def service_failure_view(request):
+    logger.error("500 Server Error occurred", exc_info=1)
+    return render(request, "500.html", status=500)
