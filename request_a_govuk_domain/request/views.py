@@ -1,6 +1,7 @@
 import logging
 import random
 import string
+import logging
 from datetime import datetime
 
 from django.shortcuts import render
@@ -600,3 +601,8 @@ class DomainPurposeFailView(FormView):
 
     def get(self, request):
         return render(request, self.template_name)
+
+
+def service_failure_view(request):
+    logger.error("500 Server Error occurred", exc_info=1)
+    return render(request, "500.html", status=500)
