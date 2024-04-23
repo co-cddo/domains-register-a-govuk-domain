@@ -37,6 +37,12 @@ SECRET_KEY: str = str(uuid.uuid4()) if DEBUG else env.str("SECRET_KEY")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 ENVIRONMENT = env.str("ENVIRONMENT", default=None)
 
+# AWS related settings
+IS_AWS: bool = env.bool("IS_AWS", default=False)
+AWS_STORAGE_BUCKET_NAME = env.str(
+    "S3_MEDIA_ROOT", default=f"registration-app-media-root-{ENVIRONMENT}"
+)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -56,6 +62,7 @@ INSTALLED_APPS = [
     "crispy_forms_gds",
     "simple_history",
     "phonenumber_field",
+    "storages",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["gds"]
