@@ -1,4 +1,3 @@
-import json
 import random
 import string
 from datetime import datetime
@@ -595,11 +594,3 @@ class DomainPurposeFailView(FormView):
 
     def get(self, request):
         return render(request, self.template_name)
-
-
-def answers_context_processor(request):
-    """Temporary for ease of development: This sends the "answers" object to each form
-    so we can display the data collected so far on every page"""
-    answers = request.session.get("registration_data", {})
-    answers_json = json.dumps(answers, indent=4)
-    return {"answers": answers_json}
