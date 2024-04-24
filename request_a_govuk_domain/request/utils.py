@@ -161,7 +161,6 @@ def send_email(email_address: str, template_id: str, personalisation: dict) -> N
     param: personalisation: Dictionary of Personalisation data
     """
     notify_api_key = get_env_variable("NOTIFY_API_KEY")
-    logger.info(f"Api key is {notify_api_key}")
 
     # If api key is found then send email, else log that it was not found
     if notify_api_key:
