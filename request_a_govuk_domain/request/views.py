@@ -446,8 +446,9 @@ class MinisterView(FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
-        initial["minister"] = session_data.get("minister", "")
+        session_data = self.request.session.get("registration_data")
+        if session_data is not None:
+            initial["minister"] = session_data.get("minister", "")
         return initial
 
     def get_context_data(self, **kwargs):
@@ -605,3 +606,11 @@ class DomainPurposeFailView(FormView):
 def service_failure_view(request):
     logger.error("500 Server Error occurred", exc_info=1)
     return render(request, "500.html", status=500)
+
+
+def http_404_view(request, exception):
+    return render(request, "404.html", status=404)
+
+
+def http_403_view(request, reason):
+    return render(request, "403.html", status=404)

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load govuk_frontend_django crispy_forms_gds %}
+
+{% block title %}Method not allowed (405){% endblock %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <h1 class="govuk-heading-l">Method not allowed</h1>
+          <p class="govuk-body">The action you tried is not allowed on this page. Please use your browser’s back button or <a href="{% url "start" %}">go to this service’s start page.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+{% endblock %}

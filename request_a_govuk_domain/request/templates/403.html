@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load govuk_frontend_django crispy_forms_gds %}
+
+{% block title %}Not authorised{% endblock %}
+
+{% block content %}
+    <div class="govuk-width-container">
+        <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-l">Not authorised</h1>
+                    <p class="govuk-body">Sorry, you don't have permission to access this page.</p>
+                    <p class="govuk-body">
+                      Return to the <a href="{% url "start" %}">start page</a>
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+{% endblock %}

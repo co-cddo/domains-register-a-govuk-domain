@@ -77,13 +77,14 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "request_a_govuk_domain.request.middleware.FormProgressMiddleware",
 ]
 
 FILE_UPLOAD_HANDLERS = [
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
 ]
+
+CSRF_FAILURE_VIEW = "request_a_govuk_domain.request.views.http_403_view"
 
 ROOT_URLCONF = "request_a_govuk_domain.urls"
 

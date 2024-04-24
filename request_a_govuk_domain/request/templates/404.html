@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load govuk_frontend_django crispy_forms_gds %}
+
+{% block title %}Page not found{% endblock %}
+
+{% block content %}
+    <div class="govuk-width-container">
+        <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-l">Page not found</h1>
+                    <p class="govuk-body">If you entered a web address, check it is correct.</p>
+                    <p class="govuk-body">
+                      You can also <a href="{% url "start" %}">go to this service's start page</a>
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+{% endblock %}
