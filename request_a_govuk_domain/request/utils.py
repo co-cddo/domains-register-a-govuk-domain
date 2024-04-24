@@ -3,35 +3,35 @@ import os
 import uuid
 from typing import List
 
+import clamd
 from django.conf import settings
 from django.core.exceptions import ValidationError
-
-import clamd
-from dotenv import load_dotenv
 from notifications_python_client import NotificationsAPIClient
+
+from request_a_govuk_domain.request.models.storage_util import select_storage
 
 logger = logging.getLogger(__name__)
 
-# Load environment values from .env file
-load_dotenv()
 
-
-def handle_uploaded_file(file):
+def handle_uploaded_file(file, session_id):
     """
     How and where to save a file that the user has uploaded
 
     :param file: a File object
+    :param session_id for the current session
     :return: the name of the file as store on the server
     """
 
     _, file_extension = os.path.splitext(file.name)
 
-    saved_filename = f"{uuid.uuid4()}{file_extension}"
-
-    file_path = os.path.join(settings.MEDIA_ROOT, saved_filename)
-    with open(file_path, "wb") as destination:
-        for chunk in file.chunks():
-            destination.write(chunk)
+    saved_filename = f"{session_id}/{uuid.uuid4()}{file_extension}"
+    storage = select_storage()
+    if not settings.IS_AWS:
+        file_path = os.path.join(settings.MEDIA_ROOT, saved_filename)
+    else:
+        file_path = saved_filename
+    logger.info(f"Saving {file.name} in to {file_path}")
+    storage.save(file_path, file)
     return saved_filename
 
 
@@ -40,12 +40,16 @@ def validate_file_infection(file):
     Incoming file is sent to clamd for scanning.
     Raises a ValidationError
     """
+    if not settings.IS_AWS:
+        cd = clamd.ClamdNetworkSocket(
+            settings.CLAMD_TCP_ADDR, settings.CLAMD_TCP_SOCKET
+        )
+        result = cd.instream(file)
 
-    cd = clamd.ClamdNetworkSocket(settings.CLAMD_TCP_ADDR, settings.CLAMD_TCP_SOCKET)
-    result = cd.instream(file)
-
-    if result and result["stream"][0] == "FOUND":
-        raise ValidationError("File is infected with malware.", code="infected")
+        if result and result["stream"][0] == "FOUND":
+            raise ValidationError("File is infected with malware.", code="infected")
+    else:
+        logger.warning("Clam is not enabled on AWS")
 
 
 def route_number(session_data: dict) -> dict[str, int]:

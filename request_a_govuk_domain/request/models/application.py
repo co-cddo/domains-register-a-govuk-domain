@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
 from .organisation import Registrant, Registrar
+from .storage_util import select_storage
 
 REF_NUM_LENGTH = 17
 
@@ -53,7 +54,7 @@ class Application(models.Model):
     )
     registrant_org = models.ForeignKey(Registrant, on_delete=models.CASCADE)
     registrar_org = models.ForeignKey(Registrar, on_delete=models.CASCADE)
-    written_permission_evidence = models.FileField()
+    written_permission_evidence = models.FileField(storage=select_storage)
 
     def __str__(self):
         return f"{self.reference} - {self.domain_name}"
@@ -68,8 +69,12 @@ class CentralGovernmentAttributes(models.Model):
 
     application = models.OneToOneField(Application, on_delete=models.CASCADE)
     domain_purpose = models.CharField()
-    ministerial_request_evidence = models.FileField(null=True, blank=True)
-    policy_exemption_evidence = models.FileField(null=True, blank=True)
+    ministerial_request_evidence = models.FileField(
+        null=True, blank=True, storage=select_storage
+    )
+    policy_exemption_evidence = models.FileField(
+        null=True, blank=True, storage=select_storage
+    )
 
     def __str__(self):
         return str(self.application)

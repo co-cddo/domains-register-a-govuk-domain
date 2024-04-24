@@ -22,6 +22,7 @@ clamd = "^1.0.2"
 notifications-python-client = "^9.0.0"
 python-dotenv = "^1.0.1"
 django-admin-interface = "^0.28.6"
+django-storages = {extras = ["s3"], version = "^1.14.2"}
 
 
 [tool.poetry.group.dev.dependencies]

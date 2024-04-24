@@ -1,10 +1,13 @@
+import logging
 import random
 import string
 from datetime import datetime
-from django.views.generic import TemplateView, RedirectView
+
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
+from django.views.generic import TemplateView, RedirectView
+from django.views.generic.edit import FormView
 
 from .db import save_data_in_database
 from .forms import (
@@ -21,8 +24,6 @@ from .forms import (
     WrittenPermissionForm,
 )
 from .models.organisation import Registrar, RegistrantTypeChoices
-from django.views.generic.edit import FormView
-
 from .utils import (
     add_value_to_session,
     handle_uploaded_file,
@@ -31,6 +32,8 @@ from .utils import (
     route_number,
     send_email,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class StartView(TemplateView):
@@ -58,6 +61,7 @@ class RegistrarDetailsView(FormView):
             initial["registrar_name"] = session_data.get("registrar_name", "")
             initial["registrar_phone"] = session_data.get("registrar_phone", "")
             initial["registrar_email"] = session_data.get("registrar_email", "")
+        logger.info(f"Process started for session {self.request.session.session_key}")
         return initial
 
     def form_valid(self, form):
@@ -484,7 +488,9 @@ class UploadView(FormView):
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
-        saved_filename = handle_uploaded_file(self.request.FILES["file"])
+        saved_filename = handle_uploaded_file(
+            self.request.FILES["file"], self.request.session.session_key
+        )
         registration_data = self.request.session.get("registration_data", {})
         registration_data[f"{self.page_type}_file_uploaded_filename"] = saved_filename
         registration_data[
