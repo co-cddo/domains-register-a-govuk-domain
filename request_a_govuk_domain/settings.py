@@ -20,6 +20,7 @@ env = Env(
     DEBUG=(bool, False)
 )
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -32,6 +33,12 @@ Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG: bool = env.bool("DEBUG", default=False)
+if DEBUG:
+    # Use dotenv for debug environments
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
 SECRET_KEY: str = str(uuid.uuid4()) if DEBUG else env.str("SECRET_KEY")
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])

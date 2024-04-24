@@ -24,6 +24,7 @@ from .forms import (
     WrittenPermissionForm,
 )
 from .models.organisation import Registrar, RegistrantTypeChoices
+from .models.storage_util import select_storage
 from .utils import (
     add_value_to_session,
     handle_uploaded_file,
@@ -102,12 +103,15 @@ class RegistrantTypeView(FormView):
                 "exemption",
                 "exemption_file_uploaded_filename",
                 "exemption_file_original_filename",
+                "exemption_file_uploaded_url",
                 "written_permission",
                 "written_permission_file_uploaded_filename",
                 "written_permission_file_original_filename",
+                "written_permission_file_uploaded_url",
                 "minister",
                 "minister_file_uploaded_filename",
                 "minister_file_original_filename",
+                "minister_file_uploaded_url",
             ],
         )
 
@@ -311,6 +315,7 @@ class UploadRemoveView(RedirectView):
             [
                 self.page_type + "_file_uploaded_filename",
                 self.page_type + "_file_original_filename",
+                self.page_type + "_file_uploaded_url",
             ],
         )
         return super().get_redirect_url(*args, **kwargs)
@@ -483,6 +488,7 @@ class UploadView(FormView):
             [
                 f"{self.page_type}_file_uploaded_filename",
                 f"{self.page_type}_file_original_filename",
+                f"{self.page_type}_file_uploaded_url",
             ],
         )
         return super().get_context_data(**kwargs)
@@ -493,6 +499,9 @@ class UploadView(FormView):
         )
         registration_data = self.request.session.get("registration_data", {})
         registration_data[f"{self.page_type}_file_uploaded_filename"] = saved_filename
+        registration_data[f"{self.page_type}_file_uploaded_url"] = select_storage().url(
+            saved_filename
+        )
         registration_data[
             f"{self.page_type}_file_original_filename"
         ] = self.request.FILES["file"].name
@@ -567,12 +576,15 @@ class DomainPurposeView(FormView):
                 "exemption",
                 "exemption_file_uploaded_filename",
                 "exemption_file_original_filename",
+                "exemption_file_uploaded_url",
                 "written_permission",
                 "written_permission_file_uploaded_filename",
                 "written_permission_file_original_filename",
+                "written_permission_file_uploaded_url",
                 "minister",
                 "minister_file_uploaded_filename",
                 "minister_file_original_filename",
+                "minister_file_uploaded_url",
             ],
         )
 
