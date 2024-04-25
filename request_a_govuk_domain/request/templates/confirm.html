@@ -50,7 +50,7 @@
             {{ registration_data.registrar_email }}
           {% endgds_summary_list_row_value %}
           {% gds_summary_list_row_actions %}
-          {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registrar-details" %}
+            {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registrar-details" %}
           {% endgds_summary_list_row_actions %}
         {% endgds_summary_list_row %}
       {% endgds_summary_list %}
@@ -64,14 +64,14 @@
         {#### Registrant Organisation type ####}
 
         {% gds_summary_list_row %}
-          {% gds_summary_list_row_key %}Organisation type{% endgds_summary_list_row_key %}
+          {% gds_summary_list_row_key %}
+            Organisation type
+          {% endgds_summary_list_row_key %}
           {% gds_summary_list_row_value %}
             {{ registrant_type }}
           {% endgds_summary_list_row_value %}
           {% gds_summary_list_row_actions %}
-             {% gds_summary_list_row_actions_item_inline href="/" %}
-               <a href="/registrant-type">Change</a>
-             {% endgds_summary_list_row_actions_item %}
+             {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registrant-details" %}
           {% endgds_summary_list_row_actions %}
         {% endgds_summary_list_row %}
 
@@ -84,9 +84,7 @@
               {% if registration_data.domain_purpose == "email-only" %}Email only{% endif %}
             {% endgds_summary_list_row_value %}
             {% gds_summary_list_row_actions %}
-              {% gds_summary_list_row_actions_item_inline href="/" %}
-                <a href="/change-domain-purpose">Change</a>
-              {% endgds_summary_list_row_actions_item %}
+              {% gds_summary_list_row_actions_item_inline text="Change" href="/change-domain-purpose" %}
             {% endgds_summary_list_row_actions %}
           {% endgds_summary_list_row %}
         {% endif %}
@@ -100,13 +98,11 @@
             {% gds_summary_list_row_value %}
               {% if registration_data.written_permission == "yes" %}
                 Yes, evidence provided:<br/>
-                <a href="{{ registration_data.exemption_file_uploaded_url }}" target="_blank">{{ registration_data.exemption_file_original_filename }}</a>
+                <a class="govuk-link" href="{{ registration_data.exemption_file_uploaded_url }}" target="_blank">{{ registration_data.exemption_file_original_filename }}</a>
               {% endif %}
             {% endgds_summary_list_row_value %}
             {% gds_summary_list_row_actions %}
-              {% gds_summary_list_row_actions_item_inline href="/" %}
-                <a href="/change-exemption">Change</a>
-              {% endgds_summary_list_row_actions_item %}
+              {% gds_summary_list_row_actions_item_inline text="Change" href="/change-exemption" %}
             {% endgds_summary_list_row_actions %}
           {% endgds_summary_list_row %}
         {% endif %}
@@ -120,15 +116,13 @@
             {% gds_summary_list_row_value %}
               {% if registration_data.written_permission == "yes" %}
                 Yes, evidence provided:<br/>
-                <a href="{{ registration_data.written_permission_file_uploaded_url }}" target="_blank">{{ registration_data.written_permission_file_original_filename }}</a>
+                <a class="govuk-link" href="{{ registration_data.written_permission_file_uploaded_url }}" target="_blank">{{ registration_data.written_permission_file_original_filename }}</a>
               {% else %}
                 No {# This shouldn't normally happen #}
               {% endif %}
             {% endgds_summary_list_row_value %}
             {% gds_summary_list_row_actions %}
-              {% gds_summary_list_row_actions_item_inline href="/" %}
-                <a href="/change-written-permission">Change</a>
-              {% endgds_summary_list_row_actions_item %}
+              {% gds_summary_list_row_actions_item_inline text="Change" href="/change-written-permission" %}
             {% endgds_summary_list_row_actions %}
           {% endgds_summary_list_row %}
         {% endif %}
@@ -141,9 +135,7 @@
           {% gds_summary_list_row_key %}Domain name{% endgds_summary_list_row_key %}
           {% gds_summary_list_row_value %}{{ registration_data.domain_name }}{% endgds_summary_list_row_value %}
           {% gds_summary_list_row_actions %}
-            {% gds_summary_list_row_actions_item_inline href="/" %}
-              <a href="/change-domain">Change</a>
-            {% endgds_summary_list_row_actions_item %}
+            {% gds_summary_list_row_actions_item_inline text="Change" href="/change-domain" %}
           {% endgds_summary_list_row_actions %}
         {% endgds_summary_list_row %}
 
@@ -158,13 +150,11 @@
                 No evidence provided
               {% else %}
                 Yes, evidence provided:<br/>
-                <a href="{{ registration_data.minister_file_uploaded_url }}" target="_blank">{{ registration_data.minister_file_original_filename }}</a>
+                <a class="govuk-link" href="{{ registration_data.minister_file_uploaded_url }}" target="_blank">{{ registration_data.minister_file_original_filename }}</a>
               {% endif %}
             {% endgds_summary_list_row_value %}
             {% gds_summary_list_row_actions %}
-              {% gds_summary_list_row_actions_item_inline href="/" %}
-                <a href="/change-minister">Change</a>
-              {% endgds_summary_list_row_actions_item %}
+              {% gds_summary_list_row_actions_item_inline text="Change" href="/change-minister" %}
             {% endgds_summary_list_row_actions %}
           {% endgds_summary_list_row %}
         {% endif %}
@@ -183,9 +173,7 @@
           {% gds_summary_list_row_key %}Organisation name{% endgds_summary_list_row_key %}
           {% gds_summary_list_row_value %}{{ registration_data.registrant_organisation }}{% endgds_summary_list_row_value %}
           {% gds_summary_list_row_actions %}
-            {% gds_summary_list_row_actions_item_inline href="/" %}
-              <a href="/change-registrant">Change</a>
-            {% endgds_summary_list_row_actions_item %}
+            {% gds_summary_list_row_actions_item_inline text="Change" href="/change-registrant" %}
           {% endgds_summary_list_row_actions %}
         {% endgds_summary_list_row %}
 

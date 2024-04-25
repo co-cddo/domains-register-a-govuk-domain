@@ -31,15 +31,6 @@ class PhoneNumberValidator:
             raise ValidationError(self.error_message)
 
 
-def add_back_to_answers_button(args, field, layout):
-    """
-    Add the back button when coming to chnage the answer.
-    """
-    if args and field in args[0]:
-        if args[0][field] != "":
-            layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
-
-
 class RegistrarDetailsForm(forms.Form):
     """
     Registrar Form with organisations choice fields
@@ -95,7 +86,7 @@ class RegistrarDetailsForm(forms.Form):
         )
         if self.change:
             self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to Answers")
+                Button.secondary("back_to_answers", "Back to answers")
             )
 
 

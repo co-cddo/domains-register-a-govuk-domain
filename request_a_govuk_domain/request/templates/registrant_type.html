@@ -2,7 +2,7 @@
 {% load crispy_forms_tags crispy_forms_gds %}
 
 {% block beforeContent %}
-  {% url "registrant_details" as back_url %}
+  {% url "registrar_details" as back_url %}
   {% back_link back_url %}
 {% endblock %}
 
@@ -13,8 +13,6 @@
         Who is this domain name for?
       </h1>
       {% error_summary form %}
-
-      <p class="govuk-body">Your registrant must be from an eligible organisation to get a .gov.uk domain name.</p>
 
       {% crispy form %}
     </div>

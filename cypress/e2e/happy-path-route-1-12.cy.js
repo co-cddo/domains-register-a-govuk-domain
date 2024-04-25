@@ -8,13 +8,13 @@ describe('Happy path - route 1-12', () => {
     cy.checkPageTitleIncludes('Who is this domain name for?')
     cy.chooseRegistrantType(3) // Parish or community council -> route 1
 
-    cy.checkPageTitleIncludes('Choose a .gov.uk domain name?')
+    cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
     cy.enterDomainName('something-pc')
 
     cy.checkPageTitleIncludes('Is something-pc.gov.uk the correct domain name?')
     cy.selectYesOrNo('domain_confirmation', 'no')
 
-    cy.checkPageTitleIncludes('Choose a .gov.uk domain name?')
+    cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
     cy.enterDomainName('somethingelse-pc')
 
     cy.checkPageTitleIncludes('Is somethingelse-pc.gov.uk the correct domain name?')
