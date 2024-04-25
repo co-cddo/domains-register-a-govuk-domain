@@ -100,7 +100,7 @@
             {% gds_summary_list_row_value %}
               {% if registration_data.written_permission == "yes" %}
                 Yes, evidence provided:<br/>
-                <a href="/media/{{ registration_data.exemption_file_uploaded_filename }}" target="_blank">{{ registration_data.exemption_file_original_filename }}</a>
+                <a href="/media/{{ registration_data.exemption_file_uploaded_url }}" target="_blank">{{ registration_data.exemption_file_original_filename }}</a>
               {% endif %}
             {% endgds_summary_list_row_value %}
             {% gds_summary_list_row_actions %}
@@ -120,7 +120,7 @@
             {% gds_summary_list_row_value %}
               {% if registration_data.written_permission == "yes" %}
                 Yes, evidence provided:<br/>
-                <a href="/media/{{ registration_data.written_permission_file_uploaded_filename }}" target="_blank">{{ registration_data.written_permission_file_original_filename }}</a>
+                <a href="/media/{{ registration_data.written_permission_file_uploaded_url }}" target="_blank">{{ registration_data.written_permission_file_original_filename }}</a>
               {% else %}
                 No {# This shouldn't normally happen #}
               {% endif %}
@@ -158,7 +158,7 @@
                 No evidence provided
               {% else %}
                 Yes, evidence provided:<br/>
-                <a href="/media/{{ registration_data.minister_file_uploaded_filename }}" target="_blank">{{ registration_data.minister_file_original_filename }}</a>
+                <a href="/media/{{ registration_data.minister_file_uploaded_url }}" target="_blank">{{ registration_data.minister_file_original_filename }}</a>
               {% endif %}
             {% endgds_summary_list_row_value %}
             {% gds_summary_list_row_actions %}
