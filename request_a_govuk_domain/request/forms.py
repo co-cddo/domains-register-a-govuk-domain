@@ -31,15 +31,6 @@ class PhoneNumberValidator:
             raise ValidationError(self.error_message)
 
 
-def add_back_to_answers_button(args, field, layout):
-    """
-    Add the back button when coming to chnage the answer.
-    """
-    if args and field in args[0]:
-        if args[0][field] != "":
-            layout.fields.append(Button.secondary("back_to_answers", "Back to Answers"))
-
-
 class RegistrarDetailsForm(forms.Form):
     """
     Registrar Form with organisations choice fields
@@ -95,7 +86,7 @@ class RegistrarDetailsForm(forms.Form):
         )
         if self.change:
             self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to Answers")
+                Button.secondary("back_to_answers", "Back to answers")
             )
 
 
@@ -162,20 +153,21 @@ class DomainForm(forms.Form):
 
 
 class DomainConfirmationForm(forms.Form):
-    domain_confirmation = forms.ChoiceField(
-        label="",
-        choices=(("yes", "Yes, I confirm"), ("no", "No, I want to change it")),
-        widget=forms.RadioSelect,
-        error_messages={"required": "Please answer Yes or No"},
-    )
-
     def __init__(self, *args, **kwargs):
+        self.domain_name = kwargs.pop("domain_name", None)
         super().__init__(*args, **kwargs)
+        self.fields["domain_confirmation"] = forms.ChoiceField(
+            label=f"Is {self.domain_name} the correct domain name?",
+            choices=(("yes", "Yes, I confirm"), ("no", "No, I want to change it")),
+            widget=forms.RadioSelect,
+            help_text="The Domains Team will review the domain name and make a decision on whether to approve or reject it.",
+            error_messages={"required": "Please answer Yes or No"},
+        )
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field.radios(
                 "domain_confirmation",
-                legend_size=Size.MEDIUM,
+                legend_size=Size.EXTRA_LARGE,
                 legend_tag="h1",
                 inline=False,
             ),
@@ -185,6 +177,9 @@ class DomainConfirmationForm(forms.Form):
     def get_choice(self, field):
         value = self.cleaned_data[field]
         return dict(self.fields[field].choices).get(value)
+
+    class Meta:
+        fields = ["domain_confirmation"]
 
 
 class RegistrantDetailsForm(forms.Form):
@@ -304,7 +299,7 @@ class WrittenPermissionForm(forms.Form):
 
 class ExemptionForm(forms.Form):
     exemption = forms.ChoiceField(
-        label="",
+        label="Does your registrant have an exemption from using the GOV.UK website?",
         help_text="If your registrant is a central government department or \
             agency, they must have an exemption from the Government Digital \
             Service before applying for a new third-level .gov.uk domain \
@@ -321,8 +316,8 @@ class ExemptionForm(forms.Form):
         self.helper.layout = Layout(
             Field.radios(
                 "exemption",
-                legend_size=Size.MEDIUM,
                 legend_tag="h1",
+                legend_size=Size.EXTRA_LARGE,
                 inline=True,
             ),
             Button("submit", "Continue"),
@@ -338,21 +333,22 @@ class ExemptionForm(forms.Form):
 
 
 class MinisterForm(forms.Form):
-    minister = forms.ChoiceField(
-        label="",
-        choices=(("yes", "Yes"), ("no", "No")),
-        widget=forms.RadioSelect,
-        error_messages={"required": "Please answer Yes or No"},
-    )
-
     def __init__(self, *args, **kwargs):
         self.change = kwargs.pop("change", None)
+        self.domain_name = kwargs.pop("domain_name", None)
         super().__init__(*args, **kwargs)
+        self.fields["minister"] = forms.ChoiceField(
+            label=f"Has a central government minister requested the {self.domain_name} domain name?",
+            help_text=f"If {self.domain_name} does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.",
+            choices=(("yes", "Yes"), ("no", "No")),
+            widget=forms.RadioSelect,
+            error_messages={"required": "Please answer Yes or No"},
+        )
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field.radios(
                 "minister",
-                legend_size=Size.MEDIUM,
+                legend_size=Size.EXTRA_LARGE,
                 legend_tag="h1",
                 inline=True,
             ),
@@ -437,7 +433,8 @@ class DomainPurposeForm(forms.Form):
     domain_purpose = forms.ChoiceField(
         choices=DOMAIN_PURPOSES,
         widget=forms.RadioSelect,
-        label="Tell us what you plan to use the .gov.uk domain name for. Select one option",
+        label="Why do you want a .gov.uk domain name?",
+        help_text="Tell us what you plan to use the .gov.uk domain name for. Select one option",
         error_messages={"required": "Please select from one of the choices"},
     )
 
@@ -445,6 +442,10 @@ class DomainPurposeForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            Field.radios("domain_purpose", legend_size=Size.SMALL),
+            Field.radios(
+                "domain_purpose",
+                legend_tag="h1",
+                legend_size=Size.EXTRA_LARGE,
+            ),
             Button("submit", "Continue"),
         )

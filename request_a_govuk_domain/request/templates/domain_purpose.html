@@ -4,7 +4,7 @@
 {% block title %}Domain purpose{% endblock %}
 
 {% block beforeContent %}
-  {% url "registrant" as back_url %}
+  {% url "registrant_type" as back_url %}
   {% back_link back_url %}
 {% endblock %}
 
@@ -13,10 +13,6 @@
     <div class="govuk-grid-column-two-thirds">
 
       {% error_summary form %}
-
-      <h1 class="govuk-heading-l">
-        Why do you want a .gov.uk domain name?
-      </h1>
 
       {% crispy form %}
 

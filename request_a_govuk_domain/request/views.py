@@ -163,6 +163,12 @@ class DomainConfirmationView(FormView):
     template_name = "domain_confirmation.html"
     form_class = DomainConfirmationForm
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        session = self.request.session.get("registration_data", {})
+        kwargs["domain_name"] = session.get("domain_name")
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["registration_data"] = self.request.session.get("registration_data", {})
@@ -446,7 +452,9 @@ class MinisterView(FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+        session = self.request.session.get("registration_data", {})
         kwargs["change"] = getattr(self, "change")
+        kwargs["domain_name"] = session.get("domain_name")
         return kwargs
 
     def get_initial(self):
