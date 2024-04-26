@@ -12,12 +12,6 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% error_summary form %}
-      <h1 class="govuk-heading-l">
-        Has a central government minister requested the {{ registration_data.domain_name }} domain name?
-      </h1>
-      <p class="govuk-body">
-        If the requested .gov.uk domain does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.
-      </p>
       {% crispy form %}
     </div>
   </div>

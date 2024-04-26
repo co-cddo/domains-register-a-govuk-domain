@@ -12,12 +12,6 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% error_summary form %}
-      <h1 class="govuk-heading-l">
-        Is {{ registration_data.domain_name }} the correct domain name?
-      </h1>
-      <p class="govuk-body">
-        The Domains Team will review the domain name and make a decision on whether to approve or reject it.
-      </p>
       {% crispy form %}
     </div>
   </div>
