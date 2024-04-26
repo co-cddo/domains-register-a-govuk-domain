@@ -16,6 +16,7 @@ from request_a_govuk_domain.request.models import (
     RegistrarPerson,
     RegistrantPerson,
     RegistryPublishedPerson,
+    Review,
 )
 from request_a_govuk_domain.request.utils import is_central_government, route_number
 
@@ -85,6 +86,8 @@ def save_data_in_database(reference, request):
                 registrar_org=registrar_org,
                 written_permission_evidence=written_permission_evidence,
             )
+
+            Review.objects.create(application=application)
 
             # Create CentralGovernmentAttributes, if the registrant type is central_government
             if is_central_government(registration_data["registrant_type"]):
