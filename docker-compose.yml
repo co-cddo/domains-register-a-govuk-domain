@@ -1,5 +1,6 @@
 x-common-application-variables: &common-application-variables
   DEBUG: "True"
+  SECRET_KEY: "Unneeded"  # pragma: allowlist secret
   DJANGO_SETTINGS_MODULE: request_a_govuk_domain.settings
   DATABASE_URL: postgresql://govuk_domain:govuk_domain@postgres:5432/govuk_domain  # pragma: allowlist secret
 
