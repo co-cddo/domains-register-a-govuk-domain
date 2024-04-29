@@ -82,6 +82,7 @@ jobs:
       env:
         SECRET_KEY: blah
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
+        DEBUG: True
       with:
         start: |
           /home/runner/work/domains-register-a-govuk-domain/domains-register-a-govuk-domain/.github/workflows/start-server.sh

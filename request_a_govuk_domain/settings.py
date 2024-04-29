@@ -84,7 +84,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "request_a_govuk_domain.request.middleware.FormProgressMiddleware",
 ]
 
 FILE_UPLOAD_HANDLERS = [
@@ -237,5 +236,6 @@ CLAMD_TCP_SOCKET = 3310
 # Cross-site request forgery protection
 # What: https://owasp.org/www-community/attacks/csrf
 # How: https://docs.djangoproject.com/en/5.0/ref/settings/
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = True
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
