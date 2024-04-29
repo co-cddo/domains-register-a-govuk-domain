@@ -187,4 +187,6 @@ def send_email(email_address: str, template_id: str, personalisation: dict) -> N
             translate_notify_missing_service_id_error(e)
             raise e
     else:
+        if get_env_variable("ENVIRONMENT") == "prod":
+            raise ValueError("Notify API key not found in Production environment")
         logger.info("Not sending email as Notify API key not found")
