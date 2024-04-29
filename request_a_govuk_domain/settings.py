@@ -233,3 +233,9 @@ MAX_UPLOAD_SIZE = "10485760"
 
 CLAMD_TCP_ADDR = "clamav"
 CLAMD_TCP_SOCKET = 3310
+
+# Cross-site request forgery protection
+# What: https://owasp.org/www-community/attacks/csrf
+# How: https://docs.djangoproject.com/en/5.0/ref/settings/
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
