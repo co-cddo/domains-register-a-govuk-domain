@@ -175,6 +175,9 @@ def send_email(email_address: str, template_id: str, personalisation: dict) -> N
     notify_api_key = get_env_variable("NOTIFY_API_KEY")
 
     # If api key is found then send email, else log that it was not found
+    # This check is necessary for github actions ( where "NOTIFY_API_KEY" is not set and during build all the
+    # cypress tests would fail where they reach Application submitted page, where the application will try to
+    # send mail ). It is also needed for local environment if "NOTIFY_API_KEY" is not set
     if notify_api_key:
         try:
             notifications_client = NotificationsAPIClient(notify_api_key)
