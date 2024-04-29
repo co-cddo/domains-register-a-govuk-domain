@@ -152,6 +152,18 @@ def get_env_variable(key: str, default=None) -> str:
     return os.getenv(key, default)
 
 
+def translate_notify_missing_service_id_error(e):
+    """
+    If the Notify API key is invalid, then Notify API throws an error message saying "Missing service ID" which is
+    not very clear. This method is to translate that message to more clear message ""Notify API key seems
+    invalid"
+    """
+    error_type = type(e).__name__
+    error_message = str(e)
+    if error_type == "AssertionError" and error_message == "Missing service ID":
+        raise ValueError("Notify API key seems invalid") from e
+
+
 def send_email(email_address: str, template_id: str, personalisation: dict) -> None:
     """
     Method to send email using Notify API
@@ -164,11 +176,15 @@ def send_email(email_address: str, template_id: str, personalisation: dict) -> N
 
     # If api key is found then send email, else log that it was not found
     if notify_api_key:
-        notifications_client = NotificationsAPIClient(notify_api_key)
-        notifications_client.send_email_notification(
-            email_address=email_address,
-            template_id=template_id,
-            personalisation=personalisation,
-        )
+        try:
+            notifications_client = NotificationsAPIClient(notify_api_key)
+            notifications_client.send_email_notification(
+                email_address=email_address,
+                template_id=template_id,
+                personalisation=personalisation,
+            )
+        except Exception as e:
+            translate_notify_missing_service_id_error(e)
+            raise e
     else:
         logger.info("Not sending email as Notify API key not found")
