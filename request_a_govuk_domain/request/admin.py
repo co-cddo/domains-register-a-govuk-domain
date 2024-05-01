@@ -13,9 +13,11 @@ from django.utils.html import format_html
 from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
 
+from .constants import NOTIFY_TEMPLATE_ID_MAP
 
 # from .utils import send_email
 from .models import Application, ApplicationStatus, CentralGovernmentAttributes, Review
+from .utils import send_email
 
 
 class ReviewerReadOnlyFieldsMixin:
@@ -167,6 +169,28 @@ class ReviewInline(admin.StackedInline):
     verbose_name_plural = "Reviews"
 
 
+def send_approval_or_rejection_email(request):
+    """
+    Sends Approval/Rejection mail depending on the action ( approval/rejection ) in the request object
+
+    :param request: Request object
+    """
+    application = Application.objects.get(pk=request.POST["obj_id"])
+    registrar_name = application.registrar_person.name
+    registrar_email = application.registrar_person.email_address
+    personalisation = {
+        "first_name": registrar_name,
+    }
+
+    send_email(
+        email_address=registrar_email,
+        template_id=NOTIFY_TEMPLATE_ID_MAP[
+            request.POST["action"]
+        ],  # Notify template id of Approval/Rejection mail
+        personalisation=personalisation,
+    )
+
+
 class DecisionConfirmationView(View, admin.ModelAdmin):
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
@@ -190,8 +214,14 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
         if "_confirm" in request.POST:
             try:
                 # send email
+                send_approval_or_rejection_email(request)
                 self._set_application_status(request)
-                self.message_user(request, "Confirmation email sent", messages.SUCCESS)
+                # To show the backend app user a message "[Approval/Rejection] email sent", get the type of
+                # action ( i.e. whether it is Approval or Rejection )
+                approval_or_rejection = request.POST["action"].capitalize()
+                self.message_user(
+                    request, f"{approval_or_rejection} email sent", messages.SUCCESS
+                )
                 return HttpResponseRedirect(
                     reverse("admin:request_application_changelist")
                 )

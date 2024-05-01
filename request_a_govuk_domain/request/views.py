@@ -9,6 +9,7 @@ from django.views import View
 from django.views.generic import TemplateView, RedirectView
 from django.views.generic.edit import FormView
 
+from .constants import NOTIFY_TEMPLATE_ID_MAP
 from .db import save_data_in_database
 from .forms import (
     DomainConfirmationForm,
@@ -403,7 +404,9 @@ def send_confirmation_email(request) -> None:
     }
     send_email(
         email_address=registration_data["registrar_email"],
-        template_id="d749d1a5-366c-4c0b-8e96-488150a62205",  # Notify API template id of Confirmation email
+        template_id=NOTIFY_TEMPLATE_ID_MAP[
+            "confirmation"
+        ],  # Notify API template id of Confirmation email
         personalisation=personalisation,
     )
 
