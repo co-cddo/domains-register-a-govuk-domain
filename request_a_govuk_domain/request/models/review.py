@@ -67,7 +67,6 @@ class Review(models.Model):
                 self.registrant_org_exists,
                 self.registrant_org_eligible,
                 self.registrant_person_id_confirmed,
-                self.permission_signatory_role_confirmed,
                 self.domain_name_validated,
             )
         ):
