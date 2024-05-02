@@ -70,6 +70,7 @@ jobs:
       env:
         SECRET_KEY: blah
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
+        DOMAIN_NAME: http://localhost:8010
       run: |
         poetry run ./manage.py collectstatic --noinput
         poetry run ./manage.py migrate --noinput
@@ -90,4 +91,4 @@ jobs:
       env:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
       run: |
-        SECRET_KEY=unneeded poetry run python manage.py test -v 2
+        SECRET_KEY=unneeded DOMAIN_NAME=localhost:2010 poetry run python manage.py test -v 2

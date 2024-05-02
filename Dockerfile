@@ -19,7 +19,10 @@ COPY request_a_govuk_domain /app/request_a_govuk_domain
 RUN sed -i 's/\r$//' /app/manage.py  && \
     chmod +x /app/manage.py
 
-RUN SECRET_KEY=unneeded /app/manage.py collectstatic --no-input
+ENV SECRET_KEY=unneeded
+ENV DOMAIN_NAME=http://localhost:2010
+
+RUN  /app/manage.py collectstatic --no-input
 
 RUN mkdir /var/run/request_a_govuk_domain && \
     chown govuk_domain:govuk_domain /var/run/request_a_govuk_domain
