@@ -32,6 +32,14 @@ black = "^24.3.0"
 ipdb = "^0.13.13"
 web-pdb = "^1.6.2"
 
+[tool.mypy]
+ignore_missing_imports = true
+mypy_path = "."
+plugins = ['mypy_django_plugin.main']
+
+[tool.django-stubs]
+django_settings_module = "request_a_govuk_domain.settings"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -26,3 +26,22 @@ repos:
     hooks:
     -   id: detect-secrets
         exclude: (^\.github/workflows/)|package\.lock\.json|(^tests/fixtures/)|request_a_govuk_domain/static|seed/
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+    -   id: mypy
+        exclude: wsgi.py
+        additional_dependencies:
+        -    types-six
+        -    'django-stubs[compatible-mypy]'
+        -    django-admin-interface
+        -    django-environ
+        -    psycopg2-binary
+        -    django-postgres-extra
+        -    govuk-frontend-django
+        -    crispy-forms-gds
+        -    django-simple-history
+        -    django-phonenumbers
+        -    django-phonenumber-field
+        -    django-storages
+        -    boto3

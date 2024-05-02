@@ -153,10 +153,10 @@ class CentralGovernmentAttributesInline(
     def download_policy_exemption_evidence(self, obj):
         return self.generate_download_link(obj, "download_policy_exemption_evidence")
 
-    download_ministerial_request_evidence.short_description = (
+    download_ministerial_request_evidence.short_description = (  # type: ignore
         "Ministerial request evidence"
     )
-    download_policy_exemption_evidence.short_description = (
+    download_policy_exemption_evidence.short_description = (  # type: ignore
         "Naming policy exemption evidence"
     )
 
@@ -230,7 +230,7 @@ class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
             file = getattr(instance.centralgovt, field_name)
         return FileResponse(file.open("rb"))
 
-    download_written_permission_evidence.short_description = (
+    download_written_permission_evidence.short_description = (  # type: ignore
         "Written permission evidence"
     )
 
