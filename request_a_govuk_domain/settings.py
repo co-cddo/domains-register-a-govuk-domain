@@ -20,7 +20,6 @@ env = Env(
     DEBUG=(bool, False)
 )
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -46,6 +45,7 @@ ENVIRONMENT = env.str("ENVIRONMENT", default=None)
 
 # AWS related settings
 IS_AWS: bool = env.bool("IS_AWS", default=False)
+IS_SCANNING_ENABLED: bool = env.bool("SCANNING_ENABLED", default=True)
 AWS_STORAGE_BUCKET_NAME = env.str(
     "S3_MEDIA_ROOT", default=f"registration-app-media-root-{ENVIRONMENT}"
 )
@@ -231,5 +231,5 @@ CONTENT_TYPES = ["png", "jpeg", "jpg", "pdf"]
 # 10 MB
 MAX_UPLOAD_SIZE = "10485760"
 
-CLAMD_TCP_ADDR = "clamav"
+CLAMD_TCP_ADDR = "clamav" if not IS_AWS else "clamav.internal-domains-registry-cluster"
 CLAMD_TCP_SOCKET = 3310

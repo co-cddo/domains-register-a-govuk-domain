@@ -40,7 +40,7 @@ def validate_file_infection(file):
     Incoming file is sent to clamd for scanning.
     Raises a ValidationError
     """
-    if not settings.IS_AWS:
+    if settings.IS_SCANNING_ENABLED:
         cd = clamd.ClamdNetworkSocket(
             settings.CLAMD_TCP_ADDR, settings.CLAMD_TCP_SOCKET
         )
