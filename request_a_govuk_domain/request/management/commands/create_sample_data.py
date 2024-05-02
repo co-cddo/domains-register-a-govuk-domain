@@ -10,8 +10,6 @@ MEDIA_ROOT_PATH = os.path.join(SCRIPT_PATH, "..", "..", "..", "media")
 
 PERSON_NAMES = ["Bob Roberts", "Peter Peters", "Olivia Oliver"]
 
-REGISTRANT_NAMES = ["HMRC", "MOD", "MOT", "MOJ"]
-
 DOMAIN_NAME = "ministryofdomains.gov.uk"
 DOMAIN_PURPOSE = "Web site"
 
@@ -51,13 +49,26 @@ class Command(BaseCommand):
             name=PERSON_NAMES[1], registrar=application_registrar
         )
 
-        registrants = [
-            models.Registrant.objects.create(
-                name=name,
+        # Must upload permission and can upload ministerial exemption and domain name exemption
+        central_gov_registrant = models.Registrant.objects.create(
+                name="Ministry of Domains",
                 type=models.RegistrantTypeChoices.CENTRAL_GOVERNMENT,
             )
-            for name in REGISTRANT_NAMES
-        ]
+
+        # Doesn't upload any documents
+        parish_council_registrant = models.Registrant.objects.create(
+                name="Border Gateway Parish Council",
+                type=models.RegistrantTypeChoices.PARISH_COUNCIL,
+            )
+
+        # Must upload permission. Does not upload any other documents
+        other_local_registrant = models.Registrant.objects.create(
+                name="Anycast County Council",
+                type=models.RegistrantTypeChoices.LOCAL_AUTHORITY,
+            )
+
+
+        # Create a central government application
 
         application = models.Application(
             reference="GOVUK20240327ABCD",
