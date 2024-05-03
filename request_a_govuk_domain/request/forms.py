@@ -293,7 +293,7 @@ class WrittenPermissionForm(forms.Form):
         )
         if self.change:
             self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to Answers")
+                Button.secondary("back_to_answers", "Back to answers")
             )
 
 
@@ -324,7 +324,7 @@ class ExemptionForm(forms.Form):
         )
         if self.change:
             self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to Answers")
+                Button.secondary("back_to_answers", "Back to answers")
             )
 
     def get_choice(self, field):
@@ -356,7 +356,7 @@ class MinisterForm(forms.Form):
         )
         if self.change:
             self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to Answers")
+                Button.secondary("back_to_answers", "Back to answers")
             )
 
     def get_choice(self, field):
