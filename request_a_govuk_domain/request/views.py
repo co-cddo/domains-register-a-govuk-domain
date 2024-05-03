@@ -414,6 +414,7 @@ def send_confirmation_email(request) -> None:
 class SuccessView(View):
     def get(self, request):
         reference = generate_reference()
+        logger.info("Saving form %s", self.request.session.session_key)
         save_data_in_database(reference, request)
         send_confirmation_email(request)
 

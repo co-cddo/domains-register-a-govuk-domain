@@ -86,7 +86,9 @@ def save_data_in_database(reference, request):
                 registrar_org=registrar_org,
                 written_permission_evidence=written_permission_evidence,
             )
-
+            logger.info(
+                "Saved application %d with reference %s", application.id, reference
+            )
             Review.objects.create(application=application)
 
             # Create CentralGovernmentAttributes, if the registrant type is central_government

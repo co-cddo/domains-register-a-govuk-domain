@@ -40,7 +40,6 @@ def validate_file_infection(file):
     Incoming file is sent to clamd for scanning.
     Raises a ValidationError
     """
-    logger.info("Scanning file {}", file)
     if settings.IS_SCANNING_ENABLED:
         cd = clamd.ClamdNetworkSocket(
             settings.CLAMD_TCP_ADDR, settings.CLAMD_TCP_SOCKET
@@ -49,7 +48,6 @@ def validate_file_infection(file):
 
         if result and result["stream"][0] == "FOUND":
             raise ValidationError("File is infected with malware.", code="infected")
-        logger.info("File is clean")
     else:
         logger.warning("Clam is not enabled on AWS")
 
