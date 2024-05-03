@@ -27,7 +27,6 @@ from .forms import (
 from .models.organisation import Registrar, RegistrantTypeChoices
 from .models.storage_util import select_storage
 from .utils import (
-    add_value_to_session,
     handle_uploaded_file,
     add_to_session,
     remove_from_session,
@@ -269,12 +268,6 @@ class WrittenPermissionView(FormView):
     template_name = "written_permission.html"
     form_class = WrittenPermissionForm
     success_url = reverse_lazy("written_permission_upload")
-    change = False
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["change"] = getattr(self, "change")
-        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -290,10 +283,6 @@ class WrittenPermissionView(FormView):
 
     def form_valid(self, form):
         registration_data = add_to_session(form, self.request, ["written_permission"])
-        # We need to store the fact that we're changing the value,
-        # as we're going to have to add the "Back to the answers"
-        # 2 pages later
-        add_value_to_session(self.request, "change", self.change)
         if registration_data["written_permission"] == "no":
             self.success_url = reverse_lazy("written_permission_fail")
         return super().form_valid(form)
@@ -426,12 +415,6 @@ class SuccessView(View):
 class ExemptionView(FormView):
     template_name = "exemption.html"
     form_class = ExemptionForm
-    change = False
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["change"] = getattr(self, "change")
-        return kwargs
 
     def get_initial(self):
         initial = super().get_initial()
@@ -452,12 +435,10 @@ class ExemptionView(FormView):
 class MinisterView(FormView):
     template_name = "minister.html"
     form_class = MinisterForm
-    change = False
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         session = self.request.session.get("registration_data", {})
-        kwargs["change"] = getattr(self, "change")
         kwargs["domain_name"] = session.get("domain_name")
         return kwargs
 

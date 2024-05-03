@@ -291,10 +291,6 @@ class WrittenPermissionForm(forms.Form):
             Field.radios("written_permission", legend_size=Size.SMALL, inline=True),
             Button("submit", "Continue"),
         )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to answers")
-            )
 
 
 class ExemptionForm(forms.Form):
@@ -322,10 +318,6 @@ class ExemptionForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to answers")
-            )
 
     def get_choice(self, field):
         value = self.cleaned_data[field]
@@ -334,7 +326,6 @@ class ExemptionForm(forms.Form):
 
 class MinisterForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.change = kwargs.pop("change", None)
         self.domain_name = kwargs.pop("domain_name", None)
         super().__init__(*args, **kwargs)
         self.fields["minister"] = forms.ChoiceField(
@@ -354,10 +345,6 @@ class MinisterForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to answers")
-            )
 
     def get_choice(self, field):
         value = self.cleaned_data[field]
