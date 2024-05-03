@@ -5,9 +5,12 @@ describe('Changing answers at the end of the process', () => {
 
   it('lets you change your answer about whether you have minister approval', () => {
     cy.goToConfirmation(7)
-    cy.get("a[href='/change-minister']").eq(0).click()
+    cy.get("a[href='/minister']").eq(0).click()
     cy.checkPageTitleIncludes('Has a central government minister requested')
     cy.get('input[type=radio]').eq(0).should('be.checked')
+
+    // No going back to answers
+    cy.get('#id_back_to_answers').should('not.exist')
 
     // change the answer
     cy.selectYesOrNo('minister', 'no')
@@ -19,9 +22,12 @@ describe('Changing answers at the end of the process', () => {
 
   it('lets you change your answer about whether you have permission', () => {
     cy.goToConfirmation(7)
-    cy.get("a[href='/change-written-permission']").eq(0).click()
+    cy.get("a[href='/written-permission']").eq(0).click()
     cy.checkPageTitleIncludes('Does your registrant have proof of permission')
     cy.get('input[type=radio]').eq(0).should('be.checked')
+
+    // No going back to answers
+    cy.get('#id_back_to_answers').should('not.exist')
 
     // change the answer
     cy.selectYesOrNo('written_permission', 'no')
@@ -33,9 +39,12 @@ describe('Changing answers at the end of the process', () => {
 
   it('lets you change your answer about whether you have an exemption', () => {
     cy.goToConfirmation(7)
-    cy.get("a[href='/change-exemption']").eq(0).click()
+    cy.get("a[href='/exemption']").eq(0).click()
     cy.checkPageTitleIncludes('Does your registrant have an exemption')
     cy.get('input[type=radio]').eq(0).should('be.checked')
+
+    // No going back to answers
+    cy.get('#id_back_to_answers').should('not.exist')
 
     // change the answer
     cy.selectYesOrNo('exemption', 'no')
