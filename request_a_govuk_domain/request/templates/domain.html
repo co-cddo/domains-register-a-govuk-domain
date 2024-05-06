@@ -5,7 +5,11 @@
 {% block title %}Domain{% endblock %}
 
 {% block beforeContent %}
-  {% url 'written_permission_upload_confirm' as back_url %}
+  {% if route.primary == 1 %}
+    {% url "registrant_type" as back_url %}
+  {% else %}
+    {% url "written_permission_upload_confirm" as back_url %}
+  {% endif %}
   {% back_link back_url %}
 {% endblock %}
 

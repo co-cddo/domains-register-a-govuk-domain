@@ -147,6 +147,12 @@ class DomainView(FormView):
         initial["domain_name"] = session_data.get("domain_name", "")
         return initial
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        registration_data = self.request.session.get("registration_data", {})
+        context["route"] = route_number(registration_data)
+        return context
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["change"] = getattr(self, "change")

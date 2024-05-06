@@ -1,9 +1,13 @@
-//============= Page title check ==================
+//============= Page contents checks ==================
 
 Cypress.Commands.add('checkPageTitleIncludes', expectedTitle => {
   return cy.get('h1').should('include.text', expectedTitle)
 })
 
+
+Cypress.Commands.add('checkBackLinkGoesTo', url =>
+  cy.get('.govuk-back-link').invoke('attr', 'href').should('eq', url)
+)
 
 Cypress.Commands.add('confirmProblem', (errorMessage, nb_errors = 1) => {
   cy.get('#error-summary-title').should('exist')
@@ -138,6 +142,7 @@ Cypress.Commands.add('goToRegistrarDetails', () => {
   cy.start()
   cy.get('a.govuk-button--start').click()
   cy.checkPageTitleIncludes('Registrar details')
+  cy.checkBackLinkGoesTo('/')
 })
 
 
@@ -145,6 +150,7 @@ Cypress.Commands.add('goToRegistrantType', () => {
   cy.goToRegistrarDetails()
   cy.fillOutRegistrarDetails('WeRegister', 'Joe Bloggs', '01225672345', 'joe@example.org')
   cy.checkPageTitleIncludes('Who is this domain name for?')
+  cy.checkBackLinkGoesTo('/registrar-details/')
 })
 
 
@@ -152,6 +158,7 @@ Cypress.Commands.add('goToDomainPurpose', () => {
   cy.goToRegistrantType()
   cy.chooseRegistrantType(1) // Central-gov -> route 2
   cy.checkPageTitleIncludes('Why do you want a .gov.uk domain name?')
+  cy.checkBackLinkGoesTo('/registrant-type/')
 })
 
 
@@ -159,12 +166,14 @@ Cypress.Commands.add('goToExemption', () => {
   cy.goToDomainPurpose()
   cy.chooseDomainPurpose(1) // Website -> route 7
   cy.checkPageTitleIncludes('Does your registrant have an exemption from using the GOV.UK website?')
+  cy.checkBackLinkGoesTo('/domain-purpose/')
 })
 
 Cypress.Commands.add('goToWrittenPermission', () => {
   cy.goToRegistrantType()
   cy.chooseRegistrantType(3) // Fire service -> route 3
   cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
+  cy.checkBackLinkGoesTo('/registrant-type/')
 })
 
 
@@ -172,6 +181,7 @@ Cypress.Commands.add('goToExemptionUpload', () => {
   cy.goToExemption()
   cy.selectYesOrNo('exemption', 'yes')
   cy.checkPageTitleIncludes('Upload evidence of the exemption')
+  cy.checkBackLinkGoesTo('/exemption/')
 })
 
 
@@ -179,6 +189,7 @@ Cypress.Commands.add('goToExemptionUploadConfirm', filename => {
   cy.goToExemptionUpload()
   cy.uploadDocument(filename)
   cy.checkPageTitleIncludes('Upload evidence of the exemption')
+  cy.checkBackLinkGoesTo('/exemption-upload/')
 })
 
 
@@ -186,6 +197,7 @@ Cypress.Commands.add('goToWrittenPermission', () => {
   cy.goToRegistrantType()
   cy.chooseRegistrantType(4) // Route 3
   cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
+  cy.checkBackLinkGoesTo('/registrant-type/')
 })
 
 
@@ -193,6 +205,7 @@ Cypress.Commands.add('goToWrittenPermissionUpload', filename => {
   cy.goToWrittenPermission()
   cy.selectYesOrNo('written_permission', 'yes')
   cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+  cy.checkBackLinkGoesTo('/written-permission/')
 })
 
 
@@ -200,12 +213,15 @@ Cypress.Commands.add('goToWrittenPermissionUploadConfirm', filename => {
   cy.goToWrittenPermissionUpload()
   cy.uploadDocument(filename)
   cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+  cy.checkBackLinkGoesTo('/written-permission-upload/')
 })
 
 
 Cypress.Commands.add('goToDomainConfirmation', (via_route = 1) => {
   cy.goToDomainViaRoute(via_route)
   cy.enterDomainName('something-pc')
+  cy.checkPageTitleIncludes('Is something-pc.gov.uk the correct domain name?')
+  cy.checkBackLinkGoesTo('/domain/')
 })
 
 
@@ -214,6 +230,7 @@ Cypress.Commands.add('goToDomainViaRoute', route => {
     cy.goToWrittenPermissionUploadConfirm('permission.png')
     cy.confirmUpload('permission.png')
     cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
+    cy.checkBackLinkGoesTo('/written-permission-upload-confirm/')
   } else if (route === 2) {
     cy.goToDomainPurpose()
     cy.chooseDomainPurpose(1) // Route 5
@@ -229,12 +246,15 @@ Cypress.Commands.add('goToDomainViaRoute', route => {
     cy.checkPageTitleIncludes('Upload evidence of permission')
     cy.confirmUpload('permission.png')
     cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
+    cy.checkBackLinkGoesTo('/written-permission-upload-confirm/')
   } else if (route === 1) {
     cy.goToRegistrantType()
     cy.chooseRegistrantType(3) // Parish -> route 1
     cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
+    cy.checkBackLinkGoesTo('/registrant-type/')
   }
 })
+
 
 Cypress.Commands.add('goToMinister', () => {
   cy.goToDomainViaRoute(2)
@@ -242,18 +262,23 @@ Cypress.Commands.add('goToMinister', () => {
   cy.checkPageTitleIncludes('Is foobar.gov.uk the correct domain name?')
   cy.selectYesOrNo('domain_confirmation', 'yes')
   cy.checkPageTitleIncludes('Has a central government minister requested the foobar.gov.uk domain name?')
+  cy.checkBackLinkGoesTo('/domain-confirmation/')
 })
+
 
 Cypress.Commands.add('goToMinisterUpload', filename => {
   cy.goToMinister()
   cy.selectYesOrNo('minister', 'yes')
   cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
+  cy.checkBackLinkGoesTo('/minister/')
 })
+
 
 Cypress.Commands.add('goToMinisterUploadConfirm', filename => {
   cy.goToMinisterUpload()
   cy.uploadDocument(filename)
   cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
+  cy.checkBackLinkGoesTo('/minister-upload/')
 })
 
 
@@ -261,6 +286,7 @@ Cypress.Commands.add('goToRegistrantDetails', () => {
   cy.goToDomainConfirmation()
   cy.selectYesOrNo('domain_confirmation', 'yes')
   cy.checkPageTitleIncludes('Registrant details')
+  cy.checkBackLinkGoesTo('/domain-confirmation/')
 })
 
 
@@ -268,6 +294,7 @@ Cypress.Commands.add('goToRegistryDetails', () => {
   cy.goToRegistrantDetails()
   cy.fillOutRegistrantDetails('Littleton PC', 'Robert Smith', '01225672345', 'rob@example.com')
   cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
+  cy.checkBackLinkGoesTo('/registrant-details/')
 })
 
 
