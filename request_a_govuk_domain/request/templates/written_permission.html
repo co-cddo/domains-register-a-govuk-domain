@@ -4,7 +4,13 @@
 {% block title %}Written Permission{% endblock %}
 
 {% block beforeContent %}
-  {% url "registrant-type" as back_url %}
+  {% if route.primary == 2 and route.secondary == 5 %}
+    {% url "domain_purpose" as back_url %}
+  {% elif route.primary == 2 and route.secondary == 7 %}
+      {% url "exemption_upload_confirm" as back_url %}
+  {% else %}
+    {% url "registrant_type" as back_url %}
+  {% endif %}
   {% back_link back_url %}
 {% endblock %}
 

@@ -4,7 +4,13 @@
 {% block title %}Registrant details{% endblock %}
 
 {% block beforeContent %}
-  {% url "domain_confirmation" as back_url %}
+  {% if route.primary == 1 or route.primary == 3 %}
+    {% url "domain_confirmation" as back_url %}
+  {% elif route.primary == 2 and route.secondary == 5 and route.tertiary == 8 %}
+    {% url "minister" as back_url %}
+  {% else %}
+    {% url "minister_upload_confirm" as back_url %}
+  {% endif %}
   {% back_link back_url %}
 {% endblock %}
 

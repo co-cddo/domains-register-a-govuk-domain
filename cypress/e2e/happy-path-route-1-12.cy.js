@@ -6,28 +6,36 @@ describe('Happy path - route 1-12', () => {
     cy.fillOutRegistrarDetails('WeRegister', 'Joe Bloggs', '01225672345', 'simulate-delivered@notifications.service.gov.uk')
 
     cy.checkPageTitleIncludes('Who is this domain name for?')
+    cy.checkBackLinkGoesTo('/registrar-details/')
     cy.chooseRegistrantType(3) // Parish or community council -> route 1
 
     cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
+    cy.checkBackLinkGoesTo('/registrant-type/')
     cy.enterDomainName('something-pc')
 
     cy.checkPageTitleIncludes('Is something-pc.gov.uk the correct domain name?')
+    cy.checkBackLinkGoesTo('/domain/')
     cy.selectYesOrNo('domain_confirmation', 'no')
 
     cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
+    cy.checkBackLinkGoesTo('/registrant-type/')
     cy.enterDomainName('somethingelse-pc')
 
     cy.checkPageTitleIncludes('Is somethingelse-pc.gov.uk the correct domain name?')
+    cy.checkBackLinkGoesTo('/domain/')
     cy.selectYesOrNo('domain_confirmation', 'yes')
 
     cy.checkPageTitleIncludes('Registrant details')
+    cy.checkBackLinkGoesTo('/domain-confirmation/')
     cy.get('p').should('include.text', 'For example, for Parish Councils the registrant must be the Clerk.')
     cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
 
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
+    cy.checkBackLinkGoesTo('/registrant-details/')
     cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
 
     cy.checkPageTitleIncludes('Check your answers')
+    cy.checkBackLinkGoesTo('/registry-details/')
 
     cy.summaryShouldHave(0, 'WeRegister')
     cy.summaryShouldHave(1, ['Joe Bloggs', '01225672345', 'simulate-delivered@notifications.service.gov.uk'])
