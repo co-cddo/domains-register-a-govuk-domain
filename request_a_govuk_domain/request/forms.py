@@ -119,8 +119,8 @@ class DomainForm(forms.Form):
         "^[a-z][a-z0-9-]+[a-z0-9](\\.gov\\.uk)?$"
     )  # based on RFC1035
 
-    def clean_domain_name(self):
-        domain_typed = self.cleaned_data["domain_name"].strip()
+    def clean_domain_name(self) -> str:
+        domain_typed: str = self.cleaned_data["domain_name"].strip()
         matched: Optional[re.Match] = re.fullmatch(
             self.domain_input_regexp, domain_typed
         )

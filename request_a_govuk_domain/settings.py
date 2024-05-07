@@ -38,7 +38,9 @@ if DEBUG:
 
     load_dotenv()
 
-SECRET_KEY: str = str(uuid.uuid4()) if DEBUG else env.str("SECRET_KEY")
+SECRET_KEY: str = (
+    str(uuid.uuid4()) if DEBUG else env.str("SECRET_KEY", default="not_set")
+)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 ENVIRONMENT = env.str("ENVIRONMENT", default=None)
