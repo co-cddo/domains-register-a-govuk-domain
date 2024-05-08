@@ -241,5 +241,5 @@ CLAMD_TCP_SOCKET = 3310
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
     CSRF_COOKIE_HTTPONLY = True
-    CSRF_TRUSTED_ORIGINS = [f"https://{os.environ['DOMAIN_NAME']}"]
+    CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('DOMAIN_NAME', 'localhost')}"]
     SESSION_COOKIE_SECURE = True
