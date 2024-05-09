@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
@@ -23,6 +25,23 @@ class RegistrantTypeChoices(models.TextChoices):
     PSB_PROFESSION = "psb_profession", _(
         "Organisation representing a profession across public sector bodies"
     )
+
+    @classmethod
+    def get_label(cls, code: str) -> Optional[str]:
+        """
+        Get the translated label for a given code.
+
+        E.g. if the code is "central_government" then this method will
+        return "Central government department or agency"
+
+        param: code (str): The code representing the Registrant Type.
+
+        :return: str or None: The translated label corresponding to the code.
+        """
+        for choice in cls.choices:
+            if choice[0] == code:
+                return str(choice[1])
+        return None
 
 
 class Registrant(models.Model):
