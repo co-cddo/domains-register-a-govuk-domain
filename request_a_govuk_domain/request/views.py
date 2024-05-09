@@ -385,23 +385,69 @@ def generate_reference() -> str:
     return "GOVUK" + datetime.today().strftime("%d%m%Y") + random_string
 
 
-def send_confirmation_email(request) -> None:
+def send_confirmation_email(reference: str, request) -> None:
     """
     Method to send Confirmation email
 
     It gets the required personalisation data from request and calls send_email to send the confirmation email
 
+    :param reference: Application reference
     :param request: request object
     """
     registration_data = request.session.get("registration_data", {})
-    personalisation = {
-        "first_name": registration_data["registrar_name"],
+
+    # The translation map translates the yes/no value stored in the session to human-readable values that will be shown
+    # in the emails. The translated values are based on what gets shown on the "Answers" page in the front-end
+    yes_no_translation_map = {
+        "yes": "Yes, evidence provided",
+        "no": "No evidence provided",
     }
+
+    # The translation map translates the domain purpose value stored in the session to human-readable values that will
+    # be shown in the emails. The translated values are based on what gets shown on the "Answers" page in the front-end
+    domain_purpose_translation_map = {
+        "website-email": "Website (may include email)",
+        "email-only": "Email only",
+    }
+
+    # Notify personalisation dictionary to be used in the notify templates
+    personalisation = {
+        "domain_name": registration_data["domain_name"],
+        "reference": reference,
+        "registrar_name": registration_data["registrar_name"],
+        "registrant_type": RegistrantTypeChoices.get_label(
+            registration_data["registrant_type"]
+        ),
+        "domain_purpose": domain_purpose_translation_map.get(
+            registration_data.get("domain_purpose")
+        ),
+        "exemption": yes_no_translation_map.get(registration_data.get("exemption")),
+        "written_permission": yes_no_translation_map.get(
+            registration_data.get("written_permission")
+        ),
+        "minister": yes_no_translation_map.get(registration_data.get("minister")),
+        "registrant_organisation": registration_data["registrant_organisation"],
+        "registrant_full_name": registration_data["registrant_full_name"],
+        "registrant_phone": registration_data["registrant_phone"],
+        "registrant_email": registration_data["registrant_email"],
+        "registrant_role": registration_data["registrant_role"],
+        "registrant_contact_email": registration_data["registrant_contact_email"],
+    }
+
+    # Derive confirmation email template based on route
+    route = route_number(registration_data)
+    if route["primary"] in [1, 3]:
+        route_specific_confirmation_template = f"confirmation-{route['primary']}"
+    else:
+        route_specific_confirmation_template = (
+            f"confirmation-{route['primary']}-{route['secondary']}"
+        )
+
     send_email(
         email_address=registration_data["registrar_email"],
         template_id=NOTIFY_TEMPLATE_ID_MAP[
-            "confirmation"
-        ],  # Notify API template id of Confirmation email
+            route_specific_confirmation_template
+        ],  # Notify API template id of route specific Confirmation email
         personalisation=personalisation,
     )
 
@@ -411,7 +457,7 @@ class SuccessView(View):
         reference = generate_reference()
         logger.info("Saving form %s", self.request.session.session_key)
         save_data_in_database(reference, request)
-        send_confirmation_email(request)
+        send_confirmation_email(reference, request)
 
         # We're finished, so clear the session data
         request.session.pop("registration_data", None)
