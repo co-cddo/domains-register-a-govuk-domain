@@ -5,7 +5,6 @@ from django.core.management import call_command
 EXPECTED_PERMISSIONS = [
     "change_application",
     "change_review",
-    "view_centralgovernmentattributes",
     "view_registrant",
     "view_registrar",
     "view_registrarperson",

@@ -12,13 +12,11 @@ from request_a_govuk_domain.request.models import (
     Registrant,
     Registrar,
     Application,
-    CentralGovernmentAttributes,
     RegistrarPerson,
     RegistrantPerson,
     RegistryPublishedPerson,
     Review,
 )
-from request_a_govuk_domain.request.utils import is_central_government, route_number
 
 logger = logging.getLogger(__name__)
 
@@ -67,15 +65,6 @@ def save_data_in_database(reference, request):
                 id=int(registration_data["registrar_organisation"].split("-")[1])
             )
 
-            # Written permission is needed for all routes except route 1  ( Parish/Community/Neighbourhood/Village
-            # council )
-            if route_number(registration_data).get("primary") != 1:
-                written_permission_evidence = registration_data[
-                    "written_permission_file_uploaded_filename"
-                ]
-            else:
-                written_permission_evidence = None
-
             application = Application.objects.create(
                 reference=reference,
                 domain_name=registration_data["domain_name"],
@@ -84,25 +73,22 @@ def save_data_in_database(reference, request):
                 registry_published_person=registry_published_person,
                 registrant_org=registrant_org,
                 registrar_org=registrar_org,
-                written_permission_evidence=written_permission_evidence,
+                written_permission_evidence=registration_data.get(
+                    "written_permission_file_uploaded_filename"
+                ),
+                domain_purpose=registration_data.get("domain_purpose"),
+                ministerial_request_evidence=registration_data.get(
+                    "minister_file_uploaded_filename"
+                ),
+                policy_exemption_evidence=registration_data.get(
+                    "exemption_file_uploaded_filename"
+                ),
             )
             logger.info(
                 "Saved application %d with reference %s", application.id, reference
             )
             Review.objects.create(application=application)
 
-            # Create CentralGovernmentAttributes, if the registrant type is central_government
-            if is_central_government(registration_data["registrant_type"]):
-                CentralGovernmentAttributes.objects.create(
-                    application=application,
-                    domain_purpose=registration_data["domain_purpose"],
-                    ministerial_request_evidence=registration_data.get(
-                        "minister_file_uploaded_filename", None
-                    ),
-                    policy_exemption_evidence=registration_data.get(
-                        "exemption_file_uploaded_filename", None
-                    ),
-                )
     except Exception as e:
         logger.error(
             f"""Exception while saving data. Exception: {type(e).__name__} - {str(e)} ,

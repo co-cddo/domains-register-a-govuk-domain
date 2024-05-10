@@ -39,6 +39,7 @@ class Application(models.Model):
     # enable users to select e.g. a registrant from a previous record so
     # perhaps we do nothing.
     domain_name = models.CharField(max_length=253)
+    domain_purpose = models.CharField(null=True, blank=True)
     registrar_person = models.ForeignKey(
         RegistrarPerson, on_delete=models.CASCADE, related_name="registrar_application"
     )
@@ -55,20 +56,6 @@ class Application(models.Model):
     registrant_org = models.ForeignKey(Registrant, on_delete=models.CASCADE)
     registrar_org = models.ForeignKey(Registrar, on_delete=models.CASCADE)
     written_permission_evidence = models.FileField(storage=select_storage)
-
-    def __str__(self):
-        return f"{self.reference} - {self.domain_name}"
-
-
-class CentralGovernmentAttributes(models.Model):
-    """
-    An extension to the Application class (uses a one-to-one) relationship
-    to avoid adding attributes which are relevant to only a small proportion
-    of applications to all instances.
-    """
-
-    application = models.OneToOneField(Application, on_delete=models.CASCADE)
-    domain_purpose = models.CharField()
     ministerial_request_evidence = models.FileField(
         null=True, blank=True, storage=select_storage
     )
@@ -77,7 +64,4 @@ class CentralGovernmentAttributes(models.Model):
     )
 
     def __str__(self):
-        return str(self.application)
-
-    class Meta:
-        default_related_name = "centralgovt"
+        return f"{self.reference} - {self.domain_name}"
