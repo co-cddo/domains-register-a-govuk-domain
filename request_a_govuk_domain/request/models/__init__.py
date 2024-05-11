@@ -1,7 +1,7 @@
 from .application import Application, ApplicationStatus
 from .organisation import Registrant, Registrar, RegistrantTypeChoices
 from .person import Person, RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
-from .review import Review
+from .review import Review, ReviewFormGuidance
 
 __all__ = [
     "Application",
@@ -15,4 +15,5 @@ __all__ = [
     "RegistrantPerson",
     "RegistrarPerson",
     "Review",
+    "ReviewFormGuidance",
 ]
