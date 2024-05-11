@@ -85,3 +85,8 @@ class Review(models.Model):
 
     class Meta:
         default_related_name = "review"
+
+
+class ReviewFormGuidance(models.Model):
+    name = models.CharField()
+    how_to = models.CharField()
