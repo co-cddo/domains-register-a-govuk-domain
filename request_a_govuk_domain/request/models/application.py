@@ -13,7 +13,8 @@ class ApplicationStatus(models.TextChoices):
     # "Appealed to NAC" status.
     APPROVED = "approved", _("Approved")
     REJECTED = "rejected", _("Rejected")
-    PENDING = "pending", _("Pending")
+    IN_PROGRESS = "in_progress", _("In Progress")
+    NEW = "new", _("New")
 
 
 class Application(models.Model):
@@ -31,8 +32,8 @@ class Application(models.Model):
     time_decided = models.DateTimeField(null=True)
     status = models.CharField(
         choices=ApplicationStatus.choices,
-        default=ApplicationStatus.PENDING,
-        max_length=8,
+        default=ApplicationStatus.NEW,
+        max_length=11,
     )
     # This is going to lead to duplicate persons and organisations. It's fine
     # for now pending working out what our intention is. We're not going to
