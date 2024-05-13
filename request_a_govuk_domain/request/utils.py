@@ -66,14 +66,15 @@ def route_number(session_data: dict) -> dict[str, int]:
             if domain_purpose is not None:
                 if domain_purpose in ["email-only"]:
                     route["secondary"] = 5
-                    if session_data.get("minister") == "no":
-                        route["tertiary"] = 8
                 elif domain_purpose in ["website-email"]:
                     route["secondary"] = 7
                 else:
                     route["secondary"] = 6
                     if session_data.get("written_permission") == "no":
                         route["tertiary"] = 9
+            if session_data.get("minister") == "no":
+                route["tertiary"] = 8
+
         elif registrant_type in [
             "local_authority",
             "fire_service",
