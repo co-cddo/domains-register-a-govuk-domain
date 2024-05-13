@@ -27,7 +27,7 @@ class RegistrantTypeChoices(models.TextChoices):
     )
 
     @classmethod
-    def get_label(cls, code: str) -> Optional[str]:
+    def get_label(cls, code: Optional[str]) -> Optional[str]:
         """
         Get the translated label for a given code.
 

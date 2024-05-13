@@ -32,6 +32,8 @@ from .utils import (
     remove_from_session,
     route_number,
     send_email,
+    route_specific_email_template,
+    personalisation,
 )
 
 logger = logging.getLogger(__name__)
@@ -390,59 +392,19 @@ def send_confirmation_email(reference: str, request) -> None:
     """
     registration_data = request.session.get("registration_data", {})
 
-    # The translation map translates the yes/no value stored in the session to human-readable values that will be shown
-    # in the emails. The translated values are based on what gets shown on the "Answers" page in the front-end
-    yes_no_translation_map = {
-        "yes": "Yes, evidence provided",
-        "no": "No evidence provided",
-    }
-
-    # The translation map translates the domain purpose value stored in the session to human-readable values that will
-    # be shown in the emails. The translated values are based on what gets shown on the "Answers" page in the front-end
-    domain_purpose_translation_map = {
-        "website-email": "Website (may include email)",
-        "email-only": "Email only",
-    }
-
     # Notify personalisation dictionary to be used in the notify templates
-    personalisation = {
-        "domain_name": registration_data["domain_name"],
-        "reference": reference,
-        "registrar_name": registration_data["registrar_name"],
-        "registrant_type": RegistrantTypeChoices.get_label(
-            registration_data["registrant_type"]
-        ),
-        "domain_purpose": domain_purpose_translation_map.get(
-            registration_data.get("domain_purpose")
-        ),
-        "exemption": yes_no_translation_map.get(registration_data.get("exemption")),
-        "written_permission": yes_no_translation_map.get(
-            registration_data.get("written_permission")
-        ),
-        "minister": yes_no_translation_map.get(registration_data.get("minister")),
-        "registrant_organisation": registration_data["registrant_organisation"],
-        "registrant_full_name": registration_data["registrant_full_name"],
-        "registrant_phone": registration_data["registrant_phone"],
-        "registrant_email": registration_data["registrant_email"],
-        "registrant_role": registration_data["registrant_role"],
-        "registrant_contact_email": registration_data["registrant_contact_email"],
-    }
+    personalisation_dict = personalisation(reference, registration_data)
 
-    # Derive confirmation email template based on route
-    route = route_number(registration_data)
-    if route["primary"] in [1, 3]:
-        route_specific_confirmation_template = f"confirmation-{route['primary']}"
-    else:
-        route_specific_confirmation_template = (
-            f"confirmation-{route['primary']}-{route['secondary']}"
-        )
+    route_specific_email_template_name = route_specific_email_template(
+        "confirmation", registration_data
+    )
 
     send_email(
         email_address=registration_data["registrar_email"],
         template_id=NOTIFY_TEMPLATE_ID_MAP[
-            route_specific_confirmation_template
+            route_specific_email_template_name
         ],  # Notify API template id of route specific Confirmation email
-        personalisation=personalisation,
+        personalisation=personalisation_dict,
     )
 
 
