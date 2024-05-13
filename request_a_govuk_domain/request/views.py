@@ -241,12 +241,6 @@ class RegistryDetailsView(FormView):
     template_name = "registry_details.html"
     form_class = RegistryDetailsForm
     success_url = reverse_lazy("confirm")
-    change = False
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["change"] = getattr(self, "change")
-        return kwargs
 
     def get_initial(self):
         initial = super().get_initial()

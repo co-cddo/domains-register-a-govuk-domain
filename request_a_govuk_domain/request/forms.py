@@ -247,7 +247,6 @@ class RegistryDetailsForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        self.change = kwargs.pop("change", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
@@ -264,10 +263,6 @@ class RegistryDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        if self.change:
-            self.helper.layout.fields.append(
-                Button.secondary("back_to_answers", "Back to answers")
-            )
 
 
 class WrittenPermissionForm(forms.Form):
