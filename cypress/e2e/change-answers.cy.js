@@ -102,5 +102,17 @@ describe('Changing answers at the end of the process', () => {
     cy.checkPageTitleIncludes('Why do you want a .gov.uk domain name?')
   })
 
+  it('doesn\'t show the back-to-answers button when changing registry details', () => {
+    cy.goToConfirmation(7)
+    cy.get("a[href='/registry-details']").eq(0).click()
+    cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
+
+    // No going back to answers because it's the last page before the confirmation page
+    cy.get('#id_back_to_answers').should('not.exist')
+
+    cy.fillOutRegistryDetails('Clerk', 'jim@example.com')
+    cy.checkPageTitleIncludes('Check your answers')
+    cy.summaryShouldHave(10, ['Clerk', 'jim@example.com'])
+  })
 
 })

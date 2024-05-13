@@ -83,11 +83,6 @@ urlpatterns = [
         RegistryDetailsView.as_view(),
         name="registry_details",
     ),
-    path(
-        "change-registry-details",
-        RegistryDetailsView.as_view(change=True),
-        name="change_registry_details",
-    ),
     path("domain-purpose/", DomainPurposeView.as_view(), name="domain_purpose"),
     path(
         "domain-purpose-fail/",
