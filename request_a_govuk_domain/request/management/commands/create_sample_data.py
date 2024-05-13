@@ -1,6 +1,9 @@
 import os
 import shutil
+from datetime import datetime
+from typing import Optional
 from django.core.management.base import BaseCommand
+from django.db import IntegrityError
 from request_a_govuk_domain.request import models
 
 
@@ -8,16 +11,76 @@ SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 SEED_DOCS_PATH = os.path.join(SCRIPT_PATH, "..", "..", "..", "..", "seed", "documents")
 MEDIA_ROOT_PATH = os.path.join(SCRIPT_PATH, "..", "..", "..", "media")
 
-PERSON_NAMES = ["Bob Roberts", "Peter Peters", "Olivia Oliver"]
+PERSON_NAMES = [
+    "Bob Roberts",
+    "Peter Peters",
+    "Olivia Oliver",
+    "Thomas Thomson",
+    "Alice Allison",
+    "Samuel Samuels",
+    "William Williams",
+    "Harry Harris",
+    "Emily Emmerson",
+]
 
-REGISTRANT_NAMES = ["HMRC", "MOD", "MOT", "MOJ"]
+CG_REGISTRANT_NAME = "Ministry of Domains"
+PC_REGISTRANT_NAME = "Any Cast Parish Council"
+OTHER_REGISTRANT_NAME = "Border Gateway County Council"
 
-DOMAIN_NAME = "ministryofdomains.gov.uk"
-DOMAIN_PURPOSE = "Web site"
+CG_DOMAIN_NAME = "ministryofdomains.gov.uk"
+PC_DOMAIN_NAME = "anycastparishcouncil.gov.uk"
+OTHER_DOMAIN_NAME = "bordergatway.gov.uk"
+
+CG_DOMAIN_PURPOSE = "Web site"
 
 WRITTEN_PERMISSION_FN = "written_permission.png"
 MINISTERIAL_REQUEST_FN = "ministerial_request.png"
 POLICY_TEAM_EXEMPTION_FN = "policy_team_exception.png"
+
+DUMMY_REGISTRARS = ["WeRegister", "WeAlsoRegister", "WeLikeToRegister"]
+
+
+def create_sample_application(
+    domain_name: str,
+    registrant_name: str,
+    registrar_index: int,
+    person_names: list[str],
+    reference_suffix: str,
+    written_permission_file: Optional[str] = None,
+    ministerial_request_file: Optional[str] = None,
+    policy_exemption_file: Optional[str] = None,
+):
+    registrant = models.Registrant.objects.create(name=registrant_name)
+
+    registrant_person = models.RegistrantPerson.objects.create(name=person_names[0])
+
+    registry_published_person = models.RegistryPublishedPerson.objects.create(
+        name=person_names[1],
+        email_address=f"{'.'.join(person_names[1].split()).lower()}@{registrant.name.replace(' ', '').lower()}.net",
+    )
+
+    registrar = models.Registrar.objects.get(pk=registrar_index)
+
+    registrar_person = models.RegistrarPerson.objects.create(
+        name=person_names[2], registrar=registrar
+    )
+
+    application = models.Application(
+        reference=f"GOVUK{datetime.today().strftime('%Y%m%d')}{reference_suffix}",
+        domain_name=domain_name,
+        registrant_person=registrant_person,
+        registrar_person=registrar_person,
+        registry_published_person=registry_published_person,
+        registrant_org=registrant,
+        registrar_org=registrar,
+        written_permission_evidence=written_permission_file,
+        ministerial_request_evidence=ministerial_request_file,
+        policy_exemption_evidence=policy_exemption_file,
+    )
+
+    application.save()
+
+    models.Review.objects.create(application=application)
 
 
 class Command(BaseCommand):
@@ -36,46 +99,48 @@ class Command(BaseCommand):
         models.RegistrantPerson.objects.all().delete()
         models.Registrant.objects.all().delete()
         models.Application.objects.all().delete()
-        models.CentralGovernmentAttributes.objects.all().delete()
         models.Review.objects.all().delete()
 
-        registrant_person = models.RegistrantPerson.objects.create(name=PERSON_NAMES[0])
+        # Always try to create the dummy registrars as they are needed by the Cypress tests
+        for registrar in DUMMY_REGISTRARS:
+            try:
+                models.Registrar.objects.create(name=registrar)
+            except IntegrityError:
+                print(f"Not creating registrar {registrar} as it already exists.")
 
-        registry_published_person = models.RegistryPublishedPerson.objects.create(
-            name=PERSON_NAMES[2]
+        # Create an application from a central government department. This must have written permission
+        # and can have (does have) evidence of a ministerial request and a naming policy exemption
+
+        create_sample_application(
+            domain_name=CG_DOMAIN_NAME,
+            registrant_name=CG_REGISTRANT_NAME,
+            registrar_index=1,
+            person_names=PERSON_NAMES[:3],
+            reference_suffix="ABCD",
+            written_permission_file=WRITTEN_PERMISSION_FN,
+            ministerial_request_file=MINISTERIAL_REQUEST_FN,
+            policy_exemption_file=POLICY_TEAM_EXEMPTION_FN,
         )
 
-        application_registrar = models.Registrar.objects.create(name="WeRegister")
+        # Create an application from a parish council. This cannot have any of the three evidence types.
 
-        registrar_person = models.RegistrarPerson.objects.create(
-            name=PERSON_NAMES[1], registrar=application_registrar
+        create_sample_application(
+            domain_name=PC_DOMAIN_NAME,
+            registrant_name=PC_REGISTRANT_NAME,
+            registrar_index=2,
+            person_names=PERSON_NAMES[3:6],
+            reference_suffix="EFGH",
         )
 
-        registrants = [
-            models.Registrant.objects.create(
-                name=name,
-                type=models.RegistrantTypeChoices.CENTRAL_GOVERNMENT,
-            )
-            for name in REGISTRANT_NAMES
-        ]
+        # Create an application from any other registrant (not a parish council or central government org).
+        # This must have written permission and cannot have evidence of a minsterial request nor a naming
+        # policy exemption
 
-        application = models.Application(
-            reference="GOVUK20240327ABCD",
-            domain_name=DOMAIN_NAME,
-            registrant_person=registrant_person,
-            registrar_person=registrar_person,
-            registry_published_person=registry_published_person,
-            registrant_org=registrants[0],
-            registrar_org=application_registrar,
-            written_permission_evidence=WRITTEN_PERMISSION_FN,
+        create_sample_application(
+            domain_name=OTHER_DOMAIN_NAME,
+            registrant_name=OTHER_REGISTRANT_NAME,
+            registrar_index=3,
+            person_names=PERSON_NAMES[6:],
+            reference_suffix="IJKL",
+            written_permission_file=WRITTEN_PERMISSION_FN,
         )
-
-        application.save()
-
-        models.CentralGovernmentAttributes.objects.create(
-            application=application,
-            ministerial_request_evidence=MINISTERIAL_REQUEST_FN,
-            policy_exemption_evidence=POLICY_TEAM_EXEMPTION_FN,
-        )
-
-        models.Review.objects.create(application=application)

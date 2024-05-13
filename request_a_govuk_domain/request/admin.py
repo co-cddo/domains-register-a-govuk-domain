@@ -16,7 +16,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from .constants import NOTIFY_TEMPLATE_ID_MAP
 
 # from .utils import send_email
-from .models import Application, ApplicationStatus, CentralGovernmentAttributes, Review
+from .models import Application, ApplicationStatus, Review
 from .utils import send_email
 
 
@@ -142,27 +142,6 @@ class DomainRegistrationGroupAdmin(GroupAdmin):
         return False
 
 
-class CentralGovernmentAttributesInline(
-    ReviewerReadOnlyFieldsMixin, admin.StackedInline
-):
-    model = CentralGovernmentAttributes
-    can_delete = False
-    verbose_name_plural = "Central Government Attributes"
-
-    def download_ministerial_request_evidence(self, obj):
-        return self.generate_download_link(obj, "download_ministerial_request_evidence")
-
-    def download_policy_exemption_evidence(self, obj):
-        return self.generate_download_link(obj, "download_policy_exemption_evidence")
-
-    download_ministerial_request_evidence.short_description = (  # type: ignore
-        "Ministerial request evidence"
-    )
-    download_policy_exemption_evidence.short_description = (  # type: ignore
-        "Naming policy exemption evidence"
-    )
-
-
 class ReviewInline(admin.StackedInline):
     model = Review
     can_delete = False
@@ -247,10 +226,16 @@ class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
         "owner",
     ]
     list_filter = ["status", "registrar_org", "registrant_org"]
-    inlines = [CentralGovernmentAttributesInline, ReviewInline]
+    inlines = [ReviewInline]
 
     def download_written_permission_evidence(self, obj):
         return self.generate_download_link(obj, "download_written_permission_evidence")
+
+    def download_ministerial_request_evidence(self, obj):
+        return self.generate_download_link(obj, "download_ministerial_request_evidence")
+
+    def download_policy_exemption_evidence(self, obj):
+        return self.generate_download_link(obj, "download_policy_exemption_evidence")
 
     def download_file(self, request, field_name, object_id):
         instance = self.model.objects.get(pk=object_id)
@@ -262,6 +247,13 @@ class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
 
     download_written_permission_evidence.short_description = (  # type: ignore
         "Written permission evidence"
+    )
+
+    download_ministerial_request_evidence.short_description = (  # type: ignore
+        "Ministerial request evidence"
+    )
+    download_policy_exemption_evidence.short_description = (  # type: ignore
+        "Naming policy exemption evidence"
     )
 
     def get_readonly_fields(self, request, obj=None):

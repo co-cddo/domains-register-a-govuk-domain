@@ -4,7 +4,6 @@ from django.contrib.contenttypes.models import ContentType
 from request_a_govuk_domain.request import models
 
 VIEWABLE_MODELS = [
-    models.CentralGovernmentAttributes,
     models.Registrant,
     models.Registrar,
     models.RegistrantPerson,

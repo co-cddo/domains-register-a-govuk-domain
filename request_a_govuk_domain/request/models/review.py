@@ -1,6 +1,7 @@
 from django.db import models
 from simple_history.models import HistoricalRecords
 from .application import Application
+from request_a_govuk_domain.request.models import review_choices
 
 NOTES_MAX_LENGTH = 500
 
@@ -17,67 +18,82 @@ class Review(models.Model):
 
     application = models.OneToOneField(Application, on_delete=models.CASCADE)
 
-    registrant_org_exists = models.BooleanField(default=False)
-    registrant_org_exists_notes = models.TextField(
+    registrar_details = models.CharField(
+        choices=review_choices.RegistrarDetailsReviewChoices.choices,
+        blank=True,
+        null=True,
+    )
+    registrar_details_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH, blank=True, null=True
     )
 
-    registrant_org_eligible = models.BooleanField(default=False)
-    registrant_org_eligible_notes = models.TextField(
+    domain_name_availability = models.CharField(
+        choices=review_choices.DomainNameAvailabilityReviewChoices.choices,
+        blank=True,
+        null=True,
+    )
+    domain_name_availability_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH, blank=True, null=True
     )
 
-    registrant_person_id_confirmed = models.BooleanField(default=False)
-    registrant_person_id_confirmed_notes = models.TextField(
+    registrant_org = models.CharField(
+        choices=review_choices.RegistrantOrgReviewChoices.choices, blank=True, null=True
+    )
+    registrant_org_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH, blank=True, null=True
     )
 
-    permission_signatory_role_confirmed = models.BooleanField(default=False)
-    permission_signatory_role_confirmed_notes = models.TextField(
+    registrant_person = models.CharField(
+        choices=review_choices.RegistrantPersonReviewChoices.choices,
+        blank=True,
+        null=True,
+    )
+    registrant_person_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH, blank=True, null=True
     )
 
-    domain_name_validated = models.BooleanField(default=False)
-    domain_name_validated_notes = models.TextField(
+    registrant_permission = models.CharField(
+        choices=review_choices.RegistrantPermissionReviewChoices.choices,
+        blank=True,
+        null=True,
+    )
+    registrant_permission_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH, blank=True, null=True
     )
 
-    gds_exemption_validated = models.BooleanField(null=True)
-    gds_exemption_validated_notes = models.TextField(
+    policy_exemption = models.CharField(
+        choices=review_choices.PolicyExemptionReviewChoices.choices,
+        blank=True,
+        null=True,
+    )
+    policy_exemption_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH, blank=True, null=True
     )
 
-    ministerial_request_validated = models.BooleanField(null=True)
-    ministerial_request_validated_notes = models.TextField(
+    domain_name_rules = models.CharField(
+        choices=review_choices.DomainNameRulesReviewChoices.choices,
+        blank=True,
+        null=True,
+    )
+    domain_name_rules_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH, blank=True, null=True
     )
 
-    nac_appeal_validated = models.BooleanField(null=True)
-    nac_appeal_validated_notes = models.TextField(
+    registrant_senior_support = models.CharField(
+        choices=review_choices.RegistrantSeniorSupportReviewChoices.choices,
+        blank=True,
+        null=True,
+    )
+    registrant_senior_support_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH, blank=True, null=True
     )
 
     history = HistoricalRecords()
 
     def is_approvable(self) -> bool:
-        if self.nac_appeal_validated:
-            return True
-        if all(
-            (
-                self.registrant_org_exists,
-                self.registrant_org_eligible,
-                self.registrant_person_id_confirmed,
-                self.domain_name_validated,
-            )
-        ):
-            return True
-        return False
+        return True
 
     def is_rejectable(self):
-        # This logic needs some thought. That isn't to suggest the
-        # logic above doesn't
-        if self.nac_appeal_validated:
-            return False
         return True
 
     def __str__(self):
@@ -85,3 +101,8 @@ class Review(models.Model):
 
     class Meta:
         default_related_name = "review"
+
+
+class ReviewFormGuidance(models.Model):
+    name = models.CharField()
+    how_to = models.CharField()
