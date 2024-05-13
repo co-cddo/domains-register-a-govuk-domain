@@ -78,6 +78,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = ["gds"]
 CRISPY_TEMPLATE_PACK = "gds"
 
 MIDDLEWARE = [
+    "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -243,3 +244,10 @@ if not DEBUG:
     CSRF_COOKIE_HTTPONLY = True
     CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('DOMAIN_NAME', 'localhost')}"]
     SESSION_COOKIE_SECURE = True
+
+
+# Content Security Policy: only allow images, stylesheets and scripts from the
+# same origin as the HTML
+CSP_IMG_SRC = "'self'"
+CSP_STYLE_SRC = "'self'"
+CSP_SCRIPT_SRC = "'self'"
