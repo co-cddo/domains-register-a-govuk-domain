@@ -13,13 +13,17 @@ phases:
       - echo Building the Docker image...
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - echo $FOUND_TAG_NAME
+      - \[ ! -z $FOUND_TAG_NAME \] && docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$FOUND_TAG_NAME
   post_build:
     commands:
       - echo Pushing the Docker images...
-      - docker push $REPOSITORY_URI:latest
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker image ls
+      - docker image push $REPOSITORY_URI --all-tags
       - export imageTag=$IMAGE_TAG
+      - export foundTagName=$FOUND_TAG_NAME
       - echo Build completed on `date`
 env:
   exported-variables:
     - imageTag
+    - foundTagName
