@@ -8,9 +8,25 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from notifications_python_client import NotificationsAPIClient
 
+
+from request_a_govuk_domain.request.models import RegistrantTypeChoices
 from request_a_govuk_domain.request.models.storage_util import select_storage
 
 logger = logging.getLogger(__name__)
+
+# The translation map translates the yes/no value stored in the session to human-readable values that will be shown
+# in the emails. The translated values are based on what gets shown on the "Answers" page in the front-end
+YES_NO_TRANSLATION_MAP = {
+    "yes": "Yes, evidence provided",
+    "no": "No evidence provided",
+}
+
+# The translation map translates the domain purpose value stored in the session to human-readable values that will
+# be shown in the emails. The translated values are based on what gets shown on the "Answers" page in the front-end
+DOMAIN_PURPOSE_TRANSLATION_MAP = {
+    "website-email": "Website (may include email)",
+    "email-only": "Email only",
+}
 
 
 def handle_uploaded_file(file, session_id):
@@ -194,3 +210,76 @@ def send_email(email_address: str, template_id: str, personalisation: dict) -> N
         if get_env_variable("ENVIRONMENT") == "prod":
             raise ValueError("Notify API key not found in Production environment")
         logger.info("Not sending email as Notify API key not found")
+
+
+def personalisation(
+    reference: str, registration_data: dict[str, str | None]
+) -> dict[str, str | None]:
+    """
+    Creates personalisation dictionary to be used in the GovUK Notify templates
+
+    :param reference: application reference
+    :param registration_data: registration/application data
+
+    :return: personalisation dictionary to be used in the GovUK Notify templates
+    """
+    domain_purpose = registration_data.get("domain_purpose")
+    domain_purpose_personalisation = (
+        DOMAIN_PURPOSE_TRANSLATION_MAP.get(domain_purpose) if domain_purpose else None
+    )
+
+    exemption = registration_data.get("exemption")
+    exemption_personalisation = (
+        YES_NO_TRANSLATION_MAP.get(exemption) if exemption else None
+    )
+
+    written_permission = registration_data.get("written_permission")
+    written_permission_personalisation = (
+        YES_NO_TRANSLATION_MAP.get(written_permission) if written_permission else None
+    )
+
+    minister = registration_data.get("minister")
+    minister_personalisation = (
+        YES_NO_TRANSLATION_MAP.get(minister) if minister else None
+    )
+
+    return {
+        "domain_name": registration_data["domain_name"],
+        "reference": reference,
+        "registrar_name": registration_data["registrar_name"],
+        "registrant_type": RegistrantTypeChoices.get_label(
+            registration_data["registrant_type"]
+        ),
+        "domain_purpose": domain_purpose_personalisation,
+        "exemption": exemption_personalisation,
+        "written_permission": written_permission_personalisation,
+        "minister": minister_personalisation,
+        "registrant_organisation": registration_data["registrant_organisation"],
+        "registrant_full_name": registration_data["registrant_full_name"],
+        "registrant_phone": registration_data["registrant_phone"],
+        "registrant_email": registration_data["registrant_email"],
+        "registrant_role": registration_data["registrant_role"],
+        "registrant_contact_email": registration_data["registrant_contact_email"],
+    }
+
+
+def route_specific_email_template(
+    email_type: str, registration_data: dict[str, str]
+) -> str:
+    """
+    Derive the email template based on email type ( confirmation/approval/rejection ) and route (central government/
+    parish council etc.) derived from registration data
+
+    :param email_type: email type (confirmation/approval/rejection)
+    :param registration_data: registration/application data
+
+    :return: email template
+    """
+    route = route_number(registration_data)
+    if route["primary"] in [1, 3]:
+        route_specific_email_template = f"{email_type}-{route['primary']}"
+    else:
+        route_specific_email_template = (
+            f"{email_type}-{route['primary']}-{route['secondary']}"
+        )
+    return route_specific_email_template
