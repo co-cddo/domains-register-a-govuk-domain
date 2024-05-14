@@ -1,7 +1,7 @@
 import os
 import shutil
 from datetime import datetime
-from typing import Optional
+
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from request_a_govuk_domain.request import models
@@ -46,9 +46,9 @@ def create_sample_application(
     registrar_index: int,
     person_names: list[str],
     reference_suffix: str,
-    written_permission_file: Optional[str] = None,
-    ministerial_request_file: Optional[str] = None,
-    policy_exemption_file: Optional[str] = None,
+    written_permission_file: str | None = None,
+    ministerial_request_file: str | None = None,
+    policy_exemption_file: str | None = None,
 ):
     registrant = models.Registrant.objects.create(name=registrant_name)
 

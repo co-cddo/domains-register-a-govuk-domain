@@ -1,7 +1,7 @@
 import logging
 import os
 import uuid
-from typing import List
+
 
 import clamd
 from django.conf import settings
@@ -118,7 +118,7 @@ def is_central_government(registrant_type: str) -> bool:
     return registrant_type in ["central_government", "ndpb"]
 
 
-def add_to_session(form, request, field_names: List[str]) -> dict:
+def add_to_session(form, request, field_names: list[str]) -> dict:
     """
     Common utility method to clean the list of fields and save them in the session. This is to save boilerplate code.
 
@@ -142,7 +142,7 @@ def add_value_to_session(request, field_name: str, field_value) -> None:
     request.session["registration_data"] = registration_data
 
 
-def remove_from_session(session, field_names: List[str]) -> dict:
+def remove_from_session(session, field_names: list[str]) -> dict:
     """
     Remove fields from a session, for instance when an uploaded
     file is removed
