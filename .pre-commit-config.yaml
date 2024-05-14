@@ -44,6 +44,7 @@ repos:
         -    django-phonenumbers
         -    django-phonenumber-field
         -    django-storages
+        -    django-cors-headers
         -    boto3
         -    clamd
         -    notifications-python-client
