@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
@@ -27,7 +25,7 @@ class RegistrantTypeChoices(models.TextChoices):
     )
 
     @classmethod
-    def get_label(cls, code: Optional[str]) -> Optional[str]:
+    def get_label(cls, code: str | None) -> str | None:
         """
         Get the translated label for a given code.
 

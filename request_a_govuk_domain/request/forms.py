@@ -14,7 +14,7 @@ from crispy_forms_gds.layout import (
     Layout,
     Size,
 )
-from typing import Optional
+
 from .models.organisation import RegistrantTypeChoices, Registrar
 from ..layout.content import DomainsHTML
 from .utils import validate_file_infection
@@ -121,9 +121,7 @@ class DomainForm(forms.Form):
 
     def clean_domain_name(self) -> str:
         domain_typed: str = self.cleaned_data["domain_name"].strip()
-        matched: Optional[re.Match] = re.fullmatch(
-            self.domain_input_regexp, domain_typed
-        )
+        matched: re.Match | None = re.fullmatch(self.domain_input_regexp, domain_typed)
         if matched is not None:
             if ".gov.uk" not in domain_typed:
                 domain_typed = domain_typed + ".gov.uk"
