@@ -4,24 +4,24 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - IMAGE_TAG=${COMMIT_HASH:=latest}
+      - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+      - COMMIT_HASH=$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} | cut -c 1-7)
+      - IMAGE_TAG=${{}COMMIT_HASH:=latest}
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
-      - echo $FOUND_TAG_NAME
-      - \[ ! -z $FOUND_TAG_NAME \] && docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$FOUND_TAG_NAME
+      - docker build -t ${REPOSITORY_URI}:latest .
+      - docker tag ${REPOSITORY_URI}:latest ${REPOSITORY_URI}:${IMAGE_TAG}
+      - echo ${FOUND_TAG_NAME}
+      - if [ ! -z ${FOUND_TAG_NAME} ]; then docker tag ${REPOSITORY_URI}:latest ${REPOSITORY_URI}:${FOUND_TAG_NAME}; fi
   post_build:
     commands:
       - echo Pushing the Docker images...
       - docker image ls
-      - docker image push $REPOSITORY_URI --all-tags
-      - export imageTag=$IMAGE_TAG
-      - export foundTagName=$FOUND_TAG_NAME
+      - docker image push ${REPOSITORY_URI} --all-tags
+      - export imageTag=${IMAGE_TAG}
+      - export foundTagName=${FOUND_TAG_NAME}
       - echo Build completed on `date`
 env:
   exported-variables:
