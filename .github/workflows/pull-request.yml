@@ -84,6 +84,7 @@ jobs:
         SECRET_KEY: blah
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
         DEBUG: True
+        DOMAIN_NAME: http://localhost:8010
       with:
         start: |
           /home/runner/work/domains-register-a-govuk-domain/domains-register-a-govuk-domain/.github/workflows/start-server.sh
@@ -91,4 +92,4 @@ jobs:
       env:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
       run: |
-        SECRET_KEY=unneeded DOMAIN_NAME=localhost:2010 poetry run python manage.py test -v 2
+        SECRET_KEY=unneeded DOMAIN_NAME=http://localhost:8010 poetry run python manage.py test -v 2
