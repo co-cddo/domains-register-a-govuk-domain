@@ -3,6 +3,23 @@ import './base.cy'
 describe('Changing answers at the end of the process', () => {
 
 
+  it('lets you change your answer for the domain-purpose question', () => {
+    cy.goToConfirmation(7)
+    cy.get("a[href='/domain-purpose']").eq(0).click()
+    cy.checkPageTitleIncludes('Why do you want a .gov.uk domain name?')
+    cy.get('input[type=radio]').eq(0).should('be.checked')
+
+    // No going back to answers
+    cy.get('#id_back_to_answers').should('not.exist')
+
+    // change the answer
+    cy.chooseDomainPurpose(2) // Email only -> route 5
+
+    // and see the new page
+    cy.checkPageTitleIncludes('Does your registrant have proof of permission')
+  })
+
+
   it('lets you change your answer about whether you have minister approval', () => {
     cy.goToConfirmation(7)
     cy.get("a[href='/minister']").eq(0).click()
