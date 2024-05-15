@@ -47,6 +47,7 @@ from .request.views import (
     DomainPurposeView,
     DomainPurposeFailView,
     service_failure_view,
+    page_not_found_view,
 )
 
 from .request.admin import DecisionConfirmationView
@@ -165,3 +166,4 @@ urlpatterns = [
 
 
 handler500 = service_failure_view
+handler404 = page_not_found_view

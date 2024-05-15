@@ -621,3 +621,7 @@ def service_failure_view(request):
     )
     request.session.pop("registration_data", None)
     return render(request, "500.html", status=500)
+
+
+def page_not_found_view(request, exception):
+    return render(request, "404.html", status=404)
