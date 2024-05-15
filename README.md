@@ -98,6 +98,8 @@ Following are some of the make commands:
 
 `make up-devserver` - Run the application on docker using the Django development server
 
+`make up-devserver-nodebug` - Run the application on docker using the Django development server, but don't set Debug mode (to test error pages, for instance)
+
 `make shell` - Open a bash console within the running application container (you'll get an error if the service isn't running)
 
 `make down` - Stop the application on docker
