@@ -252,3 +252,11 @@ if not DEBUG:
 CSP_IMG_SRC = "'self'"
 CSP_STYLE_SRC = "'self'"
 CSP_SCRIPT_SRC = "'self'"
+CSP_FORM_ACTION = "'self'"
+CSP_FRAME_ANCESTORS = "'self'"
+
+# HTTP Strict Transport Security settings
+# Tell browsers to only use HTTPS for a year
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # We don't have subdomains but it doesn't hurt
+SECURE_HSTS_PRELOAD = True  # Tell browsers to remember HTTPS only
