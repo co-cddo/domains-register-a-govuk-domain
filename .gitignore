@@ -174,3 +174,6 @@ cypress/screenshots/
 
 # macos Specific
 .DS_Store
+
+# django static files
+request_a_govuk_domain/static

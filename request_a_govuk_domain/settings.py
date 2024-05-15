@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     "request_a_govuk_domain.request",
     "admin_interface",
     "colorfield",
-    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -79,7 +78,6 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = ["gds"]
 CRISPY_TEMPLATE_PACK = "gds"
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -222,6 +220,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # Django Whitenoise Configuration
 WHITENOISE_SKIP_COMPRESS_EXTENSIONS = [".map"]
+WHITENOISE_ALLOW_ALL_ORIGINS = False
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
@@ -253,8 +252,3 @@ if not DEBUG:
 CSP_IMG_SRC = "'self'"
 CSP_STYLE_SRC = "'self'"
 CSP_SCRIPT_SRC = "'self'"
-
-# CORS: prevent static assets to be loaded by other sites
-CORS_ALLOWED_ORIGINS = [
-    f"{os.environ.get('DOMAIN_NAME', 'https://localhost')}",
-]

@@ -19,5 +19,3 @@ from whitenoise import WhiteNoise
 
 static_path = pathlib.Path(__file__).parent.joinpath("static")
 application = WhiteNoise(application, root=static_path.absolute())
-application.add_files(static_path.joinpath("images"), prefix="assets/images/")
-application.add_files(static_path.joinpath("fonts"), prefix="assets/fonts/")
