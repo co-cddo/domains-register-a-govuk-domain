@@ -392,9 +392,9 @@ class Migration(migrations.Migration):
                             ("fire_service", "Fire service"),
                             ("village_council", "Neighbourhood or village council"),
                             ("combined_authority", "Combined or unitary authority"),
-                            ("pcc", "Police and Crime Commissioner"),
-                            ("joint_authority", "Joint Authority"),
-                            ("joint_committee", "Joint Committee"),
+                            ("pcc", "Police and crime commissioner"),
+                            ("joint_authority", "Joint authority"),
+                            ("joint_committee", "Joint committee"),
                             (
                                 "psb_group",
                                 "Organisation representing a group of public sector bodies",

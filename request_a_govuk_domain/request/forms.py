@@ -54,7 +54,7 @@ class RegistrarDetailsForm(forms.Form):
 
     registrar_email = forms.CharField(
         label="Email address",
-        help_text="We will use this email address to confirm your application",
+        help_text="We will use this email to contact you about the application.",
         validators=[EmailValidator("Please enter a valid email address")],
     )
 
@@ -98,7 +98,8 @@ class RegistrantTypeForm(forms.Form):
     registrant_type = forms.ChoiceField(
         choices=registrant_types,
         widget=forms.RadioSelect,
-        label="Your registrant must be from an eligible organisation to get a .gov.uk domain name.",
+        label="Who is this domain name for?",
+        help_text="Your registrant must be from an eligible organisation to get a .gov.uk domain name.",
         error_messages={"required": "Please select from one of the choices"},
     )
 
@@ -106,7 +107,11 @@ class RegistrantTypeForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            Field.radios("registrant_type", legend_size=Size.SMALL),
+            Field.radios(
+                "registrant_type",
+                legend_tag="h1",
+                legend_size=Size.EXTRA_LARGE,
+            ),
             Button("submit", "Continue"),
         )
 
@@ -139,7 +144,7 @@ class DomainForm(forms.Form):
             Fieldset(
                 Field.text("domain_name"),
                 DomainsHTML.warning(
-                    "The .gov.uk domain name you submit will be subject to approval from the Domains Team."
+                    "The Domains Team will check if this is available and decide whether to approve it."
                 ),
             ),
             Button("submit", "Continue"),
@@ -156,9 +161,12 @@ class DomainConfirmationForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields["domain_confirmation"] = forms.ChoiceField(
             label=f"Is {self.domain_name} the correct domain name?",
-            choices=(("yes", "Yes, I confirm"), ("no", "No, I want to change it")),
+            choices=(
+                ("yes", "Yes, I confirm this is correct"),
+                ("no", "No, I want to change it"),
+            ),
             widget=forms.RadioSelect,
-            help_text="The Domains Team will review the domain name and make a decision on whether to approve or reject it.",
+            help_text="The Domains Team will check if this is available and decide whether to approve it.",
             error_messages={"required": "Please answer Yes or No"},
         )
         self.helper = FormHelper()
@@ -182,11 +190,7 @@ class DomainConfirmationForm(forms.Form):
 
 class RegistrantDetailsForm(forms.Form):
     registrant_organisation = forms.CharField(
-        label="",
-        help_text="""You must provide the formal legal name of your registrant’s
-        organisation. the Domains Team will reject applications if the
-        registrant’s organisation name does not match official records or is
-        spelled incorrectly.""",
+        label="Organisation name",
     )
 
     registrant_full_name = forms.CharField(
@@ -200,6 +204,7 @@ class RegistrantDetailsForm(forms.Form):
 
     registrant_email = forms.CharField(
         label="Email address",
+        help_text="Use a current work email address for the registrant.",
         validators=[EmailValidator("Please enter a valid email address")],
     )
 
@@ -210,7 +215,14 @@ class RegistrantDetailsForm(forms.Form):
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
             Fieldset(
-                DomainsHTML('<h2 class="govuk-heading-m">Organisation name</h2>'),
+                DomainsHTML('<h2 class="govuk-heading-m">Organisation details</h2>'),
+                DomainsHTML.p(
+                    "You must provide the formal legal name of your registrant’s organisation."
+                ),
+                DomainsHTML.p(
+                    """The Domains Team will reject applications if the registrant’s
+                organisation name does not match official records or is spelled incorrectly."""
+                ),
                 Field.text("registrant_organisation"),
             ),
             Fieldset(
@@ -221,9 +233,6 @@ class RegistrantDetailsForm(forms.Form):
                 Field.text("registrant_full_name", field_width=20),
                 Field.text("registrant_phone", field_width=20),
                 Field.text("registrant_email"),
-                DomainsHTML.warning(
-                    "You must not publish personal contact details on the registry."
-                ),
             ),
             Button("submit", "Continue"),
         )
@@ -240,7 +249,7 @@ class RegistryDetailsForm(forms.Form):
 
     registrant_contact_email = forms.CharField(
         label="Email address",
-        help_text="Use a role-based email address, like clerk@[yourorganisation].gov.uk",
+        help_text="Use a role-based email address, like itsupport@[yourorganisation].gov.uk",
         validators=[EmailValidator("Please enter a valid email address")],
     )
 
@@ -323,7 +332,7 @@ class MinisterForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields["minister"] = forms.ChoiceField(
             label=f"Has a central government minister requested the {self.domain_name} domain name?",
-            help_text=f"If {self.domain_name} does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.",
+            help_text="If the requested domain name does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.",
             choices=(("yes", "Yes"), ("no", "No")),
             widget=forms.RadioSelect,
             error_messages={"required": "Please answer Yes or No"},
@@ -392,8 +401,8 @@ class UploadForm(forms.Form):
 
 class DomainPurposeForm(forms.Form):
     DOMAIN_PURPOSES = (
-        Choice("website-email", "Website and email address"),
-        Choice("email-only", "Email address only", divider="or"),
+        Choice("website-email", "Website (may include email)"),
+        Choice("email-only", "Email only domain", divider="or"),
         Choice("api", "API", hint="For example, hmrc01application.api.gov.uk"),
         Choice("service", "Service", hint="For example, get-a-fishing-licence.gov.uk"),
         Choice(

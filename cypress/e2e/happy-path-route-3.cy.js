@@ -25,7 +25,7 @@ describe('Happy path - route 3', () => {
     cy.selectYesOrNo('domain_confirmation', 'yes')
 
     cy.checkPageTitleIncludes('Registrant details')
-    cy.get('p').should('include.text', 'For example, for Parish Councils the registrant must be the Clerk.')
+    cy.get('p').should('include.text', 'For example, for parish councils the registrant must be the Clerk.')
     cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
 
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
