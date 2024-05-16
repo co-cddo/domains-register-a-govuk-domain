@@ -615,10 +615,6 @@ class DomainPurposeFailView(FormView):
 
 
 def service_failure_view(request):
-    registration_data = request.session.get("registration_data", {})
-    logger.error(
-        f"500 Server Error occurred. Registration data: {registration_data}", exc_info=1
-    )
     request.session.pop("registration_data", None)
     return render(request, "500.html", status=500)
 
