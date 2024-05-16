@@ -14,9 +14,9 @@ class RegistrantTypeChoices(models.TextChoices):
     FIRE_SERVICE = "fire_service", _("Fire service")
     VILLAGE_COUNCIL = "village_council", _("Neighbourhood or village council")
     COMBINED_AUTHORITY = "combined_authority", _("Combined or unitary authority")
-    PCC = "pcc", _("Police and Crime Commissioner")
-    JOINT_AUTHORITY = "joint_authority", _("Joint Authority")
-    JOINT_COMMITTEE = "joint_committee", _("Joint Committee")
+    PCC = "pcc", _("Police and crime commissioner")
+    JOINT_AUTHORITY = "joint_authority", _("Joint authority")
+    JOINT_COMMITTEE = "joint_committee", _("Joint committee")
     PSB_GROUP = "psb_group", _(
         "Organisation representing a group of public sector bodies"
     )

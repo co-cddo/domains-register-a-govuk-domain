@@ -250,8 +250,8 @@ if not DEBUG:
 # Content Security Policy: only allow images, stylesheets and scripts from the
 # same origin as the HTML
 CSP_IMG_SRC = "'self'"
-CSP_STYLE_SRC = "'self'"
-CSP_SCRIPT_SRC = "'self'"
+CSP_STYLE_SRC = "'self' 'unsafe-inline'"
+CSP_SCRIPT_SRC = "'self' 'unsafe-inline'"
 CSP_FORM_ACTION = "'self'"
 CSP_FRAME_ANCESTORS = "'self'"
 
