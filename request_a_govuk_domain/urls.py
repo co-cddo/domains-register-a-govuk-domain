@@ -50,6 +50,7 @@ from .request.views import (
     page_not_found_view,
     security_txt_view,
     robots_txt_view,
+    forbidden_view,
 )
 
 from .request.admin import DecisionConfirmationView
@@ -172,3 +173,5 @@ urlpatterns = [
 
 handler500 = service_failure_view
 handler404 = page_not_found_view
+handler403 = forbidden_view
+handler401 = forbidden_view

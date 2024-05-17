@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 import uuid
 from pathlib import Path
-
 from environ import Env
 
 env = Env(
@@ -244,6 +243,7 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     CSRF_COOKIE_HTTPONLY = True
     CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('DOMAIN_NAME', 'localhost')}"]
+    CSRF_FAILURE_VIEW = "request_a_govuk_domain.request.views.csrf_failure_view"
     SESSION_COOKIE_SECURE = True
 
 
