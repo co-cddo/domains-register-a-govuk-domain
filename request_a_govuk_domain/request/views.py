@@ -630,3 +630,11 @@ def security_txt_view(request):
 
 def robots_txt_view(request):
     return HttpResponse("User-agent: *\nDisallow: /\n")
+
+
+def forbidden_view(request, exception):
+    return render(request, "403.html", status=403)
+
+
+def csrf_failure_view(request, reason=""):
+    return render(request, "403.html", status=403)
