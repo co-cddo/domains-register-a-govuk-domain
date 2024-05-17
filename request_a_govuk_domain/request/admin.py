@@ -1,5 +1,5 @@
 import hashlib
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 from functools import partial
 
 from django.views import View
@@ -193,7 +193,10 @@ def token(reference, domain_name: str) -> str:
     roms_id = get_env_variable("NOMINET_ROMSID")
     secret = get_env_variable("NOMINET_SECRET")  # pragma: allowlist secret
 
-    token_expiry_datetime = (datetime.now(UTC) + timedelta(days=60)).strftime(
+    # token_expiry_datetime = (datetime.now(UTC) + timedelta(days=60)).strftime(
+    #     "%Y%m%d%H%M"
+    # )
+    token_expiry_datetime = (datetime.utcnow() + timedelta(days=60)).strftime(
         "%Y%m%d%H%M"
     )
 
