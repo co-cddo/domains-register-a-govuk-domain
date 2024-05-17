@@ -48,9 +48,12 @@ from .request.views import (
     DomainPurposeFailView,
     service_failure_view,
     page_not_found_view,
+    security_txt_view,
+    robots_txt_view,
 )
 
 from .request.admin import DecisionConfirmationView
+
 
 urlpatterns = [
     path("", StartView.as_view(), name="start"),
@@ -162,6 +165,8 @@ urlpatterns = [
         DomainView.as_view(change=True),
         name="change_domain",
     ),
+    path(".well-known/security.txt", security_txt_view),
+    path("robots.txt", robots_txt_view),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

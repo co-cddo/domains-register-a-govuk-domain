@@ -3,8 +3,9 @@ import random
 import string
 from datetime import datetime
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.http import HttpResponse
 from django.views import View
 from django.views.generic import TemplateView, RedirectView
 from django.views.generic.edit import FormView
@@ -621,3 +622,11 @@ def service_failure_view(request):
 
 def page_not_found_view(request, exception):
     return render(request, "404.html", status=404)
+
+
+def security_txt_view(request):
+    return redirect("https://www.gov.uk/.well-known/security.txt")
+
+
+def robots_txt_view(request):
+    return HttpResponse("User-agent: *\nDisallow: /\n")
