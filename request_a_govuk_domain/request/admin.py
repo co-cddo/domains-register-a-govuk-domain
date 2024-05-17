@@ -1,3 +1,5 @@
+import hashlib
+from datetime import datetime, timedelta, UTC
 from functools import partial
 
 from django.views import View
@@ -21,6 +23,7 @@ from .utils import (
     send_email,
     personalisation,
     route_specific_email_template,
+    get_env_variable,
 )
 
 
@@ -183,6 +186,38 @@ def registration_data_from_application(
     return registration_data
 
 
+def token(reference, domain_name: str) -> str:
+    # Remove GOVUK from the application reference and that would be token_id
+    token_id = reference[5:]
+
+    roms_id = get_env_variable("NOMINET_ROMSID")
+    secret = get_env_variable("NOMINET_SECRET")  # pragma: allowlist secret
+
+    token_expiry_datetime = (datetime.now(UTC) + timedelta(days=60)).strftime(
+        "%Y%m%d%H%M"
+    )
+
+    # Generate the SHA-256 encoded signature
+    signature = hashlib.sha256(
+        (token_id + roms_id + domain_name + token_expiry_datetime + secret).encode()
+    ).hexdigest()
+
+    #  Concatenate required attributes into the final token
+    generated_token = (
+        "#"
+        + token_id
+        + "#"
+        + roms_id
+        + "#"
+        + domain_name
+        + "#"
+        + token_expiry_datetime
+        + "#"
+        + signature
+    )
+    return generated_token
+
+
 def send_approval_or_rejection_email(request):
     """
     Sends Approval/Rejection mail depending on the action ( approval/rejection ) in the request object
@@ -193,12 +228,19 @@ def send_approval_or_rejection_email(request):
     registrar_email = application.registrar_person.email_address
     reference = application.reference
 
-    # Build registration data dictionary to pass it to create_personalisation method
+    # Build registration data dictionary to pass it to personalisation method
     registration_data = registration_data_from_application(application)
     personalisation_dict = personalisation(reference, registration_data)
 
+    approval_or_rejection = request.POST["action"]
+
+    if approval_or_rejection == "approval":
+        personalisation_dict["token"] = token(
+            reference, registration_data["domain_name"]
+        )
+
     route_specific_email_template_name = route_specific_email_template(
-        request.POST["action"], registration_data
+        approval_or_rejection, registration_data
     )
 
     send_email(
