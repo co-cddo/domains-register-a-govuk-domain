@@ -1,5 +1,5 @@
 import hashlib
-from datetime import datetime, timedelta
+from datetime import timedelta
 from functools import partial
 
 from django.views import View
@@ -196,9 +196,7 @@ def token(reference, domain_name: str) -> str:
     # token_expiry_datetime = (datetime.now(UTC) + timedelta(days=60)).strftime(
     #     "%Y%m%d%H%M"
     # )
-    token_expiry_datetime = (datetime.utcnow() + timedelta(days=60)).strftime(
-        "%Y%m%d%H%M"
-    )
+    token_expiry_datetime = (timezone.now() + timedelta(days=60)).strftime("%Y%m%d%H%M")
 
     # Generate the SHA-256 encoded signature
     signature = hashlib.sha256(
