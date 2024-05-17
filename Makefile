@@ -4,6 +4,9 @@ up:
 up-devserver:
 	docker compose -f docker-compose.yml run --rm --service-ports --entrypoint "python manage.py runserver 0.0.0.0:8000" web
 
+up-devserver-nodebug:
+	docker compose -f docker-compose.yml run --rm --service-ports --env DEBUG=False --entrypoint "python manage.py runserver 0.0.0.0:8000" web
+
 down:
 	docker compose down
 
