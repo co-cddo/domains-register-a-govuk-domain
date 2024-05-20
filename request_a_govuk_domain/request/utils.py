@@ -142,19 +142,24 @@ def add_value_to_session(request, field_name: str, field_value) -> None:
     request.session["registration_data"] = registration_data
 
 
-def remove_from_session(session, field_names: list[str]) -> dict:
+def remove_from_session(session: dict, field_names: list[str]) -> dict:
     """
     Remove fields from a session, for instance when an uploaded
     file is removed
     """
-    for field_name in field_names:
-        if session["registration_data"].get(field_name) is not None:
-            if field_name.endswith("uploaded_filename"):
-                # remove the file associated
-                select_storage().delete(session["registration_data"].get(field_name))
-            del session["registration_data"][field_name]
+    if session and session.get("registration_data"):
+        for field_name in field_names:
+            if session["registration_data"].get(field_name) is not None:
+                if field_name.endswith("uploaded_filename"):
+                    # remove the file associated
+                    select_storage().delete(
+                        session["registration_data"].get(field_name)
+                    )
+                del session["registration_data"][field_name]
 
-    return session["registration_data"]
+        return session["registration_data"]
+    else:
+        return {}
 
 
 def get_env_variable(key: str, default=None) -> str:
