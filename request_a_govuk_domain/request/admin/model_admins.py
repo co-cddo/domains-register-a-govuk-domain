@@ -26,6 +26,7 @@ class DomainRegistrationGroupAdmin(GroupAdmin):
 class ReviewAdmin(admin.ModelAdmin):
     model = Review
     form = ReviewForm
+    change_form_template = "admin/review_change_form.html"
 
     list_display = (
         "get_reference",
