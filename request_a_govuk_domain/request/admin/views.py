@@ -43,13 +43,9 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
                 self.message_user(
                     request, f"{approval_or_rejection} email sent", messages.SUCCESS
                 )
-                return HttpResponseRedirect(
-                    reverse("admin:request_application_changelist")
-                )
+                return HttpResponseRedirect(reverse("admin:request_review_changelist"))
             except Exception as e:
                 self.message_user(request, f"Email send failed: {e}", messages.ERROR)
         return HttpResponseRedirect(
-            reverse(
-                "admin:request_application_change", args=[request.POST.get("obj_id")]
-            )
+            reverse("admin:request_review_change", args=[request.POST.get("obj_id")])
         )

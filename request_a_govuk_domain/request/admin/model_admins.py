@@ -1,6 +1,6 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
-from django.http import FileResponse
+from django.http import HttpResponseRedirect, FileResponse
 from django.urls import reverse, path
 from django.utils.html import format_html
 
@@ -208,6 +208,33 @@ class ReviewAdmin(admin.ModelAdmin):
 
     def get_owner(self, obj):
         return obj.application.owner
+
+    def response_change(self, request, obj):
+        if "_approve" in request.POST:
+            if obj.is_approvable():
+                return HttpResponseRedirect(
+                    f"{reverse('application_confirm')}?obj_id={obj.id}&action=approval"
+                )
+            else:
+                self.message_user(
+                    request, "This application can't be approved!", messages.ERROR
+                )
+                return HttpResponseRedirect(
+                    reverse("admin:request_review_change", args=[obj.id])
+                )
+        if "_reject" in request.POST:
+            if obj.is_rejectable():
+                return HttpResponseRedirect(
+                    f"{reverse('application_confirm')}?obj_id={obj.id}&action=rejection"
+                )
+            else:
+                self.message_user(
+                    request, "This application can't be rejected!", messages.ERROR
+                )
+                return HttpResponseRedirect(
+                    reverse("admin:request_review_change", args=[obj.id])
+                )
+        return super().response_change(request, obj)
 
 
 class ApplicationAdmin(admin.ModelAdmin):
