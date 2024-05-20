@@ -1,4 +1,4 @@
-How to check:
+**How to check:**
 
 1. You can use the following sources to help check a registrant organisation exists:
     * [List of Parish Councils](https://www.planning.data.gov.uk/entity/?dataset=parish). If the Parish Council is not on the list you can ask the The Parish Council Domain Helper Service team to see if a council has come through their service and check other trusted sources
