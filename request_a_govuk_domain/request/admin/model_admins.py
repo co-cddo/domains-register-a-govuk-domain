@@ -1,12 +1,12 @@
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
-from django.http import HttpResponseRedirect
 from django.http import FileResponse
-from django.urls import reverse
+from django.urls import reverse, path
+from django.utils.html import format_html
+
 
 from request_a_govuk_domain.request.models import Application, Review
 from .forms import ReviewForm
-from .mixins import ReviewerReadOnlyFieldsMixin
 
 
 class DomainRegistrationUserAdmin(UserAdmin):
@@ -37,11 +37,34 @@ class ReviewAdmin(admin.ModelAdmin):
         "get_owner",
     )
 
+    def generate_download_link(self, obj, field_name, link_text):
+        link = reverse("admin:review_download_file", args=[obj.pk, field_name])
+        return format_html(f'<a href="{link}" target="_blank">{link_text}</a>')
+
+    def download_file_view(self, request, object_id, field_name):
+        review = self.model.objects.get(id=object_id)
+        application = review.application
+        file = getattr(application, field_name)
+        return FileResponse(file.open("rb"))
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "download/<int:object_id>/<str:field_name>/",
+                self.admin_site.admin_view(self.download_file_view),
+                name="review_download_file",
+            ),
+        ]
+        return custom_urls + urls
+
     def _get_formatted_display_fields(self, display_fields: dict) -> str:
         formatted_fields = ""
         for key, value in display_fields.items():
-            formatted_fields = f"{formatted_fields}<li>{key} : {value}</li>"
-        return "<ul>" + formatted_fields + "</ul>"
+            formatted_fields = (
+                f"{formatted_fields}<p><strong>{key}</strong> : {value}<p>"
+            )
+        return formatted_fields
 
     def get_registrar_fieldset(self, obj):
         return (
@@ -84,7 +107,7 @@ class ReviewAdmin(admin.ModelAdmin):
             },
         )
 
-    def registrant_person_fieldset(self, obj):
+    def get_registrant_person_fieldset(self, obj):
         return (
             "The registrant's identity and their role in the organisation",
             {
@@ -97,23 +120,29 @@ class ReviewAdmin(admin.ModelAdmin):
 
     def get_registrant_permission_fieldset(self, obj):
         if obj.application.written_permission_evidence:
+            download_link = self.generate_download_link(
+                obj, "written_permission_evidence", "View document"
+            )
             return (
                 "The registrant's permission to apply for the domain",
                 {
                     "fields": ("registrant_permission", "registrant_permission_notes"),
+                    "description": download_link,
                 },
             )
-        return None
 
     def get_policy_exemption_fieldset(self, obj):
         if obj.application.policy_exemption_evidence:
+            download_link = self.generate_download_link(
+                obj, "policy_exemption_evidence", "View document"
+            )
             return (
                 "Exemption from using the GOV.UK website",
                 {
                     "fields": ("policy_exemption", "policy_exemption_notes"),
+                    "description": download_link,
                 },
             )
-        return None
 
     def get_domain_name_rules_fieldset(self, obj):
         return (
@@ -128,6 +157,9 @@ class ReviewAdmin(admin.ModelAdmin):
 
     def get_senior_support_fieldset(self, obj):
         if obj.application.ministerial_request_evidence:
+            download_link = self.generate_download_link(
+                obj, "ministerial_request_evidence", "View document"
+            )
             return (
                 "Domain name has Ministerial/Perm Sec support",
                 {
@@ -135,16 +167,16 @@ class ReviewAdmin(admin.ModelAdmin):
                         "registrant_senior_support",
                         "registrant_senior_support_notes",
                     ),
+                    "description": download_link,
                 },
             )
-        return None
 
     def _relevant_fieldsets(self, obj):
         return [
             self.get_registrar_fieldset(obj),
             self.get_domain_name_fieldset(obj),
             self.get_registrant_org_fieldset(obj),
-            self.registrant_person_fieldset(obj),
+            self.get_registrant_person_fieldset(obj),
             self.get_registrant_permission_fieldset(obj),
             self.get_policy_exemption_fieldset(obj),
             self.get_domain_name_rules_fieldset(obj),
@@ -177,9 +209,8 @@ class ReviewAdmin(admin.ModelAdmin):
         return obj.application.owner
 
 
-class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
+class ApplicationAdmin(admin.ModelAdmin):
     model = Application
-    change_form_template = "admin/application_change_form.html"
     list_display = [
         "reference",
         "domain_name",
@@ -190,61 +221,3 @@ class ApplicationAdmin(ReviewerReadOnlyFieldsMixin, admin.ModelAdmin):
         "owner",
     ]
     list_filter = ["status", "registrar_org", "registrant_org"]
-
-    def download_written_permission_evidence(self, obj):
-        return self.generate_download_link(obj, "download_written_permission_evidence")
-
-    def download_ministerial_request_evidence(self, obj):
-        return self.generate_download_link(obj, "download_ministerial_request_evidence")
-
-    def download_policy_exemption_evidence(self, obj):
-        return self.generate_download_link(obj, "download_policy_exemption_evidence")
-
-    def download_file(self, request, field_name, object_id):
-        instance = self.model.objects.get(pk=object_id)
-        try:
-            file = getattr(instance, field_name)
-        except AttributeError:
-            file = getattr(instance.centralgovt, field_name)
-        return FileResponse(file.open("rb"))
-
-    download_written_permission_evidence.short_description = (  # type: ignore
-        "Written permission evidence"
-    )
-
-    download_ministerial_request_evidence.short_description = (  # type: ignore
-        "Ministerial request evidence"
-    )
-    download_policy_exemption_evidence.short_description = (  # type: ignore
-        "Naming policy exemption evidence"
-    )
-
-    def get_readonly_fields(self, request, obj=None):
-        return super().get_readonly_fields(request, obj) + ["time_submitted"]
-
-    def response_change(self, request, obj):
-        if "_approve" in request.POST:
-            if obj.review.is_approvable():
-                return HttpResponseRedirect(
-                    f"{reverse('application_confirm')}?obj_id={obj.id}&action=approval"
-                )
-            else:
-                self.message_user(
-                    request, "This application can't be approved!", messages.ERROR
-                )
-                return HttpResponseRedirect(
-                    reverse("admin:request_application_change", args=[obj.id])
-                )
-        if "_reject" in request.POST:
-            if obj.review.is_rejectable():
-                return HttpResponseRedirect(
-                    f"{reverse('application_confirm')}?obj_id={obj.id}&action=rejection"
-                )
-            else:
-                self.message_user(
-                    request, "This application can't be rejected!", messages.ERROR
-                )
-                return HttpResponseRedirect(
-                    reverse("admin:request_application_change", args=[obj.id])
-                )
-        return super().response_change(request, obj)
