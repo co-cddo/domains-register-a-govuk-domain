@@ -24,6 +24,7 @@ python-dotenv = "^1.0.1"
 django-admin-interface = "^0.28.6"
 django-storages = {extras = ["s3"], version = "^1.14.2"}
 django-csp = "^3.8"
+sentry-sdk = {extras = ["django"], version = "^2.2.0"}
 
 
 [tool.poetry.group.dev.dependencies]

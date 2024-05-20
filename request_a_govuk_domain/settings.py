@@ -260,3 +260,14 @@ CSP_FRAME_ANCESTORS = "'self'"
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # We don't have subdomains but it doesn't hurt
 SECURE_HSTS_PRELOAD = True  # Tell browsers to remember HTTPS only
+
+# Sentry monitoring
+SENTRY_DSN = env.str("SENTRY_DSN", default=None)
+if SENTRY_DSN is not None:
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        enable_tracing=True,
+        environment=ENVIRONMENT,
+    )
