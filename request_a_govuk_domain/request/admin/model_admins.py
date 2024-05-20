@@ -3,9 +3,14 @@ from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.http import HttpResponseRedirect, FileResponse
 from django.urls import reverse, path
 from django.utils.html import format_html
+import markdown
 
 
-from request_a_govuk_domain.request.models import Application, Review
+from request_a_govuk_domain.request.models import (
+    Application,
+    Review,
+    ReviewFormGuidance,
+)
 from .forms import ReviewForm
 
 
@@ -79,6 +84,9 @@ class ReviewAdmin(admin.ModelAdmin):
                         "Telephone number": obj.application.registrar_person.phone_number,
                         "Email address": obj.application.registrar_person.email_address,
                     }
+                )
+                + markdown.markdown(
+                    ReviewFormGuidance.objects.get(name="registrar_details").how_to
                 ),
             },
         )
@@ -93,6 +101,11 @@ class ReviewAdmin(admin.ModelAdmin):
                 ),
                 "description": self._get_formatted_display_fields(
                     {"Domain name requested": obj.application.domain_name}
+                )
+                + markdown.markdown(
+                    ReviewFormGuidance.objects.get(
+                        name="domain_name_availability"
+                    ).how_to
                 ),
             },
         )
@@ -104,6 +117,9 @@ class ReviewAdmin(admin.ModelAdmin):
                 "fields": ("registrant_org", "registrant_org_notes"),
                 "description": self._get_formatted_display_fields(
                     {"Registrant's organisation": obj.application.registrant_org.name}
+                )
+                + markdown.markdown(
+                    ReviewFormGuidance.objects.get(name="registrant_org").how_to
                 ),
             },
         )
@@ -115,6 +131,9 @@ class ReviewAdmin(admin.ModelAdmin):
                 "fields": ("registrant_person", "registrant_person_notes"),
                 "description": self._get_formatted_display_fields(
                     {"Registrant's name'": obj.application.registrant_person.name}
+                )
+                + markdown.markdown(
+                    ReviewFormGuidance.objects.get(name="registrant_person").how_to
                 ),
             },
         )
@@ -128,7 +147,14 @@ class ReviewAdmin(admin.ModelAdmin):
                 "The registrant's permission to apply for the domain",
                 {
                     "fields": ("registrant_permission", "registrant_permission_notes"),
-                    "description": download_link,
+                    "description": self._get_formatted_display_fields(
+                        {"Evidence": download_link}
+                    )
+                    + markdown.markdown(
+                        ReviewFormGuidance.objects.get(
+                            name="registrant_permission"
+                        ).how_to
+                    ),
                 },
             )
 
@@ -141,7 +167,12 @@ class ReviewAdmin(admin.ModelAdmin):
                 "Exemption from using the GOV.UK website",
                 {
                     "fields": ("policy_exemption", "policy_exemption_notes"),
-                    "description": download_link,
+                    "description": self._get_formatted_display_fields(
+                        {"Evidence": download_link}
+                    )
+                    + markdown.markdown(
+                        ReviewFormGuidance.objects.get(name="policy_exemption").how_to
+                    ),
                 },
             )
 
@@ -152,6 +183,9 @@ class ReviewAdmin(admin.ModelAdmin):
                 "fields": ("domain_name_rules", "domain_name_rules_notes"),
                 "description": self._get_formatted_display_fields(
                     {"Domain name requested": obj.application.domain_name}
+                )
+                + markdown.markdown(
+                    ReviewFormGuidance.objects.get(name="domain_name_rules").how_to
                 ),
             },
         )
@@ -168,7 +202,14 @@ class ReviewAdmin(admin.ModelAdmin):
                         "registrant_senior_support",
                         "registrant_senior_support_notes",
                     ),
-                    "description": download_link,
+                    "description": self._get_formatted_display_fields(
+                        {"Evidence": download_link}
+                    )
+                    + markdown.markdown(
+                        ReviewFormGuidance.objects.get(
+                            name="registrant_senior_support"
+                        ).how_to
+                    ),
                 },
             )
 

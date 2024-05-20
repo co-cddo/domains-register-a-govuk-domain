@@ -25,6 +25,7 @@ django-admin-interface = "^0.28.6"
 django-storages = {extras = ["s3"], version = "^1.14.2"}
 django-csp = "^3.8"
 sentry-sdk = {extras = ["django"], version = "^2.2.0"}
+markdown = "^3.6"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -33,6 +34,7 @@ flake8 = "^7.0.0"
 black = "^24.3.0"
 ipdb = "^0.13.13"
 web-pdb = "^1.6.2"
+types-markdown = "^3.6.0.20240316"
 
 [tool.mypy]
 ignore_missing_imports = true
