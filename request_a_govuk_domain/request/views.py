@@ -92,7 +92,7 @@ class RegistrantTypeView(FormView):
         # we need to remove downstream session fields in case we're
         # coming back from a check-your-answers page and selecting a new registrant
         # type that leads to a different route
-        remove_from_session(
+        session_data = remove_from_session(
             self.request.session,
             [
                 "domain_purpose",
@@ -119,7 +119,6 @@ class RegistrantTypeView(FormView):
 
         # Pass the existing form answer if it is set in the session data
         initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
         initial["registrant_type"] = session_data.get("registrant_type", "")
         return initial
 
