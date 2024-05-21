@@ -211,20 +211,21 @@ class ReviewAdmin(admin.ModelAdmin):
                 },
             )
 
-    def _relevant_fieldsets(self, obj):
-        return [
-            self.get_registrar_fieldset(obj),
-            self.get_domain_name_fieldset(obj),
-            self.get_registrant_org_fieldset(obj),
-            self.get_registrant_person_fieldset(obj),
-            self.get_registrant_permission_fieldset(obj),
-            self.get_policy_exemption_fieldset(obj),
-            self.get_domain_name_rules_fieldset(obj),
-            self.get_senior_support_fieldset(obj),
-        ]
-
     def get_fieldsets(self, request, obj=None):
-        fieldsets = self._relevant_fieldsets(obj)
+        fieldsets = [
+            fieldset
+            for fieldset in (
+                self.get_registrar_fieldset(obj),
+                self.get_domain_name_fieldset(obj),
+                self.get_registrant_org_fieldset(obj),
+                self.get_registrant_person_fieldset(obj),
+                self.get_registrant_permission_fieldset(obj),
+                self.get_policy_exemption_fieldset(obj),
+                self.get_domain_name_rules_fieldset(obj),
+                self.get_senior_support_fieldset(obj),
+            )
+            if fieldset
+        ]
         return fieldsets
 
     def get_reference(self, obj):
