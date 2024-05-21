@@ -48,3 +48,5 @@ repos:
         -    boto3
         -    clamd
         -    notifications-python-client
+        -    markdown
+        -    types-Markdown

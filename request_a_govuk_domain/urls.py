@@ -53,7 +53,7 @@ from .request.views import (
     forbidden_view,
 )
 
-from .request.admin import DecisionConfirmationView
+from .request.admin.views import DecisionConfirmationView
 
 
 urlpatterns = [
