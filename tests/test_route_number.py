@@ -188,7 +188,6 @@ OTHER_REGISTRANT_RT = {"primary": 3}
 
 
 class TestRouteNumber(unittest.TestCase):
-
     def setUp(self):
         pass
 
