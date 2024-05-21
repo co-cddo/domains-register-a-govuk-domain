@@ -1,5 +1,6 @@
 from django.contrib import admin, messages
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.template.loader import render_to_string
 from django.http import HttpResponseRedirect, FileResponse
 from django.urls import reverse, path
 from django.utils.html import format_html
@@ -65,12 +66,9 @@ class ReviewAdmin(admin.ModelAdmin):
         return custom_urls + urls
 
     def _get_formatted_display_fields(self, display_fields: dict) -> str:
-        formatted_fields = ""
-        for key, value in display_fields.items():
-            formatted_fields = (
-                f"{formatted_fields}<p><strong>{key}</strong> : {value}<p>"
-            )
-        return formatted_fields
+        return render_to_string(
+            "admin/reviewer_read_only_fields.html", {"display_fields": display_fields}
+        )
 
     def get_registrar_fieldset(self, obj):
         return (
