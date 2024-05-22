@@ -18,7 +18,77 @@ from request_a_govuk_domain.request.models import (
     Review,
 )
 
+from .utils import route_number
+
 logger = logging.getLogger(__name__)
+
+
+def sanitise_registration_data(rd: dict) -> dict:
+    """
+    Remove the fields in registration data that aren't relevant to the
+    answers the user has entered
+
+    This can happen if the user has changed their answer and gone through
+    multiple paths, there might be some session data we don't need when adding
+    the submission to the database.
+
+    For instance, if the user has uploaded a minister-approval document but later
+    changed their answer to say that they don't have minister approval, we need to
+    remove the uploaded file and change the corresponding session data. Otherwise
+    approvers might get confused seeing documents that are not relevant.
+    Another example is if the user chose Central Government and thus a domain purpose,
+    but later changed to Fire Service, then the domain purpose answer should be removed
+    in order not to show in the Application.
+
+    :param rd: a registration data dictionary
+    :return: the sanitised registration data
+    """
+    route = route_number(rd)
+    if route["primary"] == 1:
+        # If the final route taken is 1 (parish/neighbourhood council), then we don't need
+        # data collected via other routes: domain purpose, exemption, written permission, minister support.
+        rd.pop("domain_purpose", None)
+        rd.pop("exemption", None)
+        rd.pop("exemption_file_uploaded_filename", None)
+        rd.pop("exemption_file_original_filename", None)
+        rd.pop("exemption_file_uploaded_url", None)
+        rd.pop("written_permission", None)
+        rd.pop("written_permission_file_uploaded_filename", None)
+        rd.pop("written_permission_file_original_filename", None)
+        rd.pop("written_permission_file_uploaded_url", None)
+        rd.pop("minister", None)
+        rd.pop("minister_file_uploaded_filename", None)
+        rd.pop("minister_file_original_filename", None)
+        rd.pop("minister_file_uploaded_url", None)
+    elif route["primary"] == 2 and route["secondary"] == 5:
+        # If the final route taken is 2-5 (central gov, email-only), then we don't need
+        # data collected via other routes: exemption.
+        rd.pop("exemption", None)
+        rd.pop("exemption_file_uploaded_filename", None)
+        rd.pop("exemption_file_original_filename", None)
+        rd.pop("exemption_file_uploaded_url", None)
+    elif route["primary"] == 3:
+        # If the final route taken is 3 (county council, fire service, etc), then we don't need
+        # data collected via other routes: domain_purpose, exemption, minister support.
+        rd.pop("domain_purpose", None)
+        rd.pop("exemption", None)
+        rd.pop("exemption_file_uploaded_filename", None)
+        rd.pop("exemption_file_original_filename", None)
+        rd.pop("exemption_file_uploaded_url", None)
+        rd.pop("minister", None)
+        rd.pop("minister_file_uploaded_filename", None)
+        rd.pop("minister_file_original_filename", None)
+        rd.pop("minister_file_uploaded_url", None)
+    if route.get("tertiary", 0) == 8:
+        # If the final route taken doen't include minister support
+        # then remove any possible minister support data previously specified.
+        rd.pop("minister", None)
+        rd.pop("minister_file_uploaded_filename", None)
+        rd.pop("minister_file_original_filename", None)
+        rd.pop("minister_file_uploaded_url", None)
+    rd.pop("domain_confirmation", None)
+
+    return rd
 
 
 def save_data_in_database(reference, request):
@@ -31,7 +101,10 @@ def save_data_in_database(reference, request):
     :param reference: Reference number of the application
     :param request: Request object
     """
-    registration_data = request.session.get("registration_data", {})
+    registration_data = sanitise_registration_data(
+        request.session.get("registration_data", {})
+    )
+
     try:
         with transaction.atomic():
             registrar_org = Registrar.objects.get(

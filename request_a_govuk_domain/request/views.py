@@ -90,35 +90,7 @@ class RegistrantTypeView(FormView):
     form_class = RegistrantTypeForm
 
     def get_initial(self):
-        # we need to remove downstream session fields in case we're
-        # coming back from a check-your-answers page and selecting a new registrant
-        # type that leads to a different route
-        session_data = remove_from_session(
-            self.request.session,
-            [
-                "domain_purpose",
-                "domain_name",
-                "domain_confirmation",
-                "change",
-                "registrant_role",
-                "registrant_email",
-                "registrant_contact_email",
-                "exemption",
-                "exemption_file_uploaded_filename",
-                "exemption_file_original_filename",
-                "exemption_file_uploaded_url",
-                "written_permission",
-                "written_permission_file_uploaded_filename",
-                "written_permission_file_original_filename",
-                "written_permission_file_uploaded_url",
-                "minister",
-                "minister_file_uploaded_filename",
-                "minister_file_original_filename",
-                "minister_file_uploaded_url",
-            ],
-        )
-
-        # Pass the existing form answer if it is set in the session data
+        session_data = self.request.session["registration_data"]
         initial = super().get_initial()
         initial["registrant_type"] = session_data.get("registrant_type", "")
         return initial
@@ -181,6 +153,12 @@ class DomainConfirmationView(FormView):
         context = super().get_context_data(**kwargs)
         context["registration_data"] = self.request.session.get("registration_data", {})
         return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        session_data = self.request.session["registration_data"]
+        initial["domain_confirmation"] = session_data.get("domain_confirmation", "")
+        return initial
 
     def form_valid(self, form):
         session_data = add_to_session(form, self.request, ["domain_confirmation"])
@@ -287,6 +265,14 @@ class WrittenPermissionView(FormView):
         registration_data = add_to_session(form, self.request, ["written_permission"])
         if registration_data["written_permission"] == "no":
             self.success_url = reverse_lazy("written_permission_fail")
+
+        # if the user has previously uploaded a file, take them to the confirmation directly
+        elif (
+            registration_data.get("written_permission_file_uploaded_filename")
+            is not None
+        ):
+            self.success_url = reverse_lazy("written_permission_upload_confirm")
+
         return super().form_valid(form)
 
 
@@ -307,7 +293,7 @@ class UploadRemoveView(RedirectView):
     pattern_name = ""  # to be subclassed
 
     def get_redirect_url(self, *args, **kwargs):
-        # delete the session data and files uploaded
+        # delete the session data
         remove_from_session(
             self.request.session,
             [
@@ -316,6 +302,7 @@ class UploadRemoveView(RedirectView):
                 self.page_type + "_file_uploaded_url",
             ],
         )
+        # TODO: delete the files
         return super().get_redirect_url(*args, **kwargs)
 
 
@@ -477,7 +464,11 @@ class MinisterView(FormView):
         registration_data = add_to_session(form, self.request, ["minister"])
         minister = registration_data["minister"]
         if minister == "yes":
-            self.success_url = reverse_lazy("minister_upload")
+            if registration_data.get("minister_file_uploaded_filename") is not None:
+                # if user previously uploaded a file, go to confirm directly
+                self.success_url = reverse_lazy("minister_upload_confirm")
+            else:
+                self.success_url = reverse_lazy("minister_upload")
         else:
             self.success_url = reverse_lazy("registrant_details")
         return super().form_valid(form)
@@ -493,18 +484,6 @@ class UploadView(FormView):
         self.success_url = reverse_lazy(f"{self.page_type}_upload_confirm")
         self.template_name = f"{self.page_type}_upload.html"
         return super().__init__()
-
-    def get_context_data(self, **kwargs):
-        # delete any previously uploaded files
-        remove_from_session(
-            self.request.session,
-            [
-                f"{self.page_type}_file_uploaded_filename",
-                f"{self.page_type}_file_original_filename",
-                f"{self.page_type}_file_uploaded_url",
-            ],
-        )
-        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         saved_filename = handle_uploaded_file(
@@ -571,37 +550,7 @@ class DomainPurposeView(FormView):
     form_class = DomainPurposeForm
 
     def get_initial(self):
-        # we need to remove downstream session fields in case we're
-        # coming back from a check-your-answers page and selecting a new registrant
-        # type that leads to a different route
-        session_data = remove_from_session(
-            self.request.session,
-            [
-                "domain_name",
-                "domain_confirmation",
-                "change",
-                "registrant_organisation",
-                "registrant_full_name",
-                "registrant_phone",
-                "registrant_role",
-                "registrant_email",
-                "registrant_contact_email",
-                "exemption",
-                "exemption_file_uploaded_filename",
-                "exemption_file_original_filename",
-                "exemption_file_uploaded_url",
-                "written_permission",
-                "written_permission_file_uploaded_filename",
-                "written_permission_file_original_filename",
-                "written_permission_file_uploaded_url",
-                "minister",
-                "minister_file_uploaded_filename",
-                "minister_file_original_filename",
-                "minister_file_uploaded_url",
-            ],
-        )
-
-        # Pass the existing form answer if it is set in the session data
+        session_data = self.request.session["registration_data"]
         initial = super().get_initial()
         initial["domain_purpose"] = session_data.get("domain_purpose", "")
         return initial

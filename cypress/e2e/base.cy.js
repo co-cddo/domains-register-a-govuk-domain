@@ -303,6 +303,32 @@ Cypress.Commands.add('goToConfirmation', (route=1) => {
     cy.goToRegistryDetails()
     cy.fillOutRegistryDetails('Clerk', 'rob@example.com')
     cy.checkPageTitleIncludes('Check your answers')
+  } else if (route === 3) {
+    cy.goToWrittenPermission()
+    cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
+    cy.get('p').should('include.text', 'chief executive')
+    cy.selectYesOrNo('written_permission', 'yes')
+
+    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.uploadDocument('permission.png')
+
+    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.confirmUpload('permission.png')
+
+    cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
+    cy.enterDomainName('something-pc')
+
+    cy.checkPageTitleIncludes('Is something-pc.gov.uk the correct domain name?')
+    cy.selectYesOrNo('domain_confirmation', 'yes')
+
+    cy.checkPageTitleIncludes('Registrant details')
+    cy.get('p').should('include.text', 'For example, for parish councils the registrant must be the Clerk.')
+    cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
+
+    cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
+    cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
+
+    cy.checkPageTitleIncludes('Check your answers')
   } else if (route === 7) {
     cy.goToExemptionUploadConfirm('exemption.png')
     cy.confirmUpload('exemption.png')
@@ -337,6 +363,52 @@ Cypress.Commands.add('goToConfirmation', (route=1) => {
     cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
 
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
+    cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
+
+    cy.checkPageTitleIncludes('Check your answers')
+  } else if (route === 5) {
+    goToDomainPurpose()
+    cy.chooseDomainPurpose(2) // Email address only -> Route 5
+    cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
+    cy.checkBackLinkGoesTo('/domain-purpose/')
+    cy.get('p').should('include.text', 'chief information officer')
+    cy.selectYesOrNo('written_permission', 'yes')
+
+    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.checkBackLinkGoesTo('/written-permission/')
+    cy.uploadDocument('permission.png')
+
+    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.checkBackLinkGoesTo('/written-permission-upload/')
+    cy.confirmUpload('permission.png')
+
+    cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
+    cy.checkBackLinkGoesTo('/written-permission-upload-confirm/')
+    cy.enterDomainName('something-pc')
+
+    cy.checkPageTitleIncludes('Is something-pc.gov.uk the correct domain name?')
+    cy.checkBackLinkGoesTo('/domain/')
+    cy.selectYesOrNo('domain_confirmation', 'yes')
+
+    cy.checkPageTitleIncludes('Has a central government minister requested the something-pc.gov.uk domain name?')
+    cy.checkBackLinkGoesTo('/domain-confirmation/')
+    cy.selectYesOrNo('minister', 'yes')
+
+    cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
+    cy.checkBackLinkGoesTo('/minister/')
+    cy.uploadDocument('minister.png')
+
+    cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
+    cy.checkBackLinkGoesTo('/minister-upload/')
+    cy.confirmUpload('minister.png')
+
+    cy.checkPageTitleIncludes('Registrant details')
+    cy.checkBackLinkGoesTo('/minister-upload-confirm/')
+    cy.get('p').should('not.include.text', 'For example, for parish councils the registrant must be the Clerk.')
+    cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
+
+    cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
+    cy.checkBackLinkGoesTo('/registrant-details/')
     cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
 
     cy.checkPageTitleIncludes('Check your answers')
