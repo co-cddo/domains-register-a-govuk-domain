@@ -76,7 +76,7 @@ def route_number(session_data: dict) -> dict[str, int]:
             route["primary"] = 1
             if session_data.get("domain_confirmation") == "no":
                 route["secondary"] = 12
-        elif registrant_type in ["central_government", "ndpb"]:
+        elif registrant_type in ["central_government", "alb"]:
             route["primary"] = 2
             domain_purpose = session_data.get("domain_purpose")
             if domain_purpose is not None:
@@ -115,7 +115,7 @@ def is_central_government(registrant_type: str) -> bool:
     Check if the registrant type is Central Government or Non-departmental body
     Note: If above is True then registrant type will be considered as Central Government
     """
-    return registrant_type in ["central_government", "ndpb"]
+    return registrant_type in ["central_government", "alb"]
 
 
 def add_to_session(form, request, field_names: list[str]) -> dict:
