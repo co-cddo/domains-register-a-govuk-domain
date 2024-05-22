@@ -82,7 +82,7 @@ class RegistrarDetailsForm(forms.Form):
                 Field.text("registrar_phone", field_width=20),
                 Field.text("registrar_email"),
             ),
-            Button("submit", "Submit"),
+            Button("submit", "Continue"),
         )
         if self.change:
             self.helper.layout.fields.append(
