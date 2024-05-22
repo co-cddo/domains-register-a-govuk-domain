@@ -3,9 +3,10 @@ import random
 import string
 from datetime import datetime
 
+from django.db import transaction
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.views import View
 from django.views.generic import TemplateView, RedirectView
 from django.views.generic.edit import FormView
@@ -407,13 +408,25 @@ def send_confirmation_email(reference: str, request) -> None:
     )
 
 
+@transaction.atomic  # This ensures that any failure during email send will not save data in db either
+def save_application_to_database_and_send_confirmation_email(
+    reference: str, request: HttpRequest
+) -> None:
+    """
+    Saves data in the db and sends confirmation email
+
+    :param reference: Application reference
+    :param request: request object
+    """
+    logger.info(f"Saving form {request.session.session_key}")
+    save_data_in_database(reference, request)
+    send_confirmation_email(reference, request)
+
+
 class SuccessView(View):
     def get(self, request):
         reference = generate_reference()
-        logger.info("Saving form %s", self.request.session.session_key)
-        save_data_in_database(reference, request)
-        send_confirmation_email(reference, request)
-
+        save_application_to_database_and_send_confirmation_email(reference, request)
         # We're finished, so clear the session data
         request.session.pop("registration_data", None)
         return render(request, "success.html", {"reference": reference})
