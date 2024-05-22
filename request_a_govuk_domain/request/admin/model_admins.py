@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 from django.contrib import admin, messages
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.template.loader import render_to_string
@@ -5,7 +7,6 @@ from django.http import HttpResponseRedirect, FileResponse
 from django.urls import reverse, path
 from django.utils.html import format_html
 import markdown
-
 
 from request_a_govuk_domain.request.models import (
     Application,
@@ -27,6 +28,15 @@ class DomainRegistrationGroupAdmin(GroupAdmin):
         if request.user.is_superuser:
             return True
         return False
+
+
+def convert_to_local_time(obj):
+    """
+    Utility function to convert a utc time to local time string
+    :param obj:
+    :return:
+    """
+    return obj.astimezone(ZoneInfo("Europe/London")).strftime("%d %b %Y %H:%M:%S %p")
 
 
 class ReviewAdmin(admin.ModelAdmin):
@@ -228,24 +238,31 @@ class ReviewAdmin(admin.ModelAdmin):
         ]
         return fieldsets
 
+    @admin.display(description="Reference")
     def get_reference(self, obj):
         return obj.application.reference
 
+    @admin.display(description="Domain Name")
     def get_domain_name(self, obj):
         return obj.application.domain_name
 
+    @admin.display(description="Status")
     def get_status(self, obj):
         return obj.application.status
 
+    @admin.display(description="Registrar org")
     def get_registrar_org(self, obj):
         return obj.application.registrar_org
 
+    @admin.display(description="Registrant org")
     def get_registrant_org(self, obj):
         return obj.application.registrant_org
 
+    @admin.display(description="Time Submitted (UK time)")
     def get_time_submitted(self, obj):
-        return obj.application.time_submitted
+        return convert_to_local_time(obj.application.time_submitted)
 
+    @admin.display(description="Owner")
     def get_owner(self, obj):
         return obj.application.owner
 
@@ -285,7 +302,11 @@ class ApplicationAdmin(admin.ModelAdmin):
         "status",
         "registrar_org",
         "registrant_org",
-        "time_submitted",
+        "time_submitted_local_time",
         "owner",
     ]
     list_filter = ["status", "registrar_org", "registrant_org"]
+
+    @admin.display(description="Time Submitted (UK time)")
+    def time_submitted_local_time(self, obj):
+        return convert_to_local_time(obj.time_submitted)
