@@ -110,14 +110,6 @@ def route_number(session_data: dict) -> dict[str, int]:
     return route
 
 
-def is_central_government(registrant_type: str) -> bool:
-    """
-    Check if the registrant type is Central Government or Non-departmental body
-    Note: If above is True then registrant type will be considered as Central Government
-    """
-    return registrant_type in ["central_government", "alb"]
-
-
 def add_to_session(form, request, field_names: list[str]) -> dict:
     """
     Common utility method to clean the list of fields and save them in the session. This is to save boilerplate code.
