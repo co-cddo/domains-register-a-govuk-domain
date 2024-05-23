@@ -13,6 +13,12 @@ describe('Bad domain names', () => {
     cy.checkPageTitleIncludes('Is dos-ac.gov.uk the correct domain name?')
   })
 
+  it('accepts valid domain names with capitals', () => {
+    cy.goToDomainViaRoute(3)
+    cy.enterDomainName('DoSAC.gov.uk')
+    cy.checkPageTitleIncludes('Is dosac.gov.uk the correct domain name?')
+  })
+
   it('accepts valid domain names when user has entered .gov.uk', () => {
     cy.goToDomainViaRoute(3)
     cy.enterDomainName('dosac.gov.uk')
@@ -25,9 +31,6 @@ describe('Bad domain names', () => {
     cy.confirmProblem('Please enter a valid domain name')
 
     cy.enterDomainName('dos.ac.gov.uk')
-    cy.confirmProblem('Please enter a valid domain name')
-
-    cy.enterDomainName('DoSAC.gov.uk')
     cy.confirmProblem('Please enter a valid domain name')
 
     cy.enterDomainName('007.gov.uk')
@@ -45,7 +48,7 @@ describe('Bad domain names', () => {
 
   it('rejects bad domain names but accepts valid retry', () => {
     cy.goToDomainViaRoute(3)
-    cy.enterDomainName('DoSAC.gov.uk')
+    cy.enterDomainName('dos.ac')
     cy.confirmProblem('Please enter a valid domain name')
     cy.enterDomainName('dosac.gov.uk')
     cy.checkPageTitleIncludes('Is dosac.gov.uk the correct domain name?')
