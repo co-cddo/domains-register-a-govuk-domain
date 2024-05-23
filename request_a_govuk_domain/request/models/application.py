@@ -56,7 +56,9 @@ class Application(models.Model):
     )
     registrant_org = models.ForeignKey(Registrant, on_delete=models.CASCADE)
     registrar_org = models.ForeignKey(Registrar, on_delete=models.CASCADE)
-    written_permission_evidence = models.FileField(storage=select_storage)
+    written_permission_evidence = models.FileField(
+        null=True, blank=True, storage=select_storage
+    )
     ministerial_request_evidence = models.FileField(
         null=True, blank=True, storage=select_storage
     )

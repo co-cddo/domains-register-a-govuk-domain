@@ -246,7 +246,6 @@ if not DEBUG:
     CSRF_FAILURE_VIEW = "request_a_govuk_domain.request.views.csrf_failure_view"
     SESSION_COOKIE_SECURE = True
 
-
 # Content Security Policy: only allow images, stylesheets and scripts from the
 # same origin as the HTML
 CSP_IMG_SRC = "'self'"
@@ -254,6 +253,9 @@ CSP_STYLE_SRC = "'self' 'sha256-Yrk+0r8BB7VG8053Bq5134CtNrZCcfqaGMD3xHpM9gI='"  
 CSP_SCRIPT_SRC = "'self' 'sha256-Gl/oWhJuv5Q73KslDBQ6Lf8TnR2wF1dznPZHMCb6P64=' 'sha256-mWnAScliK6FEboYjWY+46J2JHS2Rc/1osNHmEf8xhEg='"  # pragma: allowlist secret'
 CSP_FORM_ACTION = "'self'"
 CSP_FRAME_ANCESTORS = "'self'"
+
+# Disable CSP for debug as it prevent the style sheets from loading on  localhost
+CSP_REPORT_ONLY = DEBUG
 
 # HTTP Strict Transport Security settings
 # Tell browsers to only use HTTPS for a year
