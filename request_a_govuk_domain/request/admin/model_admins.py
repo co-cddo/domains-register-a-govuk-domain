@@ -108,7 +108,10 @@ class ReviewAdmin(admin.ModelAdmin):
                     "domain_name_availability_notes",
                 ),
                 "description": self._get_formatted_display_fields(
-                    {"Domain name requested": obj.application.domain_name}
+                    {
+                        "Domain name requested": obj.application.domain_name,
+                        "Reason for request": obj.application.domain_purpose,
+                    }
                 )
                 + markdown.markdown(
                     ReviewFormGuidance.objects.get(
@@ -138,7 +141,11 @@ class ReviewAdmin(admin.ModelAdmin):
             {
                 "fields": ("registrant_person", "registrant_person_notes"),
                 "description": self._get_formatted_display_fields(
-                    {"Registrant's name'": obj.application.registrant_person.name}
+                    {
+                        "Registrant's name": obj.application.registrant_person.name,
+                        "Telephone number": obj.application.registrant_person.phone_number,
+                        "Email address": obj.application.registrant_person.email_address,
+                    }
                 )
                 + markdown.markdown(
                     ReviewFormGuidance.objects.get(name="registrant_person").how_to
