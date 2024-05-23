@@ -125,7 +125,7 @@ class DomainForm(forms.Form):
     )  # based on RFC1035
 
     def clean_domain_name(self) -> str:
-        domain_typed: str = self.cleaned_data["domain_name"].strip()
+        domain_typed: str = self.cleaned_data["domain_name"].strip().lower()
         matched: re.Match | None = re.fullmatch(self.domain_input_regexp, domain_typed)
         if matched is not None:
             if ".gov.uk" not in domain_typed:
