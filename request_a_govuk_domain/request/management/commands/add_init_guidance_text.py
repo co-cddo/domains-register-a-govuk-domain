@@ -15,6 +15,7 @@ GUIDANCE_SECTIONS = (
     "registrant_person",
     "registrant_senior_support",
     "registrar_details",
+    "registry_details",
 )
 
 
@@ -22,8 +23,10 @@ class Command(BaseCommand):
     help = "Add initial guidance text for reviewers into the database"
 
     def handle(self, *args, **options):
-        if not models.ReviewFormGuidance.objects.all():
-            for section in GUIDANCE_SECTIONS:
+        for section in GUIDANCE_SECTIONS:
+            try:
+                models.ReviewFormGuidance.objects.get(name=section)
+            except models.ReviewFormGuidance.DoesNotExist:
                 with open(
                     os.path.join(INIT_GUIDANCE_PATH, f"{section}.md"), "r"
                 ) as file:

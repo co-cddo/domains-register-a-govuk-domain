@@ -57,3 +57,9 @@ class RegistrantSeniorSupportReviewChoices(models.TextChoices):
     APPROVE = "approve", _("Strong evidence exists - approve")
     HOLDING = "holding", _("Need more info - on hold, awaiting response")
     REJECT = "reject", _("Insufficient evidence exists - reject")
+
+
+class RegistryDetailsReviewChoices(models.TextChoices):
+    APPROVE = "approve", _("Role and/or email address meet guidelines - approved")
+    HOLDING = "holding", _("Need more info - on hold/awaiting response")
+    REJECT = "reject", _("Role and/or email address does not meet guidelines - reject")

@@ -228,6 +228,23 @@ class ReviewAdmin(admin.ModelAdmin):
                 },
             )
 
+    def get_registry_details(self, obj):
+        return (
+            "Registry published details",
+            {
+                "fields": ("registry_details", "registry_details_notes"),
+                "description": self._get_formatted_display_fields(
+                    {
+                        "Registrant role": obj.application.registry_published_person.role,
+                        "Registrant email": obj.application.registry_published_person.email_address,
+                    }
+                )
+                + markdown.markdown(
+                    ReviewFormGuidance.objects.get(name="registry_details").how_to
+                ),
+            },
+        )
+
     def get_fieldsets(self, request, obj=None):
         fieldsets = [
             fieldset
@@ -240,6 +257,7 @@ class ReviewAdmin(admin.ModelAdmin):
                 self.get_policy_exemption_fieldset(obj),
                 self.get_domain_name_rules_fieldset(obj),
                 self.get_senior_support_fieldset(obj),
+                self.get_registry_details(obj),
             )
             if fieldset
         ]

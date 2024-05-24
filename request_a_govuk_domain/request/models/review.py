@@ -88,6 +88,15 @@ class Review(models.Model):
         max_length=NOTES_MAX_LENGTH, blank=True, null=True
     )
 
+    registry_details = models.CharField(
+        choices=review_choices.RegistryDetailsReviewChoices.choices,
+        blank=True,
+        null=True,
+    )
+    registry_details_notes = models.TextField(
+        max_length=NOTES_MAX_LENGTH, blank=True, null=True
+    )
+
     history = HistoricalRecords()
 
     def is_approvable(self) -> bool:
