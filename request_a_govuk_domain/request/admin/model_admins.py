@@ -1,7 +1,9 @@
 from zoneinfo import ZoneInfo
 
+import django.db.models.fields.files
 import markdown
 from django.contrib import admin, messages
+from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.http import HttpResponseRedirect, FileResponse
 from django.template.loader import render_to_string
@@ -339,6 +341,14 @@ class ReviewAdmin(admin.ModelAdmin):
         obj.application.save()
 
 
+class CustomAdminFileWidget(AdminFileWidget):
+    """
+    Extend the default template to open the links on a new tab
+    """
+
+    template_name = "admin/clearable_file_input.html"
+
+
 class ApplicationAdmin(admin.ModelAdmin):
     model = Application
     list_display = [
@@ -352,6 +362,9 @@ class ApplicationAdmin(admin.ModelAdmin):
         "owner",
     ]
     list_filter = ["status", "registrar_org", "registrant_org"]
+    formfield_overrides = {
+        django.db.models.fields.files.FileField: {"widget": CustomAdminFileWidget},
+    }
 
     @admin.display(description="Time Submitted (UK time)")
     def time_submitted_local_time(self, obj):
