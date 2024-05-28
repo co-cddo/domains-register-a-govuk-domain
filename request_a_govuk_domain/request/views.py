@@ -36,6 +36,7 @@ from .utils import (
     send_email,
     route_specific_email_template,
     personalisation,
+    delete_uploaded_file,
 )
 
 logger = logging.getLogger(__name__)
@@ -302,7 +303,13 @@ class UploadRemoveView(RedirectView):
                 self.page_type + "_file_uploaded_url",
             ],
         )
-        # TODO: delete the files
+
+        # delete the uploaded file
+        delete_uploaded_file(
+            self.request.session.get("registration_data"),
+            self.page_type + "_file_uploaded_filename",
+            self.request.session.session_key,
+        )
         return super().get_redirect_url(*args, **kwargs)
 
 
