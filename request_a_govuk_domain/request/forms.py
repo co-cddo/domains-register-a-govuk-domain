@@ -279,7 +279,7 @@ class WrittenPermissionForm(forms.Form):
     )
 
     written_permission = forms.ChoiceField(
-        label="",
+        label="Does your registrant have proof of permission to apply for a .gov.uk domain name?",
         choices=CHOICES,
         widget=forms.RadioSelect,
         error_messages={"required": "Please answer Yes or No"},

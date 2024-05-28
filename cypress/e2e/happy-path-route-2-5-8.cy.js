@@ -22,7 +22,7 @@ describe('Happy path - route 2-5-8', () => {
     cy.checkBackLinkGoesTo('/written-permission/')
     cy.uploadDocument("permission.png")
 
-    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.checkPageTitleIncludes('Confirm uploaded evidence of permission to apply')
     cy.checkBackLinkGoesTo('/written-permission-upload/')
     cy.confirmUpload('permission.png')
 

@@ -17,7 +17,7 @@ describe('Error messages for the Exemption form', () => {
     cy.selectYesOrNo('written_permission', 'yes')
 
     // check we are on the next page
-  cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
 
   })
 })

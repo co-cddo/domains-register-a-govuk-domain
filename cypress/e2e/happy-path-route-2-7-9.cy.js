@@ -17,7 +17,7 @@ describe('Happy path - route 2-7-10', () => {
     cy.checkPageTitleIncludes('Upload evidence of the exemption')
     cy.uploadDocument("exemption.png")
 
-    cy.checkPageTitleIncludes('Upload evidence of the exemption')
+    cy.checkPageTitleIncludes('Confirm uploaded evidence of the exemption')
     cy.confirmUpload('exemption.png')
 
     cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
