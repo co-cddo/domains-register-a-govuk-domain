@@ -3,6 +3,35 @@
 
 {% block title %}Has a central government minister requested the domain name?{% endblock %}
 
+{% block extra_stylesheets %}
+  <style>
+   /*
+      Hide legend for visual modalities as it repeats the title
+      based on the GOV.UK Design System's govuk-visually-hidden
+      CSS class
+    */
+   legend::before {
+     content: "\00a0";
+   }
+   legend::after {
+     content: "\00a0";
+   }
+   .govuk-fieldset__legend.govuk-fieldset__legend--s {
+     position: absolute;
+     width: 1px;
+     height: 1px;
+     margin: 0;
+     padding: 0;
+     overflow: hidden;
+     clip: rect(0 0 0 0);
+     clip-path: inset(50%);
+     border: 0;
+     white-space: nowrap;
+     user-select: none;
+   }
+  </style>
+{% endblock %}
+
 {% block beforeContent %}
   {% url "domain_confirmation" as back_url %}
   {% back_link back_url %}
