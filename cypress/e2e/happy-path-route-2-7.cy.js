@@ -17,7 +17,7 @@ describe('Happy path - route 2-7', () => {
     cy.checkPageTitleIncludes('Upload evidence of the exemption')
     cy.uploadDocument("exemption.png")
 
-    cy.checkPageTitleIncludes('Upload evidence of the exemption')
+    cy.checkPageTitleIncludes('Confirm uploaded evidence of the exemption')
     cy.confirmUpload('exemption.png')
 
     cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
@@ -27,7 +27,7 @@ describe('Happy path - route 2-7', () => {
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
     cy.uploadDocument("permission.png")
 
-    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.checkPageTitleIncludes('Confirm uploaded evidence of permission to apply')
     cy.confirmUpload('permission.png')
 
     cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
@@ -42,7 +42,7 @@ describe('Happy path - route 2-7', () => {
     cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
     cy.uploadDocument("minister.png")
 
-    cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
+    cy.checkPageTitleIncludes('Confirm uploaded evidence of the minister\'s request')
     cy.confirmUpload('minister.png')
 
     cy.checkPageTitleIncludes('Registrant details')

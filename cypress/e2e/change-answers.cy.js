@@ -142,7 +142,7 @@ describe('Changing answers at the end of the process', () => {
     cy.selectYesOrNo('written_permission', 'yes')
 
     // permission was already uploaded so it should still show
-    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.checkPageTitleIncludes('Confirm uploaded evidence of permission to apply')
     cy.confirmUpload('permission.png')
 
     // same with domain name

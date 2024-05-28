@@ -22,7 +22,7 @@ describe('Happy path - route 2-5', () => {
     cy.checkBackLinkGoesTo('/written-permission/')
     cy.uploadDocument('permission.png')
 
-    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.checkPageTitleIncludes('Confirm uploaded evidence of permission to apply')
     cy.checkBackLinkGoesTo('/written-permission-upload/')
     cy.confirmUpload('permission.png')
 
@@ -42,7 +42,7 @@ describe('Happy path - route 2-5', () => {
     cy.checkBackLinkGoesTo('/minister/')
     cy.uploadDocument('minister.png')
 
-    cy.checkPageTitleIncludes('Upload evidence of the minister\'s request')
+    cy.checkPageTitleIncludes('Confirm uploaded evidence of the minister\'s request')
     cy.checkBackLinkGoesTo('/minister-upload/')
     cy.confirmUpload('minister.png')
 

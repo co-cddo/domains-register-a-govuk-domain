@@ -15,7 +15,7 @@ describe('Happy path - route 3', () => {
     cy.checkPageTitleIncludes('Upload evidence of permission to apply')
     cy.uploadDocument('permission.png')
 
-    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.checkPageTitleIncludes('Confirm uploaded evidence of permission to apply')
     cy.confirmUpload('permission.png')
 
     cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
