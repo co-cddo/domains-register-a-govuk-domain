@@ -30,6 +30,7 @@ class Application(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     time_submitted = models.DateTimeField(auto_now_add=True)
     time_decided = models.DateTimeField(null=True)
+    last_updated = models.DateTimeField(auto_now=True)
     status = models.CharField(
         choices=ApplicationStatus.choices,
         default=ApplicationStatus.NEW,

@@ -1,17 +1,18 @@
 from zoneinfo import ZoneInfo
 
+import markdown
 from django.contrib import admin, messages
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
-from django.template.loader import render_to_string
 from django.http import HttpResponseRedirect, FileResponse
+from django.template.loader import render_to_string
 from django.urls import reverse, path
 from django.utils.html import format_html
-import markdown
 
 from request_a_govuk_domain.request.models import (
     Application,
     Review,
     ReviewFormGuidance,
+    ApplicationStatus,
 )
 from .forms import ReviewForm
 
@@ -36,7 +37,11 @@ def convert_to_local_time(obj):
     :param obj:
     :return:
     """
-    return obj.astimezone(ZoneInfo("Europe/London")).strftime("%d %b %Y %H:%M:%S %p")
+    return (
+        obj.astimezone(ZoneInfo("Europe/London")).strftime("%d %b %Y %H:%M:%S %p")
+        if obj
+        else "-"
+    )
 
 
 class ReviewAdmin(admin.ModelAdmin):
@@ -51,6 +56,7 @@ class ReviewAdmin(admin.ModelAdmin):
         "get_registrar_org",
         "get_registrant_org",
         "get_time_submitted",
+        "get_last_updated",
         "get_owner",
     )
 
@@ -287,6 +293,10 @@ class ReviewAdmin(admin.ModelAdmin):
     def get_time_submitted(self, obj):
         return convert_to_local_time(obj.application.time_submitted)
 
+    @admin.display(description="Last updated (UK time)")
+    def get_last_updated(self, obj):
+        return convert_to_local_time(obj.application.last_updated)
+
     @admin.display(description="Owner")
     def get_owner(self, obj):
         return obj.application.owner
@@ -318,6 +328,16 @@ class ReviewAdmin(admin.ModelAdmin):
                 )
         return super().response_change(request, obj)
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        # Save the application attributes
+        if obj.application.status == ApplicationStatus.NEW:
+            obj.application.status = ApplicationStatus.IN_PROGRESS
+        # Change the owner to be the current user regardless if there is already a user
+        # assigned or not
+        obj.application.owner = request.user
+        obj.application.save()
+
 
 class ApplicationAdmin(admin.ModelAdmin):
     model = Application
@@ -328,6 +348,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         "registrar_org",
         "registrant_org",
         "time_submitted_local_time",
+        "last_updated_local_time",
         "owner",
     ]
     list_filter = ["status", "registrar_org", "registrant_org"]
@@ -335,3 +356,17 @@ class ApplicationAdmin(admin.ModelAdmin):
     @admin.display(description="Time Submitted (UK time)")
     def time_submitted_local_time(self, obj):
         return convert_to_local_time(obj.time_submitted)
+
+    @admin.display(description="Last updated (UK time)")
+    def last_updated_local_time(self, obj):
+        return convert_to_local_time(obj.last_updated)
+
+    def save_model(self, request, obj, form, change):
+        # When an application is saved, if it is still in the new state
+        # update it to be 'in progress'
+        if obj.status == ApplicationStatus.NEW:
+            obj.status = ApplicationStatus.IN_PROGRESS
+        # if the application owner is not set, then set it as the current user
+        if not obj.owner:
+            obj.owner = request.user
+        super().save_model(request, obj, form, change)

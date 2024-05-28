@@ -3,7 +3,7 @@ from simple_history.models import HistoricalRecords
 from .application import Application
 from request_a_govuk_domain.request.models import review_choices
 
-NOTES_MAX_LENGTH = 500
+NOTES_MAX_LENGTH = 5000
 
 
 # We've added simple-history to the dependencies but need to implement it,
