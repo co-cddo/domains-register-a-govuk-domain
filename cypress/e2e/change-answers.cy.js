@@ -1,8 +1,6 @@
 import './base.cy'
 
 describe('Changing answers at the end of the process', () => {
-
-
   it('lets you change your answer for the domain-purpose question', () => {
     cy.goToConfirmation(7)
     cy.get("a[href='/domain-purpose']").eq(0).click()
@@ -132,4 +130,57 @@ describe('Changing answers at the end of the process', () => {
     cy.summaryShouldHave(10, ['Clerk', 'jim@example.com'])
   })
 
+  it('doesn\'t ask for data again, even if you\'ve changed routes (route 5)', () => {
+    cy.goToConfirmation(3)
+    cy.get("a[href='/registrant-type']").click()
+    cy.chooseRegistrantType(1) // change to route 2
+    cy.checkPageTitleIncludes('Why do you want a .gov.uk domain name?')
+    cy.chooseDomainPurpose(2) // Email address only -> Route 5
+
+    cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
+    cy.get('p').should('include.text', 'chief information officer')
+    cy.selectYesOrNo('written_permission', 'yes')
+
+    // permission was already uploaded so it should still show
+    cy.checkPageTitleIncludes('Upload evidence of permission to apply')
+    cy.confirmUpload('permission.png')
+
+    // same with domain name
+    cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
+    cy.get('#id_domain_name').should('have.value', 'something-pc.gov.uk')
+    cy.get('.govuk-button#id_submit').click();
+
+    cy.checkPageTitleIncludes('Is something-pc.gov.uk the correct domain name?')
+    cy.get('#id_domain_confirmation_1').should('be.checked')
+    cy.get('.govuk-button#id_submit').click();
+
+    cy.checkPageTitleIncludes('Has a central government minister requested the something-pc.gov.uk domain name?')
+    // No radio button should be checked as we've not been here before
+    cy.get('[type="radio"]').should('not.be.checked')
+    cy.selectYesOrNo('minister', 'no')
+
+    cy.checkPageTitleIncludes('Registrant details')
+    cy.get('#id_registrant_organisation').should('have.value', 'HMRC')
+    cy.get('#id_registrant_full_name').should('have.value', 'Rob Roberts')
+    cy.get('#id_registrant_phone').should('have.value', '01225672344')
+    cy.get('#id_registrant_email').should('have.value', 'rob@example.org')
+    cy.get('#id_submit').click()
+
+    cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
+    cy.get('#id_registrant_role').should('have.value', 'Clerk')
+    cy.get('#id_registrant_contact_email').should('have.value', 'clerk@example.org')
+    cy.get('#id_submit').click()
+
+    cy.checkPageTitleIncludes('Check your answers')
+    cy.summaryShouldHave(0, 'WeRegister')
+    cy.summaryShouldHave(1, ['Joe Bloggs', '01225672345', 'joe@example.org'])
+    cy.summaryShouldHave(2, 'Central government')
+    cy.summaryShouldHave(3, 'Email only')
+    cy.summaryShouldHave(4, ['Yes, evidence provided:', 'permission.png'])
+    cy.summaryShouldHave(5, 'something-pc.gov.uk')
+    cy.summaryShouldHave(6, 'No evidence provided')
+    cy.summaryShouldHave(7, 'HMRC')
+    cy.summaryShouldHave(8, ['Rob Roberts', '01225672344', 'rob@example.org'])
+    cy.summaryShouldHave(9, ['Clerk', 'clerk@example.org'])
+  })
 })
