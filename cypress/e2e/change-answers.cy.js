@@ -1,6 +1,61 @@
 import './base.cy'
 
 describe('Changing answers at the end of the process', () => {
+
+  it('lets you change registry details', () => {
+    cy.goToConfirmation(7)
+    cy.get("a[href='/registry-details']").eq(0).click()
+    cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
+    cy.get('#id_registrant_role').should('have.value', 'Clerk')
+    cy.get('#id_registrant_contact_email').should('have.value', 'clerk@example.org')
+
+    // change a value
+    cy.get('#id_registrant_role').clear().type('IT Support')
+
+    // go back to answers
+    cy.get('#id_submit').click()
+    cy.checkPageTitleIncludes('Check your answers')
+    cy.summaryShouldHave(10, 'IT Support')
+  })
+
+
+  it('lets you change registrant details', () => {
+    cy.goToConfirmation(7)
+    cy.get("a[href='/change-registrant-details']").eq(0).click()
+    cy.checkPageTitleIncludes('Registrant details')
+    cy.get('#id_registrant_organisation').should('have.value', 'HMRC')
+    cy.get('#id_registrant_full_name').should('have.value', 'Rob Roberts')
+    cy.get('#id_registrant_phone').should('have.value', '01225672344')
+    cy.get('#id_registrant_email').should('have.value', 'rob@example.org')
+
+    // change a value
+    cy.get('#id_registrant_phone').clear().type('01225672345')
+
+    // go back to answers
+    cy.get('#id_back_to_answers').click()
+    cy.checkPageTitleIncludes('Check your answers')
+    cy.summaryShouldHave(9, '01225672345')
+  })
+
+
+  it('lets you change registrar details', () => {
+    cy.goToConfirmation(7)
+    cy.get("a[href='/change-registrar-details']").eq(0).click()
+    cy.checkPageTitleIncludes('Registrar details')
+    cy.get('#id_registrar_name').should('have.value', 'Joe Bloggs')
+    cy.get('#id_registrar_phone').should('have.value', '01225672345')
+    cy.get('#id_registrar_email').should('have.value', 'joe@example.org')
+
+    // change a value
+    cy.get('#id_registrar_phone').clear().type('01225672345')
+
+    // go back to answers
+    cy.get('#id_back_to_answers').click()
+    cy.checkPageTitleIncludes('Check your answers')
+    cy.summaryShouldHave(1, '01225672345')
+  })
+
+
   it('lets you change your answer for the domain-purpose question', () => {
     cy.goToConfirmation(7)
     cy.get("a[href='/domain-purpose']").eq(0).click()
@@ -122,6 +177,10 @@ describe('Changing answers at the end of the process', () => {
     cy.get("a[href='/registry-details']").eq(0).click()
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
 
+    // check previous answers are still there
+    cy.get('#id_registrant_role').should('have.value', 'Clerk')
+    cy.get('#id_registrant_contact_email').should('have.value', 'clerk@example.org')
+
     // No going back to answers because it's the last page before the confirmation page
     cy.get('#id_back_to_answers').should('not.exist')
 
@@ -133,8 +192,10 @@ describe('Changing answers at the end of the process', () => {
   it('doesn\'t ask for data again, even if you\'ve changed routes (route 5)', () => {
     cy.goToConfirmation(3)
     cy.get("a[href='/registrant-type']").click()
+    cy.get('input[type=radio]').eq(3).should('be.checked')
     cy.chooseRegistrantType(1) // change to route 2
     cy.checkPageTitleIncludes('Why do you want a .gov.uk domain name?')
+    cy.get('input[type=radio]').should('not.be.checked')
     cy.chooseDomainPurpose(2) // Email address only -> Route 5
 
     cy.checkPageTitleIncludes('Does your registrant have proof of permission to apply for a .gov.uk domain name?')
