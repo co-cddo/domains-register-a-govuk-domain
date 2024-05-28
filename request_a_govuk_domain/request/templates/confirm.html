@@ -2,6 +2,8 @@
 {% load crispy_forms_tags crispy_forms_gds %}
 {% load govuk_frontend_django %}
 
+{% block title %}Check your answers{% endblock %}
+
 {% block beforeContent %}
   {% url "registry_details" as back_url %}
   {% back_link back_url %}
