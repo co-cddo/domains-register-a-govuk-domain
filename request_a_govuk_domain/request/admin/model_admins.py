@@ -3,6 +3,7 @@ from zoneinfo import ZoneInfo
 import django.db.models.fields.files
 import markdown
 from django.contrib import admin, messages
+from django.contrib.admin import ChoicesFieldListFilter
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.http import HttpResponseRedirect, FileResponse
@@ -349,6 +350,15 @@ class CustomAdminFileWidget(AdminFileWidget):
     template_name = "admin/clearable_file_input.html"
 
 
+class CustomChoicesFieldListFilter(ChoicesFieldListFilter):
+    """
+    Override the default template, so we can use a function for the list change event
+    and use that hash in the allowed hashes for the CSP list
+    """
+
+    template = "admin/dropdown_filter.html"
+
+
 class ApplicationAdmin(admin.ModelAdmin):
     model = Application
     list_display = [
@@ -361,7 +371,11 @@ class ApplicationAdmin(admin.ModelAdmin):
         "last_updated_local_time",
         "owner",
     ]
-    list_filter = ["status", "registrar_org", "registrant_org"]
+    list_filter = [
+        ("status", CustomChoicesFieldListFilter),
+        ("registrar_org", CustomChoicesFieldListFilter),
+        ("registrant_org", CustomChoicesFieldListFilter),
+    ]
     formfield_overrides = {
         django.db.models.fields.files.FileField: {"widget": CustomAdminFileWidget},
     }
