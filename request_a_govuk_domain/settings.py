@@ -250,7 +250,7 @@ if not DEBUG:
 # same origin as the HTML
 CSP_IMG_SRC = "'self'"
 CSP_STYLE_SRC = "'self' 'sha256-Yrk+0r8BB7VG8053Bq5134CtNrZCcfqaGMD3xHpM9gI='"  # pragma: allowlist secret
-CSP_SCRIPT_SRC = "'self' 'sha256-Gl/oWhJuv5Q73KslDBQ6Lf8TnR2wF1dznPZHMCb6P64=' 'sha256-mWnAScliK6FEboYjWY+46J2JHS2Rc/1osNHmEf8xhEg='"  # pragma: allowlist secret'
+CSP_SCRIPT_SRC = "'self' 'sha256-Gl/oWhJuv5Q73KslDBQ6Lf8TnR2wF1dznPZHMCb6P64=' 'sha256-mWnAScliK6FEboYjWY+46J2JHS2Rc/1osNHmEf8xhEg=' 'sha256-XnQ3IfOhmMbP75i80XPTDYp0PiESaF/qwUDCGZnUwRk='"  # pragma: allowlist secret'
 CSP_FORM_ACTION = "'self'"
 CSP_FRAME_ANCESTORS = "'self'"
 
