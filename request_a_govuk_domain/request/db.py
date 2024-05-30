@@ -82,7 +82,6 @@ def sanitise_registration_data(rd: dict) -> dict:
     if route.get("tertiary", 0) == 8:
         # If the final route taken doen't include minister support
         # then remove any possible minister support data previously specified.
-        rd.pop("minister", None)
         rd.pop("minister_file_uploaded_filename", None)
         rd.pop("minister_file_original_filename", None)
         rd.pop("minister_file_uploaded_url", None)
