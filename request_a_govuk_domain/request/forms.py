@@ -1,10 +1,6 @@
 import re
-from django import forms
-from django.template.defaultfilters import filesizeformat
-from django.conf import settings
+
 from crispy_forms_gds.choices import Choice
-from django.core.exceptions import ValidationError
-from django.core.validators import EmailValidator
 from crispy_forms_gds.helper import FormHelper
 from crispy_forms_gds.layout import (
     Button,
@@ -14,10 +10,16 @@ from crispy_forms_gds.layout import (
     Layout,
     Size,
 )
+from django import forms
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.validators import EmailValidator
+from django.template.defaultfilters import filesizeformat
 
 from .models.organisation import RegistrantTypeChoices, Registrar
-from ..layout.content import DomainsHTML
 from .utils import validate_file_infection
+from .validators import PhoneNumberValidator
+from ..layout.content import DomainsHTML
 
 
 def domain_validator(value: str):
@@ -39,17 +41,6 @@ def domain_validator(value: str):
         )
 
 
-class PhoneNumberValidator:
-    phone_number_pattern = re.compile(r"^\s*\d(?:\s*\d){10}\s*$")
-
-    def __init__(self, error_message=None):
-        self.error_message = error_message or "Invalid phone number format"
-
-    def __call__(self, phone_number):
-        if re.fullmatch(self.phone_number_pattern, phone_number) is None:
-            raise ValidationError(self.error_message)
-
-
 class RegistrarDetailsForm(forms.Form):
     """
     Registrar Form with organisations choice fields
@@ -68,13 +59,21 @@ class RegistrarDetailsForm(forms.Form):
 
     registrar_phone = forms.CharField(
         label="Telephone number",
-        validators=[PhoneNumberValidator("Please enter a valid phone number")],
+        validators=[
+            PhoneNumberValidator(
+                "Enter a telephone number, like 01632 960 001 or 07700 900 982"
+            )
+        ],
     )
 
     registrar_email = forms.CharField(
         label="Email address",
         help_text="We will use this email to contact you about the application.",
-        validators=[EmailValidator("Please enter a valid email address")],
+        validators=[
+            EmailValidator(
+                "Enter an email address in the correct format, like name@example.co.uk"
+            )
+        ],
     )
 
     def __init__(self, *args, **kwargs):
@@ -107,6 +106,18 @@ class RegistrarDetailsForm(forms.Form):
             self.helper.layout.fields.append(
                 Button.secondary("back_to_answers", "Back to answers")
             )
+        self.fields["registrar_organisation"].error_messages[
+            "required"
+        ] = "Select your organisation"
+        self.fields["registrar_name"].error_messages[
+            "required"
+        ] = "Enter your full name"
+        self.fields["registrar_phone"].error_messages[
+            "required"
+        ] = "Enter your telephone number"
+        self.fields["registrar_email"].error_messages[
+            "required"
+        ] = "Enter your email address"
 
 
 class RegistrantTypeForm(forms.Form):
@@ -133,6 +144,9 @@ class RegistrantTypeForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        self.fields["registrant_type"].error_messages[
+            "required"
+        ] = "Select the registrant's organisation type"
 
 
 class DomainForm(forms.Form):
@@ -167,6 +181,9 @@ class DomainForm(forms.Form):
             self.helper.layout.fields.append(
                 Button.secondary("back_to_answers", "Back to answers")
             )
+        self.fields["domain_name"].error_messages[
+            "required"
+        ] = "Enter the .gov.uk domain name you want to request"
 
 
 class DomainConfirmationForm(forms.Form):
@@ -181,7 +198,9 @@ class DomainConfirmationForm(forms.Form):
             ),
             widget=forms.RadioSelect,
             help_text="The Domains Team will check if this is available and decide whether to approve it.",
-            error_messages={"required": "Please answer Yes or No"},
+            error_messages={
+                "required": "Select yes if the requested .gov.uk domain name is correct"
+            },
         )
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -213,13 +232,21 @@ class RegistrantDetailsForm(forms.Form):
 
     registrant_phone = forms.CharField(
         label="Telephone number",
-        validators=[PhoneNumberValidator("Please enter a valid phone number")],
+        validators=[
+            PhoneNumberValidator(
+                "Enter a telephone number, like 01632 960 001 or 07700 900 982"
+            )
+        ],
     )
 
     registrant_email = forms.CharField(
         label="Email address",
         help_text="Use a current work email address for the registrant.",
-        validators=[EmailValidator("Please enter a valid email address")],
+        validators=[
+            EmailValidator(
+                "Enter an email address in the correct format, like name@example.co.uk"
+            )
+        ],
     )
 
     def __init__(self, *args, **kwargs):
@@ -254,6 +281,18 @@ class RegistrantDetailsForm(forms.Form):
             self.helper.layout.fields.append(
                 Button.secondary("back_to_answers", "Back to answers")
             )
+        self.fields["registrant_organisation"].error_messages[
+            "required"
+        ] = "Enter the registrant's organisation name"
+        self.fields["registrant_full_name"].error_messages[
+            "required"
+        ] = "Enter the registrant's full name"
+        self.fields["registrant_phone"].error_messages[
+            "required"
+        ] = "Enter the registrant's telephone number"
+        self.fields["registrant_email"].error_messages[
+            "required"
+        ] = "Enter the registrant's current email address"
 
 
 class RegistryDetailsForm(forms.Form):
@@ -264,7 +303,11 @@ class RegistryDetailsForm(forms.Form):
     registrant_contact_email = forms.CharField(
         label="Email address",
         help_text="Use a role-based email address, like itsupport@[yourorganisation].gov.uk",
-        validators=[EmailValidator("Please enter a valid email address")],
+        validators=[
+            EmailValidator(
+                "Enter the registrant's role-based email address in the correct format, like itsupport@organisation.gov.uk"
+            )
+        ],
     )
 
     def __init__(self, *args, **kwargs):
@@ -284,6 +327,12 @@ class RegistryDetailsForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        self.fields["registrant_role"].error_messages[
+            "required"
+        ] = "Enter the registrant's role name"
+        self.fields["registrant_contact_email"].error_messages[
+            "required"
+        ] = "Enter the registrant's role-based email address"
 
 
 class WrittenPermissionForm(forms.Form):
@@ -296,7 +345,9 @@ class WrittenPermissionForm(forms.Form):
         label="Does your registrant have proof of permission to apply for a .gov.uk domain name?",
         choices=CHOICES,
         widget=forms.RadioSelect,
-        error_messages={"required": "Please answer Yes or No"},
+        error_messages={
+            "required": "Select yes if your registrant has permission to apply for a .gov.uk domain name"
+        },
     )
 
     def __init__(self, *args, **kwargs):
@@ -349,7 +400,9 @@ class MinisterForm(forms.Form):
             help_text="If the requested domain name does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.",
             choices=(("yes", "Yes"), ("no", "No")),
             widget=forms.RadioSelect,
-            error_messages={"required": "Please answer Yes or No"},
+            error_messages={
+                "required": "Select yes if a central government minister requested the .gov.uk domain name"
+            },
         )
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -372,7 +425,7 @@ class UploadForm(forms.Form):
         label="Upload a file",
         help_text="We support JPEG, PNG or PDF files. The maximum upload size is %s."
         % filesizeformat(settings.MAX_UPLOAD_SIZE),
-        error_messages={"required": "Choose the file you want to upload."},
+        error_messages={"required": "Select the file you want to upload"},
         validators=[validate_file_infection],
     )
 
@@ -399,16 +452,10 @@ class UploadForm(forms.Form):
         ):
             if file.size > int(settings.MAX_UPLOAD_SIZE):
                 raise forms.ValidationError(
-                    ("Please keep filesize under %s. Current filesize %s")
-                    % (
-                        filesizeformat(settings.MAX_UPLOAD_SIZE),
-                        filesizeformat(file.size),
-                    )
+                    ("The selected file must be smaller than 10MB")
                 )
         else:
-            raise forms.ValidationError(
-                "Wrong file format. Please upload an image or PDF."
-            )
+            raise forms.ValidationError("The selected file must be a JPEG, PNG or PDF.")
 
         return file
 
@@ -452,3 +499,6 @@ class DomainPurposeForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
+        self.fields["domain_purpose"].error_messages[
+            "required"
+        ] = "Select what you plan to use the .gov.uk domain name for"

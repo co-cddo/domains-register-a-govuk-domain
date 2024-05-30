@@ -11,17 +11,17 @@ describe('Error messages for registry details', () => {
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
 
     // but display errors
-    cy.confirmProblem('This field is required', 2)
+    cy.confirmProblem("Enter the registrant's role name", 2)
 
     // enter just the registry
     cy.get('#id_registrant_role').clear().type('Littleton PC')
     cy.get('#id_submit').click()
-    cy.confirmProblem('This field is required', 1)
+    cy.confirmProblem("Enter the registrant's role-based email address", 1)
 
 
     // enter a bad email address
     cy.fillOutRegistryDetails('clerk', 'joe@example')
-    cy.confirmProblem('Please enter a valid email address')
+    cy.confirmProblem("Enter the registrant's role-based email address in the correct format, like itsupport@organisation.gov.uk")
 
     // enter valid details
     cy.fillOutRegistryDetails('clerk', 'joe@example.com')
