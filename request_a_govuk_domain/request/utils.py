@@ -2,12 +2,10 @@ import logging
 import os
 import uuid
 
-
 import clamd
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from notifications_python_client import NotificationsAPIClient
-
 
 from request_a_govuk_domain.request.models import RegistrantTypeChoices
 from request_a_govuk_domain.request.models.storage_util import select_storage
@@ -74,8 +72,6 @@ def route_number(session_data: dict) -> dict[str, int]:
     if registrant_type is not None:
         if registrant_type in ["parish_council", "village_council"]:
             route["primary"] = 1
-            if session_data.get("domain_confirmation") == "no":
-                route["secondary"] = 12
         elif registrant_type in ["central_government", "alb"]:
             route["primary"] = 2
             domain_purpose = session_data.get("domain_purpose")
@@ -106,7 +102,9 @@ def route_number(session_data: dict) -> dict[str, int]:
                 route["secondary"] = 10
         else:
             route["primary"] = 4
-
+    # Override the secondary route so we always go to domain selection if the confirmation is not present
+    if session_data.get("domain_confirmation") == "no":
+        route["secondary"] = 12
     return route
 
 
