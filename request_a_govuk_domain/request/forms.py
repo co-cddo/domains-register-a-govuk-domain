@@ -20,6 +20,25 @@ from ..layout.content import DomainsHTML
 from .utils import validate_file_infection
 
 
+def domain_validator(value: str):
+    """Reject domain names which do not meet the RFCs:
+    https://datatracker.ietf.org/doc/html/rfc1034#page-11,
+    https://www.rfc-editor.org/rfc/rfc2181#section-11
+    """
+    domain_input_regexp = re.compile(
+        "^[a-z][a-z0-9-]+[a-z0-9](\\.gov\\.uk)?$"
+    )  # based on RFC1035
+
+    if len(value) > 63:
+        raise ValidationError(
+            "The .gov.uk domain name must be between 3 and 63 characters"
+        )
+    if not domain_input_regexp.match(value):
+        raise ValidationError(
+            "The .gov.uk domain name must only include a to z, alphanumberic characters and special characters such as hyphens."
+        )
+
+
 class PhoneNumberValidator:
     phone_number_pattern = re.compile(r"^\s*\d(?:\s*\d){10}\s*$")
 
@@ -120,19 +139,14 @@ class DomainForm(forms.Form):
     domain_name = forms.CharField(
         label="Enter the .gov.uk domain name",
     )
-    domain_input_regexp = re.compile(
-        "^[a-z][a-z0-9-]+[a-z0-9](\\.gov\\.uk)?$"
-    )  # based on RFC1035
 
     def clean_domain_name(self) -> str:
         domain_typed: str = self.cleaned_data["domain_name"].strip().lower()
-        matched: re.Match | None = re.fullmatch(self.domain_input_regexp, domain_typed)
-        if matched is not None:
-            if ".gov.uk" not in domain_typed:
-                domain_typed = domain_typed + ".gov.uk"
-        else:
-            raise ValidationError("Please enter a valid domain name")
+        if ".gov.uk" not in domain_typed:
+            domain_typed = domain_typed + ".gov.uk"
 
+        # check for the domain length and regex
+        domain_validator(domain_typed)
         return domain_typed
 
     def __init__(self, *args, **kwargs):
