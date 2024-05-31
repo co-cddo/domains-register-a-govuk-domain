@@ -11,7 +11,7 @@ describe('Error messages for registrant type form', () => {
     cy.checkPageTitleIncludes('Who is this domain name for?')
 
     // but display errors
-    cy.confirmProblem('Please select from one of the choices')
+    cy.confirmProblem('Select the registrant\'s organisation type')
 
     // this time make a choice
     cy.chooseRegistrantType(1) // Central government -> Route 2

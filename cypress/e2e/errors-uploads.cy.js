@@ -8,16 +8,16 @@ describe('Errors when uploading files', () => {
     // don't select a file but click
     cy.get('.govuk-button#id_submit').click()
 
-    cy.confirmProblem('Choose the file you want to upload.')
+    cy.confirmProblem('Select the file you want to upload')
 
     // select a too big file
     cy.uploadDocument('large-image.png')
 
-    cy.confirmProblem('Please keep filesize under')
+    cy.confirmProblem('The selected file must be smaller than 10MB')
 
     // select not an image
     cy.uploadDocument('example.json')
-    cy.confirmProblem('Wrong file format.')
+    cy.confirmProblem('The selected file must be a JPEG, PNG or PDF.')
 
     // do it right this time
     cy.uploadDocument('exemption.png')
@@ -32,16 +32,16 @@ describe('Errors when uploading files', () => {
     // don't select a file but click
     cy.get('.govuk-button#id_submit').click()
 
-    cy.confirmProblem('Choose the file you want to upload.')
+    cy.confirmProblem('Select the file you want to upload')
 
     // select a too big file
     cy.uploadDocument('large-image.png')
 
-    cy.confirmProblem('Please keep filesize under')
+    cy.confirmProblem('The selected file must be smaller than 10MB')
 
     // select not an image
     cy.uploadDocument('example.json')
-    cy.confirmProblem('Wrong file format.')
+    cy.confirmProblem('The selected file must be a JPEG, PNG or PDF.')
 
     // do it right this time
     cy.uploadDocument('permission.png')
@@ -56,16 +56,16 @@ describe('Errors when uploading files', () => {
     // don't select a file but click
     cy.get('.govuk-button#id_submit').click()
 
-    cy.confirmProblem('Choose the file you want to upload.')
+    cy.confirmProblem('Select the file you want to upload')
 
     // select a too big file
     cy.uploadDocument('large-image.png')
 
-    cy.confirmProblem('Please keep filesize under')
+    cy.confirmProblem('The selected file must be smaller than 10MB')
 
     // select not an image
     cy.uploadDocument('example.json')
-    cy.confirmProblem('Wrong file format.')
+    cy.confirmProblem('The selected file must be a JPEG, PNG or PDF.')
 
     // do it right this time
     cy.uploadDocument('minister.png')

@@ -11,21 +11,21 @@ describe('Error messages for registrant details', () => {
     cy.checkPageTitleIncludes('Registrant details')
 
     // but display errors
-    cy.confirmProblem('This field is required', 4)
+    cy.confirmProblem("Enter the registrant's full name", 4)
 
     // enter just the registrant
     cy.get('#id_registrant_organisation').clear().type('Littleton PC')
     cy.get('#id_submit').click()
-    cy.confirmProblem('This field is required', 3)
+    cy.confirmProblem("Enter the registrant's full name", 3)
 
 
     // enter a bad phone number
     cy.fillOutRegistrantDetails('Littleton PC', 'Joe', '01 3332', 'joe@example.com')
-    cy.confirmProblem('Please enter a valid phone number')
+    cy.confirmProblem("Enter a telephone number, like 01632 960 001 or 07700 900 982")
 
     // enter a bad email address
     cy.fillOutRegistrantDetails('Littleton PC', 'Joe', '01225998877', 'joe@example')
-    cy.confirmProblem('Please enter a valid email address')
+    cy.confirmProblem("Enter an email address in the correct format, like name@example.co.uk")
 
     // enter valid details
     cy.fillOutRegistrantDetails('Littleton PC', 'Joe', '01225998877', 'joe@example.com')
