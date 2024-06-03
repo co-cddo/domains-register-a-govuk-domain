@@ -150,9 +150,7 @@ class RegistrantTypeForm(forms.Form):
 
 
 class DomainForm(forms.Form):
-    domain_name = forms.CharField(
-        label="Enter the .gov.uk domain name",
-    )
+    domain_name = forms.CharField(label="")
 
     def clean_domain_name(self) -> str:
         domain_typed: str = self.cleaned_data["domain_name"].strip().lower()
@@ -397,7 +395,7 @@ class MinisterForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields["minister"] = forms.ChoiceField(
             label=f"Has a central government minister requested the {self.domain_name} domain name?",
-            help_text="If the requested domain name does not meet the domain naming rules, it could still be approved if it has ministerial support. For example, the domain is needed to support the creation of a new government department or body.",
+            help_text="If the requested domain name does not meet the domain naming rules, it could still be approved if it has ministerial support.<br />For example, the domain is needed to support the creation of a new government department or body.",
             choices=(("yes", "Yes"), ("no", "No")),
             widget=forms.RadioSelect,
             error_messages={
@@ -423,8 +421,8 @@ class MinisterForm(forms.Form):
 class UploadForm(forms.Form):
     file = forms.FileField(
         label="Upload a file",
-        help_text="We support JPEG, PNG or PDF files. The maximum upload size is %s."
-        % filesizeformat(settings.MAX_UPLOAD_SIZE),
+        help_text="We support JPEG, PNG or PDF files. The maximum upload size is %sMB."
+        % filesizeformat(settings.MAX_UPLOAD_SIZE).split(".")[0],
         error_messages={"required": "Select the file you want to upload"},
         validators=[validate_file_infection],
     )
@@ -484,7 +482,7 @@ class DomainPurposeForm(forms.Form):
         choices=DOMAIN_PURPOSES,
         widget=forms.RadioSelect,
         label="Why do you want a .gov.uk domain name?",
-        help_text="Tell us what you plan to use the .gov.uk domain name for. Select one option",
+        help_text="Tell us what you plan to use the .gov.uk domain name for.<br />Select one option",
         error_messages={"required": "Please select from one of the choices"},
     )
 
