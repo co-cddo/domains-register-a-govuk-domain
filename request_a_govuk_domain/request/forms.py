@@ -367,7 +367,9 @@ class ExemptionForm(forms.Form):
             name.",
         choices=(("yes", "Yes"), ("no", "No")),
         widget=forms.RadioSelect,
-        error_messages={"required": "Please answer Yes or No"},
+        error_messages={
+            "required": "Select yes if your registrant has permission to apply for a .gov.uk domain name"
+        },
     )
 
     def __init__(self, *args, **kwargs):
