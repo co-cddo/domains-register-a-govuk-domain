@@ -11,7 +11,7 @@ describe('Error messages for the Exemption form', () => {
     cy.checkPageTitleIncludes('Does your registrant have an exemption')
 
     // but display errors
-    cy.confirmProblem('Please answer Yes or No')
+    cy.confirmProblem('Select yes if your registrant has permission to apply for a .gov.uk domain name')
 
     // this time make a choice
     cy.selectYesOrNo('exemption', 'yes')
