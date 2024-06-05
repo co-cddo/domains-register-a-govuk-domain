@@ -10,7 +10,11 @@ from django.contrib.sessions.backends.db import SessionStore
 from notifications_python_client import NotificationsAPIClient
 
 from request_a_govuk_domain.request.models import RegistrantTypeChoices
+from request_a_govuk_domain.request.models.notification_response_id import (
+    NotificationResponseID,
+)
 from request_a_govuk_domain.request.models.storage_util import select_storage
+
 
 logger = logging.getLogger(__name__)
 
@@ -246,6 +250,30 @@ def translate_notify_missing_service_id_error(e):
         raise ValueError("Notify API key seems invalid") from e
 
 
+def get_notification_client() -> NotificationsAPIClient | None:
+    """
+    Get a NotificationsAPIClient
+
+    :return: NotificationsAPIClient if NOTIFY_API_KEY is present, None otherwise
+    """
+    notify_api_key = get_env_variable("NOTIFY_API_KEY")
+
+    # If api key is found then create and return NotificationsAPIClient, else log that it was not found
+    # This check is necessary for github actions ( where "NOTIFY_API_KEY" is not set and during build all the
+    # cypress tests would fail where they reach Application submitted page, where the application will try to
+    # send mail ). It is also needed for local environment if "NOTIFY_API_KEY" is not set
+    if notify_api_key:
+        try:
+            notifications_client = NotificationsAPIClient(notify_api_key)
+            return notifications_client
+        except Exception as e:
+            translate_notify_missing_service_id_error(e)
+            raise e
+    else:
+        logger.info("Notify API key not found, hence no interation with Notify API")
+        return None
+
+
 def send_email(email_address: str, template_id: str, personalisation: dict) -> None:
     """
     Method to send email using Notify API
@@ -254,27 +282,18 @@ def send_email(email_address: str, template_id: str, personalisation: dict) -> N
     param: template_id: Template id of the Email Template
     param: personalisation: Dictionary of Personalisation data
     """
-    notify_api_key = get_env_variable("NOTIFY_API_KEY")
+    notifications_client = get_notification_client()
 
-    # If api key is found then send email, else log that it was not found
-    # This check is necessary for github actions ( where "NOTIFY_API_KEY" is not set and during build all the
-    # cypress tests would fail where they reach Application submitted page, where the application will try to
-    # send mail ). It is also needed for local environment if "NOTIFY_API_KEY" is not set
-    if notify_api_key:
-        try:
-            notifications_client = NotificationsAPIClient(notify_api_key)
-            notifications_client.send_email_notification(
-                email_address=email_address,
-                template_id=template_id,
-                personalisation=personalisation,
-            )
-        except Exception as e:
-            translate_notify_missing_service_id_error(e)
-            raise e
-    else:
-        if get_env_variable("ENVIRONMENT") == "prod":
-            raise ValueError("Notify API key not found in Production environment")
-        logger.info("Not sending email as Notify API key not found")
+    if notifications_client:
+        response = notifications_client.send_email_notification(
+            email_address=email_address,
+            template_id=template_id,
+            personalisation=personalisation,
+        )
+
+        # Save the notification response id, to track it's status ( failed/delivered ) later asynchronously
+        notification_response_id = NotificationResponseID(id=response["id"])
+        notification_response_id.save()
 
 
 def personalisation(

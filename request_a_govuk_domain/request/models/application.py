@@ -15,6 +15,10 @@ class ApplicationStatus(models.TextChoices):
     REJECTED = "rejected", _("Rejected")
     IN_PROGRESS = "in_progress", _("In Progress")
     NEW = "new", _("New")
+    FAILED_CONFIRMATION_EMAIL = "failed_confirmation_email", _(
+        "Failed Confirmation Email"
+    )
+    FAILED_DECISION_EMAIL = "failed_decision_email", _("Failed Decision Email")
 
 
 class Application(models.Model):
@@ -26,7 +30,7 @@ class Application(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    reference = models.CharField(max_length=REF_NUM_LENGTH, null=False)
+    reference = models.CharField(max_length=REF_NUM_LENGTH, null=False, unique=True)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     time_submitted = models.DateTimeField(auto_now_add=True)
     time_decided = models.DateTimeField(null=True)
@@ -34,7 +38,7 @@ class Application(models.Model):
     status = models.CharField(
         choices=ApplicationStatus.choices,
         default=ApplicationStatus.NEW,
-        max_length=11,
+        max_length=25,
     )
     # This is going to lead to duplicate persons and organisations. It's fine
     # for now pending working out what our intention is. We're not going to
