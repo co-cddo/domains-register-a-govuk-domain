@@ -414,3 +414,65 @@ Cypress.Commands.add('goToConfirmation', (route=1) => {
     cy.checkPageTitleIncludes('Check your answers')
   }
 })
+
+// ====== admin actions ======
+
+Cypress.Commands.add('logInAsAdmin', () => {
+  cy.visit('/admin')
+  cy.get('#id_username').clear().type('admin')
+  cy.get('#id_password').clear().type('ilovedomains')
+  cy.get('input[type=submit]').click()
+  cy.checkPageTitleIncludes('Site administration')
+})
+
+
+Cypress.Commands.add('deleteAllApplications', () => {
+  cy.visit('/admin')
+  cy.get('#id_username').clear().type('admin')
+  cy.get('#id_password').clear().type('ilovedomains')
+  cy.get('input[type=submit]').click()
+  cy.checkPageTitleIncludes('Site administration')
+  cy.get('a[href="/admin/request/application/"]').eq(0).click()
+  cy.get('body')
+    .then(body => {
+      if (body.find('#action-toggle').length) {
+        cy.get('#action-toggle').click()
+        cy.get('.actions select').select('delete_selected')
+        cy.get('button[name=index]').click()
+        cy.get('input[type=submit]').click() // confirm
+      }
+      cy.get('button[type=submit]').click() // logout
+    })
+})
+
+
+Cypress.Commands.add('checkApplicationIsOnBackend', app => {
+  // This function should be run on the application-complete page
+
+  // First, retrieve the application reference
+  cy.get('.govuk-panel').find('strong').invoke('text').as('ref')
+  // Then check it's there in the admin panel, with the correct data
+  cy.get('@ref').then(ref => {
+    cy.logInAsAdmin()
+    cy.get('a[href="/admin/request/application/"]').eq(0).click()
+    cy.get('a').contains(ref.trim()).click()
+    if (app.domain) cy.get('#id_domain_name').should('have.value', app.domain)
+    if (app.registrar_org) cy.get('#id_registrar_org option[selected]').should('include.text', app.registrar_org)
+    if (app.registrant_org) cy.get('#id_registrant_org option[selected]').should('include.text', app.registrant_org)
+    if (app.minister) {
+      cy.get('label[for=id_ministerial_request_evidence]').next('p').should('include.text', 'Change:')
+    } else {
+      cy.get('label[for=id_ministerial_request_evidence]').next('p').should('not.exist')
+    }
+    if (app.written_permission) {
+      cy.get('label[for=id_written_permission_evidence]').next('p').should('include.text', 'Change:')
+    } else {
+      cy.get('label[for=id_written_permission_evidence]').next('p').should('not.exist')
+    }
+    if (app.exemption) {
+      cy.get('label[for=id_policy_exemption_evidence]').next('p').should('include.text', 'Change:')
+    } else {
+      cy.get('label[for=id_policy_exemption_evidence]').next('p').should('not.exist')
+    }
+  })
+})

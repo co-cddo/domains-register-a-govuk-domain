@@ -5,6 +5,8 @@ import uuid
 import clamd
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import UploadedFile
+from django.contrib.sessions.backends.db import SessionStore
 from notifications_python_client import NotificationsAPIClient
 
 from request_a_govuk_domain.request.models import RegistrantTypeChoices
@@ -27,7 +29,7 @@ DOMAIN_PURPOSE_TRANSLATION_MAP = {
 }
 
 
-def handle_uploaded_file(file, session_id):
+def handle_uploaded_file(file: UploadedFile, session_id: str | None) -> str | None:
     """
     How and where to save a file that the user has uploaded
 
@@ -35,6 +37,8 @@ def handle_uploaded_file(file, session_id):
     :param session_id for the current session
     :return: the name of the file as store on the server
     """
+    if file.name is None:
+        return None
 
     _, file_extension = os.path.splitext(file.name)
 
@@ -132,22 +136,18 @@ def add_value_to_session(request, field_name: str, field_value) -> None:
     request.session["registration_data"] = registration_data
 
 
-def remove_from_session(session: dict, field_names: list[str]) -> dict:
+def remove_from_session(session: SessionStore, field_names: list[str]) -> dict:
     """
     Remove fields from a session, for instance when an uploaded
     file is removed
     """
-    if session and session.get("registration_data"):
+    rd = session.get("registration_data")
+    if session and session.session_key and rd:
         for field_name in field_names:
-            if session["registration_data"].get(field_name) is not None:
-                if field_name.endswith("uploaded_filename"):
-                    # remove the file associated
-                    select_storage().delete(
-                        session["registration_data"].get(field_name)
-                    )
+            if rd.get(field_name) is not None:
                 del session["registration_data"][field_name]
 
-        return session["registration_data"]
+        return rd
     else:
         return {}
 

@@ -302,7 +302,6 @@ class UploadRemoveView(RedirectView):
                 self.page_type + "_file_uploaded_url",
             ],
         )
-        # TODO: delete the files
         return super().get_redirect_url(*args, **kwargs)
 
 

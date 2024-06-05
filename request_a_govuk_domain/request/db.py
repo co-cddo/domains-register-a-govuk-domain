@@ -5,7 +5,6 @@ This module provides functions for interacting with the database in Register App
 """
 
 import logging
-
 from django.db import transaction
 
 from request_a_govuk_domain.request.models import (
@@ -20,10 +19,11 @@ from request_a_govuk_domain.request.models import (
 
 from .utils import route_number
 
+
 logger = logging.getLogger(__name__)
 
 
-def sanitise_registration_data(rd: dict) -> dict:
+def sanitise_registration_data(rd: dict, session_id: str) -> dict:
     """
     Remove the fields in registration data that aren't relevant to the
     answers the user has entered
@@ -43,48 +43,35 @@ def sanitise_registration_data(rd: dict) -> dict:
     :param rd: a registration data dictionary
     :return: the sanitised registration data
     """
+
+    def clear_upload(name: str) -> None:
+        rd[name] = False
+        rd.pop(f"{name}_file_uploaded_filename", None)
+        rd.pop(f"{name}_file_original_filename", None)
+        rd.pop(f"{name}_file_uploaded_url", None)
+
     route = route_number(rd)
     if route["primary"] == 1:
         # If the final route taken is 1 (parish/neighbourhood council), then we don't need
         # data collected via other routes: domain purpose, exemption, written permission, minister support.
         rd.pop("domain_purpose", None)
-        rd.pop("exemption", None)
-        rd.pop("exemption_file_uploaded_filename", None)
-        rd.pop("exemption_file_original_filename", None)
-        rd.pop("exemption_file_uploaded_url", None)
-        rd.pop("written_permission", None)
-        rd.pop("written_permission_file_uploaded_filename", None)
-        rd.pop("written_permission_file_original_filename", None)
-        rd.pop("written_permission_file_uploaded_url", None)
-        rd.pop("minister", None)
-        rd.pop("minister_file_uploaded_filename", None)
-        rd.pop("minister_file_original_filename", None)
-        rd.pop("minister_file_uploaded_url", None)
+        clear_upload("exemption")
+        clear_upload("written_permission")
+        clear_upload("minister")
     elif route["primary"] == 2 and route["secondary"] == 5:
         # If the final route taken is 2-5 (central gov, email-only), then we don't need
         # data collected via other routes: exemption.
-        rd.pop("exemption", None)
-        rd.pop("exemption_file_uploaded_filename", None)
-        rd.pop("exemption_file_original_filename", None)
-        rd.pop("exemption_file_uploaded_url", None)
+        clear_upload("exemption")
     elif route["primary"] == 3:
         # If the final route taken is 3 (county council, fire service, etc), then we don't need
         # data collected via other routes: domain_purpose, exemption, minister support.
         rd.pop("domain_purpose", None)
-        rd.pop("exemption", None)
-        rd.pop("exemption_file_uploaded_filename", None)
-        rd.pop("exemption_file_original_filename", None)
-        rd.pop("exemption_file_uploaded_url", None)
-        rd.pop("minister", None)
-        rd.pop("minister_file_uploaded_filename", None)
-        rd.pop("minister_file_original_filename", None)
-        rd.pop("minister_file_uploaded_url", None)
+        clear_upload("exemption")
+        clear_upload("minister")
     if route.get("tertiary", 0) == 8:
         # If the final route taken doen't include minister support
         # then remove any possible minister support data previously specified.
-        rd.pop("minister_file_uploaded_filename", None)
-        rd.pop("minister_file_original_filename", None)
-        rd.pop("minister_file_uploaded_url", None)
+        clear_upload("minister")
     rd.pop("domain_confirmation", None)
 
     return rd
@@ -101,7 +88,7 @@ def save_data_in_database(reference, request):
     :param request: Request object
     """
     registration_data = sanitise_registration_data(
-        request.session.get("registration_data", {})
+        request.session.get("registration_data", {}), request.session.session_key
     )
 
     try:
