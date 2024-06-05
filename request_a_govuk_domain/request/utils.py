@@ -136,20 +136,8 @@ def is_valid_session_data(rd: dict) -> bool:
         or not_str("registrant_contact_email")
     ):
         return False
-    if not rd.get("registrant_type") in [
-        "central_government",
-        "alb",
-        "parish_council",
-        "local_authority",
-        "fire_service",
-        "village_council",
-        "combined_authority",
-        "pcc",
-        "joint_authority",
-        "joint_committee",
-        "psb_group",
-        "psb_profession",
-    ]:
+    possible_registrant_types = [choice[0] for choice in RegistrantTypeChoices.choices]
+    if not rd.get("registrant_type") in possible_registrant_types:
         return False
 
     # Minister. Must be "yes" or "no" on route 2 and 8, otherwise None
