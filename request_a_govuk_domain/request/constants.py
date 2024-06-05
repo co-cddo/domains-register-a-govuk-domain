@@ -16,4 +16,6 @@ NOTIFY_TEMPLATE_ID_MAP = {
     "rejection-2-5": "7afceecd-cdc2-469c-93a5-77f6f15a3873",
     "rejection-2-7": "305d6ef1-dbb6-47f8-b3de-6965f9029058",
     "rejection-3": "39cac762-7d52-46fd-902e-a1c3fdb332cf",
+    "email-failure-non-prod": "3229afa5-7e72-48d8-860a-4ef9f230790c",
+    "email-failure-prod": "29dfe2ba-1fb8-4424-8d08-c10d141dff42",
 }
