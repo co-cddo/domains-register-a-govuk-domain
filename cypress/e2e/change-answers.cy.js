@@ -97,6 +97,7 @@ describe('Changing answers at the end of the process', () => {
     cy.checkPageTitleIncludes('Does your registrant have proof of permission')
   })
 
+
   it('lets you change your answer about whether you have minister approval', () => {
     cy.goToConfirmation(7)
     cy.get("a[href='/minister']").eq(0).click()
@@ -127,6 +128,7 @@ describe('Changing answers at the end of the process', () => {
       exemption: true
     })
   })
+
 
   it('lets you change your answer about whether you have permission', () => {
     cy.goToConfirmation(7)
@@ -210,6 +212,7 @@ describe('Changing answers at the end of the process', () => {
     cy.checkPageTitleIncludes('Why do you want a .gov.uk domain name?')
   })
 
+
   it('doesn\'t show the back-to-answers button when changing registry details', () => {
     cy.goToConfirmation(7)
     cy.get("a[href='/registry-details']").eq(0).click()
@@ -226,6 +229,7 @@ describe('Changing answers at the end of the process', () => {
     cy.checkPageTitleIncludes('Check your answers')
     cy.summaryShouldHave(10, ['Clerk', 'jim@example.com'])
   })
+
 
   it('doesn\'t ask for data again, even if you\'ve changed routes (route 5)', () => {
     cy.goToConfirmation(3)
