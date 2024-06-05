@@ -17,13 +17,13 @@ from request_a_govuk_domain.request.models import (
     Review,
 )
 
-from .utils import route_number
+from .utils import route_number, is_valid_session_data
 
 
 logger = logging.getLogger(__name__)
 
 
-def sanitise_registration_data(rd: dict, session_id: str) -> dict:
+def sanitised_registration_data(rd: dict, session_id: str) -> dict:
     """
     Remove the fields in registration data that aren't relevant to the
     answers the user has entered
@@ -45,7 +45,7 @@ def sanitise_registration_data(rd: dict, session_id: str) -> dict:
     """
 
     def clear_upload(name: str) -> None:
-        rd[name] = False
+        rd.pop(name, None)
         rd.pop(f"{name}_file_uploaded_filename", None)
         rd.pop(f"{name}_file_original_filename", None)
         rd.pop(f"{name}_file_uploaded_url", None)
@@ -69,9 +69,12 @@ def sanitise_registration_data(rd: dict, session_id: str) -> dict:
         clear_upload("exemption")
         clear_upload("minister")
     if route.get("tertiary", 0) == 8:
-        # If the final route taken doen't include minister support
-        # then remove any possible minister support data previously specified.
-        clear_upload("minister")
+        # Route 8 is when user doesn't have minister support.
+        # In that case remove uploaded data
+        rd["minister"] = "no"
+        rd.pop("minister_file_uploaded_filename", None)
+        rd.pop("minister_file_original_filename", None)
+        rd.pop("minister_file_uploaded_url", None)
     rd.pop("domain_confirmation", None)
 
     return rd
@@ -87,9 +90,16 @@ def save_data_in_database(reference, request):
     :param reference: Reference number of the application
     :param request: Request object
     """
-    registration_data = sanitise_registration_data(
-        request.session.get("registration_data", {}), request.session.session_key
+
+    session_data = request.session.get("registration_data", {})
+    registration_data = sanitised_registration_data(
+        session_data, request.session.session_key
     )
+
+    if not is_valid_session_data(registration_data):
+        raise ValueError(
+            "Invalid session data found. Failed to create a valid application from the data collected from the user"
+        )
 
     try:
         with transaction.atomic():

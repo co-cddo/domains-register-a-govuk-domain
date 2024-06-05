@@ -112,6 +112,88 @@ def route_number(session_data: dict) -> dict[str, int]:
     return route
 
 
+def is_valid_session_data(rd: dict) -> bool:
+    """
+    check that registration data contained in a session dictionary is correct or note.
+    Depending on the route taken by the users, some session fields should be present or not,
+    or have specific value.
+    :param rd: registration data as a dictionary
+    :return: true is the data is valid, false otherwise
+    """
+
+    def not_str(field_name) -> bool:
+        return not isinstance(rd.get(field_name), str)
+
+    route = route_number(rd)
+    if (
+        not_str("domain_name")
+        or not_str("registrar_name")
+        or not_str("registrant_organisation")
+        or not_str("registrant_full_name")
+        or not_str("registrant_phone")
+        or not_str("registrant_email")
+        or not_str("registrant_role")
+        or not_str("registrant_contact_email")
+    ):
+        return False
+    if not rd.get("registrant_type") in [
+        "central_government",
+        "alb",
+        "parish_council",
+        "local_authority",
+        "fire_service",
+        "village_council",
+        "combined_authority",
+        "pcc",
+        "joint_authority",
+        "joint_committee",
+        "psb_group",
+        "psb_profession",
+    ]:
+        return False
+
+    # Minister. Must be "yes" or "no" on route 2 and 8, otherwise None
+    if route.get("primary") == 2:
+        if rd.get("minister") not in ["yes", "no"]:
+            return False
+        if rd.get("minister") == "yes" and (
+            not_str("minister_file_uploaded_filename")
+            or not_str("minister_file_original_filename")
+            or not_str("minister_file_uploaded_url")
+        ):
+            return False
+    else:
+        if rd.get("minister") is not None:
+            return False
+
+    # Exemption
+    if route.get("primary") == 2 and route.get("secondary") == 7:
+        if rd.get("exemption") != "yes":
+            return False
+        if (
+            not_str("exemption_file_uploaded_filename")
+            or not_str("exemption_file_original_filename")
+            or not_str("exemption_file_uploaded_url")
+        ):
+            return False
+
+    # written permission
+    if (
+        route.get("primary") == 3
+        or (route.get("primary") == 2 and route.get("secondary") == 5)
+        or (route.get("primary") == 2 and route.get("secondary") == 7)
+    ):
+        if rd.get("written_permission") != "yes":
+            return False
+        if (
+            not_str("written_permission_file_uploaded_filename")
+            or not_str("written_permission_file_original_filename")
+            or not_str("written_permission_file_uploaded_url")
+        ):
+            return False
+    return True
+
+
 def add_to_session(form, request, field_names: list[str]) -> dict:
     """
     Common utility method to clean the list of fields and save them in the session. This is to save boilerplate code.
