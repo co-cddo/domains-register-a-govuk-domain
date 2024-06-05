@@ -17,7 +17,7 @@ from request_a_govuk_domain.request.models import (
     Review,
 )
 
-from .utils import route_number, delete_uploaded_file
+from .utils import route_number
 
 
 logger = logging.getLogger(__name__)
@@ -45,7 +45,6 @@ def sanitise_registration_data(rd: dict, session_id: str) -> dict:
     """
 
     def clear_upload(name: str) -> None:
-        delete_uploaded_file(rd, f"{name}_file_uploaded_filename", session_id)
         rd[name] = False
         rd.pop(f"{name}_file_uploaded_filename", None)
         rd.pop(f"{name}_file_original_filename", None)

@@ -145,30 +145,11 @@ def remove_from_session(session: SessionStore, field_names: list[str]) -> dict:
     if session and session.session_key and rd:
         for field_name in field_names:
             if rd.get(field_name) is not None:
-                if field_name.endswith("uploaded_filename"):
-                    delete_uploaded_file(rd, field_name, session.session_key)
                 del session["registration_data"][field_name]
 
         return rd
     else:
         return {}
-
-
-def delete_uploaded_file(rd: dict, field_name: str, session_dir: str) -> None:
-    filename = rd.get(field_name)
-    if filename is not None:
-        storage = select_storage()
-        if not settings.IS_AWS:
-            file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        else:
-            file_path = filename
-        storage.delete(file_path)
-
-        # if there are no more files in the session folder then remove it
-        if storage.exists(session_dir):
-            files, dirs = storage.listdir(session_dir)
-            if len(files) == 0 and len(dirs) == 0:
-                storage.delete(session_dir)
 
 
 def get_env_variable(key: str, default=None) -> str:
