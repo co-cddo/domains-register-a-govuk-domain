@@ -11,7 +11,12 @@
             }
 
             document.addEventListener('DOMContentLoaded', function () {
-                document.querySelector('.filter_selection').addEventListener('change', handle_change, false);
+                item_list = document.querySelectorAll('.filter_selection');
+                var _array = [...item_list];
+                _array.forEach(item => {
+                    item.addEventListener('change', handle_change, false);
+                });
+
             }, false)
 
         </script>

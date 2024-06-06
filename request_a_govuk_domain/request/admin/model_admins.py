@@ -3,7 +3,6 @@ from zoneinfo import ZoneInfo
 import django.db.models.fields.files
 import markdown
 from django.contrib import admin, messages
-from django.contrib.admin import ChoicesFieldListFilter
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.http import HttpResponseRedirect, FileResponse
@@ -26,15 +25,6 @@ class CustomAdminFileWidget(AdminFileWidget):
     """
 
     template_name = "admin/clearable_file_input.html"
-
-
-class CustomChoicesFieldListFilter(ChoicesFieldListFilter):
-    """
-    Override the default template, so we can use a function for the list change event
-    and use that hash in the allowed hashes for the CSP list
-    """
-
-    template = "admin/dropdown_filter.html"
 
 
 class DomainRegistrationUserAdmin(UserAdmin):
@@ -79,12 +69,12 @@ class ReviewAdmin(admin.ModelAdmin):
         "get_last_updated",
         "get_owner",
     )
-    list_filter = [
-        ("application__status", CustomChoicesFieldListFilter),
-        ("application__owner", CustomChoicesFieldListFilter),
-        ("application__registrar_org", CustomChoicesFieldListFilter),
-        ("application__registrant_org", CustomChoicesFieldListFilter),
-    ]
+    list_filter = (
+        "application__status",
+        "application__owner",
+        "application__registrar_org",
+        "application__registrant_org",
+    )
 
     def generate_download_link(self, obj, field_name, link_text):
         link = reverse("admin:review_download_file", args=[obj.pk, field_name])
@@ -377,12 +367,12 @@ class ApplicationAdmin(admin.ModelAdmin):
         "last_updated_local_time",
         "owner",
     ]
-    list_filter = [
-        ("status", CustomChoicesFieldListFilter),
-        ("owner", CustomChoicesFieldListFilter),
-        ("registrar_org", CustomChoicesFieldListFilter),
-        ("registrant_org", CustomChoicesFieldListFilter),
-    ]
+    list_filter = (
+        "status",
+        "owner",
+        "registrar_org",
+        "registrant_org",
+    )
     formfield_overrides = {
         django.db.models.fields.files.FileField: {"widget": CustomAdminFileWidget},
     }
