@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load govuk_frontend_django %}
+
+{% block title %}Cookies - Get approval to use a .gov.uk domain name - GOV.UK{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">
+      Cookies
+    </h1>
+    <p class="govuk-body">
+      Small files (known as 'cookies') are put onto your computer to collect information about how you browse the site.
+    </p>
+    <p class="govuk-body">Cookies are used to:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>measure how you use the website so it can be updated and improved based on your needs</li>
+      <li>remember the notifications you've seen so that you're not shown them again</li>
+    </ul>
+    <div class="govuk-inset-text">
+      Get approval service cookies aren't used to identify you personally.
+    </div>
+
+    <p class="govuk-body">
+      You'll normally see a message on the site before a cookie is stored on your computer.
+    </p>
+
+    <p class="govuk-body">
+      Find out more about <a href="https://www.aboutcookies.org/" target="new" class="govuk-link">how to manage cookies (opens in a new tab)</a> .
+    </p>
+
+    <p class="govuk-body">
+      We use cookies to make Get approval to use a .gov.uk domain name work and collect information about how you use our service.
+    </p>
+
+    <p class="govuk-body">
+      Essential cookies keep your information secure while you use Get approval service. We do not need to ask permission to use them.
+    </p>
+
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Essential cookies</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Name</th>
+          <th scope="col" class="govuk-table__header">Purpose</th>
+          <th scope="col" class="govuk-table__header">Expires</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">_getapproval_session</th>
+          <td class="govuk-table__cell">Used to save your session data</td>
+          <td class="govuk-table__cell">30 mins</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">cookie_policy</th>
+          <td class="govuk-table__cell">Saves your cookie consent settings</td>
+          <td class="govuk-table__cell">1 year</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="govuk-heading-l">
+      Government services and external websites
+    </h3>
+    <p class="govuk-body">
+      Most services we link to are run by different government departments, or external websites for example Government Digital Service (GDS) or the Nominet website. These services may set additional cookies and, if so, will have their own cookies policy.
+    </p>
+
+    {% comment %}
+      <h3 class="govuk-heading-l">
+        Measuring website usage (Google Analytics)
+      </h3>
+
+      <p class="govuk-body">
+        With your permission, we use Google Analytics to collect data about how you use Get approval service. This information helps us to improve our service.
+      </p>
+
+      <p class="govuk-body">Google Analytics stores information about:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>the pages you visit - how long you spend on each page</li>
+        <li>how you got to the site</li>
+        <li>what you click on while you're visiting the site</li>
+        <li>any errors you see while using</li>
+      </ul>
+      <p class="govuk-body">
+        With your permission, we use Google Analytics to collect data about how you use Get approval service. This information helps us to improve our service.
+      </p>
+      <p class="govuk-body">
+        We don't collect or store your personal information (eg your name or address) so this information can't be used to identify who you are.
+      </p>
+      <p class="govuk-body">
+        Google isn't allowed to use or share our analytics data.
+      </p>
+
+      <table class="govuk-table">
+        <caption class="govuk-table__caption govuk-table__caption--m">Analytics cookies (optional)</caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Name</th>
+            <th scope="col" class="govuk-table__header">Purpose</th>
+            <th scope="col" class="govuk-table__header">Expires</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">_ga</th>
+            <td class="govuk-table__cell">Checks if you've visited Get approval before. This helps us count how many people visit our site.	</td>
+            <td class="govuk-table__cell">2 years</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">wsc</th>
+            <td class="govuk-table__cell">Stores session data</td>
+            <td class="govuk-table__cell">When you close your browser</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">_gid</th>
+            <td class="govuk-table__cell">Checks if you've visited Get approval service before. This helps us count how many people visit our site.	</td>
+            <td class="govuk-table__cell">24 hours</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <form class="form" action="cookies-updated" id="mainForm" method="post">
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h1 class="govuk-fieldset__heading">
+                Do you want to accept analytics cookies?
+              </h1>
+            </legend>
+            <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="cookies" name="cookies" type="radio" value="yes">
+                <label class="govuk-label govuk-radios__label" for="cookies">
+                  Yes
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="cookies-2" name="cookies" type="radio" value="no">
+                <label class="govuk-label govuk-radios__label" for="cookies-2">
+                  No
+                </label>
+            </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-button-group">
+          <button type="submit" class="govuk-button" data-module="govuk-button">
+            Save cookie preferences
+          </button>
+        </div>
+      </form>
+    {% endcomment %}
+  </div>
+</div>
+{% endblock %}
