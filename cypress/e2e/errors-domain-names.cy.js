@@ -46,7 +46,7 @@ describe('Bad domain names', () => {
     cy.confirmProblem('The .gov.uk domain name must only include a to z, alphanumberic characters and special characters such as hyphens.')
 
     cy.enterDomainName('b.gov.uk')
-    cy.confirmProblem('The .gov.uk domain name must only include a to z, alphanumberic characters and special characters such as hyphens.')
+    cy.confirmProblem('The .gov.uk domain name must be between 3 and 63 characters')
   })
 
   it('rejects bad domain names but accepts valid retry', () => {
