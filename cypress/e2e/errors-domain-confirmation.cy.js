@@ -8,7 +8,7 @@ describe('Error messages for domain confirmation form', () => {
 
     // just click, don't chose
     cy.get('.govuk-button#id_submit').click()
-    cy.confirmProblem('Please answer Yes or No')
+    cy.confirmProblem('Select yes if the requested .gov.uk domain name is correct')
 
     // try again and succeed
     cy.selectYesOrNo('domain_confirmation', 'yes')

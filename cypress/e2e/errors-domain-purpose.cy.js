@@ -11,7 +11,7 @@ describe('Error messages for the domain purpose form', () => {
     cy.checkPageTitleIncludes('Why do you want a .gov.uk domain name?')
 
     // but display errors
-    cy.confirmProblem('Please select from one of the choices')
+    cy.confirmProblem('Select what you plan to use the .gov.uk domain name for')
 
     // this time make a choice
     cy.chooseDomainPurpose(1)

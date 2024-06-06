@@ -11,7 +11,7 @@ describe('Error messages for the Minister form', () => {
     cy.checkPageTitleIncludes('Has a central government minister requested the foobar.gov.uk domain name?')
 
     // but display errors
-    cy.confirmProblem('Please answer Yes or No')
+    cy.confirmProblem('Select yes if a central government minister requested the .gov.uk domain name')
 
     // this time make a choice
     cy.selectYesOrNo('minister', 'yes')

@@ -2,6 +2,31 @@ import './base.cy'
 
 describe('Changing answers at the end of the process', () => {
 
+  it('does not keep uploaded documents if they are not needed at the end', () => {
+    // Start with route 2-7 and upload all 3 docs
+    cy.goToConfirmation(7)
+
+    // Change to route 1 by changing resitrant type
+    cy.get("a[href='/registrant-type']").eq(0).click()
+
+    // finish route 1 and check that the previously uploaded docs aren't visible to the admin
+    cy.chooseRegistrantType(3) // Parish or community council -> route 1
+    cy.enterDomainName('something-pc')
+    cy.selectYesOrNo('domain_confirmation', 'yes')
+    cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
+    cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
+    cy.get('#button-continue').click()
+    cy.checkApplicationIsOnBackend({
+      domain: 'something-pc.gov.uk',
+      registrar_org: 'WeRegister',
+      registrant_org: 'HMRC',
+      minister: false,
+      written_permission: false,
+      exemption: false
+    })
+  })
+
+
   it('lets you change registry details', () => {
     cy.goToConfirmation(7)
     cy.get("a[href='/registry-details']").eq(0).click()
@@ -87,6 +112,21 @@ describe('Changing answers at the end of the process', () => {
 
     // and see the new page
     cy.checkPageTitleIncludes('Registrant details')
+    cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
+    cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
+    cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
+    cy.checkPageTitleIncludes('Check your answers')
+    cy.get('#button-continue').click()
+
+    cy.checkPageTitleIncludes('Application submitted')
+    cy.checkApplicationIsOnBackend({
+      domain: 'something-pc.gov.uk',
+      registrar_org: 'WeRegister',
+      registrant_org: 'HMRC',
+      minister: false,
+      written_permission: true,
+      exemption: true
+    })
   })
 
 
@@ -149,7 +189,7 @@ describe('Changing answers at the end of the process', () => {
     cy.get('#id_registrant_phone').clear().type('2384')
     cy.get('#id_back_to_answers').click()
     cy.checkPageTitleIncludes('Registrant details')
-    cy.confirmProblem('Please enter a valid phone number')
+    cy.confirmProblem('Enter a telephone number, like 01632 960 001 or 07700 900 982')
     cy.get('#id_registrant_phone').clear().type('01233456876')
     cy.get('#id_back_to_answers').click()
     cy.checkPageTitleIncludes('Check your answers')
@@ -172,6 +212,7 @@ describe('Changing answers at the end of the process', () => {
     cy.checkPageTitleIncludes('Why do you want a .gov.uk domain name?')
   })
 
+
   it('doesn\'t show the back-to-answers button when changing registry details', () => {
     cy.goToConfirmation(7)
     cy.get("a[href='/registry-details']").eq(0).click()
@@ -188,6 +229,7 @@ describe('Changing answers at the end of the process', () => {
     cy.checkPageTitleIncludes('Check your answers')
     cy.summaryShouldHave(10, ['Clerk', 'jim@example.com'])
   })
+
 
   it('doesn\'t ask for data again, even if you\'ve changed routes (route 5)', () => {
     cy.goToConfirmation(3)

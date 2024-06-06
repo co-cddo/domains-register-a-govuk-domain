@@ -1,4 +1,4 @@
-{% load static i18n govuk_frontend_django %}<!DOCTYPE html>
+{% load static i18n govuk_frontend_django csp %}<!DOCTYPE html>
 <html lang="en" class="govuk-template">
 
 <head>
@@ -24,10 +24,11 @@
 </head>
 
 <body class="govuk-template__body ">
-  <script>
-    document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
-  </script>
-
+    {% script type="application/javascript" async=False %}
+      <script>
+        document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
+      </script>
+    {% endscript %}
   {% block skip_link %}
     <a href="#main-content" class="govuk-skip-link">{% trans 'Skip to main content' %}</a>
   {% endblock %}

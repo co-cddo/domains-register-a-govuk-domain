@@ -2,32 +2,32 @@
 {% load static %}
 {% load crispy_forms_tags crispy_forms_gds %}
 {% load govuk_frontend_django %}
-
+{% load csp %}
 
 {% block title %}Which .gov.uk Approved Registrar organisation are you from?{% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      {% error_summary form %}
-      <h1 class="govuk-heading-xl">
-        Which .gov.uk Approved Registrar organisation are you from?
-      </h1>
-      {% crispy form %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% error_summary form %}
+            <h1 class="govuk-heading-xl">
+                Which .gov.uk Approved Registrar organisation are you from?
+            </h1>
+            {% crispy form %}
+        </div>
     </div>
-  </div>
 {% endblock %}
 
 {% block bottomjs %}
-  <script type="text/javascript" src="{% static 'accessible-autocomplete.min.js' %}"></script>
-  <script>
-   accessibleAutocomplete.enhanceSelectElement({
-     selectElement: document.querySelector('#id_organisations_choice'),
-     menuClasses: "govuk-list"
-   })
-  </script>
+    <script type="text/javascript" src="{% static 'accessible-autocomplete.min.js' %}" nonce="{{request.csp_nonce}}"></script>
+    {% script type="application/javascript" async=False %}
+            accessibleAutocomplete.enhanceSelectElement({
+                selectElement: document.querySelector('#id_organisations_choice'),
+                menuClasses: "govuk-list"
+            })
+    {% endscript %}
 {% endblock %}
 
 {% block extra_stylesheets %}
-  <link rel="stylesheet" href="{% static 'accessible-autocomplete.min.css' %}">
+    <link rel="stylesheet" href="{% static 'accessible-autocomplete.min.css' %}">
 {% endblock %}

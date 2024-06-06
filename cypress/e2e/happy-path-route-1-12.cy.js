@@ -1,6 +1,10 @@
 import './base.cy'
 
 describe('Happy path - route 1-12', () => {
+  beforeEach(() => {
+    cy.deleteAllApplications()
+  })
+
   it('performs a full transaction', () => {
     cy.goToRegistrarDetails()
     cy.fillOutRegistrarDetails('WeRegister', 'Joe Bloggs', '01225672345', 'simulate-delivered@notifications.service.gov.uk')
@@ -49,5 +53,13 @@ describe('Happy path - route 1-12', () => {
     cy.get('#button-continue').click()
 
     cy.checkPageTitleIncludes('Application submitted')
+    cy.checkApplicationIsOnBackend({
+      domain: 'somethingelse-pc.gov.uk',
+      registrar_org: 'WeRegister',
+      registrant_org: 'HMRC',
+      minister: false,
+      written_permission: false,
+      exemption: false
+    })
   })
 })

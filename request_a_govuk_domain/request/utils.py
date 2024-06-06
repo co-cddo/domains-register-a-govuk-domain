@@ -2,15 +2,19 @@ import logging
 import os
 import uuid
 
-
 import clamd
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import UploadedFile
+from django.contrib.sessions.backends.db import SessionStore
 from notifications_python_client import NotificationsAPIClient
 
-
 from request_a_govuk_domain.request.models import RegistrantTypeChoices
+from request_a_govuk_domain.request.models.notification_response_id import (
+    NotificationResponseID,
+)
 from request_a_govuk_domain.request.models.storage_util import select_storage
+
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +33,7 @@ DOMAIN_PURPOSE_TRANSLATION_MAP = {
 }
 
 
-def handle_uploaded_file(file, session_id):
+def handle_uploaded_file(file: UploadedFile, session_id: str | None) -> str | None:
     """
     How and where to save a file that the user has uploaded
 
@@ -37,6 +41,8 @@ def handle_uploaded_file(file, session_id):
     :param session_id for the current session
     :return: the name of the file as store on the server
     """
+    if file.name is None:
+        return None
 
     _, file_extension = os.path.splitext(file.name)
 
@@ -74,8 +80,6 @@ def route_number(session_data: dict) -> dict[str, int]:
     if registrant_type is not None:
         if registrant_type in ["parish_council", "village_council"]:
             route["primary"] = 1
-            if session_data.get("domain_confirmation") == "no":
-                route["secondary"] = 12
         elif registrant_type in ["central_government", "alb"]:
             route["primary"] = 2
             domain_purpose = session_data.get("domain_purpose")
@@ -106,8 +110,80 @@ def route_number(session_data: dict) -> dict[str, int]:
                 route["secondary"] = 10
         else:
             route["primary"] = 4
-
+    # Override the secondary route so we always go to domain selection if the confirmation is not present
+    if session_data.get("domain_confirmation") == "no":
+        route["secondary"] = 12
     return route
+
+
+def is_valid_session_data(rd: dict) -> bool:
+    """
+    check that registration data contained in a session dictionary is correct or note.
+    Depending on the route taken by the users, some session fields should be present or not,
+    or have specific value.
+    :param rd: registration data as a dictionary
+    :return: true is the data is valid, false otherwise
+    """
+
+    def not_str(field_name) -> bool:
+        return not isinstance(rd.get(field_name), str)
+
+    route = route_number(rd)
+    if (
+        not_str("domain_name")
+        or not_str("registrar_name")
+        or not_str("registrant_organisation")
+        or not_str("registrant_full_name")
+        or not_str("registrant_phone")
+        or not_str("registrant_email")
+        or not_str("registrant_role")
+        or not_str("registrant_contact_email")
+    ):
+        return False
+    possible_registrant_types = [choice[0] for choice in RegistrantTypeChoices.choices]
+    if not rd.get("registrant_type") in possible_registrant_types:
+        return False
+
+    # Minister. Must be "yes" or "no" on route 2 and 8, otherwise None
+    if route.get("primary") == 2:
+        if rd.get("minister") not in ["yes", "no"]:
+            return False
+        if rd.get("minister") == "yes" and (
+            not_str("minister_file_uploaded_filename")
+            or not_str("minister_file_original_filename")
+            or not_str("minister_file_uploaded_url")
+        ):
+            return False
+    else:
+        if rd.get("minister") is not None:
+            return False
+
+    # Exemption
+    if route.get("primary") == 2 and route.get("secondary") == 7:
+        if rd.get("exemption") != "yes":
+            return False
+        if (
+            not_str("exemption_file_uploaded_filename")
+            or not_str("exemption_file_original_filename")
+            or not_str("exemption_file_uploaded_url")
+        ):
+            return False
+
+    # written permission
+    if (
+        route.get("primary") == 3
+        or (route.get("primary") == 2 and route.get("secondary") == 5)
+        or (route.get("primary") == 2 and route.get("secondary") == 7)
+    ):
+        if rd.get("written_permission") != "yes":
+            return False
+        if (
+            not_str("written_permission_file_uploaded_filename")
+            or not_str("written_permission_file_original_filename")
+            or not_str("written_permission_file_uploaded_url")
+        ):
+            return False
+    return True
 
 
 def add_to_session(form, request, field_names: list[str]) -> dict:
@@ -134,22 +210,18 @@ def add_value_to_session(request, field_name: str, field_value) -> None:
     request.session["registration_data"] = registration_data
 
 
-def remove_from_session(session: dict, field_names: list[str]) -> dict:
+def remove_from_session(session: SessionStore, field_names: list[str]) -> dict:
     """
     Remove fields from a session, for instance when an uploaded
     file is removed
     """
-    if session and session.get("registration_data"):
+    rd = session.get("registration_data")
+    if session and session.session_key and rd:
         for field_name in field_names:
-            if session["registration_data"].get(field_name) is not None:
-                if field_name.endswith("uploaded_filename"):
-                    # remove the file associated
-                    select_storage().delete(
-                        session["registration_data"].get(field_name)
-                    )
+            if rd.get(field_name) is not None:
                 del session["registration_data"][field_name]
 
-        return session["registration_data"]
+        return rd
     else:
         return {}
 
@@ -178,6 +250,30 @@ def translate_notify_missing_service_id_error(e):
         raise ValueError("Notify API key seems invalid") from e
 
 
+def get_notification_client() -> NotificationsAPIClient | None:
+    """
+    Get a NotificationsAPIClient
+
+    :return: NotificationsAPIClient if NOTIFY_API_KEY is present, None otherwise
+    """
+    notify_api_key = get_env_variable("NOTIFY_API_KEY")
+
+    # If api key is found then create and return NotificationsAPIClient, else log that it was not found
+    # This check is necessary for github actions ( where "NOTIFY_API_KEY" is not set and during build all the
+    # cypress tests would fail where they reach Application submitted page, where the application will try to
+    # send mail ). It is also needed for local environment if "NOTIFY_API_KEY" is not set
+    if notify_api_key:
+        try:
+            notifications_client = NotificationsAPIClient(notify_api_key)
+            return notifications_client
+        except Exception as e:
+            translate_notify_missing_service_id_error(e)
+            raise e
+    else:
+        logger.info("Notify API key not found, hence no interation with Notify API")
+        return None
+
+
 def send_email(email_address: str, template_id: str, personalisation: dict) -> None:
     """
     Method to send email using Notify API
@@ -186,27 +282,18 @@ def send_email(email_address: str, template_id: str, personalisation: dict) -> N
     param: template_id: Template id of the Email Template
     param: personalisation: Dictionary of Personalisation data
     """
-    notify_api_key = get_env_variable("NOTIFY_API_KEY")
+    notifications_client = get_notification_client()
 
-    # If api key is found then send email, else log that it was not found
-    # This check is necessary for github actions ( where "NOTIFY_API_KEY" is not set and during build all the
-    # cypress tests would fail where they reach Application submitted page, where the application will try to
-    # send mail ). It is also needed for local environment if "NOTIFY_API_KEY" is not set
-    if notify_api_key:
-        try:
-            notifications_client = NotificationsAPIClient(notify_api_key)
-            notifications_client.send_email_notification(
-                email_address=email_address,
-                template_id=template_id,
-                personalisation=personalisation,
-            )
-        except Exception as e:
-            translate_notify_missing_service_id_error(e)
-            raise e
-    else:
-        if get_env_variable("ENVIRONMENT") == "prod":
-            raise ValueError("Notify API key not found in Production environment")
-        logger.info("Not sending email as Notify API key not found")
+    if notifications_client:
+        response = notifications_client.send_email_notification(
+            email_address=email_address,
+            template_id=template_id,
+            personalisation=personalisation,
+        )
+
+        # Save the notification response id, to track it's status ( failed/delivered ) later asynchronously
+        notification_response_id = NotificationResponseID(id=response["id"])
+        notification_response_id.save()
 
 
 def personalisation(

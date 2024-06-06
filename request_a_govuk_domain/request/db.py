@@ -5,7 +5,6 @@ This module provides functions for interacting with the database in Register App
 """
 
 import logging
-
 from django.db import transaction
 
 from request_a_govuk_domain.request.models import (
@@ -18,12 +17,13 @@ from request_a_govuk_domain.request.models import (
     Review,
 )
 
-from .utils import route_number
+from .utils import route_number, is_valid_session_data
+
 
 logger = logging.getLogger(__name__)
 
 
-def sanitise_registration_data(rd: dict) -> dict:
+def sanitised_registration_data(rd: dict, session_id: str) -> dict:
     """
     Remove the fields in registration data that aren't relevant to the
     answers the user has entered
@@ -43,46 +43,35 @@ def sanitise_registration_data(rd: dict) -> dict:
     :param rd: a registration data dictionary
     :return: the sanitised registration data
     """
+
+    def clear_upload(name: str) -> None:
+        rd.pop(name, None)
+        rd.pop(f"{name}_file_uploaded_filename", None)
+        rd.pop(f"{name}_file_original_filename", None)
+        rd.pop(f"{name}_file_uploaded_url", None)
+
     route = route_number(rd)
     if route["primary"] == 1:
         # If the final route taken is 1 (parish/neighbourhood council), then we don't need
         # data collected via other routes: domain purpose, exemption, written permission, minister support.
         rd.pop("domain_purpose", None)
-        rd.pop("exemption", None)
-        rd.pop("exemption_file_uploaded_filename", None)
-        rd.pop("exemption_file_original_filename", None)
-        rd.pop("exemption_file_uploaded_url", None)
-        rd.pop("written_permission", None)
-        rd.pop("written_permission_file_uploaded_filename", None)
-        rd.pop("written_permission_file_original_filename", None)
-        rd.pop("written_permission_file_uploaded_url", None)
-        rd.pop("minister", None)
-        rd.pop("minister_file_uploaded_filename", None)
-        rd.pop("minister_file_original_filename", None)
-        rd.pop("minister_file_uploaded_url", None)
+        clear_upload("exemption")
+        clear_upload("written_permission")
+        clear_upload("minister")
     elif route["primary"] == 2 and route["secondary"] == 5:
         # If the final route taken is 2-5 (central gov, email-only), then we don't need
         # data collected via other routes: exemption.
-        rd.pop("exemption", None)
-        rd.pop("exemption_file_uploaded_filename", None)
-        rd.pop("exemption_file_original_filename", None)
-        rd.pop("exemption_file_uploaded_url", None)
+        clear_upload("exemption")
     elif route["primary"] == 3:
         # If the final route taken is 3 (county council, fire service, etc), then we don't need
         # data collected via other routes: domain_purpose, exemption, minister support.
         rd.pop("domain_purpose", None)
-        rd.pop("exemption", None)
-        rd.pop("exemption_file_uploaded_filename", None)
-        rd.pop("exemption_file_original_filename", None)
-        rd.pop("exemption_file_uploaded_url", None)
-        rd.pop("minister", None)
-        rd.pop("minister_file_uploaded_filename", None)
-        rd.pop("minister_file_original_filename", None)
-        rd.pop("minister_file_uploaded_url", None)
+        clear_upload("exemption")
+        clear_upload("minister")
     if route.get("tertiary", 0) == 8:
-        # If the final route taken doen't include minister support
-        # then remove any possible minister support data previously specified.
-        rd.pop("minister", None)
+        # Route 8 is when user doesn't have minister support.
+        # In that case remove uploaded data
+        rd["minister"] = "no"
         rd.pop("minister_file_uploaded_filename", None)
         rd.pop("minister_file_original_filename", None)
         rd.pop("minister_file_uploaded_url", None)
@@ -101,9 +90,16 @@ def save_data_in_database(reference, request):
     :param reference: Reference number of the application
     :param request: Request object
     """
-    registration_data = sanitise_registration_data(
-        request.session.get("registration_data", {})
+
+    session_data = request.session.get("registration_data", {})
+    registration_data = sanitised_registration_data(
+        session_data, request.session.session_key
     )
+
+    if not is_valid_session_data(registration_data):
+        raise ValueError(
+            "Invalid session data found. Failed to create a valid application from the data collected from the user"
+        )
 
     try:
         with transaction.atomic():
