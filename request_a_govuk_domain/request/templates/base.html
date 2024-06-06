@@ -1,5 +1,9 @@
+<<<<<<< Updated upstream
 {% load static i18n %}<!DOCTYPE html>
 {% load csp %}
+=======
+{% load static i18n govuk_frontend_django %}<!DOCTYPE html>
+>>>>>>> Stashed changes
 <html lang="en" class="govuk-template">
 
 <head>
@@ -68,16 +72,21 @@
   {% block phase_banner %}
     <div class="govuk-phase-banner govuk-width-container">
       <p class="govuk-phase-banner__content">
-        <strong class="govuk-tag govuk-phase-banner__content__tag">
-          {% block phase_banner__tag %}
+        {% if environment == "prod" %}
+          <strong class="govuk-tag govuk-phase-banner__content__tag">
+            Beta
+          </strong>
+          <span class="govuk-phase-banner__text">
+            This is a new service: your feedback will help us to improve it.
+          </span>
+        {% else %}
+          <strong class="govuk-tag govuk-phase-banner__content__tag govuk-tag--pink">
             Prototype
-          {% endblock %}
-        </strong>
-        <span class="govuk-phase-banner__text">
-          {% block phase_banner__text %}
+          </strong>
+          <span class="govuk-phase-banner__text">
             This is not a full service. It is not production code and you might experience problems.
-          {% endblock %}
-        </span>
+          </span>
+        {% endif %}
       </p>
     </div>
   {% endblock %}

@@ -110,6 +110,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "request_a_govuk_domain.request.context_processors.environment",
             ],
         },
     },
