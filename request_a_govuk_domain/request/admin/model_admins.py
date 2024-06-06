@@ -20,6 +20,23 @@ from request_a_govuk_domain.request.models import (
 from .forms import ReviewForm
 
 
+class CustomAdminFileWidget(AdminFileWidget):
+    """
+    Extend the default template to open the links on a new tab
+    """
+
+    template_name = "admin/clearable_file_input.html"
+
+
+class CustomChoicesFieldListFilter(ChoicesFieldListFilter):
+    """
+    Override the default template, so we can use a function for the list change event
+    and use that hash in the allowed hashes for the CSP list
+    """
+
+    template = "admin/dropdown_filter.html"
+
+
 class DomainRegistrationUserAdmin(UserAdmin):
     def has_module_permission(self, request):
         if request.user.is_superuser:
@@ -62,6 +79,12 @@ class ReviewAdmin(admin.ModelAdmin):
         "get_last_updated",
         "get_owner",
     )
+    list_filter = [
+        ("application__status", CustomChoicesFieldListFilter),
+        ("application__owner", CustomChoicesFieldListFilter),
+        ("application__registrar_org", CustomChoicesFieldListFilter),
+        ("application__registrant_org", CustomChoicesFieldListFilter),
+    ]
 
     def generate_download_link(self, obj, field_name, link_text):
         link = reverse("admin:review_download_file", args=[obj.pk, field_name])
@@ -342,23 +365,6 @@ class ReviewAdmin(admin.ModelAdmin):
         obj.application.save()
 
 
-class CustomAdminFileWidget(AdminFileWidget):
-    """
-    Extend the default template to open the links on a new tab
-    """
-
-    template_name = "admin/clearable_file_input.html"
-
-
-class CustomChoicesFieldListFilter(ChoicesFieldListFilter):
-    """
-    Override the default template, so we can use a function for the list change event
-    and use that hash in the allowed hashes for the CSP list
-    """
-
-    template = "admin/dropdown_filter.html"
-
-
 class ApplicationAdmin(admin.ModelAdmin):
     model = Application
     list_display = [
@@ -373,6 +379,7 @@ class ApplicationAdmin(admin.ModelAdmin):
     ]
     list_filter = [
         ("status", CustomChoicesFieldListFilter),
+        ("owner", CustomChoicesFieldListFilter),
         ("registrar_org", CustomChoicesFieldListFilter),
         ("registrant_org", CustomChoicesFieldListFilter),
     ]

@@ -2,48 +2,51 @@
 {% load static %}
 {% load crispy_forms_tags crispy_forms_gds %}
 {% load govuk_frontend_django %}
-
+{% load csp %}
 
 {% block title %}Registrar details{% endblock %}
 
 {% block beforeContent %}
-  {% url "start" as back_url %}
-  {% back_link back_url %}
+    {% url "start" as back_url %}
+    {% back_link back_url %}
 {% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      {% error_summary form %}
-      <h1 class="govuk-heading-xl">
-        Registrar details
-      </h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% error_summary form %}
+            <h1 class="govuk-heading-xl">
+                Registrar details
+            </h1>
 
-      <p class="govuk-body">
-        You must be listed as a .gov.uk Approved Registrar on <a class="govuk-link" href="https://registrars.nominet.uk/registry/dot-gov-uk/registrars/" target="_blank">Nominet's website (opens in new tab)</a>,
-        otherwise you cannot use this service.
-      </p>
+            <p class="govuk-body">
+                You must be listed as a .gov.uk Approved Registrar on <a class="govuk-link"
+                                                                         href="https://registrars.nominet.uk/registry/dot-gov-uk/registrars/"
+                                                                         target="_blank">Nominet's website (opens in new
+                tab)</a>,
+                otherwise you cannot use this service.
+            </p>
 
-      <p class="govuk-body">
-        Email <code>support@domains.gov.uk</code> for more information
-      </p>
+            <p class="govuk-body">
+                Email <code>support@domains.gov.uk</code> for more information
+            </p>
 
-      {% crispy form %}
+            {% crispy form %}
+        </div>
     </div>
-  </div>
 {% endblock %}
 
 {% block extra_script %}
-  <script type="text/javascript" src="{% static 'accessible-autocomplete.min.js' %}"></script>
-  <script>
-   accessibleAutocomplete.enhanceSelectElement({
-     selectElement: document.querySelector('#id_registrar_organisation'),
-     menuClasses: "govuk-list",
-     placeholder: "Start typing..."
-   })
-  </script>
+    <script type="text/javascript" src="{% static 'accessible-autocomplete.min.js' %}"  nonce="{{request.csp_nonce}}"></script>
+    {% script type="application/javascript" async=False %}
+            accessibleAutocomplete.enhanceSelectElement({
+                selectElement: document.querySelector('#id_registrar_organisation'),
+                menuClasses: "govuk-list",
+                placeholder: "Start typing..."
+            })
+    {% endscript %}
 {% endblock %}
 
 {% block extra_stylesheets %}
-  <link rel="stylesheet" href="{% static 'accessible-autocomplete.min.css' %}">
+    <link rel="stylesheet" href="{% static 'accessible-autocomplete.min.css' %}">
 {% endblock %}

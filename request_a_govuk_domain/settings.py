@@ -101,7 +101,11 @@ TEMPLATES = [
         "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
+            "libraries": {
+                "csp": "csp.templatetags.csp",
+            },
             "context_processors": [
+                "csp.context_processors.nonce",
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
@@ -249,13 +253,13 @@ if not DEBUG:
 # Content Security Policy: only allow images, stylesheets and scripts from the
 # same origin as the HTML
 CSP_IMG_SRC = "'self'"
-CSP_STYLE_SRC = "'self' 'sha256-Yrk+0r8BB7VG8053Bq5134CtNrZCcfqaGMD3xHpM9gI='"  # pragma: allowlist secret
-CSP_SCRIPT_SRC = "'self' 'sha256-Gl/oWhJuv5Q73KslDBQ6Lf8TnR2wF1dznPZHMCb6P64=' 'sha256-mWnAScliK6FEboYjWY+46J2JHS2Rc/1osNHmEf8xhEg=' 'sha256-XnQ3IfOhmMbP75i80XPTDYp0PiESaF/qwUDCGZnUwRk='"  # pragma: allowlist secret'
+CSP_STYLE_SRC = "'self'"  # pragma: allowlist secret
+CSP_SCRIPT_SRC = "'self'"  # pragma: allowlist secret'
 CSP_FORM_ACTION = "'self'"
 CSP_FRAME_ANCESTORS = "'self'"
-
+CSP_INCLUDE_NONCE_IN = ["script-src", "style-src", "img-src"]
 # Disable CSP for debug as it prevent the style sheets from loading on  localhost
-CSP_REPORT_ONLY = DEBUG
+CSP_REPORT_ONLY = False
 
 # HTTP Strict Transport Security settings
 # Tell browsers to only use HTTPS for a year

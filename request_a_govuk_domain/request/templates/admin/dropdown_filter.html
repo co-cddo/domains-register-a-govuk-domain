@@ -1,14 +1,9 @@
 {% load i18n %}
-<script>
-    function handle_change(current_value) {
-        window.location = current_value
-    }
-</script>
 <div class="list-filter-dropdown">
     <h3 {% if spec.lookup_val or spec.value %}class="active"{% endif %}>{% blocktrans with title as filter_title %} By
         {{ filter_title }} {% endblocktrans %}</h3>
     <div align="right">
-        <select onChange="handle_change(this.options[this.selectedIndex].value);">
+        <select class="filter_selection">
             {% for choice in choices %}
                 <option {% if choice.selected %}selected{% endif %}
                         value="{{ choice.query_string|iriencode }}">{{ choice.display }}</option>

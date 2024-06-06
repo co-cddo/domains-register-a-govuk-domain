@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags crispy_forms_gds %}
 {% load govuk_frontend_django %}
-
+{% load csp %}
 {% block title %}Upload evidence of permission to apply{% endblock %}
 
 {% block extra_stylesheets %}
-  <style>
+  <style nonce="{{request.csp_nonce}}">
    /*
       Hide legend for visual modalities as it repeats the title
       based on the GOV.UK Design System's govuk-visually-hidden

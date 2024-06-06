@@ -1,0 +1,28 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+{% load csp %}
+{% block filters %}
+    {% script type="application/javascript" async=False %}
+        <script>
+            //Event handler to be attached to the filter select elements on page load.
+            //This is the only wat to stop CDP errors from flaggingÏ
+            function handle_change(event) {
+                window.location = this.value
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelector('.filter_selection').addEventListener('change', handle_change, false);
+            }, false)
+
+        </script>
+    {% endscript %}
+    {% if cl.has_filters %}
+        <div id="changelist-filter">
+            <h2>{% translate 'Filter' %}</h2>
+            {% if cl.has_active_filters %}<h3 id="changelist-filter-clear">
+                <a href="{{ cl.clear_all_filters_qs }}">&#10006; {% translate "Clear all filters" %}</a>
+            </h3>{% endif %}
+            {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
