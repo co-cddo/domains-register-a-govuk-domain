@@ -22,6 +22,7 @@ from django.conf import settings
 from .request.views import (
     StartView,
     CookiesPageView,
+    PrivacyPolicyPageView,
     RegistrarDetailsView,
     RegistrantTypeView,
     DomainView,
@@ -60,6 +61,7 @@ from .request.admin.views import DecisionConfirmationView
 urlpatterns = [
     path("", StartView.as_view(), name="start"),
     path("cookies", CookiesPageView.as_view(), name="cookies_page"),
+    path("privacy", PrivacyPolicyPageView.as_view(), name="privacy_policy"),
     path(
         "registrar-details/", RegistrarDetailsView.as_view(), name="registrar_details"
     ),

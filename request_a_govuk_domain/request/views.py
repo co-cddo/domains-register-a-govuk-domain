@@ -49,6 +49,10 @@ class CookiesPageView(TemplateView):
     template_name = "cookies.html"
 
 
+class PrivacyPolicyPageView(TemplateView):
+    template_name = "privacy.html"
+
+
 class RegistrarDetailsView(FormView):
     template_name = "registrar_details.html"
     form_class = RegistrarDetailsForm
