@@ -15,7 +15,6 @@ from request_a_govuk_domain.request.models.notification_response_id import (
 )
 from request_a_govuk_domain.request.models.storage_util import select_storage
 
-
 logger = logging.getLogger(__name__)
 
 # The translation map translates the yes/no value stored in the session to human-readable values that will be shown
@@ -367,3 +366,16 @@ def route_specific_email_template(
             f"{email_type}-{route['primary']}-{route['secondary']}"
         )
     return route_specific_email_template
+
+
+def phase_header_text(_request):
+    """
+    Provide the header text for the phase banner
+    :param _request:
+    :return:
+    """
+    phase = os.getenv("ENVIRONMENT")
+    return {
+        "PHASE_HEADER": "Prototype" if phase != "dev" else "Beta",
+        "PHASE_CONTENT": "This is not a full service. It is not production code and you might experience problems.",
+    }
