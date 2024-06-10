@@ -69,12 +69,12 @@
       <p class="govuk-phase-banner__content">
         <strong class="govuk-tag govuk-phase-banner__content__tag">
           {% block phase_banner__tag %}
-            Prototype
+              {{PHASE_HEADER}}
           {% endblock %}
         </strong>
         <span class="govuk-phase-banner__text">
           {% block phase_banner__text %}
-            This is not a full service. It is not production code and you might experience problems.
+              {{ PHASE_CONTENT }}
           {% endblock %}
         </span>
       </p>
