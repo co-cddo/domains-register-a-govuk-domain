@@ -22,7 +22,7 @@ from .validators import PhoneNumberValidator
 from ..layout.content import DomainsHTML
 
 
-def domain_validator(value: str):
+def domain_validator(domain_name: str):
     """Reject domain names which do not meet the RFCs:
     https://datatracker.ietf.org/doc/html/rfc1034#page-11,
     https://www.rfc-editor.org/rfc/rfc2181#section-11
@@ -31,11 +31,11 @@ def domain_validator(value: str):
         "^[a-z][a-z0-9-]+[a-z0-9](\\.gov\\.uk)?$"
     )  # based on RFC1035
 
-    if len(value) > 63:
+    if not (3 <= len(domain_name.split(".")[0]) <= 63):
         raise ValidationError(
             "The .gov.uk domain name must be between 3 and 63 characters"
         )
-    if not domain_input_regexp.match(value):
+    if not domain_input_regexp.match(domain_name):
         raise ValidationError(
             "The .gov.uk domain name must only include a to z, alphanumberic characters and special characters such as hyphens."
         )
