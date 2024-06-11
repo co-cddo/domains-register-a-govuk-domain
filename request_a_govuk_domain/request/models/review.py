@@ -97,6 +97,8 @@ class Review(models.Model):
         max_length=NOTES_MAX_LENGTH, blank=True, null=True
     )
 
+    reason = models.TextField(max_length=NOTES_MAX_LENGTH, blank=True, null=True)
+
     history = HistoricalRecords()
 
     def is_approvable(self) -> bool:

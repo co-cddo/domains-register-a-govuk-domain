@@ -3,6 +3,7 @@
 {% block content %}
 <div class="submit-row">
     <h1>Confirm application {{ action }}</h1>
+    <div>Reason for {{ action }}: {{ reason }}</div>
     <div>Confirming the {{ action }} will:</div>
     <ul>
         <li>Send an email confirming the {{ action }} to {{ obj.registrar_person.email_address }}</li>
