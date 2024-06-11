@@ -45,6 +45,17 @@ class StartView(TemplateView):
     template_name = "start.html"
 
 
+class StartSessionView(RedirectView):
+    pattern_name = "registrar_details"
+
+    def setup(self, request, *args, **kwargs):
+        # User has clicked the green button, so they're
+        # starting a new journey. Therefore delete the session data
+        # so that no previous answer is shown in the new journey.
+        request.session.pop("registration_data", None)
+        return super().setup(request, *args, **kwargs)
+
+
 class CookiesPageView(TemplateView):
     template_name = "cookies.html"
 
