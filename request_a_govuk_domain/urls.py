@@ -23,6 +23,7 @@ from .request.views import (
     StartView,
     CookiesPageView,
     PrivacyPolicyPageView,
+    StartSessionView,
     RegistrarDetailsView,
     RegistrantTypeView,
     DomainView,
@@ -62,6 +63,7 @@ urlpatterns = [
     path("", StartView.as_view(), name="start"),
     path("cookies", CookiesPageView.as_view(), name="cookies_page"),
     path("privacy", PrivacyPolicyPageView.as_view(), name="privacy_policy"),
+    path("start-session/", StartSessionView.as_view(), name="start_session"),
     path(
         "registrar-details/", RegistrarDetailsView.as_view(), name="registrar_details"
     ),
