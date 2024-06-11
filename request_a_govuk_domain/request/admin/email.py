@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from request_a_govuk_domain.request.models import Application
+from request_a_govuk_domain.request.models import Application, Review
 from request_a_govuk_domain.request.constants import NOTIFY_TEMPLATE_ID_MAP
 from request_a_govuk_domain.request import utils
 from request_a_govuk_domain.request.utils import get_env_variable
@@ -108,6 +108,10 @@ def send_approval_or_rejection_email(request):
         personalisation_dict["token"] = token(
             reference, registration_data["domain_name"]
         )
+    else:
+        # we add the reason for the approval/rejection to personalisation_dict
+        review = Review.objects.filter(application__id=application.id).first()
+        personalisation_dict["reason_for_rejection"] = review.reason
 
     route_specific_email_template_name = utils.route_specific_email_template(
         approval_or_rejection, registration_data

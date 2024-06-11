@@ -20,4 +20,5 @@ class ReviewForm(forms.ModelForm):
             "domain_name_rules_notes": "Evidence",
             "registrant_senior_support": "Status",
             "registrant_senior_support_notes": "Evidence",
+            "reason": "Reason",
         }

@@ -267,6 +267,14 @@ class ReviewAdmin(admin.ModelAdmin):
             },
         )
 
+    def get_reason_for_approval_rejection(self, obj):
+        return (
+            "Reason for Approval or Rejection",
+            {
+                "fields": ["reason"],
+            },
+        )
+
     def get_fieldsets(self, request, obj=None):
         fieldsets = [
             fieldset
@@ -280,6 +288,7 @@ class ReviewAdmin(admin.ModelAdmin):
                 self.get_domain_name_rules_fieldset(obj),
                 self.get_senior_support_fieldset(obj),
                 self.get_registry_details(obj),
+                self.get_reason_for_approval_rejection(obj),
             )
             if fieldset
         ]
