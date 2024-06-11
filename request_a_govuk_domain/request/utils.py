@@ -94,16 +94,7 @@ def route_number(session_data: dict) -> dict[str, int]:
             if session_data.get("minister") == "no":
                 route["tertiary"] = 8
 
-        elif registrant_type in [
-            "local_authority",
-            "fire_service",
-            "combined_authority",
-            "pcc",
-            "joint_authority",
-            "joint_committee",
-            "representing_psb",
-            "representing_profession",
-        ]:
+        elif registrant_type in [choice[0] for choice in RegistrantTypeChoices.choices]:
             route["primary"] = 3
             if session_data.get("written_permission") == "no":
                 route["secondary"] = 10
