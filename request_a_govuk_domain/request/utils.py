@@ -366,7 +366,13 @@ def phase_header_text(_request):
     :return:
     """
     phase = os.getenv("ENVIRONMENT")
-    return {
-        "PHASE_HEADER": "Prototype" if phase != "dev" else "Beta",
-        "PHASE_CONTENT": "This is not a full service. It is not production code and you might experience problems.",
-    }
+    if phase != "prod":
+        return {
+            "PHASE_HEADER": "Prototype",
+            "PHASE_CONTENT": "This is not a full service. It is not production code and you might experience problems.",
+        }
+    else:
+        return {
+            "PHASE_HEADER": "Beta",
+            "PHASE_CONTENT": "This is a new service: your feedback will help us to improve it",
+        }
