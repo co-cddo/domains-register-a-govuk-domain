@@ -7,7 +7,7 @@ class RegistrantTypeChoices(models.TextChoices):
         "Central government department or agency"
     )
     ALB = "alb", _("Non-departmental body - also known as an arm's length body")
-    PARISH_COUNCIL = "parish_council", _("Parish or community council")
+    PARISH_COUNCIL = "parish_council", _("Parish, small town or community council")
     LOCAL_AUTHORITY = "local_authority", _(
         "Town, county, borough, metropolitan or district council"
     )
