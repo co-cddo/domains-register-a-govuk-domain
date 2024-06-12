@@ -431,3 +431,11 @@ class RegistrantAdmin(admin.ModelAdmin):
 
 class RegistrarAdmin(admin.ModelAdmin):
     model = Registrar
+
+    actions = None
+    list_display = ["name", "active"]
+
+    def change_view(self, request, object_id=None, form_url="", extra_context=None):
+        return super().change_view(
+            request, object_id, form_url, extra_context=dict(show_delete=False)
+        )

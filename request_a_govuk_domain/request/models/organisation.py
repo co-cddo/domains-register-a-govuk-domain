@@ -67,6 +67,7 @@ class Registrar(models.Model):
     """
 
     name = models.CharField(unique=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

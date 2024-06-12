@@ -82,7 +82,7 @@ class RegistrarDetailsForm(forms.Form):
 
         registrar_organisations = [("", "")] + list(
             (f"registrar-{registrar.id}", registrar.name)
-            for registrar in Registrar.objects.all()
+            for registrar in Registrar.objects.filter(active=True)
         )
 
         self.fields["registrar_organisation"].choices = registrar_organisations
