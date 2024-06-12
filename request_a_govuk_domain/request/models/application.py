@@ -1,9 +1,11 @@
-from django.utils.translation import gettext_lazy as _
-from django.db import models
 from django.contrib.auth.models import User
-from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
 from .organisation import Registrant, Registrar
+from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
 from .storage_util import select_storage
+from ...settings import IS_AWS
 
 REF_NUM_LENGTH = 17
 
@@ -62,14 +64,54 @@ class Application(models.Model):
     registrant_org = models.ForeignKey(Registrant, on_delete=models.CASCADE)
     registrar_org = models.ForeignKey(Registrar, on_delete=models.CASCADE)
     written_permission_evidence = models.FileField(
-        null=True, blank=True, storage=select_storage
+        null=True,
+        blank=True,
+        storage=select_storage,
+        max_length=255,
     )
     ministerial_request_evidence = models.FileField(
-        null=True, blank=True, storage=select_storage
+        null=True,
+        blank=True,
+        storage=select_storage,
+        max_length=255,
     )
     policy_exemption_evidence = models.FileField(
-        null=True, blank=True, storage=select_storage
+        null=True,
+        blank=True,
+        storage=select_storage,
+        max_length=255,
     )
 
     def __str__(self):
         return f"{self.reference} - {self.domain_name}"
+
+    def save(
+        self, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
+        """
+        When the application is saved, move the temporary files to the applications directory
+        :param force_insert:
+        :param force_update:
+        :param using:
+        :param update_fields:
+        :return:
+        """
+        if IS_AWS:
+            storage = select_storage()
+            # Move any temporary files in to the application specific folder
+            for file_field in [
+                self.policy_exemption_evidence,
+                self.ministerial_request_evidence,
+                self.written_permission_evidence,
+            ]:
+                if file_field and not file_field.name.startswith("applications"):
+                    from_path = "temp_files/" + file_field.name
+                    to_path = f"applications/{self.reference}/" + file_field.name
+                    storage.connection.meta.client.copy_object(
+                        Bucket=storage.bucket_name,
+                        CopySource=storage.bucket_name + "/" + from_path,
+                        Key=to_path,
+                    )
+                    storage.delete(from_path)
+                    file_field.name = to_path
+        super().save(force_insert, force_update, using, update_fields)

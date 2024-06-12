@@ -11,3 +11,11 @@ def select_storage():
     :return:
     """
     return S3Boto3Storage() if settings.S3_STORAGE_ENABLED else FileSystemStorage()
+
+
+def s3_root_storage():
+    """
+    Storage instance that allows access from the root level on S3
+    :return:
+    """
+    return S3Boto3Storage()

@@ -16,9 +16,9 @@ from request_a_govuk_domain.request.models import (
     RegistryPublishedPerson,
     Review,
 )
+from .models.storage_util import select_storage
 
 from .utils import route_number, is_valid_session_data
-
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,13 @@ def sanitised_registration_data(rd: dict, session_id: str) -> dict:
 
     def clear_upload(name: str) -> None:
         rd.pop(name, None)
-        rd.pop(f"{name}_file_uploaded_filename", None)
+        uploaded_file_name = rd.pop(f"{name}_file_uploaded_filename", None)
+        # Delete any temporary files that are no longer needed by the application
+        if uploaded_file_name:
+            storage = select_storage()
+            if storage.exists(uploaded_file_name):
+                storage.delete(uploaded_file_name)
+
         rd.pop(f"{name}_file_original_filename", None)
         rd.pop(f"{name}_file_uploaded_url", None)
 
