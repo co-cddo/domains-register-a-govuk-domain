@@ -86,6 +86,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "request_a_govuk_domain.request.middleware.SessionExpiredMiddleware",
 ]
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
@@ -252,6 +253,8 @@ if not DEBUG:
     CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('DOMAIN_NAME', 'localhost')}"]
     CSRF_FAILURE_VIEW = "request_a_govuk_domain.request.views.csrf_failure_view"
     SESSION_COOKIE_SECURE = True
+
+SESSION_COOKIE_AGE = 24  # *3600 # Sessions expire after 24 hours
 
 # Content Security Policy: only allow images, stylesheets and scripts from the
 # same origin as the HTML
