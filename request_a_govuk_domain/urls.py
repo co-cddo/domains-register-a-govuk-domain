@@ -54,6 +54,8 @@ from .request.views import (
     security_txt_view,
     robots_txt_view,
     forbidden_view,
+    AccessibilityView,
+    TermsAndConditionsView,
 )
 
 from .request.admin.views import DecisionConfirmationView
@@ -62,7 +64,9 @@ from .request.admin.views import DecisionConfirmationView
 urlpatterns = [
     path("", StartView.as_view(), name="start"),
     path("cookies", CookiesPageView.as_view(), name="cookies_page"),
+    path("accessibility", AccessibilityView.as_view(), name="accessibility_page"),
     path("privacy", PrivacyPolicyPageView.as_view(), name="privacy_policy"),
+    path("terms", TermsAndConditionsView.as_view(), name="terms_and_conditions"),
     path("start-session/", StartSessionView.as_view(), name="start_session"),
     path(
         "registrar-details/", RegistrarDetailsView.as_view(), name="registrar_details"

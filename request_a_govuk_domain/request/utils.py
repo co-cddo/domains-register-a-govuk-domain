@@ -366,13 +366,15 @@ def phase_header_text(_request):
     :return:
     """
     phase = os.getenv("ENVIRONMENT")
-    if phase != "prod":
+    if phase not in ["prod", "stage"]:
         return {
+            "PHASE_CLASS": "govuk-tag--pink",
             "PHASE_HEADER": "Prototype",
             "PHASE_CONTENT": "This is not a full service. It is not production code and you might experience problems.",
         }
     else:
         return {
+            "PHASE_CLASS": "",
             "PHASE_HEADER": "Beta",
             "PHASE_CONTENT": "This is a new service: your feedback will help us to improve it",
         }
