@@ -15,6 +15,11 @@ from request_a_govuk_domain.request.models import (
     Review,
     ReviewFormGuidance,
     ApplicationStatus,
+    RegistrantPerson,
+    RegistrarPerson,
+    RegistryPublishedPerson,
+    Registrant,
+    Registrar,
 )
 from .forms import ReviewForm
 
@@ -363,6 +368,9 @@ class ReviewAdmin(admin.ModelAdmin):
         obj.application.owner = request.user
         obj.application.save()
 
+    def has_add_permission(self, request):
+        return False
+
 
 class ApplicationAdmin(admin.ModelAdmin):
     model = Application
@@ -403,3 +411,23 @@ class ApplicationAdmin(admin.ModelAdmin):
         if not obj.owner and "owner" not in form.changed_data:
             obj.owner = request.user
         super().save_model(request, obj, form, change)
+
+
+class RegistrarPersonAdmin(admin.ModelAdmin):
+    model = RegistrarPerson
+
+
+class RegistrantPersonAdmin(admin.ModelAdmin):
+    model = RegistrantPerson
+
+
+class RegistryPublishedPersonAdmin(admin.ModelAdmin):
+    model = RegistryPublishedPerson
+
+
+class RegistrantAdmin(admin.ModelAdmin):
+    model = Registrant
+
+
+class RegistrarAdmin(admin.ModelAdmin):
+    model = Registrar
