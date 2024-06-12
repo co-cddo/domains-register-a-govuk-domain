@@ -12,7 +12,7 @@ describe('Happy path - route 1', () => {
 
     cy.checkPageTitleIncludes('Who is this domain name for?')
     cy.checkBackLinkGoesTo('/registrar-details/')
-    cy.chooseRegistrantType(3) // Parish or community council -> route 1
+    cy.chooseRegistrantType(3) // Parish, small town or community council -> route 1
 
     cy.checkPageTitleIncludes('Choose a .gov.uk domain name')
     cy.checkBackLinkGoesTo('/registrant-type/')

@@ -384,7 +384,10 @@ class Migration(migrations.Migration):
                                 "alb",
                                 "Non-departmental body - also known as an arm's length body",
                             ),
-                            ("parish_council", "Parish or community council"),
+                            (
+                                "parish_council",
+                                "Parish, small town or community council",
+                            ),
                             (
                                 "local_authority",
                                 "Town, county, borough, metropolitan or district council",

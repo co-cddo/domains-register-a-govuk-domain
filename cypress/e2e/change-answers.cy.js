@@ -10,7 +10,7 @@ describe('Changing answers at the end of the process', () => {
     cy.get("a[href='/registrant-type']").eq(0).click()
 
     // finish route 1 and check that the previously uploaded docs aren't visible to the admin
-    cy.chooseRegistrantType(3) // Parish or community council -> route 1
+    cy.chooseRegistrantType(3) // Parish, small town or community council -> route 1
     cy.enterDomainName('something-pc')
     cy.selectYesOrNo('domain_confirmation', 'yes')
     cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
