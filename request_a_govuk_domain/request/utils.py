@@ -47,7 +47,7 @@ def handle_uploaded_file(file: UploadedFile, session_id: str | None) -> str | No
 
     saved_filename = f"{session_id}/{uuid.uuid4()}{file_extension}"
     storage = select_storage()
-    if not settings.IS_AWS:
+    if not settings.S3_STORAGE_ENABLED:
         file_path = os.path.join(settings.MEDIA_ROOT, saved_filename)
     else:
         file_path = saved_filename
