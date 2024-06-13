@@ -60,6 +60,14 @@ class CookiesPageView(TemplateView):
     template_name = "cookies.html"
 
 
+class AccessibilityView(TemplateView):
+    template_name = "accessibility.html"
+
+
+class TermsAndConditionsView(TemplateView):
+    template_name = "terms.html"
+
+
 class PrivacyPolicyPageView(TemplateView):
     template_name = "privacy.html"
 
