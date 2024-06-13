@@ -10,4 +10,4 @@ def select_storage():
     with the same name.
     :return:
     """
-    return S3Boto3Storage() if settings.IS_AWS else FileSystemStorage()
+    return S3Boto3Storage() if settings.S3_STORAGE_ENABLED else FileSystemStorage()

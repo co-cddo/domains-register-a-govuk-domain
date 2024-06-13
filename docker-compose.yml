@@ -3,7 +3,12 @@ x-common-application-variables: &common-application-variables
   SECRET_KEY: "Unneeded"  # pragma: allowlist secret
   DJANGO_SETTINGS_MODULE: request_a_govuk_domain.settings
   DATABASE_URL: postgresql://govuk_domain:govuk_domain@postgres:5432/govuk_domain  # pragma: allowlist secret
-
+  AWS_ENDPOINT_URL_S3: http://s3:9090
+  CLAMD_TCP_ADDR: clamav
+  S3_STORAGE_ENABLED: "True"
+  ENVIRONMENT: 'local'
+  AWS_ACCESS_KEY_ID: dummy-access-key-id # pragma: allowlist secret
+  AWS_SECRET_ACCESS_KEY: dummy-access-key # pragma: allowlist secret
 
 x-api-base: &api-base
   platform: linux/amd64
@@ -14,7 +19,20 @@ x-api-base: &api-base
 
 
 services:
-
+  s3:
+    image: adobe/s3mock
+    restart: always
+    environment:
+      initialBuckets: registration-app-media-root-local
+      debug: "true"
+      retainFilesOnExit: "false"
+      root: containers3root
+    ports:
+      - 9090:9090
+    volumes:
+      - ./.s3-data:/containers3root
+    networks:
+      - s3-net
   web:
     platform: linux/amd64
     <<: *api-base
@@ -29,13 +47,16 @@ services:
       - govuk_domain_home:/home/govuk_domain
     depends_on:
       postgres:
-          condition: service_healthy
+        condition: service_healthy
       init:
         condition: service_completed_successfully
       clamav:
         condition: service_started
+      s3:
+        condition: service_started
     networks:
       - clam-net
+      - s3-net
 
   postgres:
     platform: linux/amd64
@@ -50,7 +71,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -76,7 +97,7 @@ services:
       - .:/app
     depends_on:
       postgres:
-          condition: service_healthy
+        condition: service_healthy
     networks:
       - clam-net
 
@@ -87,3 +108,4 @@ volumes:
 
 networks:
   clam-net:
+  s3-net:
