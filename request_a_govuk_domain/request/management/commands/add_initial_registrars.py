@@ -146,14 +146,8 @@ class Command(BaseCommand):
     help = "Create a sample application for local testing"
 
     def handle(self, *args, **options):
-        models.Registrar.objects.all().delete()
-        for name in REGISTRAR_NAMES:
-            models.Registrar.objects.create(name=name)
-
-        # Revert to the following code after go-live
-
-        # if not models.Registrar.objects.first():
-        #     for name in REGISTRAR_NAMES:
-        #         models.Registrar.objects.create(name=name)
-        # else:
-        #     print("Not adding initial Registrars as the table is already populated")
+        if not models.Registrar.objects.first():
+            for name in REGISTRAR_NAMES:
+                models.Registrar.objects.create(name=name)
+        else:
+            print("Not adding initial Registrars as the table is already populated")
