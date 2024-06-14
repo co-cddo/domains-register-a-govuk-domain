@@ -77,7 +77,7 @@ def route_number(session_data: dict) -> dict[str, int]:
     route = {}
     registrant_type = session_data.get("registrant_type")
     if registrant_type is not None:
-        if registrant_type in ["parish_council", "village_council"]:
+        if registrant_type == "parish_council":
             route["primary"] = 1
         elif registrant_type in ["central_government", "alb"]:
             route["primary"] = 2
