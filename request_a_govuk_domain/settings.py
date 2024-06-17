@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "simple_history",
     "phonenumber_field",
     "storages",
+    "django_celery_results",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["gds"]
@@ -285,3 +286,9 @@ if SENTRY_DSN is not None:
 
 # Only enable S3 storage if it is explicitly enabled or on AWS
 S3_STORAGE_ENABLED = env.bool("S3_STORAGE_ENABLED", default=IS_AWS)
+
+CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", "redis://localhost/0")
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_BEAT_SCHEDULE_FILENAME = env.str(
+    "CELERY_BEAT_SCHEDULE_FILENAME", default="celerybeat-schedule"
+)
