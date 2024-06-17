@@ -1,4 +1,4 @@
-name: Django CI
+name: Integration tests
 
 on:
   push:
@@ -27,27 +27,21 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      clamav:
+        # Docker Hub image
+        image: clamav/clamav:latest
+        ports:
+          - "3310:3310"
+      s3:
+        image: adobe/s3mock
+        env:
+          initialBuckets: registration-app-media-root-local
+          debug: "true"
+          retainFilesOnExit: "false"
+        ports:
+          - "9090:9090"
 
     steps:
-    - name: Install required system packages
-      run: |
-        sudo apt-get update &&
-        sudo apt-get -y install libcurl4-nss-dev curl git make build-essential libssl-dev zlib1g-dev libbz2-dev \
-        libreadline-dev libsqlite3-dev wget ca-certificates libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
-        libffi-dev liblzma-dev mecab-ipadic-utf8 unzip clamav clamav-daemon clamav-freshclam --fix-missing
-    # When we deploy in prod we will have a clamav installed and we will do below to update the clamav database
-    # and expose the clamav-deamon on tcp host and port with "clamav" as alias.
-    - name: Run freshclam to update virus database
-      run: |
-        sudo /etc/init.d/clamav-freshclam stop
-        sudo freshclam
-        sudo /etc/init.d/clamav-freshclam start
-        sudo systemctl stop clamav-daemon.service
-        sudo sed -i -e $'$a\\\TCPAddr 127.0.0.1' /etc/clamav/clamd.conf
-        sudo sed -i -e $'$a\\\nTCPSocket 3310' /etc/clamav/clamd.conf
-        sudo sed -i '/127.0.0.1 localhost/ s/$/ clamav/' /etc/hosts
-        sudo systemctl start clamav-daemon.service
-        sudo cat /etc/hosts
     - name: Install pyenv and Python
       run: |
         curl https://pyenv.run | bash && \
@@ -85,11 +79,23 @@ jobs:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
         DEBUG: True
         DOMAIN_NAME: http://localhost:8010
+        AWS_ENDPOINT_URL_S3: http://127.0.0.1:9090
+        CLAMD_TCP_ADDR: 127.0.0.1
+        S3_STORAGE_ENABLED: "True"
+        AWS_ACCESS_KEY_ID: "dummy-key-id"
+        AWS_SECRET_ACCESS_KEY: "dummy-key"
+        ENVIRONMENT: 'local'
       with:
         start: |
           /home/runner/work/domains-register-a-govuk-domain/domains-register-a-govuk-domain/.github/workflows/start-server.sh
     - name: Run Unit Tests
       env:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
+        AWS_ENDPOINT_URL_S3: http://127.0.0.1:9090
+        CLAMD_TCP_ADDR: 127.0.0.1
+        S3_STORAGE_ENABLED: "True"
+        AWS_ACCESS_KEY_ID: "dummy-key-id"
+        AWS_SECRET_ACCESS_KEY: "dummy-key"
+        ENVIRONMENT: 'local'
       run: |
         SECRET_KEY=unneeded DOMAIN_NAME=http://localhost:8010 poetry run python manage.py test -v 2

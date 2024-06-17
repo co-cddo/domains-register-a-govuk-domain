@@ -240,7 +240,9 @@ CONTENT_TYPES = ["png", "jpeg", "jpg", "pdf"]
 # 10 MB
 MAX_UPLOAD_SIZE = "10485760"
 
-CLAMD_TCP_ADDR = "clamav" if not IS_AWS else "clamav.internal-domains-registry-cluster"
+CLAMD_TCP_ADDR = env.str(
+    "CLAMD_TCP_ADDR", default="clamav.internal-domains-registry-cluster"
+)
 CLAMD_TCP_SOCKET = 3310
 
 # Cross-site request forgery protection
@@ -280,3 +282,6 @@ if SENTRY_DSN is not None:
         enable_tracing=True,
         environment=ENVIRONMENT,
     )
+
+# Only enable S3 storage if it is explicitly enabled or on AWS
+S3_STORAGE_ENABLED = env.bool("S3_STORAGE_ENABLED", default=IS_AWS)
