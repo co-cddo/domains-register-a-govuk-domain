@@ -1,13 +1,29 @@
 from django import forms
+from request_a_govuk_domain.request.models import Application
 
 
 class ReviewForm(forms.ModelForm):
-    application_status = forms.CharField(label="Status", required=False)
+    application_status = forms.ChoiceField(
+        label='Application Status', 
+        required=False, 
+        choices=Application.status.choices,
+        widget=forms.Select
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             self.fields["application_status"].initial = self.instance.application.status
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        status = self.cleaned_data['application_status']
+        breakpoint()
+        # instance.application.status = Application.status.chIN_PROGRESS if status == "new" else 
+        if commit:
+            instance.application.save()
+            instance.save()
+        return instance
 
     class Meta:
         labels = {

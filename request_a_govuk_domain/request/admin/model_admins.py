@@ -363,15 +363,15 @@ class ReviewAdmin(admin.ModelAdmin):
                 )
         return super().response_change(request, obj)
 
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-        # Save the application attributes
-        if obj.application.status == ApplicationStatus.NEW:
-            obj.application.status = ApplicationStatus.IN_PROGRESS
-        # Change the owner to be the current user regardless if there is already a user
-        # assigned or not
-        obj.application.owner = request.user
-        obj.application.save()
+    # def save_model(self, request, obj, form, change):
+    #     super().save_model(request, obj, form, change)
+    #     # Save the application attributes
+    #     if obj.application.status == ApplicationStatus.NEW:
+    #         obj.application.status = ApplicationStatus.IN_PROGRESS
+    #     # Change the owner to be the current user regardless if there is already a user
+    #     # assigned or not
+    #     obj.application.owner = request.user
+    #     obj.application.save()
 
     def has_add_permission(self, request):
         return False
