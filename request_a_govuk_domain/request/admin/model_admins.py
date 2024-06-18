@@ -1,5 +1,6 @@
 from zoneinfo import ZoneInfo
 
+from django import forms
 import django.db.models.fields.files
 import markdown
 from django.contrib import admin, messages
@@ -280,6 +281,9 @@ class ReviewAdmin(admin.ModelAdmin):
             },
         )
 
+    def get_status_fieldset(self, request, obj=None):
+        return (None, {"fields": ("application_status",)})
+
     def get_fieldsets(self, request, obj=None):
         fieldsets = [
             fieldset
@@ -294,6 +298,7 @@ class ReviewAdmin(admin.ModelAdmin):
                 self.get_senior_support_fieldset(obj),
                 self.get_registry_details(obj),
                 self.get_reason_for_approval_rejection(obj),
+                self.get_status_fieldset(request, obj),
             )
             if fieldset
         ]

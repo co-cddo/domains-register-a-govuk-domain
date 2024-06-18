@@ -2,6 +2,13 @@ from django import forms
 
 
 class ReviewForm(forms.ModelForm):
+    application_status = forms.CharField(label="Status", required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields["application_status"].initial = self.instance.application.status
+
     class Meta:
         labels = {
             "registrar_details": "Status",
