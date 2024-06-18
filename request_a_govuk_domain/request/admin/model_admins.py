@@ -34,7 +34,7 @@ class FileDownloadMixin:
         """
         Implement this method to provide the specific retrieval of the object based on the given id
         :param request: Current request object
-        :param object_id: id of the object containing the filed
+        :param object_id: id of the object containing the field
         :param field_name: which file field to download from the object
         :return:
         """
@@ -130,7 +130,7 @@ class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
         application = review.application
         file = getattr(application, field_name)
         # We need to use root_storage as the default storage always
-        # refer to the temp_files as the parent.
+        # refer to the TEMP_STORAGE_ROOT as the parent.
         return FileResponse(s3_root_storage().open(file.name, "rb"))
 
     @property

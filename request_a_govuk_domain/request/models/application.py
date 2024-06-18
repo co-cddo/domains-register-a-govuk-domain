@@ -1,13 +1,16 @@
+import logging
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .organisation import Registrant, Registrar
 from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
-from .storage_util import select_storage
-from ...settings import IS_AWS
+from .storage_util import select_storage, TEMP_STORAGE_ROOT
+from ...settings import S3_STORAGE_ENABLED
 
 REF_NUM_LENGTH = 17
+logger = logging.getLogger(__name__)
 
 
 class ApplicationStatus(models.TextChoices):
@@ -96,7 +99,7 @@ class Application(models.Model):
         :param update_fields:
         :return:
         """
-        if IS_AWS:
+        if S3_STORAGE_ENABLED:
             storage = select_storage()
             # Move any temporary files in to the application specific folder
             for file_field in [
@@ -105,7 +108,10 @@ class Application(models.Model):
                 self.written_permission_evidence,
             ]:
                 if file_field and not file_field.name.startswith("applications"):
-                    from_path = "temp_files/" + file_field.name
+                    from_path = TEMP_STORAGE_ROOT + file_field.name
+                    logger.info(
+                        "Copying temporary file to application folder %s", from_path
+                    )
                     to_path = f"applications/{self.reference}/" + file_field.name
                     storage.connection.meta.client.copy_object(
                         Bucket=storage.bucket_name,
