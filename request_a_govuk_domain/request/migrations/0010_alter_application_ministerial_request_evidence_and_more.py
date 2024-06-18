@@ -6,7 +6,7 @@ import request_a_govuk_domain.request.models.storage_util
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("request", "0008_alter_registrant_type"),
+        ("request", "0009_alter_application_status"),
     ]
 
     operations = [
