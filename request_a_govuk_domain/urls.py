@@ -54,6 +54,7 @@ from .request.views import (
     security_txt_view,
     robots_txt_view,
     forbidden_view,
+    download_file,
     AccessibilityView,
     TermsAndConditionsView,
 )
@@ -178,6 +179,7 @@ urlpatterns = [
     ),
     path(".well-known/security.txt", security_txt_view),
     path("robots.txt", robots_txt_view),
+    path("download_file/<str:file_type>", download_file, name="download_file"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

@@ -1,11 +1,15 @@
+import logging
 import os
 import shutil
 from datetime import datetime
+from pathlib import Path
 
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
-from request_a_govuk_domain.request import models
 
+from request_a_govuk_domain.request import models
+from request_a_govuk_domain.request.models.storage_util import select_storage
+from request_a_govuk_domain.settings import S3_STORAGE_ENABLED
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 SEED_DOCS_PATH = os.path.join(SCRIPT_PATH, "..", "..", "..", "..", "seed", "documents")
@@ -38,6 +42,7 @@ MINISTERIAL_REQUEST_FN = "ministerial_request.png"
 POLICY_TEAM_EXEMPTION_FN = "policy_team_exception.png"
 
 DUMMY_REGISTRARS = ["WeRegister", "WeAlsoRegister", "WeLikeToRegister"]
+logger = logging.getLogger(__name__)
 
 
 def create_sample_application(
@@ -50,6 +55,23 @@ def create_sample_application(
     ministerial_request_file: str | None = None,
     policy_exemption_file: str | None = None,
 ):
+    # Copy the sample data to the temporary storage so the system will assume it is comping from the temporary
+    # location. This is needed as we have overridden the save method of the application to fetch the data
+    # from the TEMP_STORAGE_ROOT root location if we are using S3
+    if S3_STORAGE_ENABLED:
+        for f in [
+            written_permission_file,
+            ministerial_request_file,
+            policy_exemption_file,
+        ]:
+            logger.info("Copying seed file %s", f)
+            if f:
+                with open(
+                    Path(__file__).parent.joinpath(f"../../../media/{f}").resolve(),
+                    "rb",
+                ) as f_content:
+                    select_storage().save(f, f_content)
+
     registrant = models.Registrant.objects.create(name=registrant_name)
 
     registrant_person = models.RegistrantPerson.objects.create(name=person_names[0])

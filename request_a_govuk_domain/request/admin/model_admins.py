@@ -22,6 +22,50 @@ from request_a_govuk_domain.request.models import (
     Registrar,
 )
 from .forms import ReviewForm
+from ..models.storage_util import s3_root_storage
+
+
+class FileDownloadMixin:
+    """
+    Provide file download support for the given admin class.
+    """
+
+    def download_file_view(self, request, object_id, field_name):
+        """
+        Implement this method to provide the specific retrieval of the object based on the given id
+        :param request: Current request object
+        :param object_id: id of the object containing the field
+        :param field_name: which file field to download from the object
+        :return:
+        """
+        pass
+
+    @property
+    def uid(self):
+        """
+        Unique id for the current subclass
+        :return:
+        """
+        pass
+
+    def get_urls(self):
+        """
+        Generate the custom url for the download_file_view.
+        :return:
+        """
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                f"download_{self.uid}/<int:object_id>/<str:field_name>/",
+                self.admin_site.admin_view(self.download_file_view),
+                name=f"{self.uid}_download_file",
+            ),
+        ]
+        return custom_urls + urls
+
+    def generate_download_link(self, obj, field_name, link_text):
+        link = reverse(f"admin:{self.uid}_download_file", args=[obj.pk, field_name])
+        return format_html(f'<a href="{link}" target="_blank">{link_text}</a>')
 
 
 class CustomAdminFileWidget(AdminFileWidget):
@@ -59,7 +103,7 @@ def convert_to_local_time(obj):
     )
 
 
-class ReviewAdmin(admin.ModelAdmin):
+class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
     model = Review
     form = ReviewForm
     change_form_template = "admin/review_change_form.html"
@@ -81,26 +125,17 @@ class ReviewAdmin(admin.ModelAdmin):
         "application__registrant_org",
     )
 
-    def generate_download_link(self, obj, field_name, link_text):
-        link = reverse("admin:review_download_file", args=[obj.pk, field_name])
-        return format_html(f'<a href="{link}" target="_blank">{link_text}</a>')
-
     def download_file_view(self, request, object_id, field_name):
         review = self.model.objects.get(id=object_id)
         application = review.application
         file = getattr(application, field_name)
-        return FileResponse(file.open("rb"))
+        # We need to use root_storage as the default storage always
+        # refer to the TEMP_STORAGE_ROOT as the parent.
+        return FileResponse(s3_root_storage().open(file.name, "rb"))
 
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path(
-                "download/<int:object_id>/<str:field_name>/",
-                self.admin_site.admin_view(self.download_file_view),
-                name="review_download_file",
-            ),
-        ]
-        return custom_urls + urls
+    @property
+    def uid(self):
+        return "review"
 
     def _get_formatted_display_fields(self, display_fields: dict) -> str:
         return render_to_string(
@@ -372,7 +407,7 @@ class ReviewAdmin(admin.ModelAdmin):
         return False
 
 
-class ApplicationAdmin(admin.ModelAdmin):
+class ApplicationAdmin(FileDownloadMixin, admin.ModelAdmin):
     model = Application
     list_display = [
         "reference",
@@ -393,6 +428,15 @@ class ApplicationAdmin(admin.ModelAdmin):
     formfield_overrides = {
         django.db.models.fields.files.FileField: {"widget": CustomAdminFileWidget},
     }
+
+    def download_file_view(self, request, object_id, field_name):
+        application = self.model.objects.get(id=object_id)
+        file = getattr(application, field_name)
+        return FileResponse(s3_root_storage().open(file.name, "rb"))
+
+    @property
+    def uid(self):
+        return "application"
 
     @admin.display(description="Time Submitted (UK time)")
     def time_submitted_local_time(self, obj):

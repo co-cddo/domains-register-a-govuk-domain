@@ -4,9 +4,9 @@ import string
 from datetime import datetime
 
 from django.db import transaction
+from django.http import HttpResponse, HttpRequest, FileResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.http import HttpResponse, HttpRequest
 from django.views import View
 from django.views.generic import TemplateView, RedirectView
 from django.views.generic.edit import FormView
@@ -320,6 +320,14 @@ class UploadRemoveView(RedirectView):
     pattern_name = ""  # to be subclassed
 
     def get_redirect_url(self, *args, **kwargs):
+        registration_data = self.request.session.get("registration_data", {})
+        if path_to_delete := registration_data.get(
+            self.page_type + "_file_uploaded_filename"
+        ):
+            storage = select_storage()
+            if storage.exists(path_to_delete):
+                storage.delete(path_to_delete)
+
         # delete the session data
         remove_from_session(
             self.request.session,
@@ -329,6 +337,7 @@ class UploadRemoveView(RedirectView):
                 self.page_type + "_file_uploaded_url",
             ],
         )
+
         return super().get_redirect_url(*args, **kwargs)
 
 
@@ -498,6 +507,21 @@ class MinisterView(FormView):
         else:
             self.success_url = reverse_lazy("registrant_details")
         return super().form_valid(form)
+
+
+def download_file(request, file_type):
+    """
+    Utility method to download a file which was temporarily uploaded during the application process.
+    :param request: Current request object
+    :param file_type:  Type of file to be downloaded
+    :return:
+    """
+    registration_data = request.session["registration_data"]
+    storage = select_storage()
+    file_name = registration_data[f"{file_type}_file_uploaded_filename"]
+    if storage.exists(file_name):
+        return FileResponse(storage.open(file_name, "rb"))
+    return HttpResponseNotFound("Not Found")
 
 
 class UploadView(FormView):
