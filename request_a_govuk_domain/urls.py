@@ -139,7 +139,7 @@ urlpatterns = [
         name="registrant_type_fail",
     ),
     path("confirm/", ConfirmView.as_view(), name="confirm"),
-    path("success/", SuccessView.as_view(), name="success"),
+    path("success/<str:token>/", SuccessView.as_view(), name="success"),
     path(
         "exemption-upload-remove/",
         ExemptionUploadRemoveView.as_view(),

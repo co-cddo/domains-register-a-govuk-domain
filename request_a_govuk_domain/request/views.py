@@ -1,6 +1,7 @@
 import logging
 import random
 import string
+import uuid
 from datetime import datetime
 
 from django.db import transaction
@@ -364,6 +365,7 @@ class ConfirmView(TemplateView):
 
         # Access session data and include it in the context
         registration_data = self.request.session.get("registration_data", {})
+        self.request.session["token"] = uuid.uuid4().hex
         context["registration_data"] = registration_data
 
         # Registrar organisation name: need to look up real name
@@ -446,11 +448,14 @@ def save_application_to_database_and_send_confirmation_email(
 
 
 class SuccessView(View):
-    def get(self, request):
-        reference = generate_reference()
-        save_application_to_database_and_send_confirmation_email(reference, request)
-        # We're finished, so clear the session data
-        request.session.pop("registration_data", None)
+    def get(self, request, token: str):
+        if request.session.pop("token", None) == token:
+            reference = generate_reference()
+            save_application_to_database_and_send_confirmation_email(reference, request)
+            # We're finished, so clear the session data
+            request.session.pop("registration_data", None)
+        else:
+            reference = None
         return render(request, "success.html", {"reference": reference})
 
 
