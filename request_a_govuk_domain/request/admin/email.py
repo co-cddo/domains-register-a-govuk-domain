@@ -67,7 +67,7 @@ def token(reference, domain_name: str) -> str:
     """
     # token_id is application reference except the prefix "GOVUK"
     token_id = reference[5:]
-
+    domain_lower = domain_name.lower()
     roms_id = nominet_env_variable("NOMINET_ROMSID")
     secret = nominet_env_variable("NOMINET_SECRET")  # pragma: allowlist secret
 
@@ -76,12 +76,12 @@ def token(reference, domain_name: str) -> str:
 
     # Generate the SHA-256 encoded signature
     signature = hashlib.sha256(
-        (token_id + roms_id + domain_name + token_expiry_datetime + secret).encode()
+        (token_id + roms_id + domain_lower + token_expiry_datetime + secret).encode()
     ).hexdigest()
 
     #  Concatenate required attributes into the final token
     generated_token = (
-        f"#{token_id}#{roms_id}#{domain_name}#{token_expiry_datetime}#{signature}"
+        f"{token_id}#{roms_id}#{domain_lower}#{token_expiry_datetime}#{signature}"
     )
     return generated_token
 
