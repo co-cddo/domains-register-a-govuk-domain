@@ -21,6 +21,13 @@ from request_a_govuk_domain.request.models import (
     Registrant,
     Registrar,
 )
+from .filters import (
+    StatusFilter,
+    OwnerFilter,
+    RegistrarOrgFilter,
+    RegistrantOrgFilter,
+    wrap_with_application_filter,
+)
 from .forms import ReviewForm
 from ..models.storage_util import s3_root_storage
 
@@ -119,10 +126,10 @@ class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
         "get_owner",
     )
     list_filter = (
-        "application__status",
-        "application__owner",
-        "application__registrar_org",
-        "application__registrant_org",
+        wrap_with_application_filter(StatusFilter),
+        wrap_with_application_filter(OwnerFilter),
+        wrap_with_application_filter(RegistrarOrgFilter),
+        wrap_with_application_filter(RegistrantOrgFilter),
     )
 
     def download_file_view(self, request, object_id, field_name):
@@ -420,10 +427,10 @@ class ApplicationAdmin(FileDownloadMixin, admin.ModelAdmin):
         "owner",
     ]
     list_filter = (
-        "status",
-        "owner",
-        "registrar_org",
-        "registrant_org",
+        StatusFilter,
+        OwnerFilter,
+        RegistrarOrgFilter,
+        RegistrantOrgFilter,
     )
     formfield_overrides = {
         django.db.models.fields.files.FileField: {"widget": CustomAdminFileWidget},
