@@ -112,7 +112,7 @@ def save_data_in_database(reference, request):
             existing_application = (
                 Application.objects.filter(reference=reference)
                 .select_for_update()
-                .get()
+                .first()
             )
             if not existing_application:
                 registrar_org = Registrar.objects.get(
