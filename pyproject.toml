@@ -26,6 +26,7 @@ django-storages = {extras = ["s3"], version = "^1.14.2"}
 django-csp = "^3.8"
 sentry-sdk = {extras = ["django"], version = "^2.2.0"}
 markdown = "^3.6"
+django-pglocks = "^1.0.4"
 
 
 [tool.poetry.group.dev.dependencies]

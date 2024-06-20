@@ -1,7 +1,6 @@
 import logging
 import random
 import string
-import threading
 import uuid
 from datetime import datetime
 
@@ -12,6 +11,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, RedirectView
 from django.views.generic.edit import FormView
+from django_pglocks import advisory_lock
 
 from .constants import NOTIFY_TEMPLATE_ID_MAP
 from .db import save_data_in_database
@@ -448,20 +448,18 @@ def save_application_to_database_and_send_confirmation_email(
     send_confirmation_email(reference, request)
 
 
-sem = threading.Semaphore()
-
-
 class SuccessView(View):
     def get(self, request, token: str):
-        sem.acquire()
-        if request.session.pop("token", None) == token:
-            reference = generate_reference()
-            save_application_to_database_and_send_confirmation_email(reference, request)
-            # We're finished, so clear the session data
-            request.session.pop("registration_data", None)
-        else:
-            reference = None
-        sem.release()
+        with advisory_lock(token) as _:
+            if request.session.pop("token", None) == token:
+                reference = generate_reference()
+                save_application_to_database_and_send_confirmation_email(
+                    reference, request
+                )
+                # We're finished, so clear the session data
+                request.session.pop("registration_data", None)
+            else:
+                reference = None
         return render(request, "success.html", {"reference": reference})
 
 
