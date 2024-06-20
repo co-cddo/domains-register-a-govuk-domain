@@ -13,7 +13,7 @@ from django.views.generic.edit import FormView
 from django_pglocks import advisory_lock
 
 from .constants import NOTIFY_TEMPLATE_ID_MAP
-from .db import save_data_in_database, no_existing_application
+from .db import save_data_in_database, check_application_exists
 from .forms import (
     DomainConfirmationForm,
     ExemptionForm,
@@ -449,22 +449,22 @@ def save_application_to_database_and_send_confirmation_email(
 
 class SuccessView(View):
     def get(self, request, token: str):
-        print(f"Saving for token {token}")
+        logger.info(f"Lock for token {token}")
         with advisory_lock(token) as _:
-            print(f"Locked for token {token}")
+            logger.info(f"Check for application with token {token}")
             # We need both the checks as it is possible that the session
             # may have not been updated by the time the other thread reached this point.
             # This is due to the Django framework setting the session at the entry point of the request.
             # https://docs.djangoproject.com/en/5.0/topics/http/sessions/#when-sessions-are-saved
-            if request.session.pop("token", None) == token and no_existing_application(
-                token
-            ):
-                print(f"Saving application {token}")
+            if request.session.pop(
+                "token", None
+            ) == token and not check_application_exists(token):
+                logger.info(f"Saving application {token}")
                 request.session.modified = True
                 save_application_to_database_and_send_confirmation_email(token, request)
                 # We're finished, so clear the session data
                 request.session.pop("registration_data", None)
-        print(f"Unlocked for token {token}")
+        logger.info(f"Unlocked for token {token}")
         return render(request, "success.html", {"reference": token})
 
 

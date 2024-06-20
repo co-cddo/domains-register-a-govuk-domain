@@ -86,13 +86,13 @@ def sanitised_registration_data(rd: dict, session_id: str) -> dict:
     return rd
 
 
-def no_existing_application(reference: str):
+def check_application_exists(reference: str):
     """
     Check for the existence of application by reference
     :param reference:
     :return:
     """
-    return not Application.objects.filter(reference=reference).exists()
+    return Application.objects.filter(reference=reference).exists()
 
 
 def save_data_in_database(reference, request):
