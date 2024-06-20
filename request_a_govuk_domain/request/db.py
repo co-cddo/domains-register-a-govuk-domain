@@ -86,6 +86,15 @@ def sanitised_registration_data(rd: dict, session_id: str) -> dict:
     return rd
 
 
+def no_existing_application(reference: str):
+    """
+    Check for the existence of application by reference
+    :param reference:
+    :return:
+    """
+    return not Application.objects.filter(reference=reference).exists()
+
+
 def save_data_in_database(reference, request):
     """
     Saves registration_data ( from session ) in the database
@@ -109,68 +118,61 @@ def save_data_in_database(reference, request):
 
     try:
         with transaction.atomic():
-            existing_application = (
-                Application.objects.filter(reference=reference)
-                .select_for_update()
-                .first()
+            registrar_org = Registrar.objects.get(
+                id=int(registration_data["registrar_organisation"].split("-")[1])
             )
-            if not existing_application:
-                registrar_org = Registrar.objects.get(
-                    id=int(registration_data["registrar_organisation"].split("-")[1])
-                )
-                registrar_person, _ = RegistrarPerson.objects.get_or_create(
-                    registrar=registrar_org,
-                    name=registration_data["registrar_name"],
-                    email_address=registration_data["registrar_email"],
-                    phone_number=registration_data["registrar_phone"],
-                )
-                registrant_person, _ = RegistrantPerson.objects.get_or_create(
-                    name=registration_data["registrant_full_name"],
-                    email_address=registration_data["registrant_email"],
-                    phone_number=registration_data["registrant_phone"],
-                )
-                (
-                    registry_published_person,
-                    _,
-                ) = RegistryPublishedPerson.objects.get_or_create(
-                    role=registration_data["registrant_role"],
-                    email_address=registration_data["registrant_contact_email"],
-                )
+            registrar_person, _ = RegistrarPerson.objects.get_or_create(
+                registrar=registrar_org,
+                name=registration_data["registrar_name"],
+                email_address=registration_data["registrar_email"],
+                phone_number=registration_data["registrar_phone"],
+            )
+            registrant_person, _ = RegistrantPerson.objects.get_or_create(
+                name=registration_data["registrant_full_name"],
+                email_address=registration_data["registrant_email"],
+                phone_number=registration_data["registrant_phone"],
+            )
+            (
+                registry_published_person,
+                _,
+            ) = RegistryPublishedPerson.objects.get_or_create(
+                role=registration_data["registrant_role"],
+                email_address=registration_data["registrant_contact_email"],
+            )
 
-                registrant_org, _ = Registrant.objects.get_or_create(
-                    name=registration_data["registrant_organisation"],
-                    type=registration_data["registrant_type"],
-                )
+            registrant_org, _ = Registrant.objects.get_or_create(
+                name=registration_data["registrant_organisation"],
+                type=registration_data["registrant_type"],
+            )
 
-                registrar_org = Registrar.objects.get(
-                    id=int(registration_data["registrar_organisation"].split("-")[1])
-                )
+            registrar_org = Registrar.objects.get(
+                id=int(registration_data["registrar_organisation"].split("-")[1])
+            )
 
-                application = Application.objects.create(
-                    reference=reference,
-                    domain_name=registration_data["domain_name"],
-                    registrar_person=registrar_person,
-                    registrant_person=registrant_person,
-                    registry_published_person=registry_published_person,
-                    registrant_org=registrant_org,
-                    registrar_org=registrar_org,
-                    written_permission_evidence=registration_data.get(
-                        "written_permission_file_uploaded_filename"
-                    ),
-                    domain_purpose=registration_data.get("domain_purpose"),
-                    ministerial_request_evidence=registration_data.get(
-                        "minister_file_uploaded_filename"
-                    ),
-                    policy_exemption_evidence=registration_data.get(
-                        "exemption_file_uploaded_filename"
-                    ),
-                )
-                logger.info(
-                    "Saved application %d with reference %s", application.id, reference
-                )
-                Review.objects.create(application=application)
-            else:
-                logger.warning(f"Application already exists for token {reference}")
+            application = Application.objects.create(
+                reference=reference,
+                domain_name=registration_data["domain_name"],
+                registrar_person=registrar_person,
+                registrant_person=registrant_person,
+                registry_published_person=registry_published_person,
+                registrant_org=registrant_org,
+                registrar_org=registrar_org,
+                written_permission_evidence=registration_data.get(
+                    "written_permission_file_uploaded_filename"
+                ),
+                domain_purpose=registration_data.get("domain_purpose"),
+                ministerial_request_evidence=registration_data.get(
+                    "minister_file_uploaded_filename"
+                ),
+                policy_exemption_evidence=registration_data.get(
+                    "exemption_file_uploaded_filename"
+                ),
+            )
+            logger.info(
+                "Saved application %d with reference %s", application.id, reference
+            )
+            Review.objects.create(application=application)
+
     except Exception as e:
         logger.error(
             f"""Exception while saving data. Exception: {type(e).__name__} - {str(e)} ,
