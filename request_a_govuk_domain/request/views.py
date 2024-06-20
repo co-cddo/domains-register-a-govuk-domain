@@ -1,6 +1,7 @@
 import logging
 import random
 import string
+import threading
 import uuid
 from datetime import datetime
 
@@ -447,8 +448,12 @@ def save_application_to_database_and_send_confirmation_email(
     send_confirmation_email(reference, request)
 
 
+sem = threading.Semaphore()
+
+
 class SuccessView(View):
     def get(self, request, token: str):
+        sem.acquire()
         if request.session.pop("token", None) == token:
             reference = generate_reference()
             save_application_to_database_and_send_confirmation_email(reference, request)
@@ -456,6 +461,7 @@ class SuccessView(View):
             request.session.pop("registration_data", None)
         else:
             reference = None
+        sem.release()
         return render(request, "success.html", {"reference": reference})
 
 
