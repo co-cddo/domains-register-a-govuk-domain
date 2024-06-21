@@ -442,29 +442,30 @@ def save_application_to_database_and_send_confirmation_email(
     :param reference: Application reference
     :param request: request object
     """
-    logger.info(f"Saving form {request.session.session_key}")
+    logging.info(f"Saving form {request.session.session_key}")
     save_data_in_database(reference, request)
     send_confirmation_email(reference, request)
 
 
 class SuccessView(View):
     def get(self, request, token: str):
-        logger.info(f"Lock for token {token}")
+        logging.info(f"Lock for token {token}")
         with advisory_lock(token) as _:
-            logger.info(f"Check for application with token {token}")
+            logging.info(f"Check for application with token {token}")
             # We need both the checks as it is possible that the session
             # may have not been updated by the time the other thread reached this point.
             # This is due to the Django framework setting the session at the entry point of the request.
             # https://docs.djangoproject.com/en/5.0/topics/http/sessions/#when-sessions-are-saved
+
             if request.session.pop(
                 "token", None
             ) == token and not check_application_exists(token):
-                logger.info(f"Saving application {token}")
-                request.session.modified = True
+                logging.info(f"Saving application {token}")
                 save_application_to_database_and_send_confirmation_email(token, request)
-                # We're finished, so clear the session data
-                request.session.pop("registration_data", None)
-        logger.info(f"Unlocked for token {token}")
+
+            # We're finished, so clear the session data
+            request.session.pop("registration_data", None)
+        logging.info(f"Unlocked for token {token}")
         return render(request, "success.html", {"reference": token})
 
 
