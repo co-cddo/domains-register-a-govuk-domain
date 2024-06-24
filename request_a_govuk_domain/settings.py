@@ -292,3 +292,11 @@ CELERY_RESULT_BACKEND = "django-db"
 CELERY_BEAT_SCHEDULE_FILENAME = env.str(
     "CELERY_BEAT_SCHEDULE_FILENAME", default="celerybeat-schedule"
 )
+
+# The setting "CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True" is to get rid of the following deprecation warning
+# message, which shows up in the Cloudwatch Celery worker logs
+#
+# PendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+# whether broker connection retries are made during startup in Celery 6.0 and above. If you wish to retain the
+# existing behavior for retrying connections on startup, you should set broker_connection_retry_on_startup to True.
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
