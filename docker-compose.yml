@@ -9,6 +9,7 @@ x-common-application-variables: &common-application-variables
   ENVIRONMENT: 'local'
   AWS_ACCESS_KEY_ID: dummy-access-key-id # pragma: allowlist secret
   AWS_SECRET_ACCESS_KEY: dummy-access-key # pragma: allowlist secret
+  CELERY_BROKER_URL: redis://redis:6379/0
 
 x-api-base: &api-base
   platform: linux/amd64
@@ -54,9 +55,30 @@ services:
         condition: service_started
       s3:
         condition: service_started
+      worker:
+        condition: service_started
     networks:
       - clam-net
       - s3-net
+
+  worker:
+    platform: linux/amd64
+    build:
+      context: .
+      args:
+        POETRY_ARGS: "--no-root --no-ansi"
+    entrypoint: [ "/usr/local/bin/celery", "-A", "request_a_govuk_domain" ]
+    command: [ "worker", "-B", "-l", "INFO" ]
+    environment:
+      <<: *common-application-variables
+      CELERY_BEAT_SCHEDULE_FILENAME: /var/run/request_a_govuk_domain/celerybeat-schedule
+      NOTIFY_EMAIL_FAILURE_RECIPIENT: prakash.jha@digital.cabinet-office.gov.uk
+    volumes:
+      - worker-var-run:/var/run/request_a_govuk_domain/
+    depends_on:
+      - redis
+    networks:
+      - clam-net
 
   postgres:
     platform: linux/amd64
@@ -77,6 +99,16 @@ services:
       retries: 5
     networks:
       - clam-net
+
+  redis:
+    image: redis
+    ports:
+      - "63790:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - clam-net
+
 
   clamav:
     platform: linux/amd64
@@ -106,6 +138,8 @@ services:
 volumes:
   postgres-data: { }
   govuk_domain_home: { }
+  redis-data: { }
+  worker-var-run: { }
 
 networks:
   clam-net:

@@ -178,3 +178,4 @@ cypress/screenshots/
 # django static files
 request_a_govuk_domain/static
 /.s3-data/
+celerybeat-schedule.db
