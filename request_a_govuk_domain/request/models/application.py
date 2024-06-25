@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -111,10 +112,26 @@ class Application(models.Model):
             ]:
                 if file_field and not file_field.name.startswith("applications"):
                     from_path = TEMP_STORAGE_ROOT + file_field.name
-                    logger.info(
-                        "Copying temporary file to application folder %s", from_path
-                    )
+                    if file_field.file and isinstance(
+                        file_field.file, InMemoryUploadedFile
+                    ):
+                        """
+                        Sometimes the file is stored in the memory instead of the S3 bucket (i.e when uploaded
+                        directly through the admin screens). Then
+                        we have to move it in to S3 explicitly before continue with the usual S3 copy
+                        """
+                        storage.connection.meta.client.put_object(
+                            Bucket=storage.bucket_name,
+                            Key=from_path,
+                            Body=file_field.file.read(),
+                        )
+
                     to_path = f"applications/{self.reference}/" + file_field.name
+                    logger.info(
+                        "Copying temporary file %s to application folder %s",
+                        from_path,
+                        to_path,
+                    )
                     storage.connection.meta.client.copy_object(
                         Bucket=storage.bucket_name,
                         CopySource=storage.bucket_name + "/" + from_path,
