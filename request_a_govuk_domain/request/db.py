@@ -163,7 +163,7 @@ def save_data_in_database(reference, request):
                 "Saved application %d with reference %s", application.id, reference
             )
             Review.objects.create(application=application)
-
+        return application
     except Exception as e:
         logger.error(
             f"""Exception while saving data. Exception: {type(e).__name__} - {str(e)} ,
