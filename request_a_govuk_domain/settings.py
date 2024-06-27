@@ -113,7 +113,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "request_a_govuk_domain.request.utils.phase_header_text",
+                "request_a_govuk_domain.request.utils.variable_page_content",
             ],
         },
     },
