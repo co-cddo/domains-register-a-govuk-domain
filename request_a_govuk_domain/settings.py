@@ -289,6 +289,7 @@ S3_STORAGE_ENABLED = env.bool("S3_STORAGE_ENABLED", default=IS_AWS)
 
 CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", "redis://localhost/0")
 CELERY_RESULT_BACKEND = "django-db"
+CELERY_TASK_DEFAULT_QUEUE = env.str("QUEUE_NAME", "celery")
 CELERY_BEAT_SCHEDULE_FILENAME = env.str(
     "CELERY_BEAT_SCHEDULE_FILENAME", default="celerybeat-schedule"
 )
