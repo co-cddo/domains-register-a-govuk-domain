@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, RedirectView
 from django.views.generic.edit import FormView
+from django.db import IntegrityError
 
 from .constants import NOTIFY_TEMPLATE_ID_MAP
 from .db import save_data_in_database
@@ -367,9 +368,14 @@ class ConfirmView(TemplateView):
         :return:
         """
         reference_ = request.POST["reference"]
-        self.save_application_to_database_and_send_confirmation_email(
-            reference_, request
-        )
+        try:
+            self.save_application_to_database_and_send_confirmation_email(
+                reference_, request
+            )
+        except IntegrityError as e:
+            logger.warning(
+                f"Exception while saving data. {type(e).__name__} - {str(e)}"
+            )
         # We're finished, so clear the session data
         request.session.pop("registration_data", None)
         request.session.modified = True

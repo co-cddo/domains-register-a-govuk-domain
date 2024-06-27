@@ -100,8 +100,31 @@ class ServiceFailureErrorHandlerTests(TransactionTestCase):
             elif feature._exception:
                 exception_count += 1
         # Only one will succeed
-        self.assertEqual(1, success_count)
+        self.assertEqual(5, success_count)
         # Remaining duplicate submissions will fail
-        self.assertEqual(4, exception_count)
+        self.assertEqual(0, exception_count)
         # Only one application will be saved int the database
         self.assertEqual(1, Application.objects.count())
+
+    def test_application_submit_only_saved_once_with_exception(self):
+        """
+        Make sure we only create one application in the database even if the user sends multiple
+        concurrent submits - multiple click on submit button with exception
+        :return:
+        """
+
+        @release_connection
+        def make_request():
+            class SessionDict(dict):
+                def __init__(self, *k, **kwargs):
+                    self.__dict__ = self
+                    super().__init__(*k, **kwargs)
+                    self.session_key = "session-key"
+
+            mock_request = Mock()
+            mock_request.session = SessionDict({})
+            mock_request.POST = {"reference": "GOVUK20062024QTLV"}
+            return ConfirmView().post(mock_request)
+
+        with self.assertRaises(Exception):
+            make_request()
