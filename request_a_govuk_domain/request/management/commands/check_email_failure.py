@@ -79,7 +79,7 @@ def send_failed_email(email_failure_notification: dict) -> None:
     personalisation = {
         "env": env,
         "reference": email_failure_notification["application_reference"],
-        "email_address": email_failure_notification["email_address"],
+        "registrar_email": email_failure_notification["email_address"],
         "status": email_failure_notification["status"],
     }
     notify_template_id = (
