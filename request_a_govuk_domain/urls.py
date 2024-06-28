@@ -54,6 +54,7 @@ from .request.views import (
     security_txt_view,
     robots_txt_view,
     forbidden_view,
+    bad_request_view,
     download_file,
     AccessibilityView,
     TermsAndConditionsView,
@@ -187,3 +188,4 @@ handler500 = service_failure_view
 handler404 = page_not_found_view
 handler403 = forbidden_view
 handler401 = forbidden_view
+handler400 = bad_request_view

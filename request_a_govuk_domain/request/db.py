@@ -6,6 +6,7 @@ This module provides functions for interacting with the database in Register App
 
 import logging
 from django.db import transaction
+from django.core.exceptions import BadRequest
 
 from request_a_govuk_domain.request.models import (
     Registrant,
@@ -103,7 +104,7 @@ def save_data_in_database(reference, request):
     )
 
     if not is_valid_session_data(registration_data):
-        raise ValueError(
+        raise BadRequest(
             "Invalid session data found. Failed to create a valid application from the data collected from the user"
         )
 

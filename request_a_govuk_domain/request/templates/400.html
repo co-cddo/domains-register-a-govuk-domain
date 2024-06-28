@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load govuk_frontend_django %}
+
+{% block title %}Invalid request{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-xl">
+        Invalid request
+      </h1>
+
+      <p class="govuk-body">
+        It looks like something went wrong with your request. This might happen
+        if some information was missing or incorrectly entered. Please
+        double-check the form fields and try again, or head back to the <a class="govuk-link" href="/">service's homepage</a>.
+      </p>
+    </div>
+  </div>
+
+{% endblock %}
