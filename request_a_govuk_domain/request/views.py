@@ -648,3 +648,7 @@ def forbidden_view(request, exception):
 
 def csrf_failure_view(request, reason=""):
     return render(request, "403.html", status=403)
+
+
+def bad_request_view(request, exception):
+    return render(request, "400.html", status=400)
