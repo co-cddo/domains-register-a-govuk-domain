@@ -359,22 +359,34 @@ def route_specific_email_template(
     return route_specific_email_template
 
 
-def phase_header_text(_request):
+def variable_page_content(_request):
     """
-    Provide the header text for the phase banner
-    :param _request:
+    Provide environment-dependent values for rendering pages
+    (e.g. header text for the phase banner)
+    :param _request: not used
     :return:
     """
     phase = os.getenv("ENVIRONMENT")
     if phase not in ["prod", "stage"]:
-        return {
+        context = {
             "PHASE_CLASS": "govuk-tag--pink",
             "PHASE_HEADER": "Prototype",
             "PHASE_CONTENT": "This is not a full service. It is not production code and you might experience problems.",
         }
     else:
-        return {
+        context = {
             "PHASE_CLASS": "",
             "PHASE_HEADER": "Beta",
             "PHASE_CONTENT": "This is a new service: your feedback will help us to improve it",
         }
+
+    context["GOOGLE_ANALYTICS_ID"] = os.getenv("GOOGLE_ANALYTICS_ID")
+
+    return context
+
+
+def google_analytics(request):
+    """
+    Context processor: sends the google analytics ID to templates
+    """
+    return {}
