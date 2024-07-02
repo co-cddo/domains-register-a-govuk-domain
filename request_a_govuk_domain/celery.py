@@ -19,7 +19,7 @@ app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
     "email-fail-checker": {
-        "task": "request_a_govuk_domain.request.tasks.email_fail_check_task",
+        "task": "request_a_govuk_domain.request.tasks.check_email_failure_and_notify",
         "schedule": crontab(minute="*/1"),
     },
 }
