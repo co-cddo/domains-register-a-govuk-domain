@@ -50,7 +50,7 @@ describe('Happy path - route 1-12', () => {
     cy.summaryShouldHave(6, ['Clerk', 'clerk@example.org'])
     cy.summaryShouldNotHave(['Reason for request', 'Minister', 'Permission', 'Exemption'])
 
-    cy.get('#button-continue').click()
+    cy.get('#id_submit').click()
 
     cy.checkPageTitleIncludes('Application submitted')
     cy.checkApplicationIsOnBackend({
