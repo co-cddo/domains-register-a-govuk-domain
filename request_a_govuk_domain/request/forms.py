@@ -425,6 +425,15 @@ class MinisterForm(forms.Form):
         return dict(self.fields[field].choices).get(value)
 
 
+class ConfirmForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Button("submit", "Accept and send"),
+        )
+
+
 class UploadForm(forms.Form):
     file = forms.FileField(
         label="Upload a file",
