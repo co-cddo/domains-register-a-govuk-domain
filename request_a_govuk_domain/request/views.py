@@ -447,11 +447,13 @@ def save_application_to_database_and_send_confirmation_email(
 
 class SuccessView(View):
     def get(self, request):
-        reference = generate_reference()
-        save_application_to_database_and_send_confirmation_email(reference, request)
-        # We're finished, so clear the session data
-        request.session.pop("registration_data", None)
-        return render(request, "success.html", {"reference": reference})
+        if (request.session.get("registration_data")) is not None:
+            reference = generate_reference()
+            save_application_to_database_and_send_confirmation_email(reference, request)
+            # We're finished, so clear the session data
+            request.session.pop("registration_data", None)
+            return render(request, "success.html", {"reference": reference})
+        return render(request, "start.html")
 
 
 class ExemptionView(FormView):
