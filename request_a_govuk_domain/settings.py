@@ -260,10 +260,11 @@ if not DEBUG:
 # same origin as the HTML
 CSP_IMG_SRC = "'self'"
 CSP_STYLE_SRC = "'self'"  # pragma: allowlist secret
-CSP_SCRIPT_SRC = "'self'"  # pragma: allowlist secret'
+CSP_SCRIPT_SRC = "'self' https://*.googletagmanager.com"  # pragma: allowlist secret'
+CSP_CONNECT_SRC = "'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com"  # pragma: allowlist secret'
 CSP_FORM_ACTION = "'self'"
 CSP_FRAME_ANCESTORS = "'self'"
-CSP_INCLUDE_NONCE_IN = ["script-src", "style-src", "img-src"]
+CSP_INCLUDE_NONCE_IN = ["script-src", "style-src", "img-src", "connect-src"]
 # Disable CSP for debug as it prevent the style sheets from loading on  localhost
 CSP_REPORT_ONLY = False
 
