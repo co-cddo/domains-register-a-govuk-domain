@@ -25,6 +25,7 @@ from .forms import (
     RegistrantDetailsForm,
     RegistryDetailsForm,
     WrittenPermissionForm,
+    ConfirmForm,
 )
 from .models.organisation import Registrar, RegistrantTypeChoices
 from .models.storage_util import select_storage
@@ -356,8 +357,10 @@ class MinisterUploadRemoveView(UploadRemoveView):
     pattern_name = "minister_upload"
 
 
-class ConfirmView(TemplateView):
+class ConfirmView(FormView):
     template_name = "confirm.html"
+    form_class = ConfirmForm
+    success_url = reverse_lazy("success")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
