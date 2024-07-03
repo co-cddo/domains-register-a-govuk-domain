@@ -15,7 +15,7 @@ describe('Changing answers at the end of the process', () => {
     cy.selectYesOrNo('domain_confirmation', 'yes')
     cy.fillOutRegistrantDetails('HMRC', 'Rob Roberts', '01225672344', 'rob@example.org')
     cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
-    cy.get('#button-continue').click()
+    cy.get('#id_submit').click()
     cy.checkApplicationIsOnBackend({
       domain: 'something-pc.gov.uk',
       registrar_org: 'WeRegister',
@@ -116,7 +116,7 @@ describe('Changing answers at the end of the process', () => {
     cy.checkPageTitleIncludes('Registrant details for publishing to the registry')
     cy.fillOutRegistryDetails('Clerk', 'clerk@example.org')
     cy.checkPageTitleIncludes('Check your answers')
-    cy.get('#button-continue').click()
+    cy.get('#id_submit').click()
 
     cy.checkPageTitleIncludes('Application submitted')
     cy.checkApplicationIsOnBackend({

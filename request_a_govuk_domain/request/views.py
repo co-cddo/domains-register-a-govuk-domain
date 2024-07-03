@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, RedirectView
 from django.views.generic.edit import FormView
+from django.db import IntegrityError
 
 from .constants import NOTIFY_TEMPLATE_ID_MAP
 from .db import save_data_in_database
@@ -25,6 +26,7 @@ from .forms import (
     RegistrantDetailsForm,
     RegistryDetailsForm,
     WrittenPermissionForm,
+    ConfirmationForm,
 )
 from .models.organisation import Registrar, RegistrantTypeChoices
 from .models.storage_util import select_storage
@@ -359,6 +361,66 @@ class MinisterUploadRemoveView(UploadRemoveView):
 class ConfirmView(TemplateView):
     template_name = "confirm.html"
 
+    def post(self, request):
+        """
+        Save the form and redirect to the success view.
+        :param request:
+        :return:
+        """
+        reference_ = request.POST["reference"]
+        try:
+            self.save_application_to_database_and_send_confirmation_email(
+                reference_, request
+            )
+        except IntegrityError as e:
+            logger.warning(
+                f"Exception while saving data. {type(e).__name__} - {str(e)}"
+            )
+        # We're finished, so clear the session data
+        request.session.pop("registration_data", None)
+        request.session.modified = True
+        return redirect("success", reference=reference_)
+
+    @transaction.atomic  # This ensures that any failure during email send will not save data in db either
+    def save_application_to_database_and_send_confirmation_email(
+        self, reference: str, request: HttpRequest
+    ) -> None:
+        """
+        Saves data in the db and sends confirmation email
+
+        :param reference: Application reference
+        :param request: request object
+        """
+        logger.info(f"Saving form {request.session.session_key}")
+        save_data_in_database(reference, request)
+        self.send_confirmation_email(reference, request)
+
+    def send_confirmation_email(self, reference: str, request) -> None:
+        """
+        Method to send Confirmation email
+
+        It gets the required personalisation data from request and calls send_email to send the confirmation email
+
+        :param reference: Application reference
+        :param request: request object
+        """
+        registration_data = request.session.get("registration_data", {})
+
+        # Notify personalisation dictionary to be used in the notify templates
+        personalisation_dict = personalisation(reference, registration_data)
+
+        route_specific_email_template_name = route_specific_email_template(
+            "confirmation", registration_data
+        )
+
+        send_email(
+            email_address=registration_data["registrar_email"],
+            template_id=NOTIFY_TEMPLATE_ID_MAP[
+                route_specific_email_template_name
+            ],  # Notify API template id of route specific Confirmation email
+            personalisation=personalisation_dict,
+        )
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -381,76 +443,30 @@ class ConfirmView(TemplateView):
         ]
         # Pass the route number as what's on the page depends on it
         context["route"] = route_number(self.request.session.get("registration_data"))
-
+        form = ConfirmationForm({"reference": self.generate_reference()})
+        context["form"] = form
         return context
 
+    def generate_reference(self) -> str:
+        """
+        Generate application reference with the following format:
+        GOVUK + date in DDMMYYYY + random 4 letter alphabetical characters ( which don't have vowels and Y )
+        e.g. 'GOVUK12042024TRFT'
 
-def generate_reference() -> str:
-    """
-    Generate application reference with the following format:
-    GOVUK + date in DDMMYYYY + random 4 letter alphabetical characters ( which don't have vowels and Y )
-    e.g. 'GOVUK12042024TRFT'
+        Returns:
+            str: application reference.
+        """
 
-    Returns:
-        str: application reference.
-    """
+        random_letters = [
+            letter for letter in string.ascii_uppercase if letter not in "AEIOUY"
+        ]
+        random_string = "".join(random.choices(random_letters, k=4))
 
-    random_letters = [
-        letter for letter in string.ascii_uppercase if letter not in "AEIOUY"
-    ]
-    random_string = "".join(random.choices(random_letters, k=4))
-
-    return "GOVUK" + datetime.today().strftime("%d%m%Y") + random_string
-
-
-def send_confirmation_email(reference: str, request) -> None:
-    """
-    Method to send Confirmation email
-
-    It gets the required personalisation data from request and calls send_email to send the confirmation email
-
-    :param reference: Application reference
-    :param request: request object
-    """
-    registration_data = request.session.get("registration_data", {})
-
-    # Notify personalisation dictionary to be used in the notify templates
-    personalisation_dict = personalisation(reference, registration_data)
-
-    route_specific_email_template_name = route_specific_email_template(
-        "confirmation", registration_data
-    )
-
-    send_email(
-        email_address=registration_data["registrar_email"],
-        template_id=NOTIFY_TEMPLATE_ID_MAP[
-            route_specific_email_template_name
-        ],  # Notify API template id of route specific Confirmation email
-        personalisation=personalisation_dict,
-    )
-
-
-@transaction.atomic  # This ensures that any failure during email send will not save data in db either
-def save_application_to_database_and_send_confirmation_email(
-    reference: str, request: HttpRequest
-) -> None:
-    """
-    Saves data in the db and sends confirmation email
-
-    :param reference: Application reference
-    :param request: request object
-    """
-    logger.info(f"Saving form {request.session.session_key}")
-    save_data_in_database(reference, request)
-    send_confirmation_email(reference, request)
+        return "GOVUK" + datetime.today().strftime("%d%m%Y") + random_string
 
 
 class SuccessView(View):
-    def get(self, request):
-        reference = generate_reference()
-        save_application_to_database_and_send_confirmation_email(reference, request)
-        # We're finished, so clear the session data
-        request.session.pop("registration_data", None)
+    def get(self, request, reference: str):
         return render(request, "success.html", {"reference": reference})
 
 
