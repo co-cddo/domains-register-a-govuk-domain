@@ -220,9 +220,7 @@
       <div class="govuk-body">
         By submitting this application you are confirming the details you are providing are correct to the best of your knowledge.
       </div>
-      <a class="govuk-button" id="button-continue" href="{% url "success" %}">
-        Accept and send
-      </a>
+      {% crispy form %}
     </div>
   </div>
 {% endblock %}
