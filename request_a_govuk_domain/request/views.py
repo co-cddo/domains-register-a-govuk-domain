@@ -400,7 +400,7 @@ class MinisterUploadRemoveView(UploadRemoveView):
 
 class ConfirmView(FormView):
     template_name = "confirm.html"
-    form_class = ConfirmForm
+    form_class = ConfirmationForm
     success_url = reverse_lazy("success")
 
     def post(self, request):
