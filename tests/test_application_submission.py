@@ -64,6 +64,46 @@ class ServiceFailureErrorHandlerTests(TransactionTestCase):
             self.assertEqual(302, res.status_code)
             self.assertEqual(1, Application.objects.count())
 
+    def test_application_success_page_only_works_for_existing_applications(self):
+        """
+        Success page returns 200 status when correct reference is passed
+        :return:
+        """
+        s = self.client.session
+        s.update({"registration_data": self.registration_data})
+        s.save()
+        with self.assertLogs() as ctx_:
+            res = self.client.post("/confirm/", data={"reference": "GOVUK20062024QTLV"})
+            self.assertIn(
+                f"INFO:request_a_govuk_domain.request.views:Saving form {s.session_key}",
+                ctx_.output,
+            )
+            self.assertEqual(302, res.status_code)
+            self.assertEqual(1, Application.objects.count())
+
+            res = self.client.get("/success/GOVUK20062024QTLV/")
+            self.assertEqual(200, res.status_code)
+
+    def test_application_success_page_riase_error_for_invalid_reference(self):
+        """
+        Success page returns 400 status when non existing reference is passed
+        :return:
+        """
+        s = self.client.session
+        s.update({"registration_data": self.registration_data})
+        s.save()
+        with self.assertLogs() as ctx_:
+            res = self.client.post("/confirm/", data={"reference": "GOVUK20062024QTLV"})
+            self.assertIn(
+                f"INFO:request_a_govuk_domain.request.views:Saving form {s.session_key}",
+                ctx_.output,
+            )
+            self.assertEqual(302, res.status_code)
+            self.assertEqual(1, Application.objects.count())
+
+            res = self.client.get("/success/GOVUK20062024QTLG/")
+            self.assertEqual(400, res.status_code)
+
     def test_application_submit_only_saved_once_on_concurrent_submits(self):
         """
         Make sure we only create one application in the database even if the user sends multiple

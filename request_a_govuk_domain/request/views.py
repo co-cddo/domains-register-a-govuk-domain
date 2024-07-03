@@ -3,6 +3,7 @@ import random
 import string
 from datetime import datetime
 
+from django.core.exceptions import BadRequest
 from django.db import transaction
 from django.http import HttpResponse, HttpRequest, FileResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect
@@ -28,6 +29,7 @@ from .forms import (
     WrittenPermissionForm,
     ConfirmationForm,
 )
+from .models import Application
 from .models.organisation import Registrar, RegistrantTypeChoices
 from .models.storage_util import select_storage
 from .utils import (
@@ -468,7 +470,9 @@ class ConfirmView(TemplateView):
 
 class SuccessView(View):
     def get(self, request, reference: str):
-        return render(request, "success.html", {"reference": reference})
+        if Application.objects.filter(reference=reference).exists():
+            return render(request, "success.html", {"reference": reference})
+        raise BadRequest("Invalid data in request")
 
 
 class ExemptionView(FormView):
