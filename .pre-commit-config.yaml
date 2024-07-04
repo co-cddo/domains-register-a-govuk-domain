@@ -31,6 +31,8 @@ repos:
     hooks:
     -   id: mypy
         exclude: wsgi.py
+        verbose: true
+        args: [--pretty]
         additional_dependencies:
         -    types-six
         -    'django-stubs[compatible-mypy]'

@@ -53,16 +53,75 @@ class ServiceFailureErrorHandlerTests(TransactionTestCase):
         :return:
         """
         s = self.client.session
-        s.update({"registration_data": self.registration_data})
+        s.update(
+            {
+                "registration_data": self.registration_data,
+                "application_reference": "GOVUK20062024QTLV",
+            }
+        )
         s.save()
         with self.assertLogs() as ctx_:
-            res = self.client.post("/confirm/", data={"reference": "GOVUK20062024QTLV"})
+            res = self.client.post("/confirm/", data={})
             self.assertIn(
                 f"INFO:request_a_govuk_domain.request.views:Saving form {s.session_key}",
                 ctx_.output,
             )
             self.assertEqual(302, res.status_code)
             self.assertEqual(1, Application.objects.count())
+
+    def test_application_success_page_only_works_for_existing_applications(self):
+        """
+        Success page returns 200 status when correct reference is passed
+        :return:
+        """
+        s = self.client.session
+        s.update(
+            {
+                "registration_data": self.registration_data,
+                "application_reference": "GOVUK20062024QTLV",
+            }
+        )
+        s.save()
+        with self.assertLogs() as ctx_:
+            res = self.client.post("/confirm/", data={})
+            self.assertIn(
+                f"INFO:request_a_govuk_domain.request.views:Saving form {s.session_key}",
+                ctx_.output,
+            )
+            self.assertEqual(302, res.status_code)
+            self.assertEqual(1, Application.objects.count())
+
+            res = self.client.get("/success/")
+            self.assertEqual(200, res.status_code)
+
+    def test_application_success_page_raise_error_for_invalid_reference(self):
+        """
+        Success page returns 400 status if called outside the process
+        :return:
+        """
+        s = self.client.session
+        s.update(
+            {
+                "registration_data": self.registration_data,
+                "application_reference": "GOVUK20062024QTLV",
+            }
+        )
+        s.save()
+        with self.assertLogs() as ctx_:
+            res = self.client.post("/confirm/", data={}, follow=True)
+            self.assertIn(
+                f"INFO:request_a_govuk_domain.request.views:Saving form {s.session_key}",
+                ctx_.output,
+            )
+            self.assertEqual(200, res.status_code)
+            self.assertEqual(1, Application.objects.count())
+            # Application reference will be cleand up from the session after success page
+            self.assertIsNone(self.client.session.get("application_reference"))
+
+            # Simulate accessing the success page after the process has completed
+            res = self.client.get("/success/", follow=True)
+
+            self.assertEqual(400, res.status_code)
 
     def test_application_submit_only_saved_once_on_concurrent_submits(self):
         """
@@ -83,9 +142,9 @@ class ServiceFailureErrorHandlerTests(TransactionTestCase):
             mock_request.session = SessionDict(
                 {
                     "registration_data": self.registration_data,
+                    "application_reference": "GOVUK20062024QTLV",
                 }
             )
-            mock_request.POST = {"reference": "GOVUK20062024QTLV"}
             return ConfirmView().post(mock_request)
 
         num_threads = 5
@@ -100,31 +159,27 @@ class ServiceFailureErrorHandlerTests(TransactionTestCase):
             elif feature._exception:
                 exception_count += 1
         # Only one will succeed
-        self.assertEqual(5, success_count)
+        self.assertEqual(1, success_count)
         # Remaining duplicate submissions will fail
-        self.assertEqual(0, exception_count)
+        self.assertEqual(4, exception_count)
         # Only one application will be saved int the database
         self.assertEqual(1, Application.objects.count())
 
-    def test_application_submit_only_saved_once_with_exception(self):
+    def test_unhandled_errors_are_treated_as_500(self):
         """
-        Make sure we only create one application in the database even if the user sends multiple
-        concurrent submits - multiple click on submit button with exception
+        Any error in creating the application is passed on as an internal server error.
         :return:
         """
 
-        @release_connection
-        def make_request():
-            class SessionDict(dict):
-                def __init__(self, *k, **kwargs):
-                    self.__dict__ = self
-                    super().__init__(*k, **kwargs)
-                    self.session_key = "session-key"
-
-            mock_request = Mock()
-            mock_request.session = SessionDict({})
-            mock_request.POST = {"reference": "GOVUK20062024QTLV"}
-            return ConfirmView().post(mock_request)
+        class SessionDict(dict):
+            def __init__(self, *k, **kwargs):
+                self.__dict__ = self
+                super().__init__(*k, **kwargs)
+                self.session_key = "session-key"
 
         with self.assertRaises(Exception):
-            make_request()
+            mock_request = Mock()
+            mock_request.session = SessionDict({})
+            # Try to save the application without any session data
+            mock_request.POST = {}
+            return ConfirmView().post(mock_request)
