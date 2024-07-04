@@ -294,7 +294,7 @@ CELERY_TASK_DEFAULT_QUEUE = env.str("QUEUE_NAME", "celery")
 CELERY_BEAT_SCHEDULE_FILENAME = env.str(
     "CELERY_BEAT_SCHEDULE_FILENAME", default="celerybeat-schedule"
 )
-
+CELERY_BROKER_TRANSPORT_OPTIONS = env.json("CELERY_BROKER_TRANSPORT_OPTIONS", {})
 # The setting "CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True" is to get rid of the following deprecation warning
 # message, which shows up in the Cloudwatch Celery worker logs
 #
