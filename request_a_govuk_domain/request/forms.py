@@ -1,6 +1,5 @@
 import re
 
-from crispy_forms.layout import Hidden
 from crispy_forms_gds.choices import Choice
 from crispy_forms_gds.helper import FormHelper
 from crispy_forms_gds.layout import (
@@ -506,13 +505,10 @@ class DomainPurposeForm(forms.Form):
 
 
 class ConfirmationForm(forms.Form):
-    reference = forms.HiddenInput()
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            Hidden(name="reference", value=self.data.get("reference")),
             Button(
                 "submit",
                 "Accept and send",

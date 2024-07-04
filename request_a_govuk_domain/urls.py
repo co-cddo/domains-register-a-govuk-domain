@@ -140,7 +140,7 @@ urlpatterns = [
         name="registrant_type_fail",
     ),
     path("confirm/", ConfirmView.as_view(), name="confirm"),
-    path("success/<str:reference>/", SuccessView.as_view(), name="success"),
+    path("success/", SuccessView.as_view(), name="success"),
     path(
         "exemption-upload-remove/",
         ExemptionUploadRemoveView.as_view(),
