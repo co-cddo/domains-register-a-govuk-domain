@@ -38,6 +38,7 @@ from .utils import (
     send_email,
     route_specific_email_template,
     personalisation,
+    get_registration_data,
 )
 
 logger = logging.getLogger(__name__)
@@ -119,7 +120,7 @@ class RegistrantTypeView(FormView):
     form_class = RegistrantTypeForm
 
     def get_initial(self):
-        session_data = self.request.session["registration_data"]
+        session_data = get_registration_data(self.request)
         initial = super().get_initial()
         initial["registrant_type"] = session_data.get("registrant_type", "")
         return initial
@@ -146,7 +147,7 @@ class DomainView(FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
+        session_data = get_registration_data(self.request)
         initial["domain_name"] = session_data.get("domain_name", "")
         return initial
 
@@ -185,7 +186,7 @@ class DomainConfirmationView(FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
+        session_data = get_registration_data(self.request)
         initial["domain_confirmation"] = session_data.get("domain_confirmation", "")
         return initial
 
@@ -221,7 +222,7 @@ class RegistrantDetailsView(FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
+        session_data = get_registration_data(self.request)
         initial["registrant_organisation"] = session_data.get(
             "registrant_organisation", ""
         )
@@ -253,7 +254,7 @@ class RegistryDetailsView(FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
+        session_data = get_registration_data(self.request)
         initial["registrant_role"] = session_data.get("registrant_role", "")
         initial["registrant_contact_email"] = session_data.get(
             "registrant_contact_email", ""
@@ -286,7 +287,7 @@ class WrittenPermissionView(FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
+        session_data = get_registration_data(self.request)
         initial["written_permission"] = session_data.get("written_permission", "")
         return initial
 
@@ -425,7 +426,7 @@ class ConfirmView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         # Access session data and include it in the context
-        registration_data = self.request.session.get("registration_data", {})
+        registration_data = get_registration_data(self.request)
         context["registration_data"] = registration_data
 
         # Registrar organisation name: need to look up real name
@@ -476,7 +477,7 @@ class ExemptionView(FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
+        session_data = get_registration_data(self.request)
         initial["exemption"] = session_data.get("exemption", "")
         return initial
 
@@ -502,7 +503,7 @@ class MinisterView(FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        session_data = self.request.session["registration_data"]
+        session_data = get_registration_data(self.request)
         initial["minister"] = session_data.get("minister", "")
         return initial
 
@@ -532,7 +533,7 @@ def download_file(request, file_type):
     :param file_type:  Type of file to be downloaded
     :return:
     """
-    registration_data = request.session["registration_data"]
+    registration_data = get_registration_data(request)
     storage = select_storage()
     file_name = registration_data[f"{file_type}_file_uploaded_filename"]
     if storage.exists(file_name):
@@ -616,7 +617,7 @@ class DomainPurposeView(FormView):
     form_class = DomainPurposeForm
 
     def get_initial(self):
-        session_data = self.request.session["registration_data"]
+        session_data = get_registration_data(self.request)
         initial = super().get_initial()
         initial["domain_purpose"] = session_data.get("domain_purpose", "")
         return initial

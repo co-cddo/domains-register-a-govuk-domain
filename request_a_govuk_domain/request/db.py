@@ -19,7 +19,7 @@ from request_a_govuk_domain.request.models import (
 )
 from .models.storage_util import select_storage
 
-from .utils import route_number, is_valid_session_data
+from .utils import route_number, is_valid_session_data, get_registration_data
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +98,7 @@ def save_data_in_database(reference, request):
     :param request: Request object
     """
 
-    session_data = request.session.get("registration_data", {})
+    session_data = get_registration_data(request)
     registration_data = sanitised_registration_data(
         session_data, request.session.session_key
     )
