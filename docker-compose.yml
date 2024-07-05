@@ -10,6 +10,8 @@ x-common-application-variables: &common-application-variables
   AWS_ACCESS_KEY_ID: dummy-access-key-id # pragma: allowlist secret
   AWS_SECRET_ACCESS_KEY: dummy-access-key # pragma: allowlist secret
   CELERY_BROKER_URL: redis://redis:6379/0
+  NOMINET_ROMSID: test_romsid
+  NOMINET_SECRET: test_secret # pragma: allowlist secret
 
 x-api-base: &api-base
   platform: linux/amd64
