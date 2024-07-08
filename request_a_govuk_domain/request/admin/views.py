@@ -1,3 +1,6 @@
+import logging
+
+
 from django.views import View
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
@@ -10,6 +13,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from request_a_govuk_domain.request.models import Application, ApplicationStatus, Review
 
 from .email import send_approval_or_rejection_email
+
+LOGGER = logging.getLogger(__name__)
 
 
 class DecisionConfirmationView(View, admin.ModelAdmin):
@@ -50,6 +55,7 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
                 )
                 return HttpResponseRedirect(reverse("admin:request_review_changelist"))
             except Exception as e:
+                LOGGER.error("Failed to send the email")
                 self.message_user(request, f"Email send failed: {e}", messages.ERROR)
         review = Review.objects.filter(
             application__id=request.POST.get("obj_id")

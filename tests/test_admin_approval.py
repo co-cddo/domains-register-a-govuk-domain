@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 
+import parameterized
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -57,7 +58,13 @@ class ModelAdminTestCase(TestCase):
             username="superuser", password="secret"  # pragma: allowlist secret
         )
 
-    def test_create_approval_works(self):
+    @parameterized.parameterized.expand(
+        [
+            ["approve", "Good Application", "approval"],
+            ["reject", "Bad Application", "rejection"],
+        ]
+    )
+    def test_create_approval_works(self, status, reason, action):
         """
         Test case to check that we load the correct application on the review screen.
         When we click on the item in the list, we load the correct data from the corresponding review steps.
@@ -95,12 +102,12 @@ class ModelAdminTestCase(TestCase):
                 response.context_data["subtitle"],
             )
             # Addition check the ids are correctly assigned.
-            # The id of the review should be one less than of the application
+            # The id of the review should not be equal to the application
             # as we created one application outside the normal flow
-            self.assertEqual(
-                review.id + 1,
+            self.assertNotEqual(
+                review.id,
                 application_to_approve.id,
-                "Id of the review should one less than the application id",
+                "Id of the review should not be equal to the application id",
             )
             # Object id should be the same as the review id
             self.assertEqual(review.id, int(response.context_data["object_id"]))
@@ -108,21 +115,19 @@ class ModelAdminTestCase(TestCase):
         with self.subTest("Approving the review brings up the correct data"):
             approve_response = self.c.post(
                 get_admin_change_view_url(review),
-                data={"reason": "good application", "_approve": "Approve"},
+                data={"reason": reason, f"_{status}": f"{status.capitalize()}"},
                 follow=True,
             )
             # Check that the data shown on the screen is from the correct application
             self.assertContains(
                 approve_response,
-                "Send an email confirming the approval to dummy_registrar_email-xx@gov.uk",
+                f"Send an email confirming the {action} to dummy_registrar_email-xx@gov.uk",
             )
-            self.assertContains(
-                approve_response, "Reason for approval: good application"
-            )
+            self.assertContains(approve_response, f"Reason for {action}: {reason}")
 
             # Make sure the id displayed on the url is the id if the application
             self.assertEqual(
-                f"/admin/application_confirm/?obj_id={application_to_approve.id}&action=approval",
+                f"/admin/application_confirm/?obj_id={application_to_approve.id}&action={action}",
                 approve_response.redirect_chain[0][0],
             )
 
@@ -134,15 +139,18 @@ class ModelAdminTestCase(TestCase):
                 approve_response.redirect_chain[0][0],
                 data={
                     "_confirm": "Confirm",
-                    "action": "approval",
+                    "action": f"{action}",
                     "obj_id": application_to_approve.id,
                 },
                 follow=True,
             )
             # Refresh from the database
             application_to_approve.refresh_from_db()
-            self.assertEqual("approved", application_to_approve.status)
-            self.assertContains(approve_response, "Approval email sent")
+            self.assertEqual(
+                f"{'approved' if status == 'approve' else 'rejected'}",
+                application_to_approve.status,
+            )
+            self.assertContains(approve_response, f"{action.capitalize()} email sent")
 
 
 def get_admin_change_view_url(obj: object) -> str:

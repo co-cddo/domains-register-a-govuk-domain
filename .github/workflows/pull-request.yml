@@ -97,5 +97,7 @@ jobs:
         AWS_ACCESS_KEY_ID: "dummy-key-id"
         AWS_SECRET_ACCESS_KEY: "dummy-key"
         ENVIRONMENT: 'local'
+        NOMINET_ROMSID: test_romsid
+        NOMINET_SECRET: test_secret # pragma: allowlist secret
       run: |
         SECRET_KEY=unneeded DOMAIN_NAME=http://localhost:8010 poetry run python manage.py test -v 2
