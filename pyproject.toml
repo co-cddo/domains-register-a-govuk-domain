@@ -38,6 +38,7 @@ black = "^24.3.0"
 ipdb = "^0.13.13"
 web-pdb = "^1.6.2"
 types-markdown = "^3.6.0.20240316"
+parameterized = "^0.9.0"
 
 [tool.mypy]
 ignore_missing_imports = true

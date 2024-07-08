@@ -377,7 +377,7 @@ class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
         if "_approve" in request.POST:
             if obj.is_approvable():
                 return HttpResponseRedirect(
-                    f"{reverse('application_confirm')}?obj_id={obj.id}&action=approval"
+                    f"{reverse('application_confirm')}?obj_id={obj.application.id}&action=approval"
                 )
             else:
                 self.message_user(
@@ -389,7 +389,7 @@ class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
         if "_reject" in request.POST:
             if obj.is_rejectable():
                 return HttpResponseRedirect(
-                    f"{reverse('application_confirm')}?obj_id={obj.id}&action=rejection"
+                    f"{reverse('application_confirm')}?obj_id={obj.application.id}&action=rejection"
                 )
             else:
                 self.message_user(
