@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -105,6 +106,8 @@ class Application(models.Model):
         if S3_STORAGE_ENABLED:
             storage = select_storage()
             # Move any temporary files in to the application specific folder
+            # We have to do this custom moving because we store the initially uploaded
+            # files in the temp location.
             for file_field in [
                 self.policy_exemption_evidence,
                 self.ministerial_request_evidence,
@@ -126,7 +129,9 @@ class Application(models.Model):
                             Body=file_field.file.read(),
                         )
 
-                    to_path = f"applications/{self.reference}/" + file_field.name
+                    to_path = f"applications/{self.reference}/" + re.sub(
+                        r"[^A-Za-z0-9.]+", "_", file_field.name
+                    )
                     logger.info(
                         "Copying temporary file %s to application folder %s",
                         from_path,

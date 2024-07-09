@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 from django.urls import reverse
+from parameterized import parameterized
 
 from request_a_govuk_domain.request import db
 from request_a_govuk_domain.request.admin.model_admins import convert_to_local_time
@@ -56,7 +57,17 @@ class ModelAdminTestCase(TestCase):
         )
         self.assertEqual("01 Nov 2024 00:00:00 AM", convert_to_local_time(gmt_date))
 
-    def test_file_is_uploaded_from_admin_screen(self):
+    @parameterized.expand(
+        [
+            ["new_document.pdf", "new_document.pdf"],
+            ["new document.pdf", "new_document.pdf"],
+            [
+                "new -document _with more ' spaces.pdf",
+                "new_document_with_more_spaces.pdf",
+            ],
+        ]
+    )
+    def test_file_is_uploaded_from_admin_screen(self, file_name, expected_name):
         request = Mock()
         request.session = SessionDict({"registration_data": self.registration_data})
         app = db.save_data_in_database("ABCDEFGHIJK", request)
@@ -64,7 +75,7 @@ class ModelAdminTestCase(TestCase):
         c.login(username="superuser", password="secret")  # pragma: allowlist secret
 
         written_permission_evidence = SimpleUploadedFile(
-            "new_document.pdf", b"file_content", content_type="application/pdf"
+            file_name, b"file_content", content_type="application/pdf"
         )
         with patch(
             "request_a_govuk_domain.request.models.application.S3_STORAGE_ENABLED", True
@@ -98,15 +109,15 @@ class ModelAdminTestCase(TestCase):
             [
                 call.connection.meta.client.put_object(
                     Bucket="mock-data-bucket",
-                    Key="temp_files/new_document.pdf",
+                    Key=f"temp_files/{file_name}",
                     Body=b"file_content",
                 ),
                 call.connection.meta.client.copy_object(
                     Bucket="mock-data-bucket",
-                    CopySource="mock-data-bucket/temp_files/new_document.pdf",
-                    Key="applications/ABCDEFGHIJK/new_document.pdf",
+                    CopySource=f"mock-data-bucket/temp_files/{file_name}",
+                    Key=f"applications/ABCDEFGHIJK/{expected_name}",
                 ),
-                call.delete("temp_files/new_document.pdf"),
+                call.delete(f"temp_files/{file_name}"),
             ]
         )
         self.assertEqual(response.status_code, 200)
