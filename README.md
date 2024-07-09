@@ -23,15 +23,16 @@ Steps to run the project locally on docker:
 4. Run one of the following commands to run the application:
 
 - Using gunicorn:
-    ```bash
-    make up
-    ```
+  ```bash
+  make up
+  ```
 - Using the Django development server:
-    ```bash
-    make up-devserver
-    ```
+  ```bash
+  make up-devserver
+  ```
 
 When the application is run:
+
 - Any migrations are applied to the database.
 - Static files collected.
 - Seed data (see below) is also applied if it doesn't already exist.
@@ -122,7 +123,6 @@ Following are some of the make commands:
 
 `make clear-db` - Delete the database volume
 
-
 ## End-to-end testing
 
 You need to have NodeJS installed, along with npm.
@@ -138,3 +138,7 @@ Then, to run the tests, you need to have the prototype running on port 8000 (see
 ```
 npx cypress run
 ```
+
+## test
+
+test comment
