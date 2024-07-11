@@ -21,9 +21,9 @@ class ApplicationStatus(models.TextChoices):
     APPROVED = "approved", _("Approved")
     REJECTED = "rejected", _("Rejected")
     IN_PROGRESS = "in_progress", _("In Progress")
-    NEW = "new", _("New")
     READY_2I = "ready_2i", _("Ready for 2i")
-    MORE_INFORMATION = "more_information", _("More Information Required")
+    MORE_INFORMATION = "more_information", _("More Information")
+    NEW = "new", _("New")
     FAILED_CONFIRMATION_EMAIL = "failed_confirmation_email", _(
         "Failed Confirmation Email"
     )
