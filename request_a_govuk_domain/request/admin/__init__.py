@@ -8,6 +8,7 @@ from request_a_govuk_domain.request.models import (
     RegistryPublishedPerson,
     Registrant,
     Registrar,
+    TimeFlag,
 )
 from .model_admins import (
     ApplicationAdmin,
@@ -19,6 +20,7 @@ from .model_admins import (
     RegistryPublishedPersonAdmin,
     RegistrantAdmin,
     RegistrarAdmin,
+    TimeFlagAdmin,
 )
 
 
@@ -41,3 +43,5 @@ admin.site.register(RegistryPublishedPerson, RegistryPublishedPersonAdmin)
 admin.site.register(Registrant, RegistrantAdmin)
 
 admin.site.register(Registrar, RegistrarAdmin)
+
+admin.site.register(TimeFlag, TimeFlagAdmin)

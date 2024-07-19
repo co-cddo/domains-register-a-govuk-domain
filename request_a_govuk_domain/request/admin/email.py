@@ -86,13 +86,13 @@ def token(reference, domain_name: str) -> str:
     return generated_token
 
 
-def send_approval_or_rejection_email(request):
+def send_approval_or_rejection_email(obj_id, action):
     """
     Sends Approval/Rejection mail depending on the action ( approval/rejection ) in the request object
 
     :param request: Request object
     """
-    application = Application.objects.get(pk=request.POST["obj_id"])
+    application = Application.objects.get(pk=obj_id)
     registrar_email = application.registrar_person.email_address
     reference = application.reference
 
@@ -101,10 +101,10 @@ def send_approval_or_rejection_email(request):
     personalisation_dict = utils.personalisation(reference, registration_data)
 
     # action would be either approval or rejection
-    approval_or_rejection = request.POST["action"]
+    # approval_or_rejection = request.POST["action"]
 
     # If approval_or_rejection is approval, then add token to the personalisation
-    if approval_or_rejection == "approval":
+    if action == "approval":
         personalisation_dict["token"] = token(
             reference, registration_data["domain_name"]
         )
@@ -114,7 +114,7 @@ def send_approval_or_rejection_email(request):
         personalisation_dict["reason_for_rejection"] = review.reason
 
     route_specific_email_template_name = utils.route_specific_email_template(
-        approval_or_rejection, registration_data
+        action, registration_data
     )
 
     utils.send_email(

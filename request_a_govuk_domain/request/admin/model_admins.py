@@ -20,6 +20,7 @@ from request_a_govuk_domain.request.models import (
     RegistryPublishedPerson,
     Registrant,
     Registrar,
+    TimeFlag,
 )
 from .filters import (
     StatusFilter,
@@ -30,6 +31,8 @@ from .filters import (
 )
 from .forms import ReviewForm
 from ..models.storage_util import s3_root_storage
+
+MAX_OBJECTS = 1
 
 
 class FileDownloadMixin:
@@ -482,3 +485,12 @@ class RegistrantAdmin(admin.ModelAdmin):
 
 class RegistrarAdmin(admin.ModelAdmin):
     model = Registrar
+
+
+class TimeFlagAdmin(admin.ModelAdmin):
+    model = TimeFlag
+
+    def has_add_permission(self, request):
+        if self.model.objects.count() >= MAX_OBJECTS:
+            return False
+        return super().has_add_permission(request)

@@ -1,5 +1,7 @@
 import logging
 import re
+from datetime import timedelta
+
 
 from celery import shared_task
 from django.db import transaction
@@ -8,11 +10,14 @@ from notifications_python_client.errors import HTTPError
 
 from request_a_govuk_domain.request.constants import NOTIFY_TEMPLATE_ID_MAP
 
+from .admin import email
 
 from request_a_govuk_domain.request.models import (
     Application,
     ApplicationStatus,
     NotificationResponseID,
+    TimeFlag,
+    Review,
 )
 from request_a_govuk_domain.request.utils import (
     send_email,
@@ -162,3 +167,38 @@ def check_email_failure_and_notify() -> None:
                     # Delete the notification response id, as the necessary action after email failure email has been
                     # taken, so no need to track anymore
                     notification_response_id.delete()
+
+
+@shared_task
+@transaction.atomic
+def check_application_status() -> None:
+    """
+    Checks appliction status periodically
+    """
+    time_flag = TimeFlag.objects.first()
+
+    if time_flag:
+        more_info_application = Application.objects.filter(status="more_information")
+        for application in more_info_application:
+            hold_diff = (
+                application.last_updated - timedelta(days=time_flag.on_hold_days)
+            ).day
+            if hold_diff > time_flag.on_hold_days:
+                application.status = ApplicationStatus.ON_HOLD
+                application.save()
+
+        on_hold_application = Application.objects.filter(status="on_hold")
+        for application in on_hold_application:
+            close_diff = (
+                application.last_updated - timedelta(days=time_flag.to_close_days)
+            ).day
+            if close_diff > time_flag.to_close_days:
+                application.status = ApplicationStatus.REJECTED
+                application.save()
+
+                # send an email
+                review = Review.objects.filter(application__id=application.id)
+                review.reason = "The application needed more information and time to responsed elapsed."  # type: ignore
+                email.send_approval_or_rejection_email(application.id, "rejection")
+    else:
+        logger.info("No Application Status time flags exists. Please create them.")
