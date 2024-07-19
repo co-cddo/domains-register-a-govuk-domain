@@ -180,19 +180,17 @@ def check_application_status() -> None:
     if time_flag:
         more_info_application = Application.objects.filter(status="more_information")
         for application in more_info_application:
-            hold_diff = (
+            if (
                 application.last_updated - timedelta(days=time_flag.on_hold_days)
-            ).day
-            if hold_diff > time_flag.on_hold_days:
+            ).day > time_flag.on_hold_days:
                 application.status = ApplicationStatus.ON_HOLD
                 application.save()
 
         on_hold_application = Application.objects.filter(status="on_hold")
         for application in on_hold_application:
-            close_diff = (
+            if (
                 application.last_updated - timedelta(days=time_flag.to_close_days)
-            ).day
-            if close_diff > time_flag.to_close_days:
+            ).day > time_flag.to_close_days:
                 application.status = ApplicationStatus.REJECTED
                 application.save()
 

@@ -491,6 +491,6 @@ class TimeFlagAdmin(admin.ModelAdmin):
     model = TimeFlag
 
     def has_add_permission(self, request):
-        if self.model.objects.count() >= MAX_OBJECTS:
-            return False
-        return super().has_add_permission(request)
+        if self.model.objects.count() >= MAX_OBJECTS and request.user.is_superuser:
+            return True
+        return False
