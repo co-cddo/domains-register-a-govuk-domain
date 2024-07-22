@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import timedelta
+from datetime import datetime, timezone
 
 
 from celery import shared_task
@@ -181,16 +181,16 @@ def check_application_status() -> None:
         more_info_application = Application.objects.filter(status="more_information")
         for application in more_info_application:
             if (
-                application.last_updated - timedelta(days=time_flag.on_hold_days)
-            ).day > time_flag.on_hold_days:
+                datetime.now(timezone.utc) - application.last_updated
+            ).days > time_flag.on_hold_days:
                 application.status = ApplicationStatus.ON_HOLD
                 application.save()
 
         on_hold_application = Application.objects.filter(status="on_hold")
         for application in on_hold_application:
             if (
-                application.last_updated - timedelta(days=time_flag.to_close_days)
-            ).day > time_flag.to_close_days:
+                datetime.now(timezone.utc) - application.last_updated
+            ).days > time_flag.to_close_days:
                 application.status = ApplicationStatus.REJECTED
                 application.save()
 
