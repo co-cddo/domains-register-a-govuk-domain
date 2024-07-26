@@ -24,6 +24,7 @@ class ApplicationStatus(models.TextChoices):
     READY_2I = "ready_2i", _("Ready for 2i")
     MORE_INFORMATION = "more_information", _("More Information")
     NEW = "new", _("New")
+    ON_HOLD = "on_hold", _("On-hold")
     FAILED_CONFIRMATION_EMAIL = "failed_confirmation_email", _(
         "Failed Confirmation Email"
     )

@@ -3,6 +3,7 @@ from .notification_response_id import NotificationResponseID
 from .organisation import Registrant, Registrar, RegistrantTypeChoices
 from .person import Person, RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
 from .review import Review, ReviewFormGuidance
+from .time_flags import TimeFlag
 
 __all__ = [
     "Application",
@@ -18,4 +19,5 @@ __all__ = [
     "RegistrarPerson",
     "Review",
     "ReviewFormGuidance",
+    "TimeFlag",
 ]

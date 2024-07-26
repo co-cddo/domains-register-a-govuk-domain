@@ -22,4 +22,8 @@ app.conf.beat_schedule = {
         "task": "request_a_govuk_domain.request.tasks.check_email_failure_and_notify",
         "schedule": crontab(minute="*/1"),
     },
+    "application-status-checker": {
+        "task": "request_a_govuk_domain.request.tasks.check_application_status",
+        "schedule": crontab(hour="0"),
+    },
 }

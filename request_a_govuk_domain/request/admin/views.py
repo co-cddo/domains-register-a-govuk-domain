@@ -45,7 +45,9 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
         if "_confirm" in request.POST:
             try:
                 # send email
-                send_approval_or_rejection_email(request)
+                send_approval_or_rejection_email(
+                    request.POST["obj_id"], request.POST["action"]
+                )
                 self._set_application_status(request)
                 # To show the backend app user a message "[Approval/Rejection] email sent", get the type of
                 # action ( i.e. whether it is Approval or Rejection )
