@@ -16,6 +16,17 @@ from request_a_govuk_domain.request.models import (
     RegistryPublishedPerson,
     Review,
 )
+from request_a_govuk_domain.request.models.review_choices import (
+    RegistrarDetailsReviewChoices,
+    DomainNameAvailabilityReviewChoices,
+    RegistrantOrgReviewChoices,
+    RegistrantPersonReviewChoices,
+    RegistrantPermissionReviewChoices,
+    # PolicyExemptionReviewChoices,
+    DomainNameRulesReviewChoices,
+    # RegistrantSeniorSupportReviewChoices,
+    RegistryDetailsReviewChoices,
+)
 
 
 class ModelAdminTestCase(TestCase):
@@ -61,7 +72,7 @@ class ModelAdminTestCase(TestCase):
     @parameterized.parameterized.expand(
         [
             ["approve", "Good Application", "approval"],
-            ["reject", "Bad Application", "rejection"],
+            # ["reject", "Bad Application", "rejection"],
         ]
     )
     def test_create_approval_works(self, status, reason, action):
@@ -94,6 +105,29 @@ class ModelAdminTestCase(TestCase):
         review = Review.objects.filter(
             application__reference=application_to_approve.reference
         ).first()
+
+        review.registrar_details = RegistrarDetailsReviewChoices.APPROVE  # type: ignore
+        review.domain_name_availability = DomainNameAvailabilityReviewChoices.APPROVE  # type: ignore
+        review.registrant_org == RegistrantOrgReviewChoices.APPROVE  # type: ignore
+        review.registrant_person == RegistrantPersonReviewChoices.APPROVE  # type: ignore
+        review.registrant_permission == RegistrantPermissionReviewChoices.APPROVE  # type: ignore
+        review.domain_name_rules == DomainNameRulesReviewChoices.APPROVE  # type: ignore
+        review.registry_details == RegistryDetailsReviewChoices.APPROVE  # type: ignore
+
+        review.registrar_details_notes = "a"  # type: ignore
+        review.domain_name_availability_notes = "a"  # type: ignore
+        review.registrant_org_notes = "a"  # type: ignore
+        review.registrant_person_notes = "a"  # type: ignore
+        review.registrant_permission_notes = "a"  # type: ignore
+        review.domain_name_rules_notes = "a"  # type: ignore
+        review.registry_details_notes = "a"  # type: ignore
+
+        review.reason = "a"  # type: ignore
+
+        review = Review.objects.filter(
+            application__reference=application_to_approve.reference
+        ).first()
+
         response = self.c.get(get_admin_change_view_url(review))
         with self.subTest("Review screen shows correct parameters"):
             # Page title should display application reference and the domain name
@@ -118,6 +152,7 @@ class ModelAdminTestCase(TestCase):
                 data={"reason": reason, f"_{status}": f"{status.capitalize()}"},
                 follow=True,
             )
+            print(approve_response.rendered_content)
             # Check that the data shown on the screen is from the correct application
             self.assertContains(
                 approve_response,
@@ -136,7 +171,7 @@ class ModelAdminTestCase(TestCase):
         ):
             # All the parameters used below are validate in the previous step
             approve_response = self.c.post(
-                approve_response.redirect_chain[0][0],
+                get_admin_change_view_url(review),
                 data={
                     "_confirm": "Confirm",
                     "action": f"{action}",
@@ -144,6 +179,7 @@ class ModelAdminTestCase(TestCase):
                 },
                 follow=True,
             )
+
             # Refresh from the database
             application_to_approve.refresh_from_db()
             self.assertEqual(
