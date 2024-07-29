@@ -9,7 +9,7 @@ class BaseValidator:
 
 
 class PhoneNumberValidator(BaseValidator):
-    phone_number_pattern = re.compile(r"^\s*\d(?:\s*\d){10}\s*$")
+    phone_number_pattern = re.compile(r"^\s*0(?:\s*\d){9,10}\s*$")
 
     def __call__(self, phone_number):
         if re.fullmatch(self.phone_number_pattern, phone_number) is None:
