@@ -23,7 +23,9 @@ class ApplicationStatus(models.TextChoices):
     IN_PROGRESS = "in_progress", _("In Progress")
     READY_2I = "ready_2i", _("Ready for 2i")
     MORE_INFORMATION = "more_information", _("More Information")
+    CURRENTLY_WITH_NAC = "with_nac", _("Currently with NAC")
     NEW = "new", _("New")
+    DUPLICATE_APPLICATION = "duplicate_application", _("Duplicate application")
     FAILED_CONFIRMATION_EMAIL = "failed_confirmation_email", _(
         "Failed Confirmation Email"
     )
