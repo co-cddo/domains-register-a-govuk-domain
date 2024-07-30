@@ -101,7 +101,14 @@ class Review(models.Model):
             == DomainNameAvailabilityReviewChoices.APPROVE
             and self.registrant_org == RegistrantOrgReviewChoices.APPROVE
             and self.registrant_person == RegistrantPersonReviewChoices.APPROVE
-            and self.registrant_permission == RegistrantPermissionReviewChoices.APPROVE
+            and (
+                not self.application.written_permission_evidence
+                or (
+                    self.application.written_permission_evidence
+                    and self.registrant_permission
+                    == RegistrantPermissionReviewChoices.APPROVE
+                )
+            )
             and self.domain_name_rules == DomainNameRulesReviewChoices.APPROVE
             and self.registry_details == RegistryDetailsReviewChoices.APPROVE
         ):

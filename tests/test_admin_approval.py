@@ -16,6 +16,16 @@ from request_a_govuk_domain.request.models import (
     RegistryPublishedPerson,
     Review,
 )
+from request_a_govuk_domain.request.models.review_choices import (
+    RegistryDetailsReviewChoices,
+    RegistrantOrgReviewChoices,
+    RegistrantPersonReviewChoices,
+    RegistrantPermissionReviewChoices,
+    PolicyExemptionReviewChoices,
+    DomainNameRulesReviewChoices,
+    RegistrantSeniorSupportReviewChoices,
+    RegistrarDetailsReviewChoices,
+)
 
 
 class ModelAdminTestCase(TestCase):
@@ -94,6 +104,25 @@ class ModelAdminTestCase(TestCase):
         review = Review.objects.filter(
             application__reference=application_to_approve.reference
         ).first()
+
+        review.registry_details = RegistryDetailsReviewChoices.APPROVE  # type: ignore
+        review.registrant_org = RegistrantOrgReviewChoices.APPROVE  # type: ignore
+        review.registrant_person = RegistrantPersonReviewChoices.APPROVE  # type: ignore
+        review.registrant_permission = RegistrantPermissionReviewChoices.APPROVE  # type: ignore
+        review.policy_exemption = PolicyExemptionReviewChoices.APPROVE  # type: ignore
+        review.domain_name_rules = DomainNameRulesReviewChoices.APPROVE  # type: ignore
+        review.registrant_senior_support = RegistrantSeniorSupportReviewChoices.APPROVE  # type: ignore
+        review.registrar_details = RegistrarDetailsReviewChoices.APPROVE  # type: ignore
+
+        review.registry_details_notes = "a"  # type: ignore
+        review.registrant_org_notes = "a"  # type: ignore
+        review.registrant_person_notes = "a"  # type: ignore
+        review.registrant_permission_notes = "a"  # type: ignore
+        review.policy_exemption_notes = "a"  # type: ignore
+        review.domain_name_rules_notes = "a"  # type: ignore
+        review.registrant_senior_support_notes = "a"  # type: ignore
+        review.registrar_details_notes = "a"  # type: ignore
+
         response = self.c.get(get_admin_change_view_url(review))
         with self.subTest("Review screen shows correct parameters"):
             # Page title should display application reference and the domain name
@@ -115,7 +144,28 @@ class ModelAdminTestCase(TestCase):
         with self.subTest("Approving the review brings up the correct data"):
             approve_response = self.c.post(
                 get_admin_change_view_url(review),
-                data={"reason": reason, f"_{status}": f"{status.capitalize()}"},
+                data={
+                    "reason": reason,
+                    f"_{status}": f"{status.capitalize()}",
+                    "registry_details": RegistryDetailsReviewChoices.APPROVE,
+                    "registry_details_notes": "a",
+                    "registrant_org": RegistrantOrgReviewChoices.APPROVE,
+                    "registrant_org_notes": "a",
+                    "registrant_person": RegistrantPersonReviewChoices.APPROVE,
+                    "registrant_person_notes": "a",
+                    "registrant_permission": RegistrantPermissionReviewChoices.APPROVE,
+                    "registrant_permission_notes": "a",
+                    "policy_exemption": PolicyExemptionReviewChoices.APPROVE,
+                    "policy_exemption_notes": "a",
+                    "domain_name_rules": DomainNameRulesReviewChoices.APPROVE,
+                    "domain_name_rules_notes": "a",
+                    "registrant_senior_support": RegistrantSeniorSupportReviewChoices.APPROVE,
+                    "registrant_senior_support_notes": "a",
+                    "registrar_details": RegistryDetailsReviewChoices.APPROVE,
+                    "registrar_details_notes": "a",
+                    "domain_name_availability": RegistryDetailsReviewChoices.APPROVE,
+                    "domain_name_availability_notes": "a",
+                },
                 follow=True,
             )
             # Check that the data shown on the screen is from the correct application
@@ -144,6 +194,7 @@ class ModelAdminTestCase(TestCase):
                 },
                 follow=True,
             )
+            print(approve_response.json)
             # Refresh from the database
             application_to_approve.refresh_from_db()
             self.assertEqual(
