@@ -298,20 +298,21 @@ class RegistryDetailsForm(forms.Form):
         label="Role name",
     )
 
-    registrant_contact_email = forms.CharField(
-        label="Email address",
-        help_text="Use a role-based email address, like itsupport@[yourorganisation].gov.uk",
-        validators=[
-            EmailValidator(
-                "Enter the registrant's role-based email address in the correct format, like itsupport@organisation.gov.uk"
-            )
-        ],
-    )
-
     def __init__(self, *args, **kwargs):
+        self.hint_email = kwargs.pop("hint_email", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_size = Size.SMALL
+        self.fields["registrant_contact_email"] = forms.CharField(
+            label="Email address",
+            help_text=f"Use a role-based email address, like {self.hint_email}.",
+            validators=[
+                EmailValidator(
+                    """Enter the registrant's role-based email address in the correct format,
+                    like itsupport@organisation.gov.uk"""
+                )
+            ],
+        )
         self.helper.layout = Layout(
             Fieldset(
                 DomainsHTML('<h2 class="govuk-heading-m">Registrant role</h2>'),

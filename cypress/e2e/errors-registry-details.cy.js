@@ -21,7 +21,7 @@ describe('Error messages for registry details', () => {
 
     // enter a bad email address
     cy.fillOutRegistryDetails('clerk', 'joe@example')
-    cy.confirmProblem("Enter the registrant's role-based email address in the correct format, like itsupport@organisation.gov.uk")
+    cy.confirmProblem("Enter the registrant's role-based email address in the correct format")
 
     // enter valid details
     cy.fillOutRegistryDetails('clerk', 'joe@example.com')
