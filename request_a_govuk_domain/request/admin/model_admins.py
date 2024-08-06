@@ -375,7 +375,7 @@ class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
 
     def response_change(self, request, obj):
         if "_approve" in request.POST:
-            if self.model.is_approvable(obj):
+            if obj.is_approvable():
                 return HttpResponseRedirect(
                     f"{reverse('application_confirm')}?obj_id={obj.application.id}&action=approval"
                 )

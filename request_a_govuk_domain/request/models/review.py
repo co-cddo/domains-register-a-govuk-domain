@@ -62,11 +62,9 @@ class Review(models.Model):
 
     policy_exemption = models.CharField(
         choices=PolicyExemptionReviewChoices.choices,
-        blank=True,
-        null=True,
     )
     policy_exemption_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, blank=True, null=True
+        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
     )
 
     domain_name_rules = models.CharField(choices=DomainNameRulesReviewChoices.choices)
@@ -75,12 +73,10 @@ class Review(models.Model):
     )
 
     registrant_senior_support = models.CharField(
-        choices=RegistrantSeniorSupportReviewChoices.choices,
-        blank=True,
-        null=True,
+        choices=RegistrantSeniorSupportReviewChoices.choices
     )
     registrant_senior_support_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, blank=True, null=True
+        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
     )
 
     registry_details = models.CharField(choices=RegistryDetailsReviewChoices.choices)
@@ -103,11 +99,17 @@ class Review(models.Model):
             and self.registrant_person == RegistrantPersonReviewChoices.APPROVE
             and (
                 not self.application.written_permission_evidence
-                or (
-                    self.application.written_permission_evidence
-                    and self.registrant_permission
-                    == RegistrantPermissionReviewChoices.APPROVE
-                )
+                or self.registrant_permission
+                == RegistrantPermissionReviewChoices.APPROVE
+            )
+            and (
+                not self.application.policy_exemption_evidence
+                or self.policy_exemption == PolicyExemptionReviewChoices.APPROVE
+            )
+            and (
+                not self.application.ministerial_request_evidence
+                or self.registrant_senior_support
+                == RegistrantSeniorSupportReviewChoices.APPROVE
             )
             and self.domain_name_rules == DomainNameRulesReviewChoices.APPROVE
             and self.registry_details == RegistryDetailsReviewChoices.APPROVE

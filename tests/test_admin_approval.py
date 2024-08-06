@@ -194,7 +194,6 @@ class ModelAdminTestCase(TestCase):
                 },
                 follow=True,
             )
-            print(approve_response.json)
             # Refresh from the database
             application_to_approve.refresh_from_db()
             self.assertEqual(
