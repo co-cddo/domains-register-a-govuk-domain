@@ -258,6 +258,15 @@ class RegistryDetailsView(FormView):
     form_class = RegistryDetailsForm
     success_url = reverse_lazy("confirm")
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        registrant_type = get_registration_data(self.request)["registrant_type"]
+        if registrant_type == "parish_council":
+            kwargs["hint_email"] = "clerk@[yourorganisation].gov.uk"
+        else:
+            kwargs["hint_email"] = "itsupport@[yourorganisation].gov.uk"
+        return kwargs
+
     def get_initial(self):
         initial = super().get_initial()
         session_data = get_registration_data(self.request)
