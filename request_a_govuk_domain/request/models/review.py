@@ -88,6 +88,7 @@ class Review(models.Model):
         max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
     )
 
+    # maintain history
     history = HistoricalRecords()
 
     def is_approvable(self) -> bool:
