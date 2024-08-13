@@ -3,7 +3,6 @@
 
   <head>
     {% if GOOGLE_ANALYTICS_ID %}
-      <!-- Google tag (gtag.js) --> <script nonce="{{request.csp_nonce}}" async src="https://www.googletagmanager.com/gtag/js?id={{ GOOGLE_ANALYTICS_ID }}"></script> <script  nonce="{{request.csp_nonce}}"> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '{{ GOOGLE_ANALYTICS_ID }}'); </script>
       <!-- Google Tag Manager -->
       <script nonce="{{request.csp_nonce}}">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
