@@ -31,61 +31,101 @@ class Review(models.Model):
 
     application = models.OneToOneField(Application, on_delete=models.CASCADE)
 
-    registrar_details = models.CharField(choices=RegistrarDetailsReviewChoices.choices)
+    registrar_details = models.CharField(
+        choices=RegistrarDetailsReviewChoices.choices, blank=False, null=True
+    )
     registrar_details_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
+        max_length=NOTES_MAX_LENGTH,
+        validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
+        blank=False,
+        null=True,
     )
 
     domain_name_availability = models.CharField(
-        choices=DomainNameAvailabilityReviewChoices.choices
+        choices=DomainNameAvailabilityReviewChoices.choices, blank=False, null=True
     )
     domain_name_availability_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
+        max_length=NOTES_MAX_LENGTH,
+        validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
+        blank=False,
+        null=True,
     )
 
-    registrant_org = models.CharField(choices=RegistrantOrgReviewChoices.choices)
+    registrant_org = models.CharField(
+        choices=RegistrantOrgReviewChoices.choices, blank=False, null=True
+    )
     registrant_org_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
+        max_length=NOTES_MAX_LENGTH,
+        validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
+        blank=False,
+        null=True,
     )
 
-    registrant_person = models.CharField(choices=RegistrantPersonReviewChoices.choices)
+    registrant_person = models.CharField(
+        choices=RegistrantPersonReviewChoices.choices, blank=False, null=True
+    )
     registrant_person_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
+        max_length=NOTES_MAX_LENGTH,
+        validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
+        blank=False,
+        null=True,
     )
 
     registrant_permission = models.CharField(
-        choices=RegistrantPermissionReviewChoices.choices
+        choices=RegistrantPermissionReviewChoices.choices, blank=False, null=True
     )
     registrant_permission_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
+        max_length=NOTES_MAX_LENGTH,
+        validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
+        blank=False,
+        null=True,
     )
 
     policy_exemption = models.CharField(
-        choices=PolicyExemptionReviewChoices.choices,
+        choices=PolicyExemptionReviewChoices.choices, blank=False, null=True
     )
     policy_exemption_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
+        max_length=NOTES_MAX_LENGTH,
+        validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
+        blank=False,
+        null=True,
     )
 
-    domain_name_rules = models.CharField(choices=DomainNameRulesReviewChoices.choices)
+    domain_name_rules = models.CharField(
+        choices=DomainNameRulesReviewChoices.choices, blank=False, null=True
+    )
     domain_name_rules_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
+        max_length=NOTES_MAX_LENGTH,
+        validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
+        blank=False,
+        null=True,
     )
 
     registrant_senior_support = models.CharField(
-        choices=RegistrantSeniorSupportReviewChoices.choices
+        choices=RegistrantSeniorSupportReviewChoices.choices, blank=False, null=True
     )
     registrant_senior_support_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
+        max_length=NOTES_MAX_LENGTH,
+        validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
+        blank=False,
+        null=True,
     )
 
-    registry_details = models.CharField(choices=RegistryDetailsReviewChoices.choices)
+    registry_details = models.CharField(
+        choices=RegistryDetailsReviewChoices.choices, blank=False, null=True
+    )
     registry_details_notes = models.TextField(
-        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
+        max_length=NOTES_MAX_LENGTH,
+        validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
+        blank=False,
+        null=True,
     )
 
     reason = models.TextField(
-        max_length=NOTES_MAX_LENGTH, validators=[MinLengthValidator(NOTES_MIN_LENGTH)]
+        max_length=NOTES_MAX_LENGTH,
+        validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
+        blank=False,
+        null=True,
     )
 
     history = HistoricalRecords()
