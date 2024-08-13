@@ -23,7 +23,7 @@ makemigrations:
 	docker compose run --entrypoint "python manage.py makemigrations" web
 
 migrate-devserver:
-	docker exec -it domains-register-a-govuk-domain-web-1 ./manage.py migrate
+	docker exec -it `docker ps --format '{{.Names}}' | grep web` ./manage.py migrate
 
 clear-db:
 	docker compose down && docker container prune -f && docker volume rm domains-register-a-govuk-domain_postgres-data
