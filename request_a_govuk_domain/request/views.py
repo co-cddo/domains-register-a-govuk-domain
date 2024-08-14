@@ -474,7 +474,6 @@ class ConfirmView(TemplateView):
             letter for letter in string.ascii_uppercase if letter not in "AEIOUY"
         ]
         random_string = "".join(random.choices(random_letters, k=4))
-
         return "GOVUK" + datetime.today().strftime("%d%m%Y") + random_string
 
 

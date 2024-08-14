@@ -128,6 +128,7 @@ class Review(models.Model):
         null=True,
     )
 
+    # maintain history
     history = HistoricalRecords()
 
     def is_approvable(self) -> bool:

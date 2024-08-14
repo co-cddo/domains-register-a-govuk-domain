@@ -1,3 +1,5 @@
+import logging
+
 from zoneinfo import ZoneInfo
 
 import django.db.models.fields.files
@@ -30,6 +32,8 @@ from .filters import (
 )
 from .forms import ReviewForm
 from ..models.storage_util import s3_root_storage
+
+LOGGER = logging.getLogger(__name__)
 
 
 class FileDownloadMixin:
@@ -407,6 +411,7 @@ class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
             obj.application.status = ApplicationStatus.IN_PROGRESS
         # Change the owner to be the current user regardless if there is already a user
         # assigned or not
+        LOGGER.info(f"Reference {obj.application.reference}")
         obj.application.owner = request.user
         obj.application.save()
 

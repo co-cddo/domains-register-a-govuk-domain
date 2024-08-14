@@ -11,6 +11,8 @@ from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
 from .storage_util import select_storage, TEMP_STORAGE_ROOT
 from ...settings import S3_STORAGE_ENABLED
 
+from simple_history.models import HistoricalRecords
+
 REF_NUM_LENGTH = 17
 logger = logging.getLogger(__name__)
 
@@ -91,6 +93,9 @@ class Application(models.Model):
         max_length=255,
     )
 
+    # maintain history
+    history = HistoricalRecords()
+
     def __str__(self):
         return f"{self.reference} - {self.domain_name}"
 
@@ -146,4 +151,5 @@ class Application(models.Model):
                     )
                     storage.delete(from_path)
                     file_field.name = to_path
+        logger.info(f"Reference {self.reference}")
         super().save(force_insert, force_update, using, update_fields)
