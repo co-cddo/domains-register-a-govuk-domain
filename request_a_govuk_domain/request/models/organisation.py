@@ -1,6 +1,8 @@
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
+from simple_history.models import HistoricalRecords
+
 
 class RegistrantTypeChoices(models.TextChoices):
     CENTRAL_GOVERNMENT = "central_government", _(
@@ -47,6 +49,9 @@ class Registrant(models.Model):
     name = models.CharField()
     type = models.CharField(choices=RegistrantTypeChoices.choices, max_length=100)
 
+    # maintain history
+    history = HistoricalRecords()
+
     class Meta:
         unique_together = ("name", "type")
 
@@ -64,6 +69,9 @@ class Registrar(models.Model):
     """
 
     name = models.CharField(unique=True)
+
+    # maintain history
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name

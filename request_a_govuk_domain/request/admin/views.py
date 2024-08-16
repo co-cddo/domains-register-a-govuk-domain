@@ -53,6 +53,10 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
                 self.message_user(
                     request, f"{approval_or_rejection} email sent", messages.SUCCESS
                 )
+                obj = Application.objects.get(pk=request.GET.get("obj_id"))
+                LOGGER.info(
+                    f"Application {obj.reference} status set to {approval_or_rejection}"
+                )
                 return HttpResponseRedirect(reverse("admin:request_review_changelist"))
             except Exception as e:
                 LOGGER.error("Failed to send the email")

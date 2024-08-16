@@ -1,3 +1,5 @@
+import logging
+
 from zoneinfo import ZoneInfo
 
 import django.db.models.fields.files
@@ -30,6 +32,10 @@ from .filters import (
 )
 from .forms import ReviewForm
 from ..models.storage_util import s3_root_storage
+
+from simple_history.admin import SimpleHistoryAdmin
+
+LOGGER = logging.getLogger(__name__)
 
 
 class FileDownloadMixin:
@@ -110,7 +116,7 @@ def convert_to_local_time(obj):
     )
 
 
-class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
+class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
     model = Review
     form = ReviewForm
     change_form_template = "admin/review_change_form.html"
@@ -408,13 +414,16 @@ class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
         # Change the owner to be the current user regardless if there is already a user
         # assigned or not
         obj.application.owner = request.user
+        LOGGER.info(
+            f"Application {obj.application.reference} changed by {obj.application.owner}"
+        )
         obj.application.save()
 
     def has_add_permission(self, request):
         return False
 
 
-class ApplicationAdmin(FileDownloadMixin, admin.ModelAdmin):
+class ApplicationAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
     model = Application
     list_display = [
         "reference",
