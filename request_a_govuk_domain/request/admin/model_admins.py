@@ -33,6 +33,8 @@ from .filters import (
 from .forms import ReviewForm
 from ..models.storage_util import s3_root_storage
 
+from simple_history.admin import SimpleHistoryAdmin
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -114,7 +116,7 @@ def convert_to_local_time(obj):
     )
 
 
-class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
+class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
     model = Review
     form = ReviewForm
     change_form_template = "admin/review_change_form.html"
@@ -411,15 +413,17 @@ class ReviewAdmin(FileDownloadMixin, admin.ModelAdmin):
             obj.application.status = ApplicationStatus.IN_PROGRESS
         # Change the owner to be the current user regardless if there is already a user
         # assigned or not
-        LOGGER.info(f"Reference {obj.application.reference}")
         obj.application.owner = request.user
+        LOGGER.info(
+            f"Application {obj.application.reference} changed by {obj.application.owner}"
+        )
         obj.application.save()
 
     def has_add_permission(self, request):
         return False
 
 
-class ApplicationAdmin(FileDownloadMixin, admin.ModelAdmin):
+class ApplicationAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
     model = Application
     list_display = [
         "reference",

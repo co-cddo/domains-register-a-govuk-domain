@@ -151,5 +151,5 @@ class Application(models.Model):
                     )
                     storage.delete(from_path)
                     file_field.name = to_path
-        logger.info(f"Reference {self.reference}")
+        logger.info(f"Saving application for reference {self.reference}")
         super().save(force_insert, force_update, using, update_fields)
