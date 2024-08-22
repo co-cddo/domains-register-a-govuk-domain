@@ -28,6 +28,7 @@ class ApplicationStatus(models.TextChoices):
     CURRENTLY_WITH_NAC = "with_nac", _("Currently with NAC")
     NEW = "new", _("New")
     DUPLICATE_APPLICATION = "duplicate_application", _("Duplicate application")
+    ARCHIVE = "archive", _("archive")
     FAILED_CONFIRMATION_EMAIL = "failed_confirmation_email", _(
         "Failed Confirmation Email"
     )
