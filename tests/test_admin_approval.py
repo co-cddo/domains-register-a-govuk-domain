@@ -56,10 +56,15 @@ class ModelAdminTestCase(TestCase):
             "registrant_contact_email": "dummy@test.gov.uk",
         }
 
-        User.objects.create_superuser(
+        self.superuser = User.objects.create_superuser(
             username="superuser",
             password="secret",  # pragma: allowlist secret
             email="admin@example.com",
+        )
+        self.reviewer = User.objects.create_superuser(
+            username="reviewer",
+            password="secret",  # pragma: allowlist secret
+            email="reviewer@example.com",
         )
         guidance_text = add_init_guidance_text.Command()
         guidance_text.handle()
@@ -67,6 +72,63 @@ class ModelAdminTestCase(TestCase):
         self.c.login(
             username="superuser", password="secret"  # pragma: allowlist secret
         )
+
+    @parameterized.parameterized.expand(
+        [
+            [None, "superuser", "superuser"],
+            ["reviewer", "superuser", "reviewer"],
+            ["superuser", "superuser", "superuser"],
+        ],
+        name_func=lambda testcase_func, param_num, param: "%s_%s"
+        % (
+            testcase_func.__name__,
+            parameterized.parameterized.to_safe_name(
+                "_".join(["owner_is", str(param.args[0]), "updated_by", param.args[1]]),
+            ),
+        ),
+    )
+    def test_last_modified_is_set_correctly(self, owner, changed_by, expected_owner):
+        """
+        Test the owner and last updated by fields are set correctly.
+        :return:
+        """
+        request = Mock()
+        request.session = SessionDict({"registration_data": self.registration_data})
+
+        # Simulate application creation through client screens
+        application = db.save_data_in_database("ABCDEFGHIJK", request)
+
+        # Application retrieval, check original condition
+        response = self.c.get(get_admin_change_view_url(application))
+        self.assertIsNone(response.context_data["original"].owner)
+        self.assertIsNone(response.context_data["original"].last_updated_by)
+
+        data = {
+            # Assign the application to reviewer
+            "time_decided_0": "2024-08-23",
+            "time_decided_1": "17:35:58",
+            "reference": application.reference,
+            "status": application.status,
+            "domain_name": application.domain_name,
+            "registrar_person": application.registrar_person.id,
+            "registrant_person": application.registrant_person.id,
+            "registry_published_person": application.registry_published_person.id,
+            "registrant_org": application.registrant_org.id,
+            "registrar_org": application.registrar_org.id,
+        }
+        if owner:
+            data["owner"] = getattr(self, owner).id
+
+        self.c.post(
+            get_admin_change_view_url(application),
+            data=data,
+            follow=True,
+        )
+        application.refresh_from_db()
+        # Owner will be set to the value if given else will take the value of the updated user
+        self.assertEqual(expected_owner, application.owner.username)
+        # 'superuser' is the one last actioned on the data
+        self.assertEqual(changed_by, application.last_updated_by.username)
 
     @parameterized.parameterized.expand(
         [
@@ -201,6 +263,9 @@ class ModelAdminTestCase(TestCase):
                 application_to_approve.status,
             )
             self.assertContains(approve_response, f"{action.capitalize()} email sent")
+            self.assertEqual(
+                application_to_approve.last_updated_by.username, "superuser"
+            )
 
 
 def get_admin_change_view_url(obj: object) -> str:

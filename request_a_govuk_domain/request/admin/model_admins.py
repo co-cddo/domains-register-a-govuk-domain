@@ -1,16 +1,18 @@
+import csv
 import logging
-
 from zoneinfo import ZoneInfo
 
 import django.db.models.fields.files
 import markdown
 from django.contrib import admin, messages
+from django.contrib.admin import ModelAdmin
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
-from django.http import HttpResponseRedirect, FileResponse
+from django.http import HttpResponseRedirect, FileResponse, HttpResponse
 from django.template.loader import render_to_string
 from django.urls import reverse, path
 from django.utils.html import format_html
+from simple_history.admin import SimpleHistoryAdmin
 
 from request_a_govuk_domain.request.models import (
     Application,
@@ -29,11 +31,10 @@ from .filters import (
     RegistrarOrgFilter,
     RegistrantOrgFilter,
     wrap_with_application_filter,
+    LastUpdatedFilter,
 )
 from .forms import ReviewForm
 from ..models.storage_util import s3_root_storage
-
-from simple_history.admin import SimpleHistoryAdmin
 
 LOGGER = logging.getLogger(__name__)
 
@@ -116,6 +117,57 @@ def convert_to_local_time(obj):
     )
 
 
+class ReportDownLoadMixin:
+    """
+    Mixin that can be included in to any model admin to generate csv reports.
+    """
+
+    @admin.action(  # type: ignore
+        permissions=["export"],
+        description="Download as csv file",
+    )
+    def export(self, _request, queryset):
+        """
+        Generate a CSV file from the given queryset.
+        :param _request:
+        :param queryset:
+        :return:
+        """
+        meta = self.model._meta
+        field_names = [field.name for field in meta.fields]
+
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = "attachment; filename={}.csv".format(meta)
+        writer = csv.writer(response)
+
+        writer.writerow(field_names)
+        for obj in queryset:
+            writer.writerow([getattr(obj, field) for field in field_names])
+
+        return response
+
+    def has_export_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+
+class ArchiveMixin:
+    @admin.action(  # type: ignore
+        permissions=["archive"],
+        description="Archive selected applications",
+    )
+    def archive(self, request, queryset):
+        queryset.update(status=ApplicationStatus.ARCHIVE, last_updated_by=request.user)
+
+    def has_archive_permission(self, request, obj=None):
+        """
+        Only admins can archive
+        :param request:
+        :param obj:
+        :return:
+        """
+        return request.user.is_superuser
+
+
 class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
     model = Review
     form = ReviewForm
@@ -129,6 +181,7 @@ class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
         "get_registrant_org",
         "get_time_submitted",
         "get_last_updated",
+        "get_last_updated_by",
         "get_owner",
     )
     list_filter = (
@@ -136,6 +189,7 @@ class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
         wrap_with_application_filter(OwnerFilter),
         wrap_with_application_filter(RegistrarOrgFilter),
         wrap_with_application_filter(RegistrantOrgFilter),
+        wrap_with_application_filter(LastUpdatedFilter),
     )
 
     def download_file_view(self, request, object_id, field_name):
@@ -379,6 +433,10 @@ class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
     def get_owner(self, obj):
         return obj.application.owner
 
+    @admin.display(description="Last updated by")
+    def get_last_updated_by(self, obj):
+        return obj.application.last_updated_by
+
     def response_change(self, request, obj):
         if "_approve" in request.POST:
             if obj.is_approvable():
@@ -411,11 +469,10 @@ class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
         # Save the application attributes
         if obj.application.status == ApplicationStatus.NEW:
             obj.application.status = ApplicationStatus.IN_PROGRESS
-        # Change the owner to be the current user regardless if there is already a user
-        # assigned or not
-        obj.application.owner = request.user
+
+        obj.application.last_updated_by = request.user
         LOGGER.info(
-            f"Application {obj.application.reference} changed by {obj.application.owner}"
+            f"Application {obj.application.reference} changed by {request.user} owner is {obj.application.owner}"
         )
         obj.application.save()
 
@@ -423,7 +480,13 @@ class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
         return False
 
 
-class ApplicationAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
+class ApplicationAdmin(
+    SimpleHistoryAdmin,
+    FileDownloadMixin,
+    ReportDownLoadMixin,
+    ArchiveMixin,
+    admin.ModelAdmin,
+):
     model = Application
     list_display = [
         "reference",
@@ -434,16 +497,20 @@ class ApplicationAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
         "time_submitted_local_time",
         "last_updated_local_time",
         "owner",
+        "last_updated_by",
     ]
+    readonly_fields = ["last_updated_by"]
     list_filter = (
         StatusFilter,
         OwnerFilter,
         RegistrarOrgFilter,
         RegistrantOrgFilter,
+        LastUpdatedFilter,
     )
     formfield_overrides = {
         django.db.models.fields.files.FileField: {"widget": CustomAdminFileWidget},
     }
+    actions = ["export", "archive"]
 
     def download_file_view(self, request, object_id, field_name):
         application = self.model.objects.get(id=object_id)
@@ -470,24 +537,38 @@ class ApplicationAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
         # if the application owner is not set, then set it as the current user
         if not obj.owner and "owner" not in form.changed_data:
             obj.owner = request.user
+        obj.last_updated_by = request.user
         super().save_model(request, obj, form, change)
 
 
-class RegistrarPersonAdmin(admin.ModelAdmin):
+class FilterAndOrderByName(ModelAdmin):
+    """
+    Utility base class that supports filtering and sorting by the name attribute
+    as wel as having the actions displayed on the bottom.
+    """
+
+    ordering = ["name"]
+    list_display = ["name"]
+    search_fields = ("name",)
+    actions_on_top = False
+    actions_on_bottom = True
+
+
+class RegistrarPersonAdmin(FilterAndOrderByName):
     model = RegistrarPerson
 
 
-class RegistrantPersonAdmin(admin.ModelAdmin):
+class RegistrantPersonAdmin(FilterAndOrderByName):
     model = RegistrantPerson
 
 
-class RegistryPublishedPersonAdmin(admin.ModelAdmin):
+class RegistryPublishedPersonAdmin(FilterAndOrderByName):
     model = RegistryPublishedPerson
 
 
-class RegistrantAdmin(admin.ModelAdmin):
+class RegistrantAdmin(FilterAndOrderByName):
     model = Registrant
 
 
-class RegistrarAdmin(admin.ModelAdmin):
+class RegistrarAdmin(FilterAndOrderByName):
     model = Registrar

@@ -28,7 +28,7 @@ class ApplicationStatus(models.TextChoices):
     CURRENTLY_WITH_NAC = "with_nac", _("Currently with NAC")
     NEW = "new", _("New")
     DUPLICATE_APPLICATION = "duplicate_application", _("Duplicate application")
-    ARCHIVE = "archive", _("archive")
+    ARCHIVE = "archive", _("Archive")
     FAILED_CONFIRMATION_EMAIL = "failed_confirmation_email", _(
         "Failed Confirmation Email"
     )
@@ -45,10 +45,23 @@ class Application(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     reference = models.CharField(max_length=REF_NUM_LENGTH, null=False, unique=True)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="owner_applications",
+    )
     time_submitted = models.DateTimeField(auto_now_add=True)
     time_decided = models.DateTimeField(null=True)
     last_updated = models.DateTimeField(auto_now=True)
+    last_updated_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="last_updated_applications",
+    )
     status = models.CharField(
         choices=ApplicationStatus.choices,
         default=ApplicationStatus.NEW,
