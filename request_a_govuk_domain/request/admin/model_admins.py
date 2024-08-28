@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 import django.db.models.fields.files
 import markdown
 from django.contrib import admin, messages
+from django.contrib.admin import ModelAdmin
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.http import HttpResponseRedirect, FileResponse, HttpResponse
@@ -30,6 +31,7 @@ from .filters import (
     RegistrarOrgFilter,
     RegistrantOrgFilter,
     wrap_with_application_filter,
+    LastUpdatedFilter,
 )
 from .forms import ReviewForm
 from ..models.storage_util import s3_root_storage
@@ -187,6 +189,7 @@ class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
         wrap_with_application_filter(OwnerFilter),
         wrap_with_application_filter(RegistrarOrgFilter),
         wrap_with_application_filter(RegistrantOrgFilter),
+        wrap_with_application_filter(LastUpdatedFilter),
     )
 
     def download_file_view(self, request, object_id, field_name):
@@ -502,6 +505,7 @@ class ApplicationAdmin(
         OwnerFilter,
         RegistrarOrgFilter,
         RegistrantOrgFilter,
+        LastUpdatedFilter,
     )
     formfield_overrides = {
         django.db.models.fields.files.FileField: {"widget": CustomAdminFileWidget},
@@ -537,21 +541,34 @@ class ApplicationAdmin(
         super().save_model(request, obj, form, change)
 
 
-class RegistrarPersonAdmin(admin.ModelAdmin):
+class FilterAndOrderByName(ModelAdmin):
+    """
+    Utility base class that supports filtering and sorting by the name attribute
+    as wel as having the actions displayed on the bottom.
+    """
+
+    ordering = ["name"]
+    list_display = ["name"]
+    search_fields = ("name",)
+    actions_on_top = False
+    actions_on_bottom = True
+
+
+class RegistrarPersonAdmin(FilterAndOrderByName):
     model = RegistrarPerson
 
 
-class RegistrantPersonAdmin(admin.ModelAdmin):
+class RegistrantPersonAdmin(FilterAndOrderByName):
     model = RegistrantPerson
 
 
-class RegistryPublishedPersonAdmin(admin.ModelAdmin):
+class RegistryPublishedPersonAdmin(FilterAndOrderByName):
     model = RegistryPublishedPerson
 
 
-class RegistrantAdmin(admin.ModelAdmin):
+class RegistrantAdmin(FilterAndOrderByName):
     model = Registrant
 
 
-class RegistrarAdmin(admin.ModelAdmin):
+class RegistrarAdmin(FilterAndOrderByName):
     model = Registrar

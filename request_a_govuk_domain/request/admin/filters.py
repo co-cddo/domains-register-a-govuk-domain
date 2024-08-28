@@ -55,6 +55,19 @@ class OwnerFilter(ApplicationFilterSupportMixin, SimpleListFilter):
         return list(u for u in User.objects.values_list("id", "username"))
 
 
+class LastUpdatedFilter(ApplicationFilterSupportMixin, SimpleListFilter):
+    """
+    Filter records by application last_updated_by
+    """
+
+    title = "Filter by last updated by"
+    parameter_name = "last_updated_by"
+    query_field = "last_updated_by"
+
+    def lookups(self, request, model_admin):
+        return list(u for u in User.objects.values_list("id", "username"))
+
+
 class RegistrarOrgFilter(ApplicationFilterSupportMixin, SimpleListFilter):
     """
     Filter records by application registrar
