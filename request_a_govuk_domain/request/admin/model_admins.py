@@ -534,7 +534,7 @@ class ApplicationAdmin(
         # update it to be 'in progress'
         if obj.status == ApplicationStatus.NEW and "status" not in form.changed_data:
             obj.status = ApplicationStatus.IN_PROGRESS
-            # if the application owner is not set, then set it as the current user
+        # if the application owner is not set, then set it as the current user
         if not obj.owner and "owner" not in form.changed_data:
             obj.owner = request.user
         obj.last_updated_by = request.user
