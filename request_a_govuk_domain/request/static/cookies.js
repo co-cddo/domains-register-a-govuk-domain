@@ -13,15 +13,15 @@ if (!Cookies.get('cookies_preference_set')) {
   const cookieButtons = document.querySelectorAll('#cookie-banner .govuk-button');
   if (cookieButtons.length === 2) {
     cookieButtons[0].addEventListener('click', () => {
-      Cookies.set('cookies_accepted', 'true');
-      Cookies.set('cookies_preference_set', 'true');
+      Cookies.set('cookies_accepted', 'true', { secure: true, sameSite: 'strict' });
+      Cookies.set('cookies_preference_set', 'true', { secure: true, sameSite: 'strict' });
       document.querySelector('#cookie-banner').style.display = 'none';
       document.querySelector('#cookie-banner-done').style.display = 'block';
       activateGtmScript('gtm-script');
     });
     cookieButtons[1].addEventListener('click', () => {
-      Cookies.set('cookies_accepted', 'false');
-      Cookies.set('cookies_preference_set', 'true');
+      Cookies.set('cookies_accepted', 'false', { secure: true, sameSite: 'strict' });
+      Cookies.set('cookies_preference_set', 'true', { secure: true, sameSite: 'strict' });
       document.querySelector('#cookie-banner').style.display = 'none';
       document.querySelector('#cookie-banner-done').style.display = 'block';
     });
@@ -54,12 +54,12 @@ if (cookiePageControls) {
   if (saveButton) {
     saveButton.addEventListener('click', () => {
       if (document.querySelector('#use-cookies').checked) {
-        Cookies.set('cookies_preference_set', 'true');
-        Cookies.set('cookies_accepted', 'true');
+        Cookies.set('cookies_preference_set', 'true', { secure: true, sameSite: 'strict' });
+        Cookies.set('cookies_accepted', 'true', { secure: true, sameSite: 'strict' });
       }
       if (document.querySelector('#no-cookies').checked) {
-        Cookies.set('cookies_preference_set', 'true');
-        Cookies.set('cookies_accepted', 'false');
+        Cookies.set('cookies_preference_set', 'true', { secure: true, sameSite: 'strict' });
+        Cookies.set('cookies_accepted', 'false', { secure: true, sameSite: 'strict' });
       }
     });
   }
