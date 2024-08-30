@@ -267,6 +267,9 @@ class ModelAdminTestCase(TestCase):
                 application_to_approve.last_updated_by.username, "superuser"
             )
 
+            with self.subTest(f"Owner is set to {self.superuser.username}"):
+                self.assertEqual(application_to_approve.owner.username, "superuser")
+
 
 def get_admin_change_view_url(obj: object) -> str:
     return reverse(

@@ -469,6 +469,11 @@ class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
         # Save the application attributes
         if obj.application.status == ApplicationStatus.NEW:
             obj.application.status = ApplicationStatus.IN_PROGRESS
+        if not obj.application.owner:
+            obj.application.owner = request.user
+            LOGGER.info(
+                f"Initial owner assigned {obj.application} - {obj.application.owner}"
+            )
 
         obj.application.last_updated_by = request.user
         LOGGER.info(
