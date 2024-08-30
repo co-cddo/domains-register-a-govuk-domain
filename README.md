@@ -138,3 +138,5 @@ Then, to run the tests, you need to have the prototype running on port 8000 (see
 ```
 npx cypress run
 ```
+
+Note that the cookie banner tests require the application to run with the `GOOGLE_ANALYTICS_ID` environment variable set to something that starts with `GTM-`. The easiest way is to add `GOOGLE_ANALYTICS_ID=GTM-TEST` in your `.env` file.
