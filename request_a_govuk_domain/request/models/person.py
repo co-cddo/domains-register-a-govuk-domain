@@ -14,7 +14,7 @@ class Person(models.Model):
     phone_number = PhoneNumberField(blank=True)
 
     # maintain history
-    history = HistoricalRecords()
+    history = HistoricalRecords(inherit=True)
 
     def __str__(self):
         return self.name
