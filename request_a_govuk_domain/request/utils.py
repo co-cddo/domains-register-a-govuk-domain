@@ -394,10 +394,6 @@ def variable_page_content(_request):
             "PHASE_CONTENT": "<div class='govuk-phase-banner__text'>This is a new service. Help us improve it, <a class='govuk-link' href='https://surveys.domains.gov.uk/s/VCVZSB/' target='_blank'>report a problem or give your feedback (opens in new tab)</a>.</div>",
         }
 
-    # Has the user consented to cookies?
-    context["cookies_accepted"] = _request.COOKIES.get("cookies_accepted")
-    context["cookies_preference_set"] = _request.COOKIES.get("cookies_preference_set")
-
     # Google Tag Manager ID for inclusion in the HTML markup
     google_analytics_id = os.getenv("GOOGLE_ANALYTICS_ID", "")
     context["GOOGLE_ANALYTICS_ID"] = (
