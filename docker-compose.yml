@@ -12,6 +12,7 @@ x-common-application-variables: &common-application-variables
   CELERY_BROKER_URL: redis://redis:6379/0
   NOMINET_ROMSID: test_romsid
   NOMINET_SECRET: test_secret # pragma: allowlist secret
+  GOOGLE_ANALYTICS_ID: GTM-TEST
 
 x-api-base: &api-base
   platform: linux/amd64
