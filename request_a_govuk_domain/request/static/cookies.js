@@ -8,33 +8,37 @@ const activateGtmScript = id => {
   script.parentNode.replaceChild(newScript, script);
 };
 
-if (!Cookies.get('cookies_preference_set')) {
-  document.querySelector('#cookie-banner').style.display = 'block';
-  const cookieButtons = document.querySelectorAll('#cookie-banner .govuk-button');
-  if (cookieButtons.length === 2) {
-    cookieButtons[0].addEventListener('click', () => {
-      Cookies.set('cookies_accepted', 'true', { secure: true, sameSite: 'strict' });
-      Cookies.set('cookies_preference_set', 'true', { secure: true, sameSite: 'strict' });
-      document.querySelector('#cookie-banner').style.display = 'none';
-      document.querySelector('#cookie-banner-done').style.display = 'block';
-      activateGtmScript('gtm-script');
-    });
-    cookieButtons[1].addEventListener('click', () => {
-      Cookies.set('cookies_accepted', 'false', { secure: true, sameSite: 'strict' });
-      Cookies.set('cookies_preference_set', 'true', { secure: true, sameSite: 'strict' });
-      document.querySelector('#cookie-banner').style.display = 'none';
-      document.querySelector('#cookie-banner-done').style.display = 'block';
-    });
-    const hideButton = document.querySelector('#cookie-banner-done .govuk-button');
-    if (hideButton) {
-      hideButton.addEventListener('click', () => {
-        document.querySelectorAll('.cookie-banner').forEach(banner => banner.style.display='none');
+
+const banner = document.querySelector('#cookie-banner');
+if (banner) {
+  if (!Cookies.get('cookies_preference_set')) {
+    banner.style.display = 'block';
+    const cookieButtons = document.querySelectorAll('#cookie-banner .govuk-button');
+    if (cookieButtons.length === 2) {
+      cookieButtons[0].addEventListener('click', () => {
+        Cookies.set('cookies_accepted', 'true', { secure: true, sameSite: 'strict' });
+        Cookies.set('cookies_preference_set', 'true', { secure: true, sameSite: 'strict' });
+        document.querySelector('#cookie-banner').style.display = 'none';
+        document.querySelector('#cookie-banner-done').style.display = 'block';
+        activateGtmScript('gtm-script');
       });
+      cookieButtons[1].addEventListener('click', () => {
+        Cookies.set('cookies_accepted', 'false', { secure: true, sameSite: 'strict' });
+        Cookies.set('cookies_preference_set', 'true', { secure: true, sameSite: 'strict' });
+        document.querySelector('#cookie-banner').style.display = 'none';
+        document.querySelector('#cookie-banner-done').style.display = 'block';
+      });
+      const hideButton = document.querySelector('#cookie-banner-done .govuk-button');
+      if (hideButton) {
+        hideButton.addEventListener('click', () => {
+          document.querySelectorAll('.cookie-banner').forEach(banner => banner.style.display='none');
+        });
+      }
     }
-  }
-} else {
-  if (Cookies.get('cookies_accepted') === 'true') {
-    activateGtmScript('gtm-script');
+  } else {
+    if (Cookies.get('cookies_accepted') === 'true') {
+      activateGtmScript('gtm-script');
+    }
   }
 }
 

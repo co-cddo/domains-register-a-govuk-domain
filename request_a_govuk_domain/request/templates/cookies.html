@@ -34,37 +34,38 @@
         manage cookies (opens in a new tab)</a> .
       </p>
 
-      <style>#cookies-analytics { display: none }</style>
-      <div class="govuk-form-group govuk-!-margin-bottom-6" id="cookies-analytics">
-        <fieldset class="govuk-fieldset" aria-describedby="hint-0c454062">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            <h2 class="govuk-fieldset__heading">Cookies that measure website use</h2>
-          </legend>
+      {% if GOOGLE_ANALYTICS_ID %}
+        <style>#cookies-analytics { display: none }</style>
+        <div class="govuk-form-group govuk-!-margin-bottom-6" id="cookies-analytics">
+          <fieldset class="govuk-fieldset" aria-describedby="hint-0c454062">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">Cookies that measure website use</h2>
+            </legend>
 
-          <div id="hint-0c454062" class="govuk-hint">
-            <p class="govuk-body govuk-hint">We use Google Analytics cookies to measure how you use GOV.UK and government digital services.</p>
-            <p class="govuk-body govuk-hint">These cookies collect information about:</p>
-            <ul class="govuk-list--bullet govuk-hint">
-              <li>how you got to these sites</li>
-              <li>the pages you visit and how long you spend on each page</li>
-              <li>what you click on while you're visiting these sites</li>
-            </ul>
-            <p class="govuk-body govuk-hint">We do not allow Google to use or share this data for their own purposes.</p>
-         </div>
-         <div class="govuk-radios">
-           <div class="govuk-radios__item">
-             <input type="radio" name="cookies-usage" id="use-cookies" value="on" class="govuk-radios__input">
-             <label for="use-cookies" class="govuk-label govuk-radios__label">Use cookies that measure my website use</label>
+            <div id="hint-0c454062" class="govuk-hint">
+              <p class="govuk-body govuk-hint">We use Google Analytics cookies to measure how you use GOV.UK and government digital services.</p>
+              <p class="govuk-body govuk-hint">These cookies collect information about:</p>
+              <ul class="govuk-list--bullet govuk-hint">
+                <li>how you got to these sites</li>
+                <li>the pages you visit and how long you spend on each page</li>
+                <li>what you click on while you're visiting these sites</li>
+              </ul>
+              <p class="govuk-body govuk-hint">We do not allow Google to use or share this data for their own purposes.</p>
            </div>
-           <div class="govuk-radios__item">
-             <input type="radio" name="cookies-usage" id="no-cookies" value="off" class="govuk-radios__input" checked="">
-             <label for="no-cookies" class="govuk-label govuk-radios__label">Do not use cookies that measure my website use</label>
+           <div class="govuk-radios">
+             <div class="govuk-radios__item">
+               <input type="radio" name="cookies-usage" id="use-cookies" value="on" class="govuk-radios__input">
+               <label for="use-cookies" class="govuk-label govuk-radios__label">Use cookies that measure my website use</label>
+             </div>
+             <div class="govuk-radios__item">
+               <input type="radio" name="cookies-usage" id="no-cookies" value="off" class="govuk-radios__input" checked="">
+               <label for="no-cookies" class="govuk-label govuk-radios__label">Do not use cookies that measure my website use</label>
+             </div>
            </div>
-         </div>
-        </fieldset>
-        <button id="save-cookies" class="govuk-!-margin-top-5 govuk-button" type="submit">Save changes</button>
-      </div>
-
+          </fieldset>
+          <button id="save-cookies" class="govuk-!-margin-top-5 govuk-button" type="submit">Save changes</button>
+        </div>
+      {% endif %}
       <h2 class="govuk-heading-m">
         Essential cookies
       </h2>
