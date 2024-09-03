@@ -52,10 +52,9 @@
           {% gds_cookie_banner_message headingText="Cookies on Get approval to use a .gov.uk domain" %}
             <p class="govuk-body">We use some essential cookies to make this website work.</p>
             <p class="govuk-body">We’d also like to use analytics cookies so we can understand how you use the service and make improvements.</p>
-            <p class="govuk-body"><a class="govuk-link--no-visited-state" href="/cookies">View cookies</a></p>
-
             {% gds_cookie_banner_message_action text="Accept analytics cookies" %}
             {% gds_cookie_banner_message_action text="Reject analytics cookies" %}
+            {% gds_cookie_banner_message_action text="View cookies" href="/cookies" %}
           {% endgds_cookie_banner_message %}
         {% endgds_cookie_banner %}
       </div>

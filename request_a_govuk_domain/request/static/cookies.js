@@ -65,6 +65,9 @@ if (cookiePageControls) {
         Cookies.set('cookies_preference_set', 'true', { secure: true, sameSite: 'strict' });
         Cookies.set('cookies_accepted', 'false', { secure: true, sameSite: 'strict' });
       }
+      document.querySelector('#cookie-success-back-link').href = document.referrer;
+      document.querySelector('#success-banner').style.display = 'block';
+      window.scrollTo(0, 0);
     });
   }
 }
