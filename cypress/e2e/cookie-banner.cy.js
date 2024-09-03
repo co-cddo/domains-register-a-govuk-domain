@@ -60,6 +60,7 @@ describe('Cookie banner', () => {
   it('lets the user change their mind from accept to reject', () => {
     cy.acceptCookies()
     cy.visit('/cookies')
+    cy.get('#success-banner').should('not.be.visible');
     cy.get('#replaced-gtm-snippet').should('exist')
     cy.get('#use-cookies').should('be.checked')
     cy.get('#no-cookies').should('not.be.checked')
@@ -67,6 +68,7 @@ describe('Cookie banner', () => {
     cy.get('#save-cookies').click()
     cy.getCookie('cookies_preference_set').should('have.property', 'value', 'true')
     cy.getCookie('cookies_accepted').should('have.property', 'value', 'false')
+    cy.get('#success-banner').should('be.visible');
     cy.visit('/')
     cy.get('#replaced-gtm-snippet').should('not.exist')
   })
@@ -74,11 +76,13 @@ describe('Cookie banner', () => {
   it('lets the user change their mind from reject to accept', () => {
     cy.refuseCookies()
     cy.visit('/cookies')
+    cy.get('#success-banner').should('not.be.visible');
     cy.get('#replaced-gtm-snippet').should('not.exist')
     cy.get('#use-cookies').should('not.be.checked')
     cy.get('#no-cookies').should('be.checked')
     cy.get('#use-cookies').click()
     cy.get('#save-cookies').click()
+    cy.get('#success-banner').should('be.visible');
     cy.getCookie('cookies_preference_set').should('have.property', 'value', 'true')
     cy.getCookie('cookies_accepted').should('have.property', 'value', 'true')
     cy.visit('/')
