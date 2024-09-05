@@ -1,0 +1,91 @@
+{% load i18n %}
+{% load url from simple_history_compat %}
+{% load admin_urls %}
+{% load getattribute from getattributes %}
+{% load admin_tags %}
+<style>
+    .full_width {
+        width: 100%;
+        align-items: center;
+    }
+
+    h2 {
+        margin-top: 2%;
+    }
+</style>
+<table id="change-history" class="table table-bordered table-striped full_width">
+    <thead>
+    <tr>
+        <th scope="col">{% trans 'Date/time' %}</th>
+        <th scope="col">{% trans 'User' %}</th>
+        <th scope="col">{% trans 'Status' %}</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {% with filtered_actions=action_list %}
+        {% for action in filtered_actions %}
+            {% should_display action as should_display %}
+            {% if should_display %}
+                <tr>
+                    <td>
+                        <a href="{% url opts|admin_urlname:'simple_history' object.pk action.pk %}">{{ action.history_date }}</a>
+                    </td>
+                    <td>
+                        {% if action.history_object.last_updated_by %}
+                            {% url admin_user_view action.history_object.last_updated_by.id as admin_user_url %}
+                            {% if admin_user_url %}
+                                <a href="{{ admin_user_url }}">{{ action.history_object | owner_filter }}</a>
+                            {% else %}
+                                {{ action.history_object.last_updated_by }}
+                            {% endif %}
+                        {% else %}
+                            {% trans "-" %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ action.history_object.status | capfirst }}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+    </tbody>
+</table>
+
+<h2>Full event history</h2>
+<table id="change-history" class="table table-bordered table-striped full_width">
+    <thead>
+    <tr>
+        <th scope="col">{% trans 'Date/time' %}</th>
+        <th scope="col">{% trans 'Event' %}</th>
+        <th scope="col">{% trans 'Changed by' %}</th>
+        <th scope="col">{% trans 'Change fields' %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for action in action_list %}
+        <tr>
+            <td>
+                <a href="{% url opts|admin_urlname:'simple_history' object.pk action.pk %}">{{ action.history_date }}</a>
+            </td>
+            <td>{{ action.get_history_type_display }}</td>
+            <td>
+                {% if action.history_object.last_updated_by %}
+                    {% url admin_user_view action.history_object.last_updated_by.id as admin_user_url %}
+                    {% if admin_user_url %}
+                        <a href="{{ admin_user_url }}">{{ action.history_object.last_updated_by }}</a>
+                    {% else %}
+                        {{ action.history_object.last_updated_by }}
+                    {% endif %}
+                {% else %}
+                    {% trans "-" %}
+                {% endif %}
+            </td>
+            <td>
+                <i>{{ action | changed_fields }}</i>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
