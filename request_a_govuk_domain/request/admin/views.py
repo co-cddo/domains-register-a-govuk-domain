@@ -1,5 +1,5 @@
 import logging
-
+import os
 
 from django.views import View
 from django.contrib import admin, messages
@@ -45,7 +45,12 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
         if "_confirm" in request.POST:
             try:
                 # send email
-                send_approval_or_rejection_email(request)
+                if os.environ.get("ENVIRONMENT") != "local":
+                    send_approval_or_rejection_email(request)
+                else:
+                    LOGGER.warning(
+                        "Not sending approval or rejection email as marked as local environment"
+                    )
                 self._set_application_status(request)
                 # To show the backend app user a message "[Approval/Rejection] email sent", get the type of
                 # action ( i.e. whether it is Approval or Rejection )
