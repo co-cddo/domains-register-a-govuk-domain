@@ -1,5 +1,7 @@
 from django import template
 
+from request_a_govuk_domain.request.models import Application
+
 register = template.Library()
 
 
@@ -15,20 +17,47 @@ def changed_fields(obj):
     if obj.prev_record:
         delta = obj.diff_against(obj.prev_record)
         changes = list(filter(lambda x: x != "last_updated_by", delta.changed_fields))
-        return changes if changes else "Updated through review"
+        return changes if changes else "--"
     return "-"
 
 
+@register.filter
+def application_admin_url(value, arg):
+    return "admin:%s_%s_%s" % ("request", "application", arg)
+
+
+@register.inclusion_tag(
+    "simple_history/_review_object_history_list.html", takes_context=True
+)
+def display_review_list(context):
+    context["application_history"] = Application.history.filter(
+        id=context["object"].application.id
+    ).order_by("-pk")
+    return context
+
+
+@register.inclusion_tag(
+    "simple_history/_application_object_history_list.html", takes_context=True
+)
+def display_application_list(context):
+    return context
+
+
 @register.filter(is_safe=True)
-def owner_filter(app):
+def owner_filter(application):
     """
     Extract the owner information from the application object.
     """
     return (
-        f"{app.last_updated_by.username}"
-        if app.last_updated_by != app.owner
-        else f"{app.last_updated_by.username} (owner)"
+        f"{application.last_updated_by.username}"
+        if application.last_updated_by != application.owner
+        else f"{application.last_updated_by.username} (owner)"
     )
+
+
+@register.simple_tag
+def history_type(action, **kwargs):
+    return str(action[0].instance_type.__name__)
 
 
 @register.simple_tag
@@ -44,10 +73,15 @@ def should_display(action, **kwargs):
     :param kwargs:
     :return:
     """
+
     return (
         not action.next_record
-        or action.next_record.history_object.status != action.history_object.status
-        or action.next_record.history_object.last_updated_by
-        != action.history_object.last_updated_by
-        or action.next_record.history_object.owner != action.history_object.owner
+        or action.next_record.status != action.status
+        or action.next_record.last_updated_by != action.last_updated_by
+        or action.next_record.owner != action.owner
     )
+
+
+@register.filter(is_safe=True)
+def format_date(date):
+    return date.strftime("%b. %d, %Y, %I:%M %p")
