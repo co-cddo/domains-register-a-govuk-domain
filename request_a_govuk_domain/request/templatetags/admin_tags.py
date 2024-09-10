@@ -17,8 +17,8 @@ def changed_fields(obj):
     if obj.prev_record:
         delta = obj.diff_against(obj.prev_record)
         changes = list(filter(lambda x: x != "last_updated_by", delta.changed_fields))
-        return changes if changes else "--"
-    return "-"
+        return ", ".join(changes) if changes else "No Changes"
+    return "Initial Data"
 
 
 @register.filter
