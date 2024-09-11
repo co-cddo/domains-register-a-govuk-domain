@@ -20,7 +20,7 @@ NOTES_MIN_LENGTH = 1
 
 
 # We've added simple-history to the dependencies but need to implement it,
-# principally for this this class.
+# principally for this class.
 class Review(models.Model):
     """
     An extension of the Application class (has a one-to-one) relationship

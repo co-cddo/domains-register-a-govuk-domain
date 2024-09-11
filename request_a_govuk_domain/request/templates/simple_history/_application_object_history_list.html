@@ -1,0 +1,55 @@
+{% load i18n %}
+{% load url from simple_history_compat %}
+{% load admin_urls %}
+{% load getattribute from getattributes %}
+{% load admin_tags %}
+<style nonce="{{ request.csp_nonce }}">
+    .full_width {
+        width: 100%;
+        align-items: center;
+    }
+
+    .full_width td {
+        width: 30%;
+    }
+
+    h2 {
+        margin-top: 2%;
+    }
+</style>
+
+
+<h2>Full event history</h2>
+<table id="change-history" class="table table-bordered table-striped full_width">
+    <thead>
+    <tr>
+        <th scope="col">{% trans 'Date/time' %}</th>
+        <th scope="col">{% trans 'User' %}</th>
+        <th scope="col">{% trans 'Changed fields' %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for action in action_list %}
+        <tr>
+            <td>
+                <a href="{% url opts|admin_urlname:'simple_history' object.pk action.pk %}">{{ action.history_date | format_date }}</a>
+            </td>
+            <td>
+                {% if action.history_object.last_updated_by %}
+                    {% url admin_user_view action.history_object.last_updated_by.id as admin_user_url %}
+                    {% if admin_user_url %}
+                        <a href="{{ admin_user_url }}">{{ action.history_object.last_updated_by }}</a>
+                    {% else %}
+                        {{ action.history_object.last_updated_by }}
+                    {% endif %}
+                {% else %}
+                    {% trans "-" %}
+                {% endif %}
+            </td>
+            <td>
+                {{ action | changed_fields }}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

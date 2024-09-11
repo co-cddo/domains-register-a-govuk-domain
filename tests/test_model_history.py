@@ -1,62 +1,16 @@
 from unittest.mock import Mock
 
-from django.contrib.auth.models import User
-from django.test import TestCase, Client
-from django.urls import reverse
+from django.test import TestCase
 
 from request_a_govuk_domain.request import db
-from request_a_govuk_domain.request.management.commands import add_init_guidance_text
 from request_a_govuk_domain.request.models import (
-    Registrar,
-    Registrant,
-    RegistrantPerson,
-    RegistrarPerson,
-    RegistryPublishedPerson,
     Review,
     ApplicationStatus,
 )
+from tests.util import get_admin_change_view_url, SessionDict, AdminScreenTestMixin
 
 
-class CheckHistoryTestCase(TestCase):
-    def setUp(self):
-        self.registrar = Registrar.objects.create(name="dummy registrar")
-        self.registrar_person = RegistrarPerson.objects.create(
-            name="dummy registrar person", registrar=self.registrar
-        )
-        self.registrant = Registrant.objects.create(name="dummy registrant")
-        self.registrant_person = RegistrantPerson.objects.create(
-            name="dummy registrant person"
-        )
-        self.registry_publish_person = RegistryPublishedPerson.objects.create(
-            name="dummy reg publish person"
-        )
-        self.registration_data = {
-            "registrant_type": "parish_council",
-            "domain_name": "test.domain.gov.uk",
-            "registrar_name": "dummy registrar",
-            "registrar_email": "dummy_registrar_email@gov.uk",
-            "registrar_phone": "23456789",
-            "registrar_organisation": f"{self.registrar.name}-{self.registrar.id}",
-            "registrant_organisation": "dummy org",
-            "registrant_full_name": "dummy user",
-            "registrant_phone": "012345678",
-            "registrant_email": "dummy@test.gov.uk",
-            "registrant_role": "dummy",
-            "registrant_contact_email": "dummy@test.gov.uk",
-        }
-
-        User.objects.create_superuser(
-            username="superuser",
-            password="secret",  # pragma: allowlist secret
-            email="admin@example.com",
-        )
-        guidance_text = add_init_guidance_text.Command()
-        guidance_text.handle()
-        self.c = Client()
-        self.c.login(
-            username="superuser", password="secret"  # pragma: allowlist secret
-        )
-
+class CheckHistoryTestCase(AdminScreenTestMixin, TestCase):
     def test_application_history(self):
         """
         Test case to check that we load the correct application on the review screen.
@@ -73,7 +27,7 @@ class CheckHistoryTestCase(TestCase):
         history = application.history.all()  # type: ignore
         self.assertEqual(len(history), 1)
 
-        response = self.c.get(get_admin_change_view_url(application))
+        response = self.admin_client.get(get_admin_change_view_url(application))
         self.assertContains(response, "History")
 
         # change application field
@@ -103,7 +57,7 @@ class CheckHistoryTestCase(TestCase):
         history = review.history.all()  # type: ignore
         self.assertEqual(len(history), 1)
 
-        response = self.c.get(get_admin_change_view_url(review))
+        response = self.admin_client.get(get_admin_change_view_url(review))
 
         self.assertContains(response, "History")
 
@@ -112,17 +66,3 @@ class CheckHistoryTestCase(TestCase):
         review.save()  # type: ignore
         history = review.history.all()  # type: ignore
         self.assertEqual(len(history), 2)
-
-
-def get_admin_change_view_url(obj: object) -> str:
-    return reverse(
-        "admin:{}_{}_change".format(obj._meta.app_label, type(obj).__name__.lower()),  # type: ignore
-        args=(obj.pk,),  # type: ignore
-    )
-
-
-class SessionDict(dict):
-    def __init__(self, *k, **kwargs):
-        self.__dict__ = self
-        super().__init__(*k, **kwargs)
-        self.session_key = "session-key"

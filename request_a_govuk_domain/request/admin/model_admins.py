@@ -559,19 +559,31 @@ class FilterAndOrderByName(ModelAdmin):
     actions_on_bottom = True
 
 
-class RegistrarPersonAdmin(FilterAndOrderByName):
+class DisableHistoryMixin:
+    """
+    Disable change for the given entity, this in turn
+    disables the history button.
+    """
+
+    def render_change_form(
+        self, request, context, add=False, change=False, form_url="", obj=None
+    ):
+        return super().render_change_form(request, context, add, False, form_url, obj)
+
+
+class RegistrarPersonAdmin(DisableHistoryMixin, FilterAndOrderByName):
     model = RegistrarPerson
 
 
-class RegistrantPersonAdmin(FilterAndOrderByName):
+class RegistrantPersonAdmin(DisableHistoryMixin, FilterAndOrderByName):
     model = RegistrantPerson
 
 
-class RegistryPublishedPersonAdmin(FilterAndOrderByName):
+class RegistryPublishedPersonAdmin(DisableHistoryMixin, FilterAndOrderByName):
     model = RegistryPublishedPerson
 
 
-class RegistrantAdmin(FilterAndOrderByName):
+class RegistrantAdmin(DisableHistoryMixin, FilterAndOrderByName):
     model = Registrant
 
 

@@ -1,19 +1,12 @@
 from unittest.mock import Mock
 
 import parameterized
-from django.contrib.auth.models import User
-from django.test import TestCase, Client
-from django.urls import reverse
+from django.test import TestCase
+
 
 from request_a_govuk_domain.request import db
-from request_a_govuk_domain.request.management.commands import add_init_guidance_text
 from request_a_govuk_domain.request.models import (
-    Registrar,
     Application,
-    Registrant,
-    RegistrantPerson,
-    RegistrarPerson,
-    RegistryPublishedPerson,
     Review,
 )
 from request_a_govuk_domain.request.models.review_choices import (
@@ -26,53 +19,10 @@ from request_a_govuk_domain.request.models.review_choices import (
     RegistrantSeniorSupportReviewChoices,
     RegistrarDetailsReviewChoices,
 )
+from tests.util import AdminScreenTestMixin, SessionDict, get_admin_change_view_url
 
 
-class ModelAdminTestCase(TestCase):
-    def setUp(self):
-        self.registrar = Registrar.objects.create(name="dummy registrar")
-        self.registrar_person = RegistrarPerson.objects.create(
-            name="dummy registrar person", registrar=self.registrar
-        )
-        self.registrant = Registrant.objects.create(name="dummy registrant")
-        self.registrant_person = RegistrantPerson.objects.create(
-            name="dummy registrant person"
-        )
-        self.registry_publish_person = RegistryPublishedPerson.objects.create(
-            name="dummy reg publish person"
-        )
-        self.registration_data = {
-            "registrant_type": "parish_council",
-            "domain_name": "test.domain.gov.uk",
-            "registrar_name": "dummy registrar",
-            "registrar_email": "dummy_registrar_email@gov.uk",
-            "registrar_phone": "23456789",
-            "registrar_organisation": f"{self.registrar.name}-{self.registrar.id}",
-            "registrant_organisation": "dummy org",
-            "registrant_full_name": "dummy user",
-            "registrant_phone": "012345678",
-            "registrant_email": "dummy@test.gov.uk",
-            "registrant_role": "dummy",
-            "registrant_contact_email": "dummy@test.gov.uk",
-        }
-
-        self.superuser = User.objects.create_superuser(
-            username="superuser",
-            password="secret",  # pragma: allowlist secret
-            email="admin@example.com",
-        )
-        self.reviewer = User.objects.create_superuser(
-            username="reviewer",
-            password="secret",  # pragma: allowlist secret
-            email="reviewer@example.com",
-        )
-        guidance_text = add_init_guidance_text.Command()
-        guidance_text.handle()
-        self.c = Client()
-        self.c.login(
-            username="superuser", password="secret"  # pragma: allowlist secret
-        )
-
+class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
     @parameterized.parameterized.expand(
         [
             [None, "superuser", "superuser"],
@@ -99,27 +49,15 @@ class ModelAdminTestCase(TestCase):
         application = db.save_data_in_database("ABCDEFGHIJK", request)
 
         # Application retrieval, check original condition
-        response = self.c.get(get_admin_change_view_url(application))
+        response = self.admin_client.get(get_admin_change_view_url(application))
         self.assertIsNone(response.context_data["original"].owner)
         self.assertIsNone(response.context_data["original"].last_updated_by)
 
-        data = {
-            # Assign the application to reviewer
-            "time_decided_0": "2024-08-23",
-            "time_decided_1": "17:35:58",
-            "reference": application.reference,
-            "status": application.status,
-            "domain_name": application.domain_name,
-            "registrar_person": application.registrar_person.id,
-            "registrant_person": application.registrant_person.id,
-            "registry_published_person": application.registry_published_person.id,
-            "registrant_org": application.registrant_org.id,
-            "registrar_org": application.registrar_org.id,
-        }
+        data = self.get_application_update_json(application)
         if owner:
             data["owner"] = getattr(self, owner).id
 
-        self.c.post(
+        self.admin_client.post(
             get_admin_change_view_url(application),
             data=data,
             follow=True,
@@ -185,7 +123,7 @@ class ModelAdminTestCase(TestCase):
         review.registrant_senior_support_notes = "a"  # type: ignore
         review.registrar_details_notes = "a"  # type: ignore
 
-        response = self.c.get(get_admin_change_view_url(review))
+        response = self.admin_client.get(get_admin_change_view_url(review))
         with self.subTest("Review screen shows correct parameters"):
             # Page title should display application reference and the domain name
             self.assertEqual(
@@ -204,7 +142,7 @@ class ModelAdminTestCase(TestCase):
             self.assertEqual(review.id, int(response.context_data["object_id"]))
 
         with self.subTest("Approving the review brings up the correct data"):
-            approve_response = self.c.post(
+            approve_response = self.admin_client.post(
                 get_admin_change_view_url(review),
                 data={
                     "reason": reason,
@@ -247,7 +185,7 @@ class ModelAdminTestCase(TestCase):
             "Confirming the application will change the status to approved"
         ):
             # All the parameters used below are validate in the previous step
-            approve_response = self.c.post(
+            approve_response = self.admin_client.post(
                 approve_response.redirect_chain[0][0],
                 data={
                     "_confirm": "Confirm",
@@ -269,17 +207,3 @@ class ModelAdminTestCase(TestCase):
 
             with self.subTest(f"Owner is set to {self.superuser.username}"):
                 self.assertEqual(application_to_approve.owner.username, "superuser")
-
-
-def get_admin_change_view_url(obj: object) -> str:
-    return reverse(
-        "admin:{}_{}_change".format(obj._meta.app_label, type(obj).__name__.lower()),  # type: ignore
-        args=(obj.pk,),  # type: ignore
-    )
-
-
-class SessionDict(dict):
-    def __init__(self, *k, **kwargs):
-        self.__dict__ = self
-        super().__init__(*k, **kwargs)
-        self.session_key = "session-key"
