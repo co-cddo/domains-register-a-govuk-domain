@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+import re
+import logging
 import uuid
 from pathlib import Path
 from environ import Env
@@ -307,3 +309,31 @@ CELERY_BROKER_TRANSPORT_OPTIONS = env.json("CELERY_BROKER_TRANSPORT_OPTIONS", {}
 # whether broker connection retries are made during startup in Celery 6.0 and above. If you wish to retain the
 # existing behavior for retrying connections on startup, you should set broker_connection_retry_on_startup to True.
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+# Apply the filter only if we are running under the Gunicorn server on AWS.
+#   - We use Gunicon server when the application is deployed on AWS
+#   - We only get these type of requests (health check probes) only on AWS
+is_gunicorn = "gunicorn" in os.environ.get("SERVER_SOFTWARE", "")
+if is_gunicorn:
+
+    class LbCheckFilter(logging.Filter):
+        """
+        filter out loadbalancer successful check respnse.
+        This is needed to reduce the log entries in our application log
+        """
+
+        expression = re.compile(r'.*?GET / HTTP/1.1" 200.*?ELB-HealthChecker/2.0.*')
+
+        def filter(self, record):
+            return not self.expression.match(record.getMessage())
+
+    gunicorn_logger = logging.getLogger("gunicorn.access")
+    current_filters = gunicorn_logger.filters
+    add_filter = True
+    if current_filters:
+        # Make sure we do not add the filter multiple times
+        for filter in current_filters:
+            if type(filter) is LbCheckFilter:
+                add_filter = False
+    if add_filter:
+        gunicorn_logger.addFilter(LbCheckFilter())
