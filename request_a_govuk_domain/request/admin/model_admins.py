@@ -172,6 +172,15 @@ class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
     model = Review
     form = ReviewForm
     change_form_template = "admin/review_change_form.html"
+    list_select_related = [
+        "application",
+        "application__owner",
+        "application__last_updated_by",
+        "application__registrar_person",
+        "application__registrant_person",
+        "application__registrant_org",
+        "application__registrar_org",
+    ]
 
     list_display = (
         "get_reference",
@@ -516,6 +525,14 @@ class ApplicationAdmin(
         django.db.models.fields.files.FileField: {"widget": CustomAdminFileWidget},
     }
     actions = ["export", "archive"]
+    list_select_related = [
+        "owner",
+        "last_updated_by",
+        "registrar_person",
+        "registrant_person",
+        "registrant_org",
+        "registrar_org",
+    ]
 
     def download_file_view(self, request, object_id, field_name):
         application = self.model.objects.get(id=object_id)
