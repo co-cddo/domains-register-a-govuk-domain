@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 from django import template
 
 from request_a_govuk_domain.request.models import Application
@@ -84,4 +86,8 @@ def should_display(action, **kwargs):
 
 @register.filter(is_safe=True)
 def format_date(date):
-    return date.strftime("%b. %d, %Y, %I:%M %p")
+    return (
+        date.astimezone(ZoneInfo("Europe/London")).strftime("%d %b %Y %H:%M:%S %p")
+        if date
+        else "-"
+    )
