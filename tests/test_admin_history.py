@@ -5,6 +5,7 @@ from django.test import TestCase
 
 from request_a_govuk_domain.request import db
 from request_a_govuk_domain.request.models import Review
+from request_a_govuk_domain.request.templatetags.admin_tags import format_date
 from tests.util import (
     AdminScreenTestMixin,
     SessionDict,
@@ -71,7 +72,7 @@ class SimpleHistoryTest(AdminScreenTestMixin, TestCase):
             <tr>
             <td>
             <a href="/admin/request/application/{application.id}/history/{history_records[0].history_id}/">
-            {history_records[0].history_date.strftime('%b. %d, %Y, %I:%M %p')}
+            {format_date(history_records[0].history_date)}
             </a>
             </td>
             <td>
@@ -91,7 +92,7 @@ class SimpleHistoryTest(AdminScreenTestMixin, TestCase):
             <tr>
             <td>
             <a href="/admin/request/application/{application.id}/history/{history_records[-1].history_id}/">
-            {history_records[-1].history_date.strftime('%b. %d, %Y, %I:%M %p')}
+            {format_date(history_records[-1].history_date)}
             </a>
             </td><td>
             -
