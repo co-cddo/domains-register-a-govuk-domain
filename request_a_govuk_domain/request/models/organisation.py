@@ -48,6 +48,9 @@ class Registrant(models.Model):
     name = models.CharField()
     type = models.CharField(choices=RegistrantTypeChoices.choices, max_length=100)
 
+    # maintain history
+    history = HistoricalRecords()
+
     class Meta:
         unique_together = ("name", "type")
 
