@@ -466,7 +466,11 @@ class DomainPurposeForm(forms.Form):
         Choice("website-email", "Website (may include email)"),
         Choice("email-only", "Email only domain", divider="or"),
         Choice("api", "API", hint="For example, hmrc01application.api.gov.uk"),
-        Choice("service", "Service", hint="For example, get-a-fishing-licence.gov.uk"),
+        Choice(
+            "service",
+            "Service",
+            hint="For example, get-a-fishing-licence.service.gov.uk",
+        ),
         Choice(
             "campaign",
             "Campaign",
