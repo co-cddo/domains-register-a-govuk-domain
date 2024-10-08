@@ -9,6 +9,8 @@ from request_a_govuk_domain.request.models import (
 )
 from tests.util import get_admin_change_view_url, SessionDict, AdminScreenTestMixin
 
+from request_a_govuk_domain.request.models import Application
+
 
 class CheckHistoryTestCase(AdminScreenTestMixin, TestCase):
     def test_application_history(self):
@@ -21,7 +23,9 @@ class CheckHistoryTestCase(AdminScreenTestMixin, TestCase):
         request.session = SessionDict({"registration_data": self.registration_data})
 
         # Simulate application creation through client screens
-        application = db.save_data_in_database("ABCDEFGHIJK", request)
+        status = db.save_data_in_database("ABCDEFGHIJK", request)
+        print(f"{status=}")
+        application = Application.objects.filter(reference="ABCDEFGHIJK")[0]
 
         # see the records in history table
         history = application.history.all()  # type: ignore
@@ -46,7 +50,8 @@ class CheckHistoryTestCase(AdminScreenTestMixin, TestCase):
         request.session = SessionDict({"registration_data": self.registration_data})
 
         # Simulate application creation through client screens
-        application = db.save_data_in_database("ABCDEFGHIJL", request)
+        db.save_data_in_database("ABCDEFGHIJL", request)
+        application = Application.objects.filter(reference="ABCDEFGHIJL")[0]
 
         # Now we review the last application created by the client
         review = Review.objects.filter(
