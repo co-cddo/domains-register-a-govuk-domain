@@ -46,7 +46,8 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
         request.session = SessionDict({"registration_data": self.registration_data})
 
         # Simulate application creation through client screens
-        application = db.save_data_in_database("ABCDEFGHIJK", request)
+        db.save_data_in_database("ABCDEFGHIJK", request)
+        application = Application.objects.filter(reference="ABCDEFGHIJK")[0]
 
         # Application retrieval, check original condition
         response = self.admin_client.get(get_admin_change_view_url(application))
@@ -98,7 +99,8 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
         # Make the application email unique so that we are sure when we compare the data later
         self.registration_data["registrar_email"] = "dummy_registrar_email-xx@gov.uk"
         # Simulate application creation through client screens
-        application_to_approve = db.save_data_in_database("ABCDEFGHIJG", request)
+        db.save_data_in_database("ABCDEFGHIJG", request)
+        application_to_approve = Application.objects.filter(reference="ABCDEFGHIJG")[0]
 
         # Now we review the last application created by the client
         review = Review.objects.filter(

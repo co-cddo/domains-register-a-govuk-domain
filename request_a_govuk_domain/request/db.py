@@ -98,6 +98,12 @@ def save_data_in_database(reference, request):
     :param request: Request object
     """
 
+    # get the application here and return status as False.
+    # since the application already is created in DB.
+    application = Application.objects.filter(reference=reference)
+    if application:
+        return False
+
     session_data = get_registration_data(request)
     registration_data = sanitised_registration_data(
         session_data, request.session.session_key
@@ -164,7 +170,7 @@ def save_data_in_database(reference, request):
                 "Saved application %d with reference %s", application.id, reference
             )
             Review.objects.create(application=application)
-        return application
+        return True
     except Exception as e:
         logger.error(
             f"""Exception while saving data. Exception: {type(e).__name__} - {str(e)} ,
