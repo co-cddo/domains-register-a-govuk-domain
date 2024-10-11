@@ -60,14 +60,8 @@ class StartSessionView(RedirectView):
         # User has clicked the green button, so they're
         # starting a new journey. Therefore delete the session data
         # so that no previous answer is shown in the new journey.
-        if "Referer" in request.headers:
-            if "confirm" not in request.headers["Referer"]:
-                request.session.pop(REGISTRATION_DATA, None)
-                request.session.pop(APPLICATION_REFERENCE, None)
-
-        request.session["init"] = True
-        request.session.save()
-        print("in start session")
+        request.session.pop(REGISTRATION_DATA, None)
+        request.session.pop(APPLICATION_REFERENCE, None)
         return super().setup(request, *args, **kwargs)
 
 
@@ -92,17 +86,6 @@ class RegistrarDetailsView(FormView):
     form_class = RegistrarDetailsForm
     success_url = reverse_lazy("registrant_type")
     change = False
-
-    def get(self, request: HttpRequest, *args: str, **kwargs: reverse_lazy):
-        if "init" in self.request.session:
-            print("init")
-            self.request.session.pop("init")
-            self.request.session.save()
-            return super().get(request, *args, **kwargs)
-        if "Referer" in self.request.headers:
-            if "registrant-type" in self.request.headers["Referer"]:
-                return super().get(request, *args, **kwargs)
-        return redirect("start_session")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
