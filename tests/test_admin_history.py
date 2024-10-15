@@ -4,7 +4,7 @@ from unittest.mock import Mock
 from django.test import TestCase
 
 from request_a_govuk_domain.request import db
-from request_a_govuk_domain.request.models import Review
+from request_a_govuk_domain.request.models import Review, Application
 from request_a_govuk_domain.request.templatetags.admin_tags import format_date
 from tests.util import (
     AdminScreenTestMixin,
@@ -27,7 +27,8 @@ class SimpleHistoryTest(AdminScreenTestMixin, TestCase):
         request.session = SessionDict({"registration_data": self.registration_data})
 
         # Simulate application creation through client screens
-        application = db.save_data_in_database("ABCDEFGHIJK", request)
+        db.save_data_in_database("ABCDEFGHIJK", request)
+        application = Application.objects.filter(reference="ABCDEFGHIJK")[0]
         sleep(1)
 
         # Simulate 1st review user interaction.

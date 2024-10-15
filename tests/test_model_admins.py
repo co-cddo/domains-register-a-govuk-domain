@@ -10,7 +10,7 @@ from parameterized import parameterized
 
 from request_a_govuk_domain.request import db
 from request_a_govuk_domain.request.admin.model_admins import convert_to_local_time
-from request_a_govuk_domain.request.models import Registrar
+from request_a_govuk_domain.request.models import Registrar, Application
 
 
 class ModelAdminTestCase(TestCase):
@@ -70,7 +70,8 @@ class ModelAdminTestCase(TestCase):
     def test_file_is_uploaded_from_admin_screen(self, file_name, expected_name):
         request = Mock()
         request.session = SessionDict({"registration_data": self.registration_data})
-        app = db.save_data_in_database("ABCDEFGHIJK", request)
+        db.save_data_in_database("ABCDEFGHIJK", request)
+        app = Application.objects.filter(reference="ABCDEFGHIJK")[0]
         c = Client()
         c.login(username="superuser", password="secret")  # pragma: allowlist secret
 
