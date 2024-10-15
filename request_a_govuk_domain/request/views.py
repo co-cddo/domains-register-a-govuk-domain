@@ -390,7 +390,7 @@ class ConfirmView(TemplateView):
         if status:
             return redirect("success")
         else:
-            return HttpResponse("Multiple Clicks")
+            return HttpResponseNotFound()
 
     @transaction.atomic  # This ensures that any failure during email send will not save data in db either
     def save_application_to_database_and_send_confirmation_email(
