@@ -384,18 +384,15 @@ class ConfirmView(TemplateView):
         :return:
         """
         reference_ = request.session.get(APPLICATION_REFERENCE)
-        status = self.save_application_to_database_and_send_confirmation_email(
+        self.save_application_to_database_and_send_confirmation_email(
             reference_, request
         )
-        if status:
-            return redirect("success")
-        else:
-            return HttpResponseNotFound()
+        return redirect("success")
 
     @transaction.atomic  # This ensures that any failure during email send will not save data in db either
     def save_application_to_database_and_send_confirmation_email(
         self, reference: str, request: HttpRequest
-    ):
+    ) -> None:
         """
         Saves data in the db and sends confirmation email
 
@@ -403,9 +400,8 @@ class ConfirmView(TemplateView):
         :param request: request object
         """
         logger.info(f"Saving form {request.session.session_key}")
-        status = save_data_in_database(reference, request)
+        save_data_in_database(reference, request)
         self.send_confirmation_email(reference, request)
-        return status
 
     def send_confirmation_email(self, reference: str, request) -> None:
         """

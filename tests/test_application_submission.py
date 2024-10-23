@@ -186,7 +186,8 @@ class ServiceFailureErrorHandlerTests(TransactionTestCase):
 
     def test_application_success(self):
         """
-        successfull response
+        On multiple clicks, we avoid saving same application to DB.
+        Test to confirm multiple clicks won't throw 500 error
         :return:
         """
 
@@ -197,17 +198,3 @@ class ServiceFailureErrorHandlerTests(TransactionTestCase):
             res = self.client.post("/confirm/", data={})
 
         self.assertEqual(302, res.status_code)
-
-    def test_application_failure(self):
-        """
-        failure response
-        :return:
-        """
-        with patch(
-            "request_a_govuk_domain.request.views.ConfirmView.save_application_to_database_and_send_confirmation_email"
-        ) as mock_save:
-            mock_save.return_value = False
-            # self.client.raise_request_exception = False
-            res = self.client.post("/confirm/", data={})
-
-        self.assertEqual(404, res.status_code)
