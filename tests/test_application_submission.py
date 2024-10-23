@@ -2,7 +2,7 @@ import concurrent
 import functools
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from django.db import connection
 from django.test import TransactionTestCase
@@ -183,3 +183,18 @@ class ServiceFailureErrorHandlerTests(TransactionTestCase):
             # Try to save the application without any session data
             mock_request.POST = {}
             return ConfirmView().post(mock_request)
+
+    def test_application_success(self):
+        """
+        On multiple clicks, we avoid saving same application to DB.
+        Test to confirm multiple clicks won't throw 500 error
+        :return:
+        """
+
+        with patch(
+            "request_a_govuk_domain.request.views.ConfirmView.save_application_to_database_and_send_confirmation_email"
+        ) as mock_save:
+            mock_save.return_value = True
+            res = self.client.post("/confirm/", data={})
+
+        self.assertEqual(302, res.status_code)
