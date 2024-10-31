@@ -1,6 +1,7 @@
 import csv
 import logging
 from zoneinfo import ZoneInfo
+from datetime import datetime
 
 import django.db.models.fields.files
 import markdown
@@ -137,7 +138,9 @@ class ReportDownLoadMixin:
         field_names = [field.name for field in meta.fields]
 
         response = HttpResponse(content_type="text/csv")
-        response["Content-Disposition"] = "attachment; filename={}.csv".format(meta)
+        response[
+            "Content-Disposition"
+        ] = f"attachment; filename={meta}_{datetime.today().strftime('%Y-%m-%d')}_data_backup.csv"
         writer = csv.writer(response)
 
         writer.writerow(field_names)
@@ -168,10 +171,13 @@ class ArchiveMixin:
         return request.user.is_superuser
 
 
-class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, admin.ModelAdmin):
+class ReviewAdmin(
+    SimpleHistoryAdmin, FileDownloadMixin, ReportDownLoadMixin, admin.ModelAdmin
+):
     model = Review
     form = ReviewForm
     change_form_template = "admin/review_change_form.html"
+    actions = ["export"]
     list_select_related = [
         "application",
         "application__owner",
