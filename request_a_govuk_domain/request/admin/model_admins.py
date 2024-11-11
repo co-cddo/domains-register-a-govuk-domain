@@ -145,9 +145,23 @@ class ReportDownLoadMixin:
 
         writer.writerow(field_names)
         for obj in queryset:
-            writer.writerow([getattr(obj, field) for field in field_names])
+            writer.writerow([self.format_field(obj, field) for field in field_names])
 
         return response
+
+    def format_field(self, obj, field):
+        """
+        Human readable names for the status and truncated datetime to date
+        :param obj:
+        :param field:
+        :return: the updated field
+        """
+        field_value = getattr(obj, field)
+        if field == "status":
+            field_value = ApplicationStatus(field_value).label
+        elif type(field_value) is datetime:
+            field_value = field_value.strftime("%Y-%m-%d")
+        return field_value
 
     def has_export_permission(self, request, obj=None):
         return request.user.is_superuser
