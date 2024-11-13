@@ -286,10 +286,27 @@ SENTRY_DSN = env.str("SENTRY_DSN", default=None)
 if SENTRY_DSN is not None:
     import sentry_sdk
 
+    def traces_sampler(sampling_context):
+        # Disable the health check and the email failure task sampling and
+        # also reduce the sampling for other events by 1/5, for the prod environment we sample 100%
+        if (
+            sampling_context["transaction_context"]["name"]
+            == "request_a_govuk_domain.request.tasks.check_email_failure_and_notify"
+        ) or (
+            sampling_context["transaction_context"]["name"] == "generic WSGI request"
+            and sampling_context["wsgi_environ"]["HTTP_USER_AGENT"]
+            == "ELB-HealthChecker/2.0"
+        ):
+            return 0.0 if ENVIRONMENT in ["dev", "test", "stage"] else 0.1
+        else:
+            # Any other traces reduce the rate for non-prod
+            return 0.2 if ENVIRONMENT in ["dev", "test"] else 1
+
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         enable_tracing=True,
         environment=ENVIRONMENT,
+        traces_sampler=traces_sampler,
     )
 
 # Only enable S3 storage if it is explicitly enabled or on AWS
