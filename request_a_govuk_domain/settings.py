@@ -354,3 +354,7 @@ if is_gunicorn:
                 add_filter = False
     if add_filter:
         gunicorn_logger.addFilter(LbCheckFilter())
+
+
+# setting the SESSION_COOKIE_AGE to 20 minutes
+SESSION_COOKIE_AGE = 20 * 60
