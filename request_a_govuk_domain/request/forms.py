@@ -91,7 +91,9 @@ class RegistrarDetailsForm(forms.Form):
         self.helper.label_size = Size.SMALL
         self.helper.layout = Layout(
             Fieldset(
-                DomainsHTML('<h2 class="govuk-heading-m">Organisation name</h2>'),
+                DomainsHTML(
+                    '<h2 class="govuk-heading-m" autocomplete="false">Organisation name</h2>'  # pragma: allowlist secret
+                ),
                 Field.text("registrar_organisation"),
             ),
             Fieldset(
