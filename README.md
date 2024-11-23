@@ -38,7 +38,7 @@ When the application is run:
 
 ## Usage instructions
 
-The user-facing application is accessible via http://localhost:8000
+The user-facing application is accessible via http://localhost:8010
 
 Note: The application is in initial stages and the forms are at prototype/R&D stage. The pages on the application and logic within them are not yet representative of application.
 
