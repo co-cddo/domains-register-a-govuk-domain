@@ -176,18 +176,26 @@ def is_valid_session_data(rd: dict) -> bool:
     return True
 
 
-def get_registration_data(request) -> dict:
+def get_registration_data(request):
     """
     Returns the registration dictionary or raise a 400 error (Bad Request) or it's missing,
     since if it happens it probably means that the user's jumped to a random page without
     being in an active session.
     """
-    try:
-        return request.session["registration_data"]
-    except KeyError:
-        raise BadRequest(
-            "No session data found. User's probably gone to a random page without a session"
-        )
+    if "registration_data" in request.session:
+        print(f"start: {request.session}")
+        try:
+            return request.session["registration_data"]
+        except KeyError:
+            raise BadRequest(
+                "No session data found. User's probably gone to a random page without a session"
+            )
+    else:
+        print(f"end: {request.session}")
+        # raise BadRequest(
+        #         "No session data found. User's probably gone to a random page without a session"
+        #     )
+        return {"test": "Sravan"}
 
 
 def add_to_session(form, request, field_names: list[str]) -> dict:

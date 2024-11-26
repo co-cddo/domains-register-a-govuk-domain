@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags crispy_forms_gds %}
+{% load govuk_frontend_django %}
+{% load csp %}
+
+{% block title %}Session Ended{% endblock %}
+
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% error_summary form %}
+            <h1 class="govuk-heading-xl">
+                Your session has ended due to inactivity
+            </h1>
+
+            <p class="govuk-body">
+                Your session has ended because you haven't done anything for over 30 minutes.
+            </p>
+
+            <p class="govuk-warning-text">
+                We have deleted all the answers you've entered to protect your security.
+            </p>
+
+            {% crispy form %}
+        </div>
+    </div>
+{% endblock %}
