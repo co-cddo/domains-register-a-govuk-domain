@@ -13,6 +13,7 @@
 
 {% block content %}
     <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
         <div class="govuk-notification-banner govuk-notification-banner--blue" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
             <div class="govuk-notification-banner__header">
             <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
@@ -24,8 +25,9 @@
             <div class="govuk-body">
               <p>We will delete your answers if you do not do anything for 20 minutes and you will have to start again.</p>
             </div>
-            </div>
-            </div>
+        </div>
+    </div>
+    </div>
         <div class="govuk-grid-column-two-thirds">
             {% error_summary form %}
             <h1 class="govuk-heading-xl">

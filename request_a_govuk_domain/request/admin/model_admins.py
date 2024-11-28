@@ -220,6 +220,11 @@ class ReviewAdmin(
         wrap_with_application_filter(RegistrantOrgFilter),
         wrap_with_application_filter(LastUpdatedFilter),
     )
+    search_fields = [
+        "application__reference",
+        "application__domain_name",
+        "application__status",
+    ]
 
     def download_file_view(self, request, object_id, field_name):
         review = self.model.objects.get(id=object_id)
@@ -552,6 +557,14 @@ class ApplicationAdmin(
         "registrant_person",
         "registrant_org",
         "registrar_org",
+    ]
+    search_fields = [
+        "reference",
+        "domain_name",
+        "status",
+        "registrar_org__name",
+        "registrant_org__name",
+        "owner__username",
     ]
 
     def download_file_view(self, request, object_id, field_name):

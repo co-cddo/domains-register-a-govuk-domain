@@ -16,12 +16,9 @@
             </h1>
 
             <p class="govuk-body">
-                Your session has ended because you haven't done anything for over 30 minutes.
+                Your session has ended because you haven't done anything for over 20 minutes.
             </p>
-
-            <p class="govuk-warning-text">
-                We have deleted all the answers you've entered to protect your security.
-            </p>
+            {% gds_component "inset-text" text="We have deleted all the answers you've entered to protect your security." %}
 
             {% crispy form %}
         </div>
