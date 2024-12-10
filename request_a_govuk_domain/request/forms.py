@@ -521,3 +521,18 @@ class ConfirmationForm(forms.Form):
                 "Accept and send",
             ),
         )
+
+
+class SessionEndedForm(forms.Form):
+    """
+    Session End - we show a continue button
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.label_size = Size.SMALL
+        self.helper.layout = Layout(
+            Button("submit", "Continue"),
+        )

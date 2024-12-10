@@ -259,8 +259,8 @@ if not DEBUG:
     CSRF_FAILURE_VIEW = "request_a_govuk_domain.request.views.csrf_failure_view"
     SESSION_COOKIE_SECURE = True
 
-# Set session (end-user or admin) to expire in 24 hours
-SESSION_COOKIE_AGE = 24 * 60 * 60
+# Set session end-user to expire in 20 minutes
+SESSION_COOKIE_AGE = 20 * 60
 
 # Content Security Policy: only allow images, stylesheets and scripts from the
 # same origin as the HTML
