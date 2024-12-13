@@ -399,6 +399,7 @@ def variable_page_content(_request):
     context["GOOGLE_ANALYTICS_ID"] = (
         google_analytics_id if google_analytics_id[:4].upper() == "GTM-" else ""
     )
+    context["SESSION_TIMEOUT"] = settings.SESSION_COOKIE_AGE
 
     return context
 

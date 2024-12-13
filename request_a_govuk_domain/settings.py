@@ -261,6 +261,7 @@ if not DEBUG:
 
 # Set session end-user to expire in 20 minutes
 SESSION_COOKIE_AGE = 20 * 60
+SESSION_SAVE_EVERY_REQUEST = True
 
 # Content Security Policy: only allow images, stylesheets and scripts from the
 # same origin as the HTML

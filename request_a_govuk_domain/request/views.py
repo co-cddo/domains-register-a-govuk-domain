@@ -693,6 +693,13 @@ def bad_request_view(request, exception):
     return render(request, "400.html", status=400)
 
 
+def reset_timer(request):
+    logger.info("Resetting the session timer")
+    logger.info(request.session.get_expiry_age())
+    logger.info(request.session.get_expiry_date())
+    return HttpResponse()
+
+
 class SessionEndedView(FormView):
     template_name = "session_ended.html"
     success_url = reverse_lazy("start_session")
