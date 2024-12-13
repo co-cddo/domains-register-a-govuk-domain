@@ -151,6 +151,26 @@
     <script nonce="{{request.csp_nonce}}" src='{% static "cookies.js" %}'></script>
   {% endif %}
 
+  <span id="timeout-span" style="display:none;">
+    <h1 id="dialog-title" class="govuk-heading-l">
+      Your session timed out
+      </h1>
+      <div class="govuk-body">
+      <p>We will delete your answers if you do not do anything for 20 minutes and you will have to start again.</p>
+      </div>
+      <button class="govuk-button dialog-button js-dialog-close" data-module="govuk-button">Continue</button>
+  </span>
+
 </body>
+<script type="text/javascript" nonce="{{request.csp_nonce}}">
+
+  var timerId = 0;
+  function onTimerElapsed() {
+      var myDiv = document.getElementById('timeout-span');
+      myDiv.style.display = myDiv.style.display === 'none' ? 'block' : 'none';
+      clearInterval(timerId);
+  }
+  timerId = (onTimerElapsed, 5)
+</script>
 
 </html>
