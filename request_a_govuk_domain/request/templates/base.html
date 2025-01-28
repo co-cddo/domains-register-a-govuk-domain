@@ -175,6 +175,7 @@
 </div>
 
 </body>
+{% block session_ended %}
 <script type="text/javascript" nonce="{{ request.csp_nonce }}">
     var warningTimerId = 0;
     var expiryTimerId = 0;
@@ -185,11 +186,13 @@
     }
 
     function showExpiry() {
+        clearTimeout(warningTimerId);
+        clearTimeout(expiryTimerId);
         document.location.href = '/session-ended/';
     }
 
     function continueSession() {
-        fetch('/reset-timer/'); // TODO: Notify server to update session
+        fetch('/reset-timer/'); // Notify server to update session
         resetTimers();
         document.getElementById('modal_dialog').style.display = 'none';
 
@@ -200,7 +203,8 @@
         clearTimeout(warningTimerId);
         clearTimeout(expiryTimerId);
         var sessionCookieAge = {{ SESSION_TIMEOUT }};
-        warningTimerId = setTimeout(showWarning, (sessionCookieAge - 5) * 1000); // 15 minutes
+        console.log('Session cookie age: ' + sessionCookieAge);
+        warningTimerId = setTimeout(showWarning, (sessionCookieAge - 300) * 1000); // 15 minutes
         expiryTimerId = setTimeout(showExpiry, sessionCookieAge * 1000); // 20 minutes
     }
 
@@ -210,5 +214,6 @@
         document.body.addEventListener('keypress', resetTimers);
     });
 </script>
+{% endblock %}
 
 </html>
