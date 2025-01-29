@@ -16,7 +16,7 @@
     <meta name="theme-color" content="#0b0c0c">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Sets the auto referesh to match with session cookie age which is 20 minutes -->
-    <!-- <meta http-equiv="refresh" content="1200; url=/session-ended/"> -->
+    <meta http-equiv="refresh" content="1200; url=/session-ended/">
 
     <title>{% block title %}{% endblock %} - Get approval to use a .gov.uk domain name - GOV.UK</title>
 
@@ -160,14 +160,14 @@
     <script nonce="{{ request.csp_nonce }}" src='{% static "js.cookie.min.js" %}'></script>
     <script nonce="{{ request.csp_nonce }}" src='{% static "cookies.js" %}'></script>
 {% endif %}
-
+{% load custom_filters %}
 <div id="modal_dialog" class="modal">
     <div class="modal-content">
         <h1 id="dialog-title" class="govuk-heading-l">
             Your session timed out
         </h1>
         <div class="govuk-body">
-            <p>We will delete your answers if you do not do anything for 20 minutes and you will have to start
+            <p>We will delete your answers if you do not do anything for {{ SESSION_TIMEOUT|divide_by_60 }} minutes and you will have to start
                 again.</p>
         </div>
         <button class="govuk-button dialog-button js-dialog-close" data-module="govuk-button" id="session-continue">Continue</button>
@@ -175,44 +175,48 @@
 </div>
 
 </body>
-{% block session_ended %}
+{% block session_ended %} <!-- session-ended block to override in child template -->
 <script type="text/javascript" nonce="{{ request.csp_nonce }}">
-    var warningTimerId = 0;
-    var expiryTimerId = 0;
+  var warningTimerId = 0;
+  var expiryTimerId = 0;
 
-    function showWarning() {
-        var warningDiv = document.getElementById('modal_dialog');
-        warningDiv.style.display = "block";
-    }
+  // Show warning dialog 15 minutes before session expiry
+  function showWarning() {
+      var warningDiv = document.getElementById('modal_dialog');
+      warningDiv.style.display = "block";
+  }
 
-    function showExpiry() {
-        clearTimeout(warningTimerId);
-        clearTimeout(expiryTimerId);
-        document.location.href = '/session-ended/';
-    }
+  // Redirect to session-ended page after session expiry
+  function showExpiry() {
+      clearTimeout(warningTimerId);
+      clearTimeout(expiryTimerId);
+      document.location.href = '/session-ended/';
+  }
 
-    function continueSession() {
-        fetch('/reset-timer/'); // Notify server to update session
-        resetTimers();
-        document.getElementById('modal_dialog').style.display = 'none';
+  // Continue session
+  function continueSession() {
+      fetch('/reset-timer/'); // Notify server to update session
+      resetTimers();
+      document.getElementById('modal_dialog').style.display = 'none';
 
-    }
-    document.getElementById("session-continue").addEventListener('click', continueSession, false);
+  }
+  document.getElementById("session-continue").addEventListener('click', continueSession, false);
 
-    function resetTimers() {
-        clearTimeout(warningTimerId);
-        clearTimeout(expiryTimerId);
-        var sessionCookieAge = {{ SESSION_TIMEOUT }};
-        console.log('Session cookie age: ' + sessionCookieAge);
-        warningTimerId = setTimeout(showWarning, (sessionCookieAge - 300) * 1000); // 15 minutes
-        expiryTimerId = setTimeout(showExpiry, sessionCookieAge * 1000); // 20 minutes
-    }
+  // Reset timers on user activity
+  function resetTimers() {
+      clearTimeout(warningTimerId);
+      clearTimeout(expiryTimerId);
+      var sessionCookieAge = "{{ SESSION_TIMEOUT|safe }}";
+      warningTimerId = setTimeout(showWarning, (sessionCookieAge - 300) * 1000); // 15 minutes
+      expiryTimerId = setTimeout(showExpiry, sessionCookieAge * 1000); // 20 minutes
+  }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        resetTimers();
-        document.body.addEventListener('click', resetTimers);
-        document.body.addEventListener('keypress', resetTimers);
-    });
+  // Reset timers on page load
+  document.addEventListener('DOMContentLoaded', function() {
+      resetTimers();
+      document.body.addEventListener('click', resetTimers);
+      document.body.addEventListener('keypress', resetTimers);
+  });
 </script>
 {% endblock %}
 

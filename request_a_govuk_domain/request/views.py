@@ -697,9 +697,6 @@ def bad_request_view(request, exception):
 
 
 def reset_timer(request):
-    logger.info("Resetting the session timer")
-    logger.info(request.session.get_expiry_age())
-    logger.info(request.session.get_expiry_date())
     return HttpResponse()
 
 

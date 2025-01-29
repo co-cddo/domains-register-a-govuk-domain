@@ -16,6 +16,8 @@ describe('session timeout tests', () => {
     cy.get('#id_registrar_email').clear('test@example.gov.uk');
     cy.get('#id_submit').click();
 
+    // check if model_dialog doesn't exist
+    cy.get('#modal_dialog').should('not.be.visible');
     // clock tick
     cy.tick(15 * 60 * 1000);
     cy.get('#modal_dialog').should('exist');
@@ -33,7 +35,7 @@ describe('session timeout tests', () => {
     cy.get('#id_submit').click();
 
     // clock tick
-    cy.tick(15 * 60 * 1000); // 1 minute for testing
+    cy.tick(15 * 60 * 1000);
     cy.get('#modal_dialog').should('exist');
     cy.get('#modal_dialog').should('be.visible');
 
@@ -54,14 +56,14 @@ describe('session timeout tests', () => {
     cy.get('#id_submit').click();
 
     // Simulate 15 minutes of inactivity
-    cy.tick(15 * 60 * 1000); // 15 minutes
+    cy.tick(15 * 60 * 1000);
 
     // Ensure the modal dialog exists and is visible
     cy.get('#modal_dialog').should('exist');
     cy.get('#modal_dialog').should('be.visible');
 
-    // Simulate additional 1 minutes of inactivity
-    cy.tick(5 * 60 * 1000); // 1 minutes
+    // Simulate additional 5 minutes of inactivity
+    cy.tick(5 * 60 * 1000);
 
     // Check if the warning modal is still hidden
     cy.get('#modal_dialog').should('not.be.visible');
