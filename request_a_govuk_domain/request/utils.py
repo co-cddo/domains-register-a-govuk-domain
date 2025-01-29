@@ -6,7 +6,6 @@ import clamd
 from django.conf import settings
 from django.core.exceptions import ValidationError, BadRequest
 from django.core.files.uploadedfile import UploadedFile
-from django.contrib.sessions.backends.db import SessionStore
 from notifications_python_client import NotificationsAPIClient
 
 from request_a_govuk_domain.request.models import RegistrantTypeChoices
@@ -212,22 +211,6 @@ def add_value_to_session(request, field_name: str, field_value) -> None:
     registration_data = request.session.get("registration_data", {})
     registration_data[field_name] = field_value
     request.session["registration_data"] = registration_data
-
-
-def remove_from_session(session: SessionStore, field_names: list[str]) -> dict:
-    """
-    Remove fields from a session, for instance when an uploaded
-    file is removed
-    """
-    rd = session.get("registration_data")
-    if session and session.session_key and rd:
-        for field_name in field_names:
-            if rd.get(field_name) is not None:
-                del session["registration_data"][field_name]
-
-        return rd
-    else:
-        return {}
 
 
 def get_env_variable(key: str, default=None) -> str:

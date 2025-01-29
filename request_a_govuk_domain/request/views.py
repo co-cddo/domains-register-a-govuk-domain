@@ -33,7 +33,6 @@ from .models.storage_util import select_storage
 from .utils import (
     handle_uploaded_file,
     add_to_session,
-    remove_from_session,
     route_number,
     send_email,
     route_specific_email_template,
@@ -347,15 +346,16 @@ class UploadRemoveView(RedirectView):
                 storage.delete(path_to_delete)
 
         # delete the session data
-        remove_from_session(
-            self.request.session,
-            [
-                self.page_type + "_file_uploaded_filename",
-                self.page_type + "_file_original_filename",
-                self.page_type + "_file_uploaded_url",
-            ],
-        )
-
+        del self.request.session[REGISTRATION_DATA][
+            self.page_type + "_file_uploaded_filename"
+        ]
+        del self.request.session[REGISTRATION_DATA][
+            self.page_type + "_file_original_filename"
+        ]
+        del self.request.session[REGISTRATION_DATA][
+            self.page_type + "_file_uploaded_url"
+        ]
+        self.request.session.modified = True
         return super().get_redirect_url(*args, **kwargs)
 
 
@@ -556,7 +556,10 @@ def download_file(request, file_type):
     """
     registration_data = get_registration_data(request)
     storage = select_storage()
-    file_name = registration_data[f"{file_type}_file_uploaded_filename"]
+    try:
+        file_name = registration_data[f"{file_type}_file_uploaded_filename"]
+    except KeyError:
+        return HttpResponseNotFound("Not Found")
     if storage.exists(file_name):
         return FileResponse(storage.open(file_name, "rb"))
     return HttpResponseNotFound("Not Found")
