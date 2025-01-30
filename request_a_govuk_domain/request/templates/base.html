@@ -1,6 +1,6 @@
 {% load static i18n govuk_frontend_django csp %}<!DOCTYPE html>
 <html lang="en" class="govuk-template">
-<head>
+  <head>
     {% if GOOGLE_ANALYTICS_ID %}
         <!-- Google Tag Manager -->
         <script type="unknown/type" id="gtm-script" nonce="{{ request.csp_nonce }}">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -30,7 +30,7 @@
 
     {% block extra_stylesheets %}
     {% endblock %}
-</head>
+  </head>
 <body class="govuk-template__body govuk-frontend-supported">
 {% if GOOGLE_ANALYTICS_ID %}
     <!-- Google Tag Manager (noscript) -->
@@ -177,45 +177,45 @@
 </body>
 {% block session_ended %} <!-- session-ended block to override in child template -->
 <script type="text/javascript" nonce="{{ request.csp_nonce }}">
-  var warningTimerId = 0;
-  var expiryTimerId = 0;
+  let warningTimerId = 0;
+  let expiryTimerId = 0;
 
   // Show warning dialog 15 minutes before session expiry
   function showWarning() {
-      var warningDiv = document.getElementById('modal_dialog');
-      warningDiv.style.display = "block";
+    let warningDiv = document.getElementById('modal_dialog');
+    warningDiv.style.display = "block";
   }
 
   // Redirect to session-ended page after session expiry
   function showExpiry() {
-      clearTimeout(warningTimerId);
-      clearTimeout(expiryTimerId);
-      document.location.href = '/session-ended/';
+    clearTimeout(warningTimerId);
+    clearTimeout(expiryTimerId);
+    document.location.href = '/session-ended/';
   }
 
   // Continue session
   function continueSession() {
-      fetch('/reset-timer/'); // Notify server to update session
-      resetTimers();
-      document.getElementById('modal_dialog').style.display = 'none';
+    fetch('/reset-timer/'); // Notify server to update session
+    resetTimers();
+    document.getElementById('modal_dialog').style.display = 'none';
 
   }
   document.getElementById("session-continue").addEventListener('click', continueSession, false);
 
   // Reset timers on user activity
   function resetTimers() {
-      clearTimeout(warningTimerId);
-      clearTimeout(expiryTimerId);
-      var sessionCookieAge = "{{ SESSION_TIMEOUT|safe }}";
-      warningTimerId = setTimeout(showWarning, (sessionCookieAge - 300) * 1000); // 15 minutes
-      expiryTimerId = setTimeout(showExpiry, sessionCookieAge * 1000); // 20 minutes
+    clearTimeout(warningTimerId);
+    clearTimeout(expiryTimerId);
+    let sessionCookieAge = "{{ SESSION_TIMEOUT|safe }}";
+    warningTimerId = setTimeout(showWarning, (sessionCookieAge - 300) * 1000); // 15 minutes
+    expiryTimerId = setTimeout(showExpiry, sessionCookieAge * 1000); // 20 minutes
   }
 
   // Reset timers on page load
   document.addEventListener('DOMContentLoaded', function() {
-      resetTimers();
-      document.body.addEventListener('click', resetTimers);
-      document.body.addEventListener('keypress', resetTimers);
+    resetTimers();
+    document.body.addEventListener('click', resetTimers);
+    document.body.addEventListener('keypress', resetTimers);
   });
 </script>
 {% endblock %}

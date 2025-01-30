@@ -9,19 +9,19 @@
 
 {% block content %}
 {% load custom_filters %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            {% error_summary form %}
-            <h1 class="govuk-heading-xl">
-                Your session has ended due to inactivity
-            </h1>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        {% error_summary form %}
+        <h1 class="govuk-heading-xl">
+            Your session has ended due to inactivity
+        </h1>
 
-            <p class="govuk-body">
-                Your session has ended because you haven't done anything for over {{ SESSION_TIMEOUT|divide_by_60 }} minutes.
-            </p>
-            {% gds_component "inset-text" text="We have deleted all the answers you've entered to protect your security." %}
+        <p class="govuk-body">
+            Your session has ended because you haven't done anything for over {{ SESSION_TIMEOUT|divide_by_60 }} minutes.
+        </p>
+        {% gds_component "inset-text" text="We have deleted all the answers you've entered to protect your security." %}
 
-            {% crispy form %}
-        </div>
+        {% crispy form %}
+    </div>
     </div>
 {% endblock %}
