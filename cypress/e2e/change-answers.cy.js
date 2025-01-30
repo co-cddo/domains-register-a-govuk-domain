@@ -189,7 +189,7 @@ describe('Changing answers at the end of the process', () => {
     cy.get('#id_registrant_phone').clear().type('2384')
     cy.get('#id_back_to_answers').click()
     cy.checkPageTitleIncludes('Registrant details')
-    cy.confirmProblem('Enter a telephone number, like 01632 960 001 or 07700 900 982')
+    cy.confirmProblem('Enter a telephone number, like 01632 960 001, 03034 443 000 or 07700 900 982')
     cy.get('#id_registrant_phone').clear().type('01233456876')
     cy.get('#id_back_to_answers').click()
     cy.checkPageTitleIncludes('Check your answers')
