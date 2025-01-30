@@ -12,11 +12,12 @@ code {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 50%; /* Full width */
-  height: 50%; /* Full height */
+  padding: 20px; /* Location of the box */
+  left: 50%;
+  top: 50%;
+  height: 100%; /* Adjust height as needed */
+  width: 100%;
+  transform: translate(-50%, -50%);
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
@@ -24,8 +25,12 @@ code {
 
 .modal-content {
   background-color: #fefefe;
+  position: fixed; /* Stay in place */
   margin: auto;
   padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
+  border: 5px solid #888;
+  width: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
