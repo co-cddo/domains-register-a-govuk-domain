@@ -4,17 +4,11 @@ describe('session timeout tests', () => {
 
   beforeEach(()=>{
     cy.clock();
-    cy.start()
   });
 
-  it('session_timeout_dialog_success', () => {
-
-    cy.get('.govuk-grid-column-two-thirds > .govuk-button').click();
-    cy.get('#id_registrar_organisation').clear().type('WeRegister')
-    cy.get('#id_registrar_name').clear('Test');
-    cy.get('#id_registrar_phone').clear('01225672345');
-    cy.get('#id_registrar_email').clear('test@example.gov.uk');
-    cy.get('#id_submit').click();
+  it('Displays the timeout warning after 15 minutes', () => {
+    // go to RegistrantType page
+    cy.goToRegistrantType()
 
     // check if model_dialog doesn't exist
     cy.get('#modal_dialog').should('not.be.visible');
@@ -25,14 +19,9 @@ describe('session timeout tests', () => {
 
   });
 
-  it('session_timeout_click_continue_session', () => {
-
-    cy.get('.govuk-grid-column-two-thirds > .govuk-button').click();
-    cy.get('#id_registrar_organisation').clear().type('WeRegister')
-    cy.get('#id_registrar_name').clear('Test');
-    cy.get('#id_registrar_phone').clear('01225672345');
-    cy.get('#id_registrar_email').clear('test@example.gov.uk');
-    cy.get('#id_submit').click();
+  it('Displays the timeout warning after 15 minutes and continue the session', () => {
+    // go to RegistrantType page
+    cy.goToRegistrantType()
 
     // clock tick
     cy.tick(15 * 60 * 1000);
@@ -47,13 +36,9 @@ describe('session timeout tests', () => {
 
   });
 
-  it('session_timeout_session_ended', () => {
-    cy.get('.govuk-grid-column-two-thirds > .govuk-button').click();
-    cy.get('#id_registrar_organisation').clear().type('WeRegister')
-    cy.get('#id_registrar_name').clear().type('Test');
-    cy.get('#id_registrar_phone').clear().type('01225672345');
-    cy.get('#id_registrar_email').clear().type('test@example.gov.uk');
-    cy.get('#id_submit').click();
+  it('Displays the timeout warning after 15 minutes and in 20 minutes session expires and goes to session-ended page', () => {
+    // go to RegistrantType page
+    cy.goToRegistrantType()
 
     // Simulate 15 minutes of inactivity
     cy.tick(15 * 60 * 1000);
@@ -70,5 +55,9 @@ describe('session timeout tests', () => {
 
     // Check if the user is not redirected to the session-ended page
     cy.url().should('include', '/session-ended/');
+
+    // Check if the session-ended page Continue button takes us to registrar-details page
+    cy.get('#id_submit').click();
+    cy.url().should('include', '/registrar-details/');
   });
 })
