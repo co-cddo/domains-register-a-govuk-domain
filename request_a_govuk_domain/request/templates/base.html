@@ -14,8 +14,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#0b0c0c">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Sets the auto referesh to match with session cookie age which is 20 minutes -->
-    <meta http-equiv="refresh" content="1200; url=/session-ended/">
+    <noscript>
+      <!-- Sets the auto referesh to match with session cookie age which is 20 minutes -->
+      <meta http-equiv="refresh" content="{{ SESSION_TIMEOUT }}; url=/session-ended/">
+    </noscript>
 
     <title>{% block title %}{% endblock %} - Get approval to use a .gov.uk domain name - GOV.UK</title>
 
@@ -151,63 +153,62 @@
     <script nonce="{{request.csp_nonce}}" src='{% static "cookies.js" %}'></script>
   {% endif %}
   {% load custom_filters %}
-  <div id="modal_dialog" class="modal">
+  <div id="timeout-warning-modal" class="modal">
     <div class="modal-content">
       <h1 id="dialog-title" class="govuk-heading-l">
         Your session timed out
       </h1>
-      <div class="govuk-body">
-        <p>We will delete your answers if you do not do anything for {{ SESSION_TIMEOUT|divide_by_60 }} minutes and you will have to start
-            again.</p>
-        </div>
+      <p class="govuk-body">We will delete your answers if you do not do anything for {{ SESSION_TIMEOUT|divide_by_60 }} minutes and you will have to start
+        again.
+      </p>
       <button class="govuk-button dialog-button js-dialog-close" id="session-continue">Continue</button>
     </div>
   </div>
 </body>
 {% block session_ended %} <!-- session-ended block to override in child template -->
-<script type="text/javascript" nonce="{{ request.csp_nonce }}">
-  let warningTimerId = 0;
-  let expiryTimerId = 0;
+  <script type="text/javascript" nonce="{{ request.csp_nonce }}">
+    let warningTimerId = 0;
+    let expiryTimerId = 0;
 
-  // Show warning dialog 15 minutes before session expiry
-  function showWarning() {
-      let warningDiv = document.getElementById('modal_dialog');
+    // Show warning dialog 15 minutes before session expiry
+    function showWarning() {
+      let warningDiv = document.getElementById('timeout-warning-modal');
       warningDiv.style.display = "block";
-  }
+    }
 
-  // Redirect to session-ended page after session expiry
-  function showExpiry() {
+    // Redirect to session-ended page after session expiry
+    function showExpiry() {
       clearTimeout(warningTimerId);
       clearTimeout(expiryTimerId);
       document.location.href = '/session-ended/';
-  }
+    }
 
-  // Continue session
-  function continueSession() {
+    // Continue session
+    function continueSession() {
       fetch('/reset-timer/'); // Notify server to update session
       resetTimers();
-      document.getElementById('modal_dialog').style.display = 'none';
+      document.getElementById('timeout-warning-modal').style.display = 'none';
 
-  }
-  document.getElementById("session-continue").addEventListener('click', continueSession, false);
+    }
+    document.getElementById("session-continue").addEventListener('click', continueSession, false);
 
-  // Reset timers on user activity
-  function resetTimers() {
+    // Reset timers on user activity
+    function resetTimers() {
       clearTimeout(warningTimerId);
       clearTimeout(expiryTimerId);
       const sessionCookieAge = {{ SESSION_TIMEOUT }}; // 20 minutes
       const warningTimeoutDuration = {{ WARNING_TIMEOUT_DURATION }}; // 5 minutes
       warningTimerId = setTimeout(showWarning, (sessionCookieAge - warningTimeoutDuration) * 1000); // 15 minutes
       expiryTimerId = setTimeout(showExpiry, sessionCookieAge * 1000); // 20 minutes
-  }
+    }
 
-  // Reset timers on page load
-  document.addEventListener('DOMContentLoaded', function () {
+    // Reset timers on page load
+    document.addEventListener('DOMContentLoaded', function () {
       resetTimers();
       document.body.addEventListener('click', resetTimers);
       document.body.addEventListener('keypress', resetTimers);
-  });
+    });
   </script>
-  {% endblock %}
+{% endblock %}
 
 </html>

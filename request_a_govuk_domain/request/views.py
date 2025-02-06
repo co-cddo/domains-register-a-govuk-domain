@@ -697,6 +697,16 @@ def bad_request_view(request, exception):
 
 
 def reset_timer(request):
+    """
+    Resets the session timeout timer for the current user session.
+
+    This view is typically called via an AJAX request to keep the user session active.
+    When this endpoint is hit, it updates the session expiry time to the configured session duration.
+    This helps in preventing the user session from expiring due to inactivity.
+
+    Returns:
+        HttpResponse: An HTTP response indicating that the session timer has been successfully reset.
+    """
     return HttpResponse()
 
 

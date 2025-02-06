@@ -7,8 +7,8 @@
 {% block title %}Registrar details{% endblock %}
 
 {% block beforeContent %}
-    {% url "start" as back_url %}
-    {% back_link back_url %}
+  {% url "start" as back_url %}
+  {% back_link back_url %}
 {% endblock %}
 
 {% block content %}
@@ -16,53 +16,53 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-notification-banner govuk-notification-banner--blue" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-          <div class="govuk-notification-banner__header">
+        <div class="govuk-notification-banner__header">
           <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-              Important
+            Important
           </h2>
-          </div>
-          <div class="govuk-notification-banner__content">
-              <h2 class="govuk-heading-s">Your session can time out</h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+          <h2 class="govuk-heading-s">Your session can time out</h2>
           <div class="govuk-body">
-              <p>We will delete your answers if you do not do anything for {{ SESSION_TIMEOUT|divide_by_60 }} minutes and you will have to start again.</p>
+            <p>We will delete your answers if you do not do anything for {{ SESSION_TIMEOUT|divide_by_60 }} minutes and you will have to start again.</p>
           </div>
+        </div>
       </div>
-    </div>
     </div>
     <div class="govuk-grid-column-two-thirds">
       {% error_summary form %}
       <h1 class="govuk-heading-xl">
-          Registrar details
+        Registrar details
       </h1>
 
       <p class="govuk-body">
-          You must be listed as a .gov.uk Approved Registrar on <a class="govuk-link"
-                                                                      href="https://registrars.nominet.uk/registry/dot-gov-uk/registrars/"
-                                                                      target="_blank">Nominet's website (opens in new
-          tab)</a>,
-          otherwise you cannot use this service.
+        You must be listed as a .gov.uk Approved Registrar on <a class="govuk-link"
+          href="https://registrars.nominet.uk/registry/dot-gov-uk/registrars/"
+          target="_blank">Nominet's website (opens in newtab)
+        </a>,
+        otherwise you cannot use this service.
       </p>
 
       <p class="govuk-body">
-          Email <code>support@domains.gov.uk</code> for more information
+        Email <code>support@domains.gov.uk</code> for more information
       </p>
 
-      {% crispy form %}
+    {% crispy form %}
     </div>
   </div>
 {% endblock %}
 
 {% block extra_script %}
-    <script type="text/javascript" src="{% static 'accessible-autocomplete.min.js' %}"  nonce="{{request.csp_nonce}}"></script>
-    {% script type="application/javascript" async=False %}
-            accessibleAutocomplete.enhanceSelectElement({
-                selectElement: document.querySelector('#id_registrar_organisation'),
-                menuClasses: "govuk-list",
-                placeholder: "Start typing..."
-            })
-    {% endscript %}
+  <script type="text/javascript" src="{% static 'accessible-autocomplete.min.js' %}"  nonce="{{request.csp_nonce}}"></script>
+  {% script type="application/javascript" async=False %}
+          accessibleAutocomplete.enhanceSelectElement({
+              selectElement: document.querySelector('#id_registrar_organisation'),
+              menuClasses: "govuk-list",
+              placeholder: "Start typing..."
+          })
+  {% endscript %}
 {% endblock %}
 
 {% block extra_stylesheets %}
-    <link rel="stylesheet" href="{% static 'accessible-autocomplete.min.css' %}">
+  <link rel="stylesheet" href="{% static 'accessible-autocomplete.min.css' %}">
 {% endblock %}
