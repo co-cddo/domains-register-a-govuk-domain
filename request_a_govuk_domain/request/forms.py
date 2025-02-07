@@ -59,9 +59,10 @@ class RegistrarDetailsForm(forms.Form):
 
     registrar_phone = forms.CharField(
         label="Telephone number",
+        help_text="Enter a UK phone number",
         validators=[
             PhoneNumberValidator(
-                "Enter a telephone number, like 01632 960 001 or 07700 900 982"
+                "Enter a telephone number, like 01632 960 001, 03034 443 000 or 07700 900 982"
             )
         ],
     )
@@ -232,9 +233,10 @@ class RegistrantDetailsForm(forms.Form):
 
     registrant_phone = forms.CharField(
         label="Telephone number",
+        help_text="Enter a UK phone number",
         validators=[
             PhoneNumberValidator(
-                "Enter a telephone number, like 01632 960 001 or 07700 900 982"
+                "Enter a telephone number, like 01632 960 001, 03034 443 000 or 07700 900 982"
             )
         ],
     )

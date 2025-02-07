@@ -21,7 +21,7 @@ describe('Error messages for registrant details', () => {
 
     // enter a bad phone number
     cy.fillOutRegistrantDetails('Littleton PC', 'Joe', '01 3332', 'joe@example.com')
-    cy.confirmProblem("Enter a telephone number, like 01632 960 001 or 07700 900 982")
+    cy.confirmProblem("Enter a telephone number, like 01632 960 001, 03034 443 000 or 07700 900 982")
 
     // enter a bad email address
     cy.fillOutRegistrantDetails('Littleton PC', 'Joe', '01225998877', 'joe@example')

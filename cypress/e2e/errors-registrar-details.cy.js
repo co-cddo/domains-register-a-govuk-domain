@@ -20,11 +20,11 @@ describe('Error messages for registrar details', () => {
 
     // enter a bad phone number
     cy.fillOutRegistrarDetails('WeRegister', 'Joe', '01 2', 'joe@example.com')
-    cy.confirmProblem('Enter a telephone number, like 01632 960 001 or 07700 900 982')
+    cy.confirmProblem('Enter a telephone number, like 01632 960 001, 03034 443 000 or 07700 900 982')
 
     // enter another bad phone number
     cy.fillOutRegistrarDetails('WeRegister', 'Joe', '87746332234', 'joe@example.com')
-    cy.confirmProblem('Enter a telephone number, like 01632 960 001 or 07700 900 982')
+    cy.confirmProblem('Enter a telephone number, like 01632 960 001, 03034 443 000 or 07700 900 982')
 
     // enter a bad email address
     cy.fillOutRegistrarDetails('WeRegister', 'Joe', '01225123334', 'a@b.c')
