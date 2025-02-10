@@ -137,6 +137,9 @@ class ReportDownLoadMixin:
         meta = self.model._meta
         field_names = [field.name for field in meta.fields]
 
+        # field for the number of days between time_submitted and time_decided
+        field_names.append("days_taken_to_decide")
+
         response = HttpResponse(content_type="text/csv")
         response[
             "Content-Disposition"
@@ -145,8 +148,15 @@ class ReportDownLoadMixin:
 
         writer.writerow(field_names)
         for obj in queryset:
-            writer.writerow([self.format_field(obj, field) for field in field_names])
-
+            row = [self.format_field(obj, field) for field in field_names[:-1]]
+            time_submitted = getattr(obj, "time_submitted", None)
+            time_decided = getattr(obj, "time_decided", None)
+            if time_submitted and time_decided:
+                days_between = (time_decided - time_submitted).days
+            else:
+                days_between = ""
+            row.append(days_between)
+            writer.writerow(row)
         return response
 
     def format_field(self, obj, field):
@@ -534,6 +544,7 @@ class ApplicationAdmin(
         "registrar_org",
         "registrant_org",
         "time_submitted_local_time",
+        "time_decided_local_time",
         "last_updated_local_time",
         "owner",
         "last_updated_by",
@@ -579,6 +590,9 @@ class ApplicationAdmin(
     @admin.display(description="Time Submitted (UK time)")
     def time_submitted_local_time(self, obj):
         return convert_to_local_time(obj.time_submitted)
+
+    def time_decided_local_time(self, obj):
+        return convert_to_local_time(obj.time_decided)
 
     @admin.display(description="Last updated (UK time)")
     def last_updated_local_time(self, obj):
