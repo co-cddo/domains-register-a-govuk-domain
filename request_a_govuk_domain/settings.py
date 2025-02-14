@@ -259,9 +259,12 @@ if not DEBUG:
     CSRF_FAILURE_VIEW = "request_a_govuk_domain.request.views.csrf_failure_view"
     SESSION_COOKIE_SECURE = True
 
-# Set session end-user to expire in 20 minutes
+# Set session to expire in 20 minutes
 SESSION_COOKIE_AGE = 20 * 60
+# session data will be saved to the database on every single request
 SESSION_SAVE_EVERY_REQUEST = True
+# Set the warning timeout duration to 5 minutes (300 seconds)
+# This is the time before the session expires when a warning modal will be shown to the user
 WARNING_TIMEOUT_DURATION = 5 * 60
 
 # Content Security Policy: only allow images, stylesheets and scripts from the

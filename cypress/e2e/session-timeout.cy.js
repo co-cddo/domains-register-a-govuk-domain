@@ -61,7 +61,7 @@ describe('session timeout tests', () => {
     cy.get('#timeout-warning-modal').should('not.be.visible');
 
     // Check if the user is not redirected to the session-ended page
-    cy.checkPageTitleIncludes('Your session has ended due to inactivity\n        \n        Your session timed out\n')
+    cy.checkPageTitleIncludes('\n          Your session has ended due to inactivity\n        \n        You have been inactive for 15 minutes\n')
 
     // Check if the session-ended page Continue button takes us to registrar-details page
     cy.get('#id_submit').click();

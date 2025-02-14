@@ -156,10 +156,9 @@
   <div id="timeout-warning-modal" class="modal">
     <div class="modal-content">
       <h1 id="dialog-title" class="govuk-heading-l">
-        Your session timed out
+        You have been inactive for {{ SESSION_TIMEOUT|subtract:WARNING_TIMEOUT_DURATION|divide_by_60 }} minutes
       </h1>
-      <p class="govuk-body">We will delete your answers if you do not do anything for {{ SESSION_TIMEOUT|divide_by_60 }} minutes and you will have to start
-        again.
+      <p class="govuk-body">This session will timeout after {{ SESSION_TIMEOUT|divide_by_60 }} minutes of inactivity and your answers will not be saved. We do this to keep your information secure. <b>{{ WARNING_TIMEOUT_DURATION|divide_by_60 }} minutes</b>.
       </p>
       <button class="govuk-button dialog-button js-dialog-close" id="session-continue">Continue</button>
     </div>
