@@ -27,6 +27,7 @@ from .forms import (
     RegistryDetailsForm,
     WrittenPermissionForm,
     ConfirmationForm,
+    SessionEndedForm,
 )
 from .models.organisation import Registrar, RegistrantTypeChoices
 from .models.storage_util import select_storage
@@ -693,3 +694,23 @@ def csrf_failure_view(request, reason=""):
 
 def bad_request_view(request, exception):
     return render(request, "400.html", status=400)
+
+
+def reset_timer(request):
+    """
+    Resets the session timeout timer for the current user session.
+
+    This view is typically called via an AJAX request to keep the user session active.
+    When this endpoint is hit, it updates the session expiry time to the configured session duration.
+    This helps in preventing the user session from expiring due to inactivity.
+
+    Returns:
+        HttpResponse: An HTTP response indicating that the session timer has been successfully reset.
+    """
+    return HttpResponse()
+
+
+class SessionEndedView(FormView):
+    template_name = "session_ended.html"
+    success_url = reverse_lazy("start_session")
+    form_class = SessionEndedForm
