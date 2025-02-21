@@ -18,3 +18,14 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+beforeEach(() => {
+  cy.intercept(
+    'POST', '/csp-report',
+    req => req.reply(200, { message: 'mocked response' })
+  ).as('cspReport')
+});
+
+afterEach(() => {
+  cy.get('@cspReport.all').should('have.length', 0);
+});

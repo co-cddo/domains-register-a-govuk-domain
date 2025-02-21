@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "cypress": "^13.6.6"
+  },
+  "devDependencies": {
+    "cypress-fail-on-console-error": "^5.1.1"
   }
 }

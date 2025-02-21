@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 from .request.views import (
     StartView,
@@ -58,6 +59,7 @@ from .request.views import (
     download_file,
     AccessibilityView,
     TermsAndConditionsView,
+    simple_post_view,
 )
 
 from .request.admin.views import DecisionConfirmationView
@@ -181,6 +183,7 @@ urlpatterns = [
     path(".well-known/security.txt", security_txt_view),
     path("robots.txt", robots_txt_view),
     path("download_file/<str:file_type>", download_file, name="download_file"),
+    path("test-endpoint", simple_post_view, name="test-endpoint"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

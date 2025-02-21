@@ -1,10 +1,6 @@
 import './base.cy'
 
 describe('Happy path - route 1', () => {
-  beforeEach(() => {
-    cy.deleteAllApplications()
-  })
-
   it('performs a full transaction', () => {
     cy.deleteAllApplications()
     cy.goToRegistrarDetails()

@@ -374,6 +374,15 @@ class MinisterUploadRemoveView(UploadRemoveView):
     pattern_name = "minister_upload"
 
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def simple_post_view(request):
+    if request.method == "POST":
+        return JsonResponse({"message": "Success"}, status=200)
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 class ConfirmView(TemplateView):
     template_name = "confirm.html"
 
