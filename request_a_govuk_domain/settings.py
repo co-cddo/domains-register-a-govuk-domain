@@ -265,13 +265,19 @@ SESSION_COOKIE_AGE = 24 * 60 * 60
 # Content Security Policy: only allow images, stylesheets and scripts from the
 # same origin as the HTML
 CSP_IMG_SRC = "'self'"
-CSP_STYLE_SRC = "'self' 'unsafe-inline'"
+CSP_STYLE_SRC = "'self'"
 CSP_SCRIPT_SRC = "'self' https://*.googletagmanager.com"
 CSP_CONNECT_SRC = "'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com"
 CSP_FRAME_SRC = "'self' https://www.googletagmanager.com"
 CSP_FORM_ACTION = "'self'"
 CSP_FRAME_ANCESTORS = "'self'"
-CSP_INCLUDE_NONCE_IN = ["script-src", "img-src", "connect-src", "frame-src"]
+CSP_INCLUDE_NONCE_IN = [
+    "script-src",
+    "img-src",
+    "connect-src",
+    "frame-src",
+    "style-src",
+]
 # Disable CSP for debug as it prevent the style sheets from loading on  localhost
 CSP_REPORT_ONLY = False
 if DEBUG:
