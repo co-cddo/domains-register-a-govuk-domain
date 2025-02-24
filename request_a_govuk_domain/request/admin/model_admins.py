@@ -36,6 +36,7 @@ from .filters import (
 )
 from .forms import ReviewForm
 from ..models.storage_util import s3_root_storage
+from request_a_govuk_domain.request.models.organisation import RegistrantTypeChoices
 
 LOGGER = logging.getLogger(__name__)
 
@@ -135,7 +136,15 @@ class ReportDownLoadMixin:
         :return:
         """
         meta = self.model._meta
-        field_names = [field.name for field in meta.fields]
+        field_names = [
+            "reference",
+            "date_submitted",
+            "registrar_org",
+            "domain_name",
+            "org_type",
+            "status",
+            "application_month",
+        ]
 
         response = HttpResponse(content_type="text/csv")
         response[
@@ -145,7 +154,17 @@ class ReportDownLoadMixin:
 
         writer.writerow(field_names)
         for obj in queryset:
-            writer.writerow([self.format_field(obj, field) for field in field_names])
+            row = []
+            for field in field_names:
+                if field == "date_submitted":
+                    row.append(self.format_date(obj.time_submitted))
+                elif field == "application_month":
+                    row.append(self.get_application_month(obj.time_submitted))
+                elif field == "org_type":
+                    row.append(self.get_org_type(obj.registrant_org))
+                else:
+                    row.append(self.format_field(obj, field))
+            writer.writerow(row)
 
         return response
 
@@ -159,9 +178,36 @@ class ReportDownLoadMixin:
         field_value = getattr(obj, field)
         if field == "status":
             field_value = ApplicationStatus(field_value).label
-        elif type(field_value) is datetime:
+        elif isinstance(field_value, datetime):
             field_value = field_value.strftime("%Y-%m-%d")
         return field_value
+
+    def format_date(self, date):
+        """
+        Format the date to D/M/YYYY
+        :param date:
+        :return: formatted date string
+        """
+        return date.strftime("%d/%m/%Y") if date else ""
+
+    def get_application_month(self, date):
+        """
+        Get the application month from the date_submitted field.
+        :param date:
+        :return: application month in 'January 2025' format
+        """
+        return date.strftime("%B %Y") if date else ""
+
+    def get_org_type(self, registrant_org):
+        """
+        Get the organization type for the given object.
+        :param registrant_org:
+        :return: organization type
+        """
+        registrant = Registrant.objects.filter(id=registrant_org.id).first()
+        if registrant or registrant.type:
+            return RegistrantTypeChoices.get_label(registrant_org.type)
+        return "Unknown"
 
     def has_export_permission(self, request, obj=None):
         return request.user.is_superuser
