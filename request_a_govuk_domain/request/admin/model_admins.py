@@ -36,7 +36,6 @@ from .filters import (
 )
 from .forms import ReviewForm
 from ..models.storage_util import s3_root_storage
-from request_a_govuk_domain.request.models.organisation import RegistrantTypeChoices
 
 LOGGER = logging.getLogger(__name__)
 
@@ -205,8 +204,17 @@ class ReportDownLoadMixin:
         :return: organization type
         """
         registrant = Registrant.objects.filter(id=registrant_org.id).first()
-        if registrant or registrant.type:
-            return RegistrantTypeChoices.get_label(registrant_org.type)
+        if registrant and registrant.type:
+            registrant_type = registrant.type
+            if registrant_type in [
+                "central_government",
+                "alb",
+            ]:
+                return "Central Gov or ALBs"
+            elif registrant_type == "parish_council":
+                return "Parish, town or community council"
+            else:
+                return "Other"
         return "Unknown"
 
     def has_export_permission(self, request, obj=None):
