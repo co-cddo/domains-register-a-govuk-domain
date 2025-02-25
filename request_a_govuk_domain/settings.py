@@ -280,7 +280,7 @@ CSP_INCLUDE_NONCE_IN = [
 ]
 # Disable CSP for debug as it prevent the style sheets from loading on  localhost
 CSP_REPORT_ONLY = False
-if DEBUG:
+if "TEST_CSP" in os.environ:
     CSP_REPORT_URI = (
         "/csp-report"  # The URI doesn't exist but is intercepted by the test suite
     )
