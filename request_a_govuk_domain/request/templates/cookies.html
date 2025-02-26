@@ -57,7 +57,7 @@
       </p>
 
       {% if GOOGLE_ANALYTICS_ID %}
-        <style>#cookies-analytics { display: none }</style>
+        <style nonce="{{request.csp_nonce}}">#cookies-analytics { display: none }</style>
         <div class="govuk-form-group govuk-!-margin-bottom-6" id="cookies-analytics">
           <fieldset class="govuk-fieldset" aria-describedby="hint-0c454062">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
