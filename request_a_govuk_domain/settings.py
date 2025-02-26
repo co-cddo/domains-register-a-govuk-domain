@@ -264,7 +264,7 @@ SESSION_COOKIE_AGE = 24 * 60 * 60
 
 # Content Security Policy: only allow images, stylesheets and scripts from the
 # same origin as the HTML
-CSP_IMG_SRC = "'self'"
+CSP_IMG_SRC = "'self' data:"
 CSP_STYLE_SRC = "'self'"
 CSP_SCRIPT_SRC = "'self' https://*.googletagmanager.com"
 CSP_CONNECT_SRC = "'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com"
