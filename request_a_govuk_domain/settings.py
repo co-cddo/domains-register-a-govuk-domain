@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "request_a_govuk_domain.request",
     "admin_interface",
     "colorfield",
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -264,9 +265,28 @@ SESSION_COOKIE_AGE = 24 * 60 * 60
 
 # Content Security Policy: only allow images, stylesheets and scripts from the
 # same origin as the HTML
+
+# inline style hashes
+# margin-right: 5px; margin-left: 15px;
+STYLE_HASH_1 = (
+    "YseTx7SG8cmGbackDaGDUfPisSOk87uOc+M9kIujp8k="  # pragma: allowlist secret
+)
+
+# opacity: .8
+STYLE_HASH_2 = (
+    "CJ9m20l+PpbPWxBLL0MR9gHIQPOkWWBOFC1juPHQRQs="  # pragma: allowlist secret
+)
+
+# jazzmin inline script
+SCRIPT_HASH_1 = (
+    "F7GVayJMLy0KHikNUhjbBcBE0ax/V4knxuE9lJsuA6A="  # pragma: allowlist secret
+)
+
 CSP_IMG_SRC = "'self' data:"
-CSP_STYLE_SRC = "'self'"
-CSP_SCRIPT_SRC = "'self' https://*.googletagmanager.com"
+CSP_STYLE_SRC = "'self' https://fonts.googleapis.com"
+CSP_STYLE_SRC_ATTR = f"'unsafe-hashes' 'sha256-{STYLE_HASH_1}' 'sha256-{STYLE_HASH_2}'"
+CSP_FONT_SRC = "'self' https://fonts.gstatic.com"
+CSP_SCRIPT_SRC = f"'self' https://*.googletagmanager.com 'sha256-{SCRIPT_HASH_1}'"
 CSP_CONNECT_SRC = "'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com"
 CSP_FRAME_SRC = "'self' https://www.googletagmanager.com"
 CSP_FORM_ACTION = "'self'"
