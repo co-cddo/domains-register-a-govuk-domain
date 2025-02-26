@@ -54,3 +54,4 @@ repos:
         -    types-Markdown
         -    celery
         -    django_celery_results
+        -    django-jazzmin

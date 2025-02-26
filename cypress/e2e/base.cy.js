@@ -419,19 +419,15 @@ Cypress.Commands.add('goToConfirmation', (route=1) => {
 
 Cypress.Commands.add('logInAsAdmin', () => {
   cy.visit('/admin')
-  cy.get('#id_username').clear().type('admin')
-  cy.get('#id_password').clear().type('ilovedomains')
-  cy.get('input[type=submit]').click()
-  cy.checkPageTitleIncludes('Site administration')
+  cy.get('input[name=username]').clear().type('admin')
+  cy.get('input[name=password]').clear().type('ilovedomains')
+  cy.get('button[type=submit]').click()
+  cy.checkPageTitleIncludes('Dashboard')
 })
 
 
 Cypress.Commands.add('deleteAllApplications', () => {
-  cy.visit('/admin')
-  cy.get('#id_username').clear().type('admin')
-  cy.get('#id_password').clear().type('ilovedomains')
-  cy.get('input[type=submit]').click()
-  cy.checkPageTitleIncludes('Site administration')
+  cy.logInAsAdmin()
   cy.get('a[href="/admin/request/application/"]').eq(0).click()
   cy.get('body')
     .then(body => {
@@ -441,7 +437,8 @@ Cypress.Commands.add('deleteAllApplications', () => {
         cy.get('button[name=index]').click()
         cy.get('input[type=submit]').click() // confirm
       }
-      cy.get('button[type=submit]').click() // logout
+      cy.get('a[title=admin]').click() // open user menu
+      cy.get('#logout-form button').click() // logout
     })
 })
 
@@ -454,25 +451,25 @@ Cypress.Commands.add('checkApplicationIsOnBackend', app => {
   // Then check it's there in the admin panel, with the correct data
   cy.get('@ref').then(ref => {
     cy.logInAsAdmin()
-    cy.get('a[href="/admin/request/application/"]').eq(0).click()
+    cy.get('#content a[href="/admin/request/application/"]').eq(0).click()
     cy.get('a').contains(ref.trim()).click()
     if (app.domain) cy.get('#id_domain_name').should('have.value', app.domain)
     if (app.registrar_org) cy.get('#id_registrar_org option[selected]').should('include.text', app.registrar_org)
     if (app.registrant_org) cy.get('#id_registrant_org option[selected]').should('include.text', app.registrant_org)
     if (app.minister) {
-      cy.get('label[for=id_ministerial_request_evidence]').next('p').should('include.text', 'Change:')
+      cy.get('label[for=id_ministerial_request_evidence]').next('div').should('include.text', 'Change:')
     } else {
-      cy.get('label[for=id_ministerial_request_evidence]').next('p').should('not.exist')
+      cy.get('label[for=id_ministerial_request_evidence]').next('div').should('not.include.text', 'Change:')
     }
     if (app.written_permission) {
-      cy.get('label[for=id_written_permission_evidence]').next('p').should('include.text', 'Change:')
+      cy.get('label[for=id_written_permission_evidence]').next('div').should('include.text', 'Change:')
     } else {
-      cy.get('label[for=id_written_permission_evidence]').next('p').should('not.exist')
+      cy.get('label[for=id_written_permission_evidence]').next('div').should('not.include.text', 'Change:')
     }
     if (app.exemption) {
-      cy.get('label[for=id_policy_exemption_evidence]').next('p').should('include.text', 'Change:')
+      cy.get('label[for=id_policy_exemption_evidence]').next('div').should('include.text', 'Change:')
     } else {
-      cy.get('label[for=id_policy_exemption_evidence]').next('p').should('not.exist')
+      cy.get('label[for=id_policy_exemption_evidence]').next('div').should('not.include.text', 'Change:')
     }
   })
 })
