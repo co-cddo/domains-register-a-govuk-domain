@@ -123,6 +123,13 @@ class ReportDownLoadMixin:
     Mixin that can be included in to any model admin to generate csv reports.
     """
 
+    def get_field_names(self):
+        """
+        Get the field names for the given model
+        :return: list of field names
+        """
+        return [field.name for field in self.model._meta.fields]
+
     @admin.action(  # type: ignore
         permissions=["export"],
         description="Download as csv file",
@@ -135,15 +142,7 @@ class ReportDownLoadMixin:
         :return:
         """
         meta = self.model._meta
-        field_names = [
-            "reference",
-            "date_submitted",
-            "registrar_org",
-            "domain_name",
-            "org_type",
-            "status",
-            "application_month",
-        ]
+        field_names = self.get_field_names()
 
         response = HttpResponse(content_type="text/csv")
         response[
@@ -620,6 +619,18 @@ class ApplicationAdmin(
         "registrant_org__name",
         "owner__username",
     ]
+
+    def get_field_names(self):
+        field_names = [
+            "reference",
+            "date_submitted",
+            "registrar_org",
+            "domain_name",
+            "org_type",
+            "status",
+            "application_month",
+        ]
+        return field_names
 
     def download_file_view(self, request, object_id, field_name):
         application = self.model.objects.get(id=object_id)
