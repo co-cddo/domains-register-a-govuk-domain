@@ -264,16 +264,30 @@ SESSION_COOKIE_AGE = 24 * 60 * 60
 
 # Content Security Policy: only allow images, stylesheets and scripts from the
 # same origin as the HTML
-CSP_IMG_SRC = "'self'"
-CSP_STYLE_SRC = "'self' 'unsafe-inline'"
+CSP_IMG_SRC = "'self' data:"
+CSP_STYLE_SRC = "'self'"
 CSP_SCRIPT_SRC = "'self' https://*.googletagmanager.com"
 CSP_CONNECT_SRC = "'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com"
 CSP_FRAME_SRC = "'self' https://www.googletagmanager.com"
 CSP_FORM_ACTION = "'self'"
 CSP_FRAME_ANCESTORS = "'self'"
-CSP_INCLUDE_NONCE_IN = ["script-src", "img-src", "connect-src", "frame-src"]
+CSP_INCLUDE_NONCE_IN = [
+    "script-src",
+    "img-src",
+    "connect-src",
+    "frame-src",
+    "style-src",
+]
 # Disable CSP for debug as it prevent the style sheets from loading on  localhost
 CSP_REPORT_ONLY = False
+
+# If we want to test CSP breaches we need to set a fake reporting URL, so the tests
+# check if it's been called.
+if "TEST_CSP" in os.environ:
+    CSP_REPORT_URI = (
+        "/csp-report"  # The URI doesn't exist but is intercepted by the test suite
+    )
+
 
 # HTTP Strict Transport Security settings
 # Tell browsers to only use HTTPS for a year
