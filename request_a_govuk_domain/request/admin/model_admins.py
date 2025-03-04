@@ -123,6 +123,13 @@ class ReportDownLoadMixin:
     Mixin that can be included in to any model admin to generate csv reports.
     """
 
+    def get_field_names(self):
+        """
+        Get the field names for the given model
+        :return: list of field names
+        """
+        return [field.name for field in self.model._meta.fields]
+
     @admin.action(  # type: ignore
         permissions=["export"],
         description="Download as csv file",
@@ -135,15 +142,7 @@ class ReportDownLoadMixin:
         :return:
         """
         meta = self.model._meta
-        field_names = [
-            "reference",
-            "date_submitted",
-            "registrar_org",
-            "domain_name",
-            "org_type",
-            "status",
-            "application_month",
-        ]
+        field_names = self.get_field_names()
 
         response = HttpResponse(content_type="text/csv")
         response[
@@ -161,6 +160,8 @@ class ReportDownLoadMixin:
                     row.append(self.get_application_month(obj.time_submitted))
                 elif field == "org_type":
                     row.append(self.get_org_type(obj.registrant_org))
+                elif field == "days_taken_to_decide":
+                    row.append(self.get_days_between(obj))
                 else:
                     row.append(self.format_field(obj, field))
             writer.writerow(row)
@@ -216,6 +217,15 @@ class ReportDownLoadMixin:
             else:
                 return "Other"
         return "Unknown"
+
+    def get_days_between(self, obj):
+        time_submitted = getattr(obj, "time_submitted", None)
+        time_decided = getattr(obj, "time_decided", None)
+        if time_submitted and time_decided:
+            days_between = (time_decided - time_submitted).days
+        else:
+            days_between = ""
+        return days_between
 
     def has_export_permission(self, request, obj=None):
         return request.user.is_superuser
@@ -620,6 +630,34 @@ class ApplicationAdmin(
         "registrant_org__name",
         "owner__username",
     ]
+
+    def get_field_names(self):
+        """
+        Get the field names for the CSV export.
+
+        This method returns a list of field names to be included in the CSV export.
+        The fields included are:
+        - reference: The reference number of the application.
+        - date_submitted: The date the application was submitted.
+        - registrar_org: The organization of the registrar.
+        - domain_name: The domain name requested.
+        - org_type: The type of organization.
+        - status: The current status of the application.
+        - application_month: The month the application was submitted.
+
+        :return: list of field names
+        """
+        field_names = [
+            "reference",
+            "date_submitted",
+            "registrar_org",
+            "domain_name",
+            "org_type",
+            "status",
+            "application_month",
+            "days_taken_to_decide",
+        ]
+        return field_names
 
     def download_file_view(self, request, object_id, field_name):
         application = self.model.objects.get(id=object_id)
