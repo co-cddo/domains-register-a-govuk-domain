@@ -5,7 +5,13 @@ from datetime import datetime
 
 from django.core.exceptions import BadRequest
 from django.db import transaction
-from django.http import HttpResponse, HttpRequest, FileResponse, HttpResponseNotFound
+from django.http import (
+    HttpResponse,
+    HttpRequest,
+    FileResponse,
+    HttpResponseNotFound,
+    HttpResponseBadRequest,
+)
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -256,6 +262,15 @@ class RegistryDetailsView(FormView):
     template_name = "registry_details.html"
     form_class = RegistryDetailsForm
     success_url = reverse_lazy("confirm")
+
+    def dispatch(self, request, *args, **kwargs):
+        # Check that the session has the registrant type. Otherwise it
+        # means the user has skipped pages
+        try:
+            get_registration_data(request)["registrant_type"]
+        except KeyError:
+            return HttpResponseBadRequest("Bad request")
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
