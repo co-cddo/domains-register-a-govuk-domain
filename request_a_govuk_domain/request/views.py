@@ -184,6 +184,15 @@ class DomainConfirmationView(FormView):
     template_name = "domain_confirmation.html"
     form_class = DomainConfirmationForm
 
+    def dispatch(self, request, *args, **kwargs):
+        # Check that the session has the domain. Otherwise it
+        # means the user has skipped pages and we should return 400
+        try:
+            get_registration_data(request)["domain_name"]
+        except KeyError:
+            return HttpResponseBadRequest("Bad request")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         session = self.request.session.get(REGISTRATION_DATA, {})

@@ -3,6 +3,12 @@ import './base.cy'
 describe('Errors when user skips and jumps pages', () => {
   it('Throws a 400 when user skips to registry page', () => {
     cy.goToRegistrantType()
+    cy.request({ url: '/registry-details', failOnStatusCode: false })
+      .its('status').should('eq', 400)
+  })
+
+  it('Throws a 400 when user skips to registry page', () => {
+    cy.goToRegistrantType()
     cy.request({url: '/registry-details', failOnStatusCode: false}).then(res => {
       expect(res.status).to.eq(400)
     })
