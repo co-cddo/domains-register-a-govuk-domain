@@ -158,8 +158,6 @@ class ReportDownLoadMixin:
                     row.append(self.format_date(obj.time_submitted))
                 elif field == "application_month":
                     row.append(self.get_application_month(obj.time_submitted))
-                elif field == "org_type":
-                    row.append(self.get_org_type(obj.registrant_org))
                 elif field == "days_taken_to_decide":
                     row.append(self.get_days_between(obj))
                 else:
@@ -197,26 +195,6 @@ class ReportDownLoadMixin:
         :return: application month in 'January 2025' format
         """
         return date.strftime("%B %Y") if date else ""
-
-    def get_org_type(self, registrant_org):
-        """
-        Get the organization type for the given object.
-        :param registrant_org:
-        :return: organization type
-        """
-        registrant = Registrant.objects.filter(id=registrant_org.id).first()
-        if registrant and registrant.type:
-            registrant_type = registrant.type
-            if registrant_type in [
-                "central_government",
-                "alb",
-            ]:
-                return "Central Gov or ALBs"
-            elif registrant_type == "parish_council":
-                return "Parish, town or community council"
-            else:
-                return "Other"
-        return "Unknown"
 
     def get_days_between(self, obj):
         time_submitted = getattr(obj, "time_submitted", None)
@@ -274,6 +252,7 @@ class ReviewAdmin(
         "get_registrant_org",
         "get_time_submitted",
         "get_last_updated",
+        "time_decided_local_time",
         "get_last_updated_by",
         "get_owner",
     )
@@ -527,6 +506,12 @@ class ReviewAdmin(
     def get_last_updated(self, obj):
         return convert_to_local_time(obj.application.last_updated)
 
+    @admin.display(description="Time taken (UK time)")
+    def time_decided_local_time(self, obj):
+        if obj.application.time_submitted and obj.application.time_decided:
+            return (obj.application.time_decided - obj.application.time_submitted).days
+        return "-"
+
     @admin.display(description="Owner")
     def get_owner(self, obj):
         return obj.application.owner
@@ -598,6 +583,7 @@ class ApplicationAdmin(
         "registrar_org",
         "registrant_org",
         "time_submitted_local_time",
+        "time_decided_local_time",
         "last_updated_local_time",
         "owner",
         "last_updated_by",
@@ -652,7 +638,6 @@ class ApplicationAdmin(
             "date_submitted",
             "registrar_org",
             "domain_name",
-            "org_type",
             "status",
             "application_month",
             "days_taken_to_decide",
@@ -671,6 +656,12 @@ class ApplicationAdmin(
     @admin.display(description="Time Submitted (UK time)")
     def time_submitted_local_time(self, obj):
         return convert_to_local_time(obj.time_submitted)
+
+    @admin.display(description="Time taken (UK time)")
+    def time_decided_local_time(self, obj):
+        if obj.time_submitted and obj.time_decided:
+            return (obj.time_decided - obj.time_submitted).days
+        return "-"
 
     @admin.display(description="Last updated (UK time)")
     def last_updated_local_time(self, obj):
