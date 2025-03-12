@@ -274,6 +274,7 @@ class ReviewAdmin(
         "get_registrant_org",
         "get_time_submitted",
         "get_last_updated",
+        "time_decided_local_time",
         "get_last_updated_by",
         "get_owner",
     )
@@ -527,6 +528,12 @@ class ReviewAdmin(
     def get_last_updated(self, obj):
         return convert_to_local_time(obj.application.last_updated)
 
+    @admin.display(description="Time taken (UK time)")
+    def time_decided_local_time(self, obj):
+        if obj.application.time_submitted and obj.application.time_decided:
+            return (obj.application.time_decided - obj.application.time_submitted).days
+        return "-"
+
     @admin.display(description="Owner")
     def get_owner(self, obj):
         return obj.application.owner
@@ -598,6 +605,7 @@ class ApplicationAdmin(
         "registrar_org",
         "registrant_org",
         "time_submitted_local_time",
+        "time_decided_local_time",
         "last_updated_local_time",
         "owner",
         "last_updated_by",
@@ -671,6 +679,12 @@ class ApplicationAdmin(
     @admin.display(description="Time Submitted (UK time)")
     def time_submitted_local_time(self, obj):
         return convert_to_local_time(obj.time_submitted)
+
+    @admin.display(description="Time taken (UK time)")
+    def time_decided_local_time(self, obj):
+        if obj.time_submitted and obj.time_decided:
+            return (obj.time_decided - obj.time_submitted).days
+        return "-"
 
     @admin.display(description="Last updated (UK time)")
     def last_updated_local_time(self, obj):
