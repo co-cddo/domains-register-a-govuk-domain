@@ -1,4 +1,5 @@
 from unittest.mock import Mock
+from freezegun import freeze_time
 
 import parameterized
 from django.test import TestCase
@@ -209,3 +210,71 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
 
             with self.subTest(f"Owner is set to {self.superuser.username}"):
                 self.assertEqual(application_to_approve.owner.username, "superuser")
+
+    def test_time_elapsed_correct(self):
+        """
+        Test to check if the time_elapsed function returns the expected result
+        """
+        request = Mock()
+        request.session = SessionDict({"registration_data": self.registration_data})
+
+        with freeze_time("2025-01-01"):
+            db.save_data_in_database("ABCDEFGHIJG", request)
+            application = Application.objects.filter(reference="ABCDEFGHIJG")[0]
+
+        # wait 2 days
+        with freeze_time("2025-01-03"):
+            self.assertEqual(application.time_elapsed().days, 2)
+
+        # wait another 3 days and approve
+        with freeze_time("2025-01-06"):
+            review = Review.objects.filter(
+                application__reference=application.reference
+            ).first()
+
+            response = self.admin_client.post(
+                get_admin_change_view_url(review),
+                data={
+                    "reason": "approved",
+                    "_approve": "APPROVE",
+                    "registry_details": RegistryDetailsReviewChoices.APPROVE,
+                    "registry_details_notes": "a",
+                    "registrant_org": RegistrantOrgReviewChoices.APPROVE,
+                    "registrant_org_notes": "a",
+                    "registrant_person": RegistrantPersonReviewChoices.APPROVE,
+                    "registrant_person_notes": "a",
+                    "registrant_permission": RegistrantPermissionReviewChoices.APPROVE,
+                    "registrant_permission_notes": "a",
+                    "policy_exemption": PolicyExemptionReviewChoices.APPROVE,
+                    "policy_exemption_notes": "a",
+                    "domain_name_rules": DomainNameRulesReviewChoices.APPROVE,
+                    "domain_name_rules_notes": "a",
+                    "registrant_senior_support": RegistrantSeniorSupportReviewChoices.APPROVE,
+                    "registrant_senior_support_notes": "a",
+                    "registrar_details": RegistryDetailsReviewChoices.APPROVE,
+                    "registrar_details_notes": "a",
+                    "domain_name_availability": RegistryDetailsReviewChoices.APPROVE,
+                    "domain_name_availability_notes": "a",
+                },
+                follow=True,
+            )
+
+            self.admin_client.post(
+                response.redirect_chain[0][0],
+                data={
+                    "_confirm": "Confirm",
+                    "action": "approval",
+                    "obj_id": application.id,
+                },
+                follow=True,
+            )
+            application.refresh_from_db()
+
+            # Application has been closed, so time elapsed is time between created and now
+            self.assertEqual(application.time_elapsed().days, 5)
+
+        # wait some more
+        with freeze_time("2025-01-20"):
+            # Application has been closed, so time elapsed is time between created and when
+            # it was closed, so same as above regardless of time since
+            self.assertEqual(application.time_elapsed().days, 5)

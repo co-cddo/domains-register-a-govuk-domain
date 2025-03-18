@@ -196,14 +196,8 @@ class ReportDownLoadMixin:
         """
         return date.strftime("%B %Y") if date else ""
 
-    def get_days_between(self, obj):
-        time_submitted = getattr(obj, "time_submitted", None)
-        time_decided = getattr(obj, "time_decided", None)
-        if time_submitted and time_decided:
-            days_between = (time_decided - time_submitted).days
-        else:
-            days_between = ""
-        return days_between
+    def get_days_between(self, app: Application) -> int:
+        return app.time_elapsed().days
 
     def has_export_permission(self, request, obj=None):
         return request.user.is_superuser
@@ -506,11 +500,9 @@ class ReviewAdmin(
     def get_last_updated(self, obj):
         return convert_to_local_time(obj.application.last_updated)
 
-    @admin.display(description="Time taken (UK time)")
-    def time_decided_local_time(self, obj):
-        if obj.application.time_submitted and obj.application.time_decided:
-            return (obj.application.time_decided - obj.application.time_submitted).days
-        return "-"
+    @admin.display(description="Duration (days)")
+    def time_decided_local_time(self, review: Review) -> str:
+        return str(review.application.time_elapsed().days)
 
     @admin.display(description="Owner")
     def get_owner(self, obj):
@@ -657,11 +649,9 @@ class ApplicationAdmin(
     def time_submitted_local_time(self, obj):
         return convert_to_local_time(obj.time_submitted)
 
-    @admin.display(description="Time taken (UK time)")
-    def time_decided_local_time(self, obj):
-        if obj.time_submitted and obj.time_decided:
-            return (obj.time_decided - obj.time_submitted).days
-        return "-"
+    @admin.display(description="Duration (days)")
+    def time_decided_local_time(self, app: Application) -> str:
+        return str(app.time_elapsed().days)
 
     @admin.display(description="Last updated (UK time)")
     def last_updated_local_time(self, obj):
