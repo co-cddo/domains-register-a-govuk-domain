@@ -1,10 +1,12 @@
 import logging
 import re
+import datetime
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 from .organisation import Registrant, Registrar
 from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
@@ -167,3 +169,19 @@ class Application(models.Model):
                     file_field.name = to_path
         logger.info(f"Saving application for reference {self.reference}")
         super().save(force_insert, force_update, using, update_fields)
+
+    def time_elapsed(self) -> datetime.timedelta:
+        """
+        For closed applications, return the time between the application was
+        received and when it was closed (approved or rejected). For other
+        applications, return the time passed since it was received
+        """
+        if self.status in [ApplicationStatus.APPROVED, ApplicationStatus.REJECTED]:
+            if self.time_decided:
+                return self.time_decided - self.time_submitted
+            else:
+                raise Exception(
+                    f"Application f{self.id} is closed but has no time_decided"
+                )
+        else:
+            return timezone.now() - self.time_submitted

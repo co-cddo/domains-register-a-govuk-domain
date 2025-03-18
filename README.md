@@ -123,6 +123,17 @@ Following are some of the make commands:
 `make clear-db` - Delete the database volume
 
 
+## Unit testing
+
+There is a unit test suite that is run when pushing to github. It can also be run manually
+with:
+
+`poetry run ./manage.py test`
+
+Some tests require clamav to run or will try to send email, so if you're working on something else you might want to run specific tests instead, with:
+
+`ENVIRONMENT=local poetry run ./manage.py tests.test_admin_approval.ModelAdminTestCase.test_create_approval_works_0_approve`
+
 ## End-to-end testing
 
 You need to have NodeJS installed, along with npm.
