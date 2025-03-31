@@ -58,6 +58,7 @@ from .request.views import (
     download_file,
     AccessibilityView,
     TermsAndConditionsView,
+    SessionEndedView,
 )
 
 from .request.admin.views import DecisionConfirmationView
@@ -181,6 +182,7 @@ urlpatterns = [
     path(".well-known/security.txt", security_txt_view),
     path("robots.txt", robots_txt_view),
     path("download_file/<str:file_type>", download_file, name="download_file"),
+    path("session-ended/", SessionEndedView.as_view(), name="session_ended"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

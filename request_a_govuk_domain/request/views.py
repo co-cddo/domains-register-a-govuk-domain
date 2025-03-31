@@ -33,6 +33,7 @@ from .forms import (
     RegistryDetailsForm,
     WrittenPermissionForm,
     ConfirmationForm,
+    SessionEndedForm,
 )
 from .models.organisation import Registrar, RegistrantTypeChoices
 from .models.storage_util import select_storage
@@ -717,3 +718,9 @@ def csrf_failure_view(request, reason=""):
 
 def bad_request_view(request, exception):
     return render(request, "400.html", status=400)
+
+
+class SessionEndedView(FormView):
+    template_name = "session_ended.html"
+    success_url = reverse_lazy("start_session")
+    form_class = SessionEndedForm
