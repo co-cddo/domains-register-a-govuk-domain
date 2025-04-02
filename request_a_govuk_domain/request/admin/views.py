@@ -65,3 +65,16 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
         return HttpResponseRedirect(
             reverse("admin:request_review_change", args=[review.id])
         )
+
+
+class AdminDashboardView(View, admin.ModelAdmin):
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request):
+        reviews = Review.objects.all()
+        context = {
+            "reviews": reviews,
+        }
+        return render(request, "admin/dashboard.html", context)

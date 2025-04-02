@@ -1,0 +1,99 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block title %}{% if cl.formset and cl.formset.errors %}{% translate "Error:" %} {% endif %}{{ block.super }}{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "admin/css/changelists.css" %}">
+  {% if cl.formset %}
+    <link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
+  {% endif %}
+  {{ media.css }}
+  {% if not actions_on_top and not actions_on_bottom %}
+    <style>
+      #changelist table thead th:first-child {width: inherit}
+    </style>
+  {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+{{ media.js }}
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% translate 'Dashboard' %}</a>
+</div>
+{% endblock %}
+{% endif %}
+
+{% block coltype %}{% endblock %}
+
+{% block object-tools %}
+<ul class="object-tools">
+  {% block object-tools-items %}
+    {% change_list_object_tools %}
+  {% endblock %}
+</ul>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="module filtered" id="changelist">
+    <div class="changelist-form-container">
+
+      <h2>{% translate 'New' %}</h2>
+
+      <div class="results">
+        <table id="result_list">
+          <thead>
+            <tr>
+              <th scope="col" class="column-get_reference">
+                <div class="text"><span>Reference</span></div>
+                <div class="clear"></div>
+              </th>
+
+              <th scope="col" class="column-get_domain_name">
+                <div class="text"><span>Domain Name</span></div>
+                <div class="clear"></div>
+              </th>
+
+              <th scope="col" class="column-get_registrar_org">
+                <div class="text"><span>Registrar org</span></div>
+                <div class="clear"></div>
+              </th>
+
+              <th scope="col" class="column-get_registrant_org">
+                <div class="text"><span>Registrant org</span></div>
+                <div class="clear"></div>
+              </th>
+
+              <th scope="col" class="column-get_time_submitted">
+                <div class="text"><span>Time Submitted (UK time)</span></div>
+                <div class="clear"></div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for review in reviews %}
+            <tr>
+              <th class="field-get_reference">
+                <a href="/admin/request/review/{{ review.id }}/change/">{{ review.application.reference }}</a>
+              </th>
+              <td class="field-get_domain_name">{{ review.application.domain_name }}</td>
+              <td class="field-get_registrar_org">{{ review.application.registrar_org.name }}</td>
+              <td class="field-get_registrant_org">{{ review.application.registrant_org.name }}</td>
+              <td class="field-get_time_submitted">{{ review.application.time_submitted }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
