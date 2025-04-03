@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 
 from request_a_govuk_domain.request import models
+from request_a_govuk_domain.request.models.application import ApplicationStatus
 from request_a_govuk_domain.request.models.storage_util import select_storage
 from request_a_govuk_domain.settings import S3_STORAGE_ENABLED
 
@@ -34,6 +35,7 @@ OTHER_REGISTRANT_NAME = "Border Gateway County Council"
 CG_DOMAIN_NAME = "ministryofdomains.gov.uk"
 PC_DOMAIN_NAME = "anycastparishcouncil.gov.uk"
 OTHER_DOMAIN_NAME = "bordergatway.gov.uk"
+OTHER_DOMAIN_NAME_2 = "example.gov.uk"
 
 CG_DOMAIN_PURPOSE = "Web site"
 
@@ -51,6 +53,7 @@ def create_sample_application(
     registrar_index: int,
     person_names: list[str],
     reference_suffix: str,
+    status: ApplicationStatus = ApplicationStatus.NEW,
     written_permission_file: str | None = None,
     ministerial_request_file: str | None = None,
     policy_exemption_file: str | None = None,
@@ -72,18 +75,20 @@ def create_sample_application(
                 ) as f_content:
                     select_storage().save(f, f_content)
 
-    registrant = models.Registrant.objects.create(name=registrant_name)
+    registrant, _ = models.Registrant.objects.get_or_create(name=registrant_name)
 
-    registrant_person = models.RegistrantPerson.objects.create(name=person_names[0])
+    registrant_person, _ = models.RegistrantPerson.objects.get_or_create(
+        name=person_names[0]
+    )
 
-    registry_published_person = models.RegistryPublishedPerson.objects.create(
+    registry_published_person, _ = models.RegistryPublishedPerson.objects.get_or_create(
         name=person_names[1],
         email_address=f"{'.'.join(person_names[1].split()).lower()}@{registrant.name.replace(' ', '').lower()}.net",
     )
 
-    registrar = models.Registrar.objects.get(pk=registrar_index)
+    registrar, _ = models.Registrar.objects.get_or_create(pk=registrar_index)
 
-    registrar_person = models.RegistrarPerson.objects.create(
+    registrar_person, _ = models.RegistrarPerson.objects.get_or_create(
         name=person_names[2], registrar=registrar
     )
 
@@ -98,6 +103,7 @@ def create_sample_application(
         written_permission_evidence=written_permission_file,
         ministerial_request_evidence=ministerial_request_file,
         policy_exemption_evidence=policy_exemption_file,
+        status=status,
     )
 
     application.save()
@@ -165,4 +171,16 @@ class Command(BaseCommand):
             person_names=PERSON_NAMES[6:],
             reference_suffix="IJKL",
             written_permission_file=WRITTEN_PERMISSION_FN,
+        )
+
+        # Create an application in progress
+
+        create_sample_application(
+            domain_name=OTHER_DOMAIN_NAME_2,
+            registrant_name=OTHER_REGISTRANT_NAME,
+            registrar_index=3,
+            person_names=PERSON_NAMES[6:],
+            reference_suffix="MNOP",
+            written_permission_file=WRITTEN_PERMISSION_FN,
+            status=ApplicationStatus.IN_PROGRESS,
         )
