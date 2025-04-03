@@ -614,6 +614,20 @@ docs = ["furo (>=2021.8.17b43,<2021.9.dev0)", "sphinx (>=3.5.0)", "sphinx-notfou
 testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)"]
 
 [[package]]
+name = "django-macros"
+version = "0.4.0"
+description = "A Django template tag library for repeating blocks tags and creating in template macros."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "django-macros-0.4.0.zip", hash = "sha256:2724c6dd99d4061945b92130fa857eaf3d9762f0aa175e1809479a5d7e13c1c9"},
+]
+
+[package.dependencies]
+django = ">=1.6"
+
+[[package]]
 name = "django-phonenumber-field"
 version = "7.3.0"
 description = "An international phone number field for django models."
@@ -2172,4 +2186,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "52caea354aa5cc344e82963a55440f4d7653297df6a389ff30e8cf0578122bd3"
+content-hash = "2983189ce0b97ae4bbc14420aa5187b438e4a5739f91dfb5c86893549a6fd97a"

@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 from django.views import View
 from django.contrib import admin, messages
@@ -73,8 +74,58 @@ class AdminDashboardView(View, admin.ModelAdmin):
         return super().dispatch(*args, **kwargs)
 
     def get(self, request):
-        reviews = Review.objects.all()
-        context = {
-            "reviews": reviews,
-        }
+        applications = Application.objects.all()
+        new_applications = applications.filter(status=ApplicationStatus.NEW)
+        in_progress_applications_total_count = applications.filter(
+            status=ApplicationStatus.IN_PROGRESS
+        ).count()
+        in_progress_applications_owner_count = applications.filter(
+            status=ApplicationStatus.IN_PROGRESS
+        ).count()
+        seven_days_ago = timezone.now() - timedelta(days=7)
+        more_information_applications_total_count = applications.filter(
+            status=ApplicationStatus.MORE_INFORMATION,
+        ).count()
+        more_information_applications_owner_count = applications.filter(
+            status=ApplicationStatus.MORE_INFORMATION,
+            # , owner=request.user
+        ).count()
+        more_information_applications_late = applications.filter(
+            status=ApplicationStatus.MORE_INFORMATION,
+            time_submitted__lt=seven_days_ago
+            # , owner=request.user
+        )
+        more_information_applications_on_schedule = applications.filter(
+            status=ApplicationStatus.MORE_INFORMATION,
+            time_submitted__gte=seven_days_ago
+            # , owner=request.user
+        )
+        with_nac_applications_total_count = applications.filter(
+            status=ApplicationStatus.CURRENTLY_WITH_NAC  # , owner=request.user
+        ).count()
+        with_nac_applications_owner_count = applications.filter(
+            status=ApplicationStatus.CURRENTLY_WITH_NAC  # , owner=request.user
+        ).count()
+        more_information_applications_length = len(
+            more_information_applications_on_schedule
+        ) + len(more_information_applications_late)
+        context = admin.site.each_context(request)
+
+        context.update(
+            {
+                "user_id": request.user.id,
+                "new_applications": new_applications,
+                "in_progress_applications_total_count": in_progress_applications_total_count,
+                "in_progress_applications_owner_count": in_progress_applications_owner_count,
+                "more_information_applications_total_count": more_information_applications_total_count,
+                "more_information_applications_owner_count": more_information_applications_owner_count,
+                "more_information_applications_late": more_information_applications_late,
+                "more_information_applications_on_schedule": more_information_applications_on_schedule,
+                "with_nac_applications_total_count": with_nac_applications_total_count,
+                "with_nac_applications_owner_count": with_nac_applications_owner_count,
+                "more_information_applications_length": more_information_applications_length,
+                "user_name": request.user.username,
+                "is_nav_sidebar_enabled": True,
+            }
+        )
         return render(request, "admin/dashboard.html", context)

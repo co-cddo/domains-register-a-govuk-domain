@@ -1,5 +1,5 @@
 from zoneinfo import ZoneInfo
-
+from datetime import datetime
 from django import template
 
 from request_a_govuk_domain.request.models import Application
@@ -91,3 +91,18 @@ def format_date(date):
         if date
         else "-"
     )
+
+
+@register.filter(is_safe=True)
+def days_since(value):
+    now = datetime.now(tz=value.tzinfo) if value.tzinfo else datetime.now()
+    delta = now - value
+    if delta.days < 1:
+        hours = delta.seconds // 3600
+        if hours > 0:
+            return f"{hours} hours ago"
+        else:
+            minutes = delta.seconds // 60
+            return f"{minutes} minutes ago"
+    else:
+        return f"{delta.days} days ago"
