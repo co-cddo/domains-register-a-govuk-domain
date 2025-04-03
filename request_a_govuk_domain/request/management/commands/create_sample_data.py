@@ -1,14 +1,18 @@
 import logging
 import os
 import shutil
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
+from django.utils import timezone
 
 from request_a_govuk_domain.request import models
-from request_a_govuk_domain.request.models.application import ApplicationStatus
+from request_a_govuk_domain.request.models.application import (
+    Application,
+    ApplicationStatus,
+)
 from request_a_govuk_domain.request.models.storage_util import select_storage
 from request_a_govuk_domain.settings import S3_STORAGE_ENABLED
 
@@ -36,6 +40,7 @@ CG_DOMAIN_NAME = "ministryofdomains.gov.uk"
 PC_DOMAIN_NAME = "anycastparishcouncil.gov.uk"
 OTHER_DOMAIN_NAME = "bordergatway.gov.uk"
 OTHER_DOMAIN_NAME_2 = "example.gov.uk"
+OTHER_DOMAIN_NAME_3 = "example-pc.gov.uk"
 
 CG_DOMAIN_PURPOSE = "Web site"
 
@@ -57,7 +62,7 @@ def create_sample_application(
     written_permission_file: str | None = None,
     ministerial_request_file: str | None = None,
     policy_exemption_file: str | None = None,
-):
+) -> Application:
     # Copy the sample data to the temporary storage so the system will assume it is comping from the temporary
     # location. This is needed as we have overridden the save method of the application to fetch the data
     # from the TEMP_STORAGE_ROOT root location if we are using S3
@@ -109,6 +114,8 @@ def create_sample_application(
     application.save()
 
     models.Review.objects.create(application=application)
+
+    return application
 
 
 class Command(BaseCommand):
@@ -184,3 +191,31 @@ class Command(BaseCommand):
             written_permission_file=WRITTEN_PERMISSION_FN,
             status=ApplicationStatus.IN_PROGRESS,
         )
+
+        # Create an application needing more information from 2 weeks ago
+
+        app = create_sample_application(
+            domain_name=OTHER_DOMAIN_NAME_3,
+            registrant_name=OTHER_REGISTRANT_NAME,
+            registrar_index=3,
+            person_names=PERSON_NAMES[6:],
+            reference_suffix="QRST",
+            written_permission_file=WRITTEN_PERMISSION_FN,
+            status=ApplicationStatus.MORE_INFORMATION,
+        )
+        app.time_submitted = datetime.now(timezone.utc) - timedelta(days=15)
+        app.save()
+
+        # Create an application needing more information from 2 days ago
+
+        app = create_sample_application(
+            domain_name="another-domain.gov.uk",
+            registrant_name=OTHER_REGISTRANT_NAME,
+            registrar_index=3,
+            person_names=PERSON_NAMES[6:],
+            reference_suffix="QRES",
+            written_permission_file=WRITTEN_PERMISSION_FN,
+            status=ApplicationStatus.MORE_INFORMATION,
+        )
+        app.time_submitted = datetime.now(timezone.utc) - timedelta(days=3)
+        app.save()

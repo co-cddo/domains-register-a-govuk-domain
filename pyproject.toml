@@ -29,6 +29,7 @@ markdown = "^3.6"
 django-celery-results = "^2.5.1"
 celery = {extras = ["sqs"], version = "^5.4.0"}
 django-redis-cache = "^3.0.1"
+django-macros = "^0.4.0"
 
 
 [tool.poetry.group.dev.dependencies]
