@@ -74,57 +74,96 @@ class AdminDashboardView(View, admin.ModelAdmin):
         return super().dispatch(*args, **kwargs)
 
     def get(self, request):
+        user = request.user
         applications = Application.objects.all()
-        new_applications = applications.filter(status=ApplicationStatus.NEW)
-        in_progress_applications_total_count = applications.filter(
-            status=ApplicationStatus.IN_PROGRESS
-        ).count()
-        in_progress_applications_owner_count = applications.filter(
-            status=ApplicationStatus.IN_PROGRESS
-        ).count()
         seven_days_ago = timezone.now() - timedelta(days=7)
-        more_information_applications_total_count = applications.filter(
-            status=ApplicationStatus.MORE_INFORMATION,
-        ).count()
-        more_information_applications_owner_count = applications.filter(
-            status=ApplicationStatus.MORE_INFORMATION, owner=request.user
-        ).count()
-        more_information_applications_late = applications.filter(
-            status=ApplicationStatus.MORE_INFORMATION,
-            time_submitted__lt=seven_days_ago,
-            owner=request.user,
-        )
-        more_information_applications_on_schedule = applications.filter(
-            status=ApplicationStatus.MORE_INFORMATION,
-            time_submitted__gte=seven_days_ago,
-            owner=request.user,
-        )
-        with_nac_applications_total_count = applications.filter(
-            status=ApplicationStatus.CURRENTLY_WITH_NAC, owner=request.user
-        ).count()
-        with_nac_applications_owner_count = applications.filter(
-            status=ApplicationStatus.CURRENTLY_WITH_NAC, owner=request.user
-        ).count()
-        more_information_applications_length = len(
-            more_information_applications_on_schedule
-        ) + len(more_information_applications_late)
-        context = admin.site.each_context(request)
 
+        new_allusers_total = applications.filter(status=ApplicationStatus.NEW)
+        nac_owner_total_count = applications.filter(
+            status=ApplicationStatus.CURRENTLY_WITH_NAC, owner=user
+        ).count()
+        nac_allusers_total_count = applications.filter(
+            status=ApplicationStatus.CURRENTLY_WITH_NAC
+        ).count()
+        context = admin.site.each_context(request)
         context.update(
             {
-                "user_id": request.user.id,
-                "new_applications": new_applications,
-                "in_progress_applications_total_count": in_progress_applications_total_count,
-                "in_progress_applications_owner_count": in_progress_applications_owner_count,
-                "more_information_applications_total_count": more_information_applications_total_count,
-                "more_information_applications_owner_count": more_information_applications_owner_count,
-                "more_information_applications_late": more_information_applications_late,
-                "more_information_applications_on_schedule": more_information_applications_on_schedule,
-                "with_nac_applications_total_count": with_nac_applications_total_count,
-                "with_nac_applications_owner_count": with_nac_applications_owner_count,
-                "more_information_applications_length": more_information_applications_length,
-                "user_name": request.user.username,
+                "user_id": user.id,
+                "new_allusers_total": new_allusers_total,
+                "new_allusers_total_count": new_allusers_total.count(),
+                "nac_owner_total_count": nac_owner_total_count,
+                "nac_allusers_total_count": nac_allusers_total_count,
+                "user_name": user.username,
                 "is_nav_sidebar_enabled": True,
             }
         )
+
+        if user.groups.filter(name="reviewer").exists():
+            inprogress_allusers_total_count = applications.filter(
+                status=ApplicationStatus.IN_PROGRESS
+            ).count()
+            inprogress_owner_total_count = applications.filter(
+                status=ApplicationStatus.IN_PROGRESS,
+                owner=user,
+            ).count()
+            moreinfo_allusers_total_count = applications.filter(
+                status=ApplicationStatus.MORE_INFORMATION,
+            ).count()
+            moreinfo_owner_total_count = applications.filter(
+                status=ApplicationStatus.MORE_INFORMATION, owner=user
+            ).count()
+            moreinfo_owner_late = applications.filter(
+                status=ApplicationStatus.MORE_INFORMATION,
+                time_submitted__lt=seven_days_ago,
+                owner=user,
+            )
+            moreinfo_owner_onschedule = applications.filter(
+                status=ApplicationStatus.MORE_INFORMATION,
+                time_submitted__gte=seven_days_ago,
+                owner=user,
+            )
+            context.update(
+                {
+                    "user_is_reviewer": True,
+                    "inprogress_allusers_total_count": inprogress_allusers_total_count,
+                    "inprogress_owner_total_count": inprogress_owner_total_count,
+                    "moreinfo_allusers_total_count": moreinfo_allusers_total_count,
+                    "moreinfo_owner_total_count": moreinfo_owner_total_count,
+                    "moreinfo_owner_late": moreinfo_owner_late,
+                    "moreinfo_owner_onschedule": moreinfo_owner_onschedule,
+                }
+            )
+
+        else:
+            # user is not in the reviewer group, so they're an admin
+            ready2i_allusers_total_count = applications.filter(
+                status=ApplicationStatus.READY_2I,
+            ).count()
+            ready2i_owner_total_count = applications.filter(
+                status=ApplicationStatus.READY_2I, owner=user
+            ).count()
+            ready2i_owner_late = applications.filter(
+                status=ApplicationStatus.READY_2I,
+                time_submitted__lt=seven_days_ago,
+                owner=user,
+            )
+            ready2i_owner_onschedule = applications.filter(
+                status=ApplicationStatus.READY_2I,
+                time_submitted__gte=seven_days_ago,
+                owner=user,
+            )
+            ready2i_all_onschedule_count = applications.filter(
+                status=ApplicationStatus.READY_2I, time_submitted__gte=seven_days_ago
+            ).count()
+            context.update(
+                {
+                    "user_is_reviewer": False,
+                    "ready2i_allusers_total_count": ready2i_allusers_total_count,
+                    "ready2i_owner_total_count": ready2i_owner_total_count,
+                    "ready2i_owner_late": ready2i_owner_late,
+                    "ready2i_owner_onschedule": ready2i_owner_onschedule,
+                    "ready2i_all_onschedule_count": ready2i_all_onschedule_count,
+                }
+            )
+
         return render(request, "admin/dashboard.html", context)
