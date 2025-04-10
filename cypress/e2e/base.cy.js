@@ -441,7 +441,7 @@ Cypress.Commands.add('deleteAllApplications', () => {
         cy.get('button[name=index]').click()
         cy.get('input[type=submit]').click() // confirm
       }
-      cy.get('button[type=submit]').click() // logout
+      cy.get('#logout-form button[type=submit]').click() // logout
     })
 })
 
