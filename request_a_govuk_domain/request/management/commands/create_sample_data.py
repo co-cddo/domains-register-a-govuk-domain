@@ -80,7 +80,6 @@ def create_sample_application(
     # Copy the sample files to the temporary storage so the system will assume it is coming from the temporary
     # location. This is needed as we have overridden the save method of the application to fetch the data
     # from the TEMP_STORAGE_ROOT root location if we are using S3
-    print(person_names)
     if S3_STORAGE_ENABLED:
         for f in [
             written_permission_file,
