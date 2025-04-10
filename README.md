@@ -80,6 +80,30 @@ If additional groups are added or other fundamental changes made which mean the 
 python manage.py dumpdata auth.user --indent 2
 ```
 
+### Synthetic data
+
+For local development, or user testing, it is recommended to use synthetic data instead of sensitive production data. There is a management command to do so:
+
+``` bash
+./manage.py create_sample_data
+```
+
+It can be run either in the application running locally without docker, or in a docker shell (`make shell`) if the local app is running in docker.
+
+If the database to be populated is remote (like in a test account in RDS), then you'll need to connect to the database using the instructions found in the `domains-api` repository, in the tools directory.
+
+Then you'll need to change the `DATABASE_URL` environment variable, either in your local shell, or in the `docker-compose.yml` file. The format will be something like:
+
+``` bash
+DATABASE_URL: postgresql://password@host:5433/registration
+```
+
+- `password` will be the database password, as found in the secrets manager
+- `host` will be `localhost`, or `host.docker.internal` if running in docker.
+
+Once this is set you can run the `create_sample_data` command above. Note that this is a destructive operation since it'll delete existing applications before adding new ones. The db users will be unchanged though.
+
+
 ### Clearing the database
 
 While we're in the early stages of development it makes sense to delete existing migrations and create them afresh. To enable this, use the `make clear-db` command. Seed data will be re-applied when the application is restarted.
