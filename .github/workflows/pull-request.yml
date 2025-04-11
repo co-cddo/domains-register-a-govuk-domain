@@ -82,7 +82,7 @@ jobs:
         DOMAIN_NAME: http://localhost:8010
         AWS_ENDPOINT_URL_S3: http://127.0.0.1:9090
         CLAMD_TCP_ADDR: 127.0.0.1
-        S3_STORAGE_ENABLED: "False"
+        S3_STORAGE_ENABLED: "True"
         AWS_ACCESS_KEY_ID: "dummy-key-id"
         AWS_SECRET_ACCESS_KEY: "dummy-key"
         ENVIRONMENT: 'local'
@@ -94,7 +94,7 @@ jobs:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
         AWS_ENDPOINT_URL_S3: http://127.0.0.1:9090
         CLAMD_TCP_ADDR: 127.0.0.1
-        S3_STORAGE_ENABLED: "False"
+        S3_STORAGE_ENABLED: "True"
         AWS_ACCESS_KEY_ID: "dummy-key-id"
         AWS_SECRET_ACCESS_KEY: "dummy-key"
         ENVIRONMENT: 'local'
