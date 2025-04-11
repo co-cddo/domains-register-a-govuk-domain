@@ -33,7 +33,7 @@ jobs:
         ports:
           - "3310:3310"
       s3:
-        image: adobe/s3mock
+        image: adobe/s3mock:3.12.0
         env:
           initialBuckets: registration-app-media-root-local
           debug: "true"
