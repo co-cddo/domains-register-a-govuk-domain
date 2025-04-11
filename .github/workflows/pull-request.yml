@@ -80,7 +80,7 @@ jobs:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
         DEBUG: True
         DOMAIN_NAME: http://localhost:8010
-        AWS_ENDPOINT_URL_S3: http://localhost:9090
+        AWS_ENDPOINT_URL_S3: http://s3:9090
         CLAMD_TCP_ADDR: localhost
         S3_STORAGE_ENABLED: "True"
         AWS_ACCESS_KEY_ID: "dummy-key-id"
@@ -92,7 +92,7 @@ jobs:
     - name: Run Unit Tests
       env:
         DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
-        AWS_ENDPOINT_URL_S3: http://localhost:9090
+        AWS_ENDPOINT_URL_S3: http://s3:9090
         CLAMD_TCP_ADDR: localhost
         S3_STORAGE_ENABLED: "True"
         AWS_ACCESS_KEY_ID: "dummy-key-id"
