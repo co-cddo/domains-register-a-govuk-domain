@@ -1,5 +1,5 @@
 import logging
-import os
+from datetime import timedelta
 
 from django.views import View
 from django.contrib import admin, messages
@@ -44,13 +44,7 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
     def post(self, request):
         if "_confirm" in request.POST:
             try:
-                # send email
-                if os.environ.get("ENVIRONMENT") != "local":
-                    send_approval_or_rejection_email(request)
-                else:
-                    LOGGER.warning(
-                        "Not sending approval or rejection email as marked as local environment"
-                    )
+                send_approval_or_rejection_email(request)
                 self._set_application_status(request)
                 # To show the backend app user a message "[Approval/Rejection] email sent", get the type of
                 # action ( i.e. whether it is Approval or Rejection )
@@ -72,3 +66,102 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
         return HttpResponseRedirect(
             reverse("admin:request_review_change", args=[review.id])
         )
+
+
+class AdminDashboardView(View, admin.ModelAdmin):
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request):
+        user = request.user
+        applications = Application.objects.all()
+        seven_days_ago = timezone.now() - timedelta(days=7)
+
+        new_allusers_total = applications.filter(status=ApplicationStatus.NEW)
+        nac_owner_total_count = applications.filter(
+            status=ApplicationStatus.CURRENTLY_WITH_NAC, owner=user
+        ).count()
+        nac_allusers_total_count = applications.filter(
+            status=ApplicationStatus.CURRENTLY_WITH_NAC
+        ).count()
+        context = admin.site.each_context(request)
+        context.update(
+            {
+                "user_id": user.id,
+                "new_allusers_total": new_allusers_total,
+                "new_allusers_total_count": new_allusers_total.count(),
+                "nac_owner_total_count": nac_owner_total_count,
+                "nac_allusers_total_count": nac_allusers_total_count,
+                "user_name": user.username,
+                "is_nav_sidebar_enabled": True,
+            }
+        )
+
+        if user.is_superuser:
+            ready2i_allusers_total_count = applications.filter(
+                status=ApplicationStatus.READY_2I,
+            ).count()
+            ready2i_owner_total_count = applications.filter(
+                status=ApplicationStatus.READY_2I, owner=user
+            ).count()
+            ready2i_owner_late = applications.filter(
+                status=ApplicationStatus.READY_2I,
+                time_submitted__lt=seven_days_ago,
+                owner=user,
+            )
+            ready2i_owner_onschedule = applications.filter(
+                status=ApplicationStatus.READY_2I,
+                time_submitted__gte=seven_days_ago,
+                owner=user,
+            )
+            ready2i_all_onschedule_count = applications.filter(
+                status=ApplicationStatus.READY_2I, time_submitted__gte=seven_days_ago
+            ).count()
+            context.update(
+                {
+                    "user_is_reviewer": False,
+                    "ready2i_allusers_total_count": ready2i_allusers_total_count,
+                    "ready2i_owner_total_count": ready2i_owner_total_count,
+                    "ready2i_owner_late": ready2i_owner_late,
+                    "ready2i_owner_onschedule": ready2i_owner_onschedule,
+                    "ready2i_all_onschedule_count": ready2i_all_onschedule_count,
+                }
+            )
+        else:
+            inprogress_allusers_total_count = applications.filter(
+                status=ApplicationStatus.IN_PROGRESS
+            ).count()
+            inprogress_owner_total_count = applications.filter(
+                status=ApplicationStatus.IN_PROGRESS,
+                owner=user,
+            ).count()
+            moreinfo_allusers_total_count = applications.filter(
+                status=ApplicationStatus.MORE_INFORMATION,
+            ).count()
+            moreinfo_owner_total_count = applications.filter(
+                status=ApplicationStatus.MORE_INFORMATION, owner=user
+            ).count()
+            moreinfo_owner_late = applications.filter(
+                status=ApplicationStatus.MORE_INFORMATION,
+                time_submitted__lt=seven_days_ago,
+                owner=user,
+            )
+            moreinfo_owner_onschedule = applications.filter(
+                status=ApplicationStatus.MORE_INFORMATION,
+                time_submitted__gte=seven_days_ago,
+                owner=user,
+            )
+            context.update(
+                {
+                    "user_is_reviewer": True,
+                    "inprogress_allusers_total_count": inprogress_allusers_total_count,
+                    "inprogress_owner_total_count": inprogress_owner_total_count,
+                    "moreinfo_allusers_total_count": moreinfo_allusers_total_count,
+                    "moreinfo_owner_total_count": moreinfo_owner_total_count,
+                    "moreinfo_owner_late": moreinfo_owner_late,
+                    "moreinfo_owner_onschedule": moreinfo_owner_onschedule,
+                }
+            )
+
+        return render(request, "admin/dashboard.html", context)

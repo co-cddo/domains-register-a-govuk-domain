@@ -1,0 +1,257 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list macros admin_tags %}
+
+{% macro application_table_new applications %}
+  <div class="app-dashboard module">
+    <table id="result_list">
+      <thead>
+        <tr>
+          <th scope="col" class="column-get_reference">
+            <div class="text"><span>Reference</span></div>
+            <div class="clear"></div>
+          </th>
+
+          <th scope="col" class="column-get_domain_name">
+            <div class="text"><span>Domain Name</span></div>
+            <div class="clear"></div>
+          </th>
+
+          <th scope="col" class="column-get_registrar_org">
+            <div class="text"><span>Registrar org</span></div>
+            <div class="clear"></div>
+          </th>
+
+          <th scope="col" class="column-get_registrant_org">
+            <div class="text"><span>Registrant org</span></div>
+            <div class="clear"></div>
+          </th>
+
+          <th scope="col" class="column-get_time_submitted">
+            <div class="text"><span>Time Submitted (UK time)</span></div>
+            <div class="clear"></div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for application in applications %}
+          <tr>
+            <th class="field-get_reference">
+              <a href="/admin/request/application/{{ application.id }}/change/">{{ application.reference }}</a>
+            </th>
+            <td class="field-get_domain_name">{{ application.domain_name }}</td>
+            <td class="field-get_registrar_org">{{ application.registrar_org.name }}</td>
+            <td class="field-get_registrant_org">{{ application.registrant_org.name }}</td>
+            <td class="field-get_time_submitted">{{ application.time_submitted }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
+{% macro application_table applications %}
+  <div class="app-dashboard module">
+    <table id="result_list">
+      <thead>
+        <tr>
+          <th scope="col" class="column-get_reference">
+            <div class="text"><span>Reference</span></div>
+            <div class="clear"></div>
+          </th>
+
+          <th scope="col" class="column-get_domain_name">
+            <div class="text"><span>Domain Name</span></div>
+            <div class="clear"></div>
+          </th>
+
+          <th scope="col" class="column-get_registrar_org">
+            <div class="text"><span>Registrar org</span></div>
+            <div class="clear"></div>
+          </th>
+
+          <th scope="col" class="column-get_time_submitted">
+            <div class="text"><span>Time Submitted (UK time)</span></div>
+            <div class="clear"></div>
+          </th>
+
+          <th scope="col" class="column-get_last_updated">
+            <div class="text"><span>Last updated</span></div>
+            <div class="clear"></div>
+          </th>
+
+          <th scope="col" class="column-get_last_updated_by">
+            <div class="text"><span>Last updated by</span></div>
+            <div class="clear"></div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for application in applications %}
+          <tr>
+            <th class="field-get_reference">
+              <a href="/admin/request/application/{{ application.id }}/change/">{{ application.reference }}</a>
+            </th>
+            <td class="field-get_domain_name">{{ application.domain_name }}</td>
+            <td class="field-get_registrar_org">{{ application.registrar_org.name }}</td>
+            <td class="field-get_time_submitted">{{ application.time_submitted }}</td>
+            <td class="field-get_time_submitted">{{ application.last_updated|days_since }}</td>
+            <td class="field-get_time_submitted">{{ application.last_updated_by.name }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
+{% macro application_section_new applications %}
+  <details open>
+    <summary><h2>{% translate 'New' %} ({{ applications|length }})</h2></summary>
+    {% if applications %}
+      {% use_macro application_table_new applications %}
+    {% else %}
+      {% translate 'No applications' %}
+    {% endif %}
+  </details>
+{% endmacro %}
+
+{% macro application_section title applications %}
+  <details open>
+    <summary><h2>{% translate title %} ({{ applications|length }})</h2></summary>
+    {% if applications %}
+      {% use_macro application_table applications %}
+    {% else %}
+      {% translate 'No applications' %}
+    {% endif %}
+  </details>
+{% endmacro %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style nonce="{{request.csp_nonce}}">
+    details + details {
+      margin-top: 5em;
+    }
+    details summary::marker {
+      content: "";
+    }
+    table thead div.text > span {
+      padding-left: 0
+    }
+    .count {
+      font-size: 85%;
+      width: 100%;
+      padding-bottom: 0.4em;
+    }
+    .count a {
+      font-weight: 600;
+    }
+    .view-applications {
+      font-weight: 600;
+      font-size: 85%;
+      border-top: 1px solid var(--hairline-color);
+      border-bottom: 1px solid var(--hairline-color);
+      padding: 7px 0;
+    }
+    .big-button {
+      margin-top: 5em;
+      padding: .5em .3em;
+      background: var(--admin-interface-module-background-color);
+      width: fit-content;
+    }
+    .big-button a {
+      color: white!important;
+    }
+  </style>
+{% endblock %}
+
+{% if not is_popup %}
+  {% block breadcrumbs %}
+    <div class="breadcrumbs">
+      <a href="{% url 'admin:index' %}">{% translate 'Dashboard' %}</a>
+    </div>
+  {% endblock %}
+{% endif %}
+
+{% block content_title %}<h1>{% translate 'Welcome,' %} {{ user_name | title }}</h1>{% endblock %}
+
+
+{% macro applications_link title owner_count total_count query_string %}
+  <details open>
+    <summary><h2>{% translate title %} ({{ owner_count }})</h2></summary>
+    <p class="count">{{ owner_count }} assigned to you (out of {{ total_count }})</p>
+    {% if total_count %}
+      <p class="view-applications"><a href="{% url 'admin:request_application_changelist' %}{{query_string}}">View applications</a></p>
+    {% else %}
+      {% translate 'No applications' %}
+    {% endif %}
+  </details>
+{% endmacro %}
+
+
+{% block content %}
+
+  <div id="content-main">
+
+    {% if user_is_reviewer %}
+
+      {% use_macro application_section_new new_allusers_total %}
+
+      {% use_macro applications_link "In progress" inprogress_owner_total_count inprogress_allusers_total_count "?status=in_progress" %}
+
+      <details open>
+        <summary><h2>{% translate 'More information' %} ({{ moreinfo_owner_total_count }})</h2></summary>
+        <p class="count">{{ moreinfo_owner_total_count }} assigned to you (out of {{ moreinfo_allusers_total_count }})</p>
+        <h3>7 or more days late</h3>
+        {% if moreinfo_owner_late %}
+          {% use_macro application_table moreinfo_owner_late %}
+        {% else %}
+          {% translate 'No applications' %}
+        {% endif %}
+        <h3>On schedule</h3>
+        {% if moreinfo_owner_onschedule %}
+          {% use_macro application_table moreinfo_owner_onschedule %}
+        {% else %}
+          {% translate 'No applications' %}
+        {% endif %}
+      </details>
+
+    {% else %}  {# admin view #}
+
+      <details open>
+        <summary><h2>{% translate 'Ready for 2i' %} ({{ ready2i_owner_total_count }})</h2></summary>
+        <p class="count">{{ ready2i_owner_total_count }} assigned to you (out of {{ ready2i_allusers_total_count }})</p>
+        <h3>7 or more days late</h3>
+        {% if ready2i_owner_late %}
+          {% use_macro application_table ready2i_owner_late %}
+        {% else %}
+          {% translate 'No applications' %}
+        {% endif %}
+        <h3>On schedule</h3>
+        {% if ready2i_owner_late %}
+          {% use_macro application_table ready2i_owner_onschedule %}
+        {% else %}
+          {% translate 'No applications' %}
+        {% endif %}
+      </details>
+
+      <details open>
+        <summary><h2>{% translate 'New' %} ({{ new_allusers_total_count }})</h2></summary>
+        {% if new_allusers_total_count %}
+          <p class="view-applications"><a href="{% url 'admin:request_application_changelist' %}{{query_string}}">View applications</a></p>
+        {% else %}
+          {% translate 'No applications' %}
+        {% endif %}
+      </details>
+
+    {% endif %}
+
+    {% use_macro applications_link "Currently with NAC" nac_owner_total_count nac_allusers_total_count "?status=with_nac" %}
+
+
+    <div class="big-button">
+      <a href="/admin/request/application">Applications</a>
+    </div>
+
+  </div>
+
+{% endblock %}

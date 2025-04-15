@@ -24,7 +24,7 @@ x-api-base: &api-base
 
 services:
   s3:
-    image: adobe/s3mock
+    image: adobe/s3mock:3.12.0
     restart: always
     environment:
       initialBuckets: registration-app-media-root-local
@@ -37,6 +37,11 @@ services:
       - ./.s3-data:/containers3root
     networks:
       - s3-net
+    healthcheck:
+      test: wget --quiet --output-document=/dev/null http://localhost:9090
+      interval: 1s
+      retries: 20
+
   web:
     platform: linux/amd64
     <<: *api-base
@@ -132,6 +137,8 @@ services:
       - .:/app
     depends_on:
       postgres:
+        condition: service_healthy
+      s3:
         condition: service_healthy
     networks:
       - clam-net

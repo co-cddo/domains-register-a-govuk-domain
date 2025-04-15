@@ -1,14 +1,14 @@
 {% load i18n admin_urls %}
 <div class="submit-row">
 {% block submit-row %}
-<input type="submit" value="{% translate 'Save' %}" class="default" name="_save">
+<input type="submit" value="{% translate 'Save' %}" name="_save">
 
 <input type="submit" value="{% if can_change %}{% translate 'Save and continue editing' %}{% else %}{% translate 'Save and view' %}{% endif %}" name="_continue">
 
 {% if request.user.is_superuser %}
-<input type="submit" value="{% translate 'Approve' %}" class="default" name="_approve">
+<input type="submit" value="{% translate 'Approve' %}" name="_approve">
 
-<input type="submit" value="{% translate 'Reject' %}" class="default" name="_reject">
+<input type="submit" value="{% translate 'Reject' %}" name="_reject">
 {% endif %}
 
 {% endblock %}

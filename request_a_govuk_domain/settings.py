@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "storages",
     "django_celery_results",
+    "macros",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["gds"]

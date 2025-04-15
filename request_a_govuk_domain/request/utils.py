@@ -269,6 +269,10 @@ def send_email(email_address: str, template_id: str, personalisation: dict) -> N
     param: template_id: Template id of the Email Template
     param: personalisation: Dictionary of Personalisation data
     """
+    if os.environ.get("ENVIRONMENT") == "local":
+        logger.warning("Not sending email since we're in a local environment")
+        return
+
     notifications_client = get_notification_client()
 
     if notifications_client:

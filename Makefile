@@ -30,3 +30,6 @@ clear-db:
 
 test:
 	docker compose run --rm --service-ports --entrypoint "python manage.py test -v 2" web
+
+create-sample-data:
+	docker compose exec web bash -c "python manage.py create_sample_data"
