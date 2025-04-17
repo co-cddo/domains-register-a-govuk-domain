@@ -1,65 +1,48 @@
 import logging
 import os
 import shutil
-from datetime import datetime, timedelta, timezone
-import random
-import string
-import csv
+from datetime import datetime
 from pathlib import Path
 
-from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 
 from request_a_govuk_domain.request import models
-from request_a_govuk_domain.request.models.application import (
-    Application,
-    ApplicationStatus,
-)
 from request_a_govuk_domain.request.models.storage_util import select_storage
 from request_a_govuk_domain.settings import S3_STORAGE_ENABLED
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
-SEED_PATH = os.path.join(SCRIPT_PATH, "..", "..", "..", "..", "seed")
-SEED_DOCS_PATH = os.path.join(SEED_PATH, "documents")
+SEED_DOCS_PATH = os.path.join(SCRIPT_PATH, "..", "..", "..", "..", "seed", "documents")
 MEDIA_ROOT_PATH = os.path.join(SCRIPT_PATH, "..", "..", "..", "media")
 
-PERSON_NAMES: list[str] = []
-DOMAIN_NAMES: list[str] = []
-CENTRAL_GOV_DOMAINS: list[list[str]] = []
-COUNCIL_DOMAINS: list[list[str]] = []
+PERSON_NAMES = [
+    "Bob Roberts",
+    "Peter Peters",
+    "Olivia Oliver",
+    "Thomas Thomson",
+    "Alice Allison",
+    "Samuel Samuels",
+    "William Williams",
+    "Harry Harris",
+    "Emily Emmerson",
+]
 
-with open(os.path.join(SEED_PATH, "people-names.csv")) as file:
-    reader = csv.reader(file)
-    for row in reader:
-        PERSON_NAMES.append(row[0])
+CG_REGISTRANT_NAME = "Ministry of Domains"
+PC_REGISTRANT_NAME = "Any Cast Parish Council"
+OTHER_REGISTRANT_NAME = "Border Gateway County Council"
 
-with open(os.path.join(SEED_PATH, "central-gov-domains.csv")) as file:
-    reader = csv.reader(file)
-    for row in reader:
-        CENTRAL_GOV_DOMAINS.append(row)
+CG_DOMAIN_NAME = "ministryofdomains.gov.uk"
+PC_DOMAIN_NAME = "anycastparishcouncil.gov.uk"
+OTHER_DOMAIN_NAME = "bordergatway.gov.uk"
 
-with open(os.path.join(SEED_PATH, "council-domains.csv")) as file:
-    reader = csv.reader(file)
-    for row in reader:
-        COUNCIL_DOMAINS.append(row)
+CG_DOMAIN_PURPOSE = "Web site"
 
-WRITTEN_PERMISSION_FILENAME = "written_permission.png"
-MINISTERIAL_REQUEST_FILENAME = "ministerial_request.png"
-POLICY_TEAM_EXEMPTION_FILENAME = "policy_team_exception.png"
+WRITTEN_PERMISSION_FN = "written_permission.png"
+MINISTERIAL_REQUEST_FN = "ministerial_request.png"
+POLICY_TEAM_EXEMPTION_FN = "policy_team_exception.png"
 
-TEST_REGISTRARS = ["WeRegister", "WeAlsoRegister", "WeLikeToRegister"]
-
+DUMMY_REGISTRARS = ["WeRegister", "WeAlsoRegister", "WeLikeToRegister"]
 logger = logging.getLogger(__name__)
-
-
-def random_past_datetime(maxdays: int = 7) -> datetime:
-    start = datetime.now(timezone.utc) - timedelta(days=maxdays)
-    end = datetime.now(timezone.utc)
-    random_duration = timedelta(
-        seconds=random.randint(0, int((end - start).total_seconds())),
-    )
-    return start + random_duration
 
 
 def create_sample_application(
@@ -71,13 +54,8 @@ def create_sample_application(
     written_permission_file: str | None = None,
     ministerial_request_file: str | None = None,
     policy_exemption_file: str | None = None,
-    domain_purpose: str = "website-email",
-) -> Application:
-    """
-    Create an application from the parameters passed.
-    """
-
-    # Copy the sample files to the temporary storage so the system will assume it is coming from the temporary
+):
+    # Copy the sample data to the temporary storage so the system will assume it is comping from the temporary
     # location. This is needed as we have overridden the save method of the application to fetch the data
     # from the TEMP_STORAGE_ROOT root location if we are using S3
     if S3_STORAGE_ENABLED:
@@ -86,28 +64,26 @@ def create_sample_application(
             ministerial_request_file,
             policy_exemption_file,
         ]:
+            logger.info("Copying seed file %s", f)
             if f:
-                logger.info("Copying seed file %s", f)
                 with open(
                     Path(__file__).parent.joinpath(f"../../../media/{f}").resolve(),
                     "rb",
                 ) as f_content:
                     select_storage().save(f, f_content)
 
-    registrant, _ = models.Registrant.objects.get_or_create(name=registrant_name)
+    registrant = models.Registrant.objects.create(name=registrant_name)
 
-    registrant_person, _ = models.RegistrantPerson.objects.get_or_create(
-        name=person_names[0]
-    )
+    registrant_person = models.RegistrantPerson.objects.create(name=person_names[0])
 
-    registry_published_person, _ = models.RegistryPublishedPerson.objects.get_or_create(
+    registry_published_person = models.RegistryPublishedPerson.objects.create(
         name=person_names[1],
         email_address=f"{'.'.join(person_names[1].split()).lower()}@{registrant.name.replace(' ', '').lower()}.net",
     )
 
-    registrar, _ = models.Registrar.objects.get_or_create(pk=registrar_index)
+    registrar = models.Registrar.objects.get(pk=registrar_index)
 
-    registrar_person, _ = models.RegistrarPerson.objects.get_or_create(
+    registrar_person = models.RegistrarPerson.objects.create(
         name=person_names[2], registrar=registrar
     )
 
@@ -122,14 +98,11 @@ def create_sample_application(
         written_permission_evidence=written_permission_file,
         ministerial_request_evidence=ministerial_request_file,
         policy_exemption_evidence=policy_exemption_file,
-        domain_purpose=domain_purpose,
     )
 
     application.save()
 
     models.Review.objects.create(application=application)
-
-    return application
 
 
 class Command(BaseCommand):
@@ -150,81 +123,46 @@ class Command(BaseCommand):
         models.Application.objects.all().delete()
         models.Review.objects.all().delete()
 
-        # Always try to those registrars as they are needed by the Cypress tests
-        for registrar in TEST_REGISTRARS:
+        # Always try to create the dummy registrars as they are needed by the Cypress tests
+        for registrar in DUMMY_REGISTRARS:
             try:
                 models.Registrar.objects.create(name=registrar)
             except IntegrityError:
                 print(f"Not creating registrar {registrar} as it already exists.")
 
-        registrar_count = models.Registrar.objects.count()
+        # Create an application from a central government department. This must have written permission
+        # and can have (does have) evidence of a ministerial request and a naming policy exemption
 
-        # 1. Parish council domains
-        for index, (registrant, domain) in enumerate(COUNCIL_DOMAINS):
-            domain_purpose = (
-                "email-only" if random.randint(0, 10) == 0 else "website-email"
-            )
-            nbp = len(PERSON_NAMES)
-            three_persons = [
-                PERSON_NAMES[random.randint(0, nbp - 1)],
-                PERSON_NAMES[random.randint(0, nbp - 1)],
-                PERSON_NAMES[random.randint(0, nbp - 1)],
-            ]
-            create_sample_application(
-                domain_name=domain,
-                registrant_name=registrant,
-                registrar_index=index % registrar_count,
-                person_names=three_persons,
-                reference_suffix="".join(
-                    random.choice(string.ascii_uppercase) for _ in range(4)
-                ),
-                domain_purpose=domain_purpose,
-            )
+        create_sample_application(
+            domain_name=CG_DOMAIN_NAME,
+            registrant_name=CG_REGISTRANT_NAME,
+            registrar_index=1,
+            person_names=PERSON_NAMES[:3],
+            reference_suffix="ABCD",
+            written_permission_file=WRITTEN_PERMISSION_FN,
+            ministerial_request_file=MINISTERIAL_REQUEST_FN,
+            policy_exemption_file=POLICY_TEAM_EXEMPTION_FN,
+        )
 
-        # 2. Central government domains
-        for index, (registrant, domain) in enumerate(CENTRAL_GOV_DOMAINS):
-            domain_purpose = (
-                "email-only" if random.randint(0, 10) == 0 else "website-email"
-            )
-            maybe_policy_exemption_file = (
-                POLICY_TEAM_EXEMPTION_FILENAME if random.randint(0, 10) == 0 else None
-            )
-            maybe_ministerial_request = (
-                MINISTERIAL_REQUEST_FILENAME if random.randint(0, 1) == 0 else None
-            )
-            create_sample_application(
-                domain_name=domain,
-                registrant_name=registrant,
-                registrar_index=index % registrar_count,
-                person_names=PERSON_NAMES[
-                    index % len(PERSON_NAMES) : (index + 3) % len(PERSON_NAMES)
-                ],
-                reference_suffix="".join(
-                    random.choice(string.ascii_uppercase) for _ in range(4)
-                ),
-                domain_purpose=domain_purpose,
-                written_permission_file=WRITTEN_PERMISSION_FILENAME,
-                policy_exemption_file=maybe_policy_exemption_file,
-                ministerial_request_file=maybe_ministerial_request,
-            )
+        # Create an application from a parish council. This cannot have any of the three evidence types.
 
-        users = list(User.objects.all())
+        create_sample_application(
+            domain_name=PC_DOMAIN_NAME,
+            registrant_name=PC_REGISTRANT_NAME,
+            registrar_index=2,
+            person_names=PERSON_NAMES[3:6],
+            reference_suffix="EFGH",
+        )
 
-        for app in models.Application.objects.all():
-            app.time_submitted = random_past_datetime(maxdays=15)
-            owner = users[random.randint(0, len(users) - 1)]
+        # Create an application from any other registrant (not a parish council or central government org).
+        # This must have written permission and cannot have evidence of a minsterial request nor a naming
+        # policy exemption
 
-            if random.randint(0, 10) > 0:
-                match random.randint(0, 3):
-                    case 0:
-                        app.status = ApplicationStatus.IN_PROGRESS
-                    case 1:
-                        app.status = ApplicationStatus.CURRENTLY_WITH_NAC
-                    case 2:
-                        app.status = ApplicationStatus.READY_2I
-                    case 3:
-                        app.status = ApplicationStatus.MORE_INFORMATION
-                app.owner = owner
-                app.last_updated = datetime.now(timezone.utc)
-                app.last_updated_by = owner
-            app.save()
+        create_sample_application(
+            domain_name=OTHER_DOMAIN_NAME,
+            registrant_name=OTHER_REGISTRANT_NAME,
+            registrar_index=3,
+            person_names=PERSON_NAMES[6:],
+            reference_suffix="IJKL",
+            written_permission_file=WRITTEN_PERMISSION_FN,
+        )
