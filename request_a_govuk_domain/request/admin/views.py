@@ -159,6 +159,7 @@ class AdminDashboardView(View, admin.ModelAdmin):
         context.update(
             {
                 "username": user.username,
+                "userid": user.id,
                 "new_allusers_total": new_allusers_total,
                 "new_allusers_total_count": new_allusers_total.count(),
                 "nac_owner_total_count": nac_owner_total_count,
