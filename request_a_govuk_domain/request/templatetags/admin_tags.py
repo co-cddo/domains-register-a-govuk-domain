@@ -1,6 +1,7 @@
 from zoneinfo import ZoneInfo
 from datetime import datetime
 from django import template
+from django.contrib.auth.models import User
 
 from request_a_govuk_domain.request.models import Application
 
@@ -106,3 +107,21 @@ def days_since(value):
             return f"{minutes} minutes ago"
     else:
         return f"{delta.days} days ago"
+
+
+@register.filter(is_safe=True)
+def format_username(user: User) -> str:
+    if user.first_name != "":
+        return user.first_name
+    elif user.first_name != "" and user.last_name != "":
+        return f"{user.first_name} {user.last_name}"
+    else:
+        return user.username
+
+
+@register.filter(is_safe=True)
+def format_username_or_me(user: User, logged_in_username: str) -> str:
+    if user.username == logged_in_username:
+        return "me"
+    else:
+        return format_username(user)
