@@ -237,7 +237,7 @@
       <details open>
         <summary><h2>{% translate 'New' %} ({{ new_allusers_total_count }})</h2></summary>
         {% if new_allusers_total_count %}
-          <p class="view-applications"><a href="{% url 'admin:request_application_changelist' %}{{query_string}}">View applications</a></p>
+          <p class="view-applications"><a href="{% url 'admin:request_application_changelist' %}?status=new">View applications</a></p>
         {% else %}
           {% translate 'No applications' %}
         {% endif %}
