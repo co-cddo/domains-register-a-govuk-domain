@@ -158,12 +158,11 @@ class AdminDashboardView(View, admin.ModelAdmin):
         context = admin.site.each_context(request)
         context.update(
             {
-                "user_id": user.id,
+                "username": user.username,
                 "new_allusers_total": new_allusers_total,
                 "new_allusers_total_count": new_allusers_total.count(),
                 "nac_owner_total_count": nac_owner_total_count,
                 "nac_allusers_total_count": nac_allusers_total_count,
-                "user_name": user.username,
                 "is_nav_sidebar_enabled": True,
             }
         )

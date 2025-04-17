@@ -95,7 +95,7 @@
             <td class="field-get_registrar_org">{{ application.registrar_org.name }}</td>
             <td class="field-get_time_submitted">{{ application.time_submitted }}</td>
             <td class="field-get_time_submitted">{{ application.last_updated|days_since }}</td>
-            <td class="field-get_time_submitted">{{ application.last_updated_by.name }}</td>
+            <td class="field-get_time_submitted">{{ application.last_updated_by | format_username_or_me:username }}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -172,7 +172,7 @@
   {% endblock %}
 {% endif %}
 
-{% block content_title %}<h1>{% translate 'Welcome,' %} {{ user_name | title }}</h1>{% endblock %}
+{% block content_title %}<h1>{% translate 'Welcome,' %} {{ user | format_username }}</h1>{% endblock %}
 
 
 {% macro applications_link title owner_count total_count query_string %}
