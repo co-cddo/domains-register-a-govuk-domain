@@ -537,6 +537,10 @@ class ReviewAdmin(
                 return HttpResponseRedirect(
                     reverse("admin:request_review_change", args=[obj.id])
                 )
+        if "_continue" in request.POST:
+            return HttpResponseRedirect(
+                f"{reverse('application_confirm')}?obj_id={obj.application.id}&action=change_status"
+            )
         return super().response_change(request, obj)
 
     def save_model(self, request, obj, form, change):

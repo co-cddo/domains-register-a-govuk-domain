@@ -38,6 +38,9 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
             obj.status = ApplicationStatus.APPROVED
         elif request.POST.get("action") == "rejection":
             obj.status = ApplicationStatus.REJECTED
+        elif request.POST.get("action") == "change_status":
+            status = request.POST.get("status")
+            obj.status = ApplicationStatus.get_status_enum(status)
         obj.time_decided = timezone.now()
         obj.save()
 

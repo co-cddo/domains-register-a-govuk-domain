@@ -36,6 +36,18 @@ class ApplicationStatus(models.TextChoices):
     )
     FAILED_DECISION_EMAIL = "failed_decision_email", _("Failed Decision Email")
 
+    @classmethod
+    def get_status_enum(cls, value):
+        """
+        Get the ApplicationStatus enum member based on the given value.
+        :param value: The value of the status.
+        :return: The corresponding ApplicationStatus enum member, or None if not found.
+        """
+        for status in cls:
+            if status.value == value:
+                return status
+        return None
+
 
 class Application(models.Model):
     """

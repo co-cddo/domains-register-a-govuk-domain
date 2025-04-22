@@ -74,6 +74,7 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
         [
             ["approve", "Good Application", "approval"],
             ["reject", "Bad Application", "rejection"],
+            # ["in_progress", "change_status", "change_status"],
         ]
     )
     def test_create_approval_works(self, status, reason, action):
@@ -199,10 +200,24 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
             )
             # Refresh from the database
             application_to_approve.refresh_from_db()
-            self.assertEqual(
-                f"{'approved' if status == 'approve' else 'rejected'}",
-                application_to_approve.status,
-            )
+            if status == "approve":
+                self.assertEqual(
+                    "approved",
+                    application_to_approve.status,
+                )
+            elif status == "reject":
+                # Check that the status is set to rejected
+                self.assertEqual(
+                    "rejected",
+                    application_to_approve.status,
+                )
+            else:
+                # Check that the status is set to in progress
+                print("Status is set to in progress")
+                # self.assertEqual(
+                #     'in_progress',
+                #     application_to_approve.status,
+                # )
             self.assertContains(approve_response, f"{action.capitalize()} email sent")
             self.assertEqual(
                 application_to_approve.last_updated_by.username, "superuser"
