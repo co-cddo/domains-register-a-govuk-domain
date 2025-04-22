@@ -20,6 +20,12 @@ Steps to run the project locally on docker:
 1. Clone the repository
 2. Go to the project directory: domains-register-a-govuk-domain
 3. Ensure docker is running on your machine
+4. Build the containers:
+
+``` bash
+make build
+```
+
 4. Run one of the following commands to run the application:
 
 - Using gunicorn:
@@ -49,7 +55,9 @@ The team can view and assess registration applications via the Django admin site
 
 ## Development instructions
 
-This project uses Poetry for dependency management and packaging. To install Poetry, follow the instructions at https://python-poetry.org/
+You can start developing directly with the docker setup. The container will reload the app if you make changes to the source code, and tests will run with `make test`.
+
+If you're more comfortable running the application locally without docker, you will need Poetry for dependency management and packaging. To install Poetry, follow the instructions at https://python-poetry.org/
 
 To install dependencies for local development ( e.g. when using IDE to make changes ) , use `poetry install`.
 
