@@ -36,7 +36,7 @@
         {% for application in applications %}
           <tr>
             <th class="field-get_reference">
-              <a href="/admin/request/application/{{ application.id }}/change/">{{ application.reference }}</a>
+              <a href="{% url 'admin_review_by_reference' application.reference %}">{{ application.reference }}</a>
             </th>
             <td class="field-get_domain_name">{{ application.domain_name }}</td>
             <td class="field-get_registrar_org">{{ application.registrar_org.name }}</td>
@@ -89,7 +89,7 @@
         {% for application in applications %}
           <tr>
             <th class="field-get_reference">
-              <a href="/admin/request/application/{{ application.id }}/change/">{{ application.reference }}</a>
+              <a href="{% url 'admin_review_by_reference' application.reference %}">{{ application.reference }}</a>
             </th>
             <td class="field-get_domain_name">{{ application.domain_name }}</td>
             <td class="field-get_registrar_org">{{ application.registrar_org.name }}</td>
@@ -180,11 +180,13 @@
     <summary><h2>{% translate title %} ({{ owner_count }})</h2></summary>
     <p class="count">{{ owner_count }} assigned to you (out of {{ total_count }})</p>
     {% if total_count %}
-      {% if owner_count %}
-        <p class="view-applications"><a href="{% url 'admin:request_application_changelist' %}?owner={{userid}}&status={{status}}">View applications</a></p>
-      {% else %}
-        <p class="view-applications"><a href="{% url 'admin:request_application_changelist' %}?status={{status}}">View
-      {% endif %}
+      <p class="view-applications">
+        {% if owner_count %}
+          <a href="{% url 'admin:request_review_changelist' %}?owner={{userid}}&status={{status}}">View applications</a>
+        {% else %}
+          <a href="{% url 'admin:request_review_changelist' %}?status={{status}}">View Applications</a>
+        {% endif %}
+      </p>
     {% else %}
       {% translate 'No applications' %}
     {% endif %}
@@ -228,7 +230,7 @@
       <details open>
         <summary><h2>{% translate 'Ready for 2i' %} ({{ ready2i_owner_total_count }})</h2></summary>
         <p class="count">{{ ready2i_owner_total_count }} assigned to you (out of {{ ready2i_allusers_total_count }})</p>
-        {% if moreinfo_owner_total_count %}
+        {% if ready2i_owner_total_count %}
             <h3>7 or more days late</h3>
             {% if ready2i_owner_late %}
               {% use_macro application_table ready2i_owner_late %}
@@ -249,7 +251,7 @@
       <details open>
         <summary><h2>{% translate 'New' %} ({{ new_allusers_total_count }})</h2></summary>
         {% if new_allusers_total_count %}
-          <p class="view-applications"><a href="{% url 'admin:request_application_changelist' %}?status=new">View applications</a></p>
+          <p class="view-applications"><a href="{% url 'admin:request_review_changelist' %}?status=new">View applications</a></p>
         {% else %}
           {% translate 'No applications' %}
         {% endif %}
@@ -261,7 +263,7 @@
 
 
     <div class="big-button">
-      <a href="/admin/request/application">View all applications</a>
+      <a href="{% url 'admin:request_review_changelist' %}">View all applications</a>
     </div>
 
   </div>
