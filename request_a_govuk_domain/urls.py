@@ -146,12 +146,12 @@ urlpatterns = [
     path(
         "admin/request/review_by_ref/GOVUK<str:ref>/",
         ReviewByRefView.as_view(),
-        name="review_by_reference",
+        name="admin_review_by_reference",
     ),
     path(
         "admin/request/application_by_ref/GOVUK<str:ref>/",
         ApplicationByRefView.as_view(),
-        name="application_by_reference",
+        name="admin_application_by_reference",
     ),
     path("admin/", admin.site.urls),
     path(

@@ -36,7 +36,7 @@
         {% for application in applications %}
           <tr>
             <th class="field-get_reference">
-              <a href="/admin/request/application/{{ application.id }}/change/">{{ application.reference }}</a>
+              <a href="{% url 'admin_review_by_reference' application.reference %}">{{ application.reference }}</a>
             </th>
             <td class="field-get_domain_name">{{ application.domain_name }}</td>
             <td class="field-get_registrar_org">{{ application.registrar_org.name }}</td>
@@ -89,7 +89,7 @@
         {% for application in applications %}
           <tr>
             <th class="field-get_reference">
-              <a href="/admin/request/application/{{ application.id }}/change/">{{ application.reference }}</a>
+              <a href="{% url 'admin_review_by_reference' application.reference %}">{{ application.reference }}</a>
             </th>
             <td class="field-get_domain_name">{{ application.domain_name }}</td>
             <td class="field-get_registrar_org">{{ application.registrar_org.name }}</td>
@@ -261,7 +261,7 @@
 
 
     <div class="big-button">
-      <a href="/admin/request/application">View all applications</a>
+      <a href="{% url 'admin:request_application_changelist' %}">View all applications</a>
     </div>
 
   </div>
