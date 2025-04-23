@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -143,15 +143,15 @@ urlpatterns = [
         AdminDashboardView.as_view(),
         name="admin_dashboard",
     ),
-    path(
-        "admin/request/review_by_ref/GOVUK<str:ref>/",
+    re_path(
+        r"^admin/request/review_by_ref/(?P<ref>GOVUK.+)/$",
         ReviewByRefView.as_view(),
-        name="review_by_reference",
+        name="admin_review_by_reference",
     ),
-    path(
-        "admin/request/application_by_ref/GOVUK<str:ref>/",
+    re_path(
+        r"^admin/request/application_by_ref/(?P<ref>GOVUK.+)/$",
         ApplicationByRefView.as_view(),
-        name="application_by_reference",
+        name="admin_application_by_reference",
     ),
     path("admin/", admin.site.urls),
     path(

@@ -171,8 +171,7 @@ class AdminDashboardView(View, admin.ModelAdmin):
 class ReviewByRefView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         try:
-            ref = f"GOVUK{kwargs['ref']}"
-            application = Application.objects.get(reference=ref)
+            application = Application.objects.get(reference=kwargs["ref"])
             review = Review.objects.get(application=application)
             return reverse("admin:request_review_change", args=[review.id])
         except Exception:
@@ -182,8 +181,7 @@ class ReviewByRefView(RedirectView):
 class ApplicationByRefView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         try:
-            ref = f"GOVUK{kwargs['ref']}"
-            application = Application.objects.get(reference=ref)
+            application = Application.objects.get(reference=kwargs["ref"])
             return reverse("admin:request_application_change", args=[application.id])
         except Exception:
             return None
