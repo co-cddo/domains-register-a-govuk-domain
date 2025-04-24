@@ -37,6 +37,39 @@ class ApplicationStatus(models.TextChoices):
     FAILED_DECISION_EMAIL = "failed_decision_email", _("Failed Decision Email")
 
 
+class ApprovalRejectionStatus(models.TextChoices):
+    # specific to the approval/rejection process
+    APPROVED_NO_DELAY = "approved_no_delay", _("Approved (with no delay)")
+    APPROVED_DELAYED_REGISTRANT_ID = "approved_delayed_registrant_id", _(
+        "Approved, but delayed by Registrant ID/Organization verification"
+    )
+    APPROVED_DELAYED_REGISTRY_PUBLISHED = "approved_delayed_registry_published", _(
+        "Approved, but delayed by Registry published details"
+    )
+    APPROVED_DELAYED_EVIDENCE = "approved_delayed_evidence", _(
+        "Approved, but delayed by Issues with evidence"
+    )
+    APPROVED_DELAYED_OTHER = "approved_delayed_other", _(
+        "Approved, but delayed by Other types"
+    )
+    APPROVED_WITH_NAC = "approved_with_nac", _("Approved with NAC")
+
+    REJECTED_NO_DELAY = "rejected_no_delay", _("Rejected (with no delay)")
+    REJECTED_DELAYED_REGISTRANT_ID = "rejected_delayed_registrant_id", _(
+        "Rejected, but delayed by Registrant ID/Organization verification"
+    )
+    REJECTED_DELAYED_REGISTRY_PUBLISHED = "rejected_delayed_registry_published", _(
+        "Rejected, but delayed by Registry published details"
+    )
+    REJECTED_DELAYED_EVIDENCE = "rejected_delayed_evidence", _(
+        "Rejected, but delayed by Issues with evidence"
+    )
+    REJECTED_DELAYED_OTHER = "rejected_delayed_other", _(
+        "Rejected, but delayed by Other types"
+    )
+    REJECTED_WITH_NAC = "rejected_with_nac", _("Rejected with NAC")
+
+
 class Application(models.Model):
     """
     The core model for the service, to which all other models in some way

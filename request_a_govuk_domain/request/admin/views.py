@@ -25,10 +25,14 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
     def get(self, request):
         obj = Application.objects.get(pk=request.GET.get("obj_id"))
         review = Review.objects.filter(application__id=obj.id).first()
+        approval_rejection_list = request.session.pop(
+            "approval_rejection_list", None
+        )  # Retrieve and remove from session
         context = {
             "obj": obj,
             "action": request.GET.get("action"),
             "reason": review.reason,
+            "approval_rejection_list": approval_rejection_list,
         }
         return render(request, "admin/application_decision_confirmation.html", context)
 
@@ -38,6 +42,9 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
             obj.status = ApplicationStatus.APPROVED
         elif request.POST.get("action") == "rejection":
             obj.status = ApplicationStatus.REJECTED
+        # more statuses can be added here
+        # status = request.POST.get("status")
+        # obj.status = ApplicationStatus(status)
         obj.time_decided = timezone.now()
         obj.save()
 
