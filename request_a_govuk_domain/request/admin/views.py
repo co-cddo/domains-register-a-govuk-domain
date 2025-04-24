@@ -10,7 +10,11 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
 
-from request_a_govuk_domain.request.models import Application, ApplicationStatus, Review
+from request_a_govuk_domain.request.models import (
+    Application,
+    ApplicationStatus,
+    Review,
+)
 
 from .email import send_approval_or_rejection_email
 
