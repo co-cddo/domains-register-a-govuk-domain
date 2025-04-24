@@ -68,6 +68,7 @@ class Registrar(models.Model):
     """
 
     name = models.CharField(unique=True)
+    active = models.BooleanField(default=True)
 
     # maintain history
     history = HistoricalRecords()
