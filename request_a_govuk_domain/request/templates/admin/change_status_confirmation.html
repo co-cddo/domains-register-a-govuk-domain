@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="submit-row">
+    <h1>Changing the status of the application for reason: {{ reason }}.</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="{{ action }}">
+        <input type="hidden" name="obj_id" value="{{ obj.id }}">
+
+
+        <label for="status">Select Application Status:</label>
+        <select id="status" name="status">
+            {% for choice in status_choices %}
+            <option value="{{ choice.status }}">{{ choice.label }}</option>
+            {% endfor %}
+        </select>
+        <div>
+            <input type="submit" value="Confirm" class="default" name="_confirm">
+            <input type="submit" value="Cancel" class="default" name="_cancel">
+        </div>
+    </form>
+</div>
+{% endblock %}
