@@ -34,7 +34,7 @@ class StatusFilter(ApplicationFilterSupportMixin, SimpleListFilter):
     Filter records by application status
     """
 
-    title = "Filter by status"
+    title = "status"
     parameter_name = "status"
     query_field = "status"
 
@@ -47,7 +47,7 @@ class OwnerFilter(ApplicationFilterSupportMixin, SimpleListFilter):
     Filter records by application owner
     """
 
-    title = "Filter by owner"
+    title = "owner"
     parameter_name = "owner"
     query_field = "owner"
 
@@ -60,7 +60,7 @@ class LastUpdatedFilter(ApplicationFilterSupportMixin, SimpleListFilter):
     Filter records by application last_updated_by
     """
 
-    title = "Filter by last updated by"
+    title = "last updated by"
     parameter_name = "last_updated_by"
     query_field = "last_updated_by"
 
@@ -73,7 +73,7 @@ class RegistrarOrgFilter(ApplicationFilterSupportMixin, SimpleListFilter):
     Filter records by application registrar
     """
 
-    title = "Filter by registrar"
+    title = "registrar"
     parameter_name = "registrar"
     query_field = "registrar_org"
 
@@ -86,7 +86,7 @@ class RegistrantOrgFilter(ApplicationFilterSupportMixin, SimpleListFilter):
     Filter records by application registrant
     """
 
-    title = "Filter by registrant"
+    title = "registrant"
     parameter_name = "registrant"
     query_field = "registrant_org__name"
 
