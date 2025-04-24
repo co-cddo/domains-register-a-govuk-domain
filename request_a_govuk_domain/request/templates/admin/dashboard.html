@@ -36,7 +36,7 @@
         {% for application in applications %}
           <tr>
             <th class="field-get_reference">
-              <a href="/admin/request/application/{{ application.id }}/change/">{{ application.reference }}</a>
+              <a href="{% url 'admin_review_by_reference' application.reference %}">{{ application.reference }}</a>
             </th>
             <td class="field-get_domain_name">{{ application.domain_name }}</td>
             <td class="field-get_registrar_org">{{ application.registrar_org.name }}</td>
@@ -89,13 +89,13 @@
         {% for application in applications %}
           <tr>
             <th class="field-get_reference">
-              <a href="/admin/request/application/{{ application.id }}/change/">{{ application.reference }}</a>
+              <a href="{% url 'admin_review_by_reference' application.reference %}">{{ application.reference }}</a>
             </th>
             <td class="field-get_domain_name">{{ application.domain_name }}</td>
             <td class="field-get_registrar_org">{{ application.registrar_org.name }}</td>
             <td class="field-get_time_submitted">{{ application.time_submitted }}</td>
             <td class="field-get_time_submitted">{{ application.last_updated|days_since }}</td>
-            <td class="field-get_time_submitted">{{ application.last_updated_by.name }}</td>
+            <td class="field-get_time_submitted">{{ application.last_updated_by | format_username_or_me:username }}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -172,15 +172,21 @@
   {% endblock %}
 {% endif %}
 
-{% block content_title %}<h1>{% translate 'Welcome,' %} {{ user_name | title }}</h1>{% endblock %}
+{% block content_title %}<h1>{% translate 'Welcome,' %} {{ user | format_username }}</h1>{% endblock %}
 
 
-{% macro applications_link title owner_count total_count query_string %}
+{% macro applications_link title owner_count total_count status userid %}
   <details open>
     <summary><h2>{% translate title %} ({{ owner_count }})</h2></summary>
     <p class="count">{{ owner_count }} assigned to you (out of {{ total_count }})</p>
     {% if total_count %}
-      <p class="view-applications"><a href="{% url 'admin:request_application_changelist' %}{{query_string}}">View applications</a></p>
+      <p class="view-applications">
+        {% if owner_count %}
+          <a href="{% url 'admin:request_review_changelist' %}?owner={{userid}}&status={{status}}">View applications</a>
+        {% else %}
+          <a href="{% url 'admin:request_review_changelist' %}?status={{status}}">View Applications</a>
+        {% endif %}
+      </p>
     {% else %}
       {% translate 'No applications' %}
     {% endif %}
@@ -196,22 +202,26 @@
 
       {% use_macro application_section_new new_allusers_total %}
 
-      {% use_macro applications_link "In progress" inprogress_owner_total_count inprogress_allusers_total_count "?status=in_progress" %}
+      {% use_macro applications_link "In progress" inprogress_owner_total_count inprogress_allusers_total_count "in_progress" userid %}
 
       <details open>
         <summary><h2>{% translate 'More information' %} ({{ moreinfo_owner_total_count }})</h2></summary>
         <p class="count">{{ moreinfo_owner_total_count }} assigned to you (out of {{ moreinfo_allusers_total_count }})</p>
-        <h3>7 or more days late</h3>
-        {% if moreinfo_owner_late %}
-          {% use_macro application_table moreinfo_owner_late %}
+        {% if moreinfo_owner_total_count %}
+            <h3>7 or more days late</h3>
+            {% if moreinfo_owner_late %}
+              {% use_macro application_table moreinfo_owner_late %}
+            {% else %}
+              {% translate 'No applications' %}
+            {% endif %}
+            <h3>On schedule</h3>
+            {% if moreinfo_owner_onschedule %}
+              {% use_macro application_table moreinfo_owner_onschedule %}
+            {% else %}
+              {% translate 'No applications' %}
+            {% endif %}
         {% else %}
-          {% translate 'No applications' %}
-        {% endif %}
-        <h3>On schedule</h3>
-        {% if moreinfo_owner_onschedule %}
-          {% use_macro application_table moreinfo_owner_onschedule %}
-        {% else %}
-          {% translate 'No applications' %}
+            {% translate 'No applications' %}
         {% endif %}
       </details>
 
@@ -220,24 +230,28 @@
       <details open>
         <summary><h2>{% translate 'Ready for 2i' %} ({{ ready2i_owner_total_count }})</h2></summary>
         <p class="count">{{ ready2i_owner_total_count }} assigned to you (out of {{ ready2i_allusers_total_count }})</p>
-        <h3>7 or more days late</h3>
-        {% if ready2i_owner_late %}
-          {% use_macro application_table ready2i_owner_late %}
+        {% if ready2i_owner_total_count %}
+            <h3>7 or more days late</h3>
+            {% if ready2i_owner_late %}
+              {% use_macro application_table ready2i_owner_late %}
+            {% else %}
+              {% translate 'No applications' %}
+            {% endif %}
+            <h3>On schedule</h3>
+            {% if ready2i_owner_late %}
+              {% use_macro application_table ready2i_owner_onschedule %}
+            {% else %}
+              {% translate 'No applications' %}
+            {% endif %}
         {% else %}
-          {% translate 'No applications' %}
-        {% endif %}
-        <h3>On schedule</h3>
-        {% if ready2i_owner_late %}
-          {% use_macro application_table ready2i_owner_onschedule %}
-        {% else %}
-          {% translate 'No applications' %}
+            {% translate 'No applications' %}
         {% endif %}
       </details>
 
       <details open>
         <summary><h2>{% translate 'New' %} ({{ new_allusers_total_count }})</h2></summary>
         {% if new_allusers_total_count %}
-          <p class="view-applications"><a href="{% url 'admin:request_application_changelist' %}{{query_string}}">View applications</a></p>
+          <p class="view-applications"><a href="{% url 'admin:request_review_changelist' %}?status=new">View applications</a></p>
         {% else %}
           {% translate 'No applications' %}
         {% endif %}
@@ -245,11 +259,11 @@
 
     {% endif %}
 
-    {% use_macro applications_link "Currently with NAC" nac_owner_total_count nac_allusers_total_count "?status=with_nac" %}
+    {% use_macro applications_link "Currently with NAC" nac_owner_total_count nac_allusers_total_count "with_nac" userid %}
 
 
     <div class="big-button">
-      <a href="/admin/request/application">Applications</a>
+      <a href="{% url 'admin:request_review_changelist' %}">View all applications</a>
     </div>
 
   </div>

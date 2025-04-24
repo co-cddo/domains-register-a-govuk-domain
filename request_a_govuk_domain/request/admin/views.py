@@ -2,6 +2,7 @@ import logging
 from datetime import timedelta
 
 from django.views import View
+from django.views.generic import RedirectView
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -158,12 +159,12 @@ class AdminDashboardView(View, admin.ModelAdmin):
         context = admin.site.each_context(request)
         context.update(
             {
-                "user_id": user.id,
+                "username": user.username,
+                "userid": user.id,
                 "new_allusers_total": new_allusers_total,
                 "new_allusers_total_count": new_allusers_total.count(),
                 "nac_owner_total_count": nac_owner_total_count,
                 "nac_allusers_total_count": nac_allusers_total_count,
-                "user_name": user.username,
                 "is_nav_sidebar_enabled": True,
             }
         )
@@ -235,3 +236,22 @@ class AdminDashboardView(View, admin.ModelAdmin):
             )
 
         return render(request, "admin/dashboard.html", context)
+
+
+class ReviewByRefView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        try:
+            application = Application.objects.get(reference=kwargs["ref"])
+            review = Review.objects.get(application=application)
+            return reverse("admin:request_review_change", args=[review.id])
+        except Exception:
+            return None
+
+
+class ApplicationByRefView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        try:
+            application = Application.objects.get(reference=kwargs["ref"])
+            return reverse("admin:request_application_change", args=[application.id])
+        except Exception:
+            return None  # If the ref doesn't exist, return 410 Gone
