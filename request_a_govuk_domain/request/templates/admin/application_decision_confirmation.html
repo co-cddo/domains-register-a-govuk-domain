@@ -14,24 +14,8 @@
         {% csrf_token %}
         <input type="hidden" name="action" value="{{ action }}">
         <input type="hidden" name="obj_id" value="{{ obj.id }}">
-
-        {% if action == "change_status" %}
-        <label for="status">Select Application Status:</label>
-        <select id="status" name="status">
-            <option value="in_progress">In Progress</option>
-            <option value="more_information">More Information</option>
-            <option value="with_nac">Currently with NAC</option>
-            <option value="ready_2i">Ready for 2i</option>
-            <option value="archive">Archived</option>
-            <option value="duplicate_application">Duplicated application</option>
-            <option value="failed_confirmation_email">Failed Confirmation Email</option>
-            <option value="failed_decision_email">Failed Decision Email</option>
-        </select>
-        {% endif %}
-        <div>
-            <input type="submit" value="Confirm" class="default" name="_confirm">
-            <input type="submit" value="Cancel" class="default" name="_cancel">
-        </div>
+        <input type="submit" value="Confirm" class="default" name="_confirm">
+        <input type="submit" value="Cancel" class="default" name="_cancel">
     </form>
 </div>
 {% endblock %}

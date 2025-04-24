@@ -38,9 +38,6 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
             obj.status = ApplicationStatus.APPROVED
         elif request.POST.get("action") == "rejection":
             obj.status = ApplicationStatus.REJECTED
-        elif request.POST.get("action") == "change_status":
-            status = request.POST.get("status")
-            obj.status = ApplicationStatus.get_status_enum(status)
         obj.time_decided = timezone.now()
         obj.save()
 
@@ -61,8 +58,78 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
                 )
                 return HttpResponseRedirect(reverse("admin:request_review_changelist"))
             except Exception as e:
-                LOGGER.error("Failed to send the email")
+                LOGGER.error("Failed to send the email", exc_info=True)
                 self.message_user(request, f"Email send failed: {e}", messages.ERROR)
+        review = Review.objects.filter(
+            application__id=request.POST.get("obj_id")
+        ).first()
+        return HttpResponseRedirect(
+            reverse("admin:request_review_change", args=[review.id])
+        )
+
+
+class ChangeStatusView(View, admin.ModelAdmin):
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_status_choices(self):
+        """
+        Retrieve a list of status choices for the application, excluding APPROVED and REJECTED statuses.
+
+        This method filters out the APPROVED and REJECTED statuses from the ApplicationStatus choices
+        and returns a list of dictionaries, where each dictionary contains the status value and its label.
+
+        :return: A list of dictionaries with keys 'status' and 'label'.
+        Example:
+            [
+                {"status": "in_progress", "label": "In Progress"},
+                {"status": "ready_2i", "label": "Ready for 2i"},
+                {"status": "more_information", "label": "More Information"},
+                ...
+            ]
+        """
+        excluded_statuses = [ApplicationStatus.APPROVED, ApplicationStatus.REJECTED]
+        status_list = [
+            {"status": status, "label": label}
+            for status, label in ApplicationStatus.choices
+            if status not in excluded_statuses
+        ]
+        return status_list
+
+    def get(self, request):
+        status_choices = self.get_status_choices()
+        obj = Application.objects.get(pk=request.GET.get("obj_id"))
+        review = Review.objects.filter(application__id=obj.id).first()
+        context = {
+            "obj": obj,
+            "reason": review.reason,
+            "status_choices": status_choices,
+        }
+        return render(request, "admin/change_status_confirmation.html", context)
+
+    def _set_application_status(self, request):
+        obj = Application.objects.get(pk=request.POST.get("obj_id"))
+        status = request.POST.get("status")
+        obj.status = ApplicationStatus(status)
+        obj.time_decided = timezone.now()
+        obj.save()
+
+    def post(self, request):
+        if "_confirm" in request.POST:
+            try:
+                self._set_application_status(request)
+                self.message_user(
+                    request, "Application status changed", messages.SUCCESS
+                )
+                obj = Application.objects.get(pk=request.GET.get("obj_id"))
+                LOGGER.info(f"Application {obj.reference} status set to {obj.status}")
+                return HttpResponseRedirect(reverse("admin:request_review_changelist"))
+            except Exception as e:
+                LOGGER.error("Failed to change status of application", exc_info=True)
+                self.message_user(
+                    request, f"Application status change failed: {e}", messages.ERROR
+                )
         review = Review.objects.filter(
             application__id=request.POST.get("obj_id")
         ).first()

@@ -4,7 +4,7 @@
 <div class="button-container">
   <input type="submit" value="{% translate 'Save' %}" name="_save">
 
-  <input type="submit" value="{% translate 'Change status' %}" name="_continue">
+  <input type="submit" value="{% translate 'Change status' %}" name="_change_status">
 
   {% if request.user.is_superuser %}
   <input type="submit" value="{% translate 'Approve' %}" name="_approve">

@@ -60,7 +60,11 @@ from .request.views import (
     TermsAndConditionsView,
 )
 
-from .request.admin.views import DecisionConfirmationView, AdminDashboardView
+from .request.admin.views import (
+    DecisionConfirmationView,
+    AdminDashboardView,
+    ChangeStatusView,
+)
 
 
 urlpatterns = [
@@ -132,6 +136,11 @@ urlpatterns = [
         "admin/application_confirm/",
         DecisionConfirmationView.as_view(),
         name="application_confirm",
+    ),
+    path(
+        "admin/change_status_view/",
+        ChangeStatusView.as_view(),
+        name="change_status_view",
     ),
     path(
         "admin/dashboard/",

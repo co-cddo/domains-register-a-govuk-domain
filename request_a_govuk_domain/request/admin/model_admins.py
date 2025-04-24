@@ -537,9 +537,9 @@ class ReviewAdmin(
                 return HttpResponseRedirect(
                     reverse("admin:request_review_change", args=[obj.id])
                 )
-        if "_continue" in request.POST:
+        if "_change_status" in request.POST:
             return HttpResponseRedirect(
-                f"{reverse('application_confirm')}?obj_id={obj.application.id}&action=change_status"
+                f"{reverse('change_status_view')}?obj_id={obj.application.id}"
             )
         return super().response_change(request, obj)
 
