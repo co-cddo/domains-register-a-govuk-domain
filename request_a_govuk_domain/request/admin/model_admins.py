@@ -1,7 +1,7 @@
 import csv
 import logging
-from zoneinfo import ZoneInfo
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import django.db.models.fields.files
 import markdown
@@ -9,33 +9,34 @@ from django.contrib import admin, messages
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
-from django.http import HttpResponseRedirect, FileResponse, HttpResponse
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
-from django.urls import reverse, path
+from django.urls import path, reverse
 from django.utils.html import format_html
 from simple_history.admin import SimpleHistoryAdmin
 
 from request_a_govuk_domain.request.models import (
     Application,
-    Review,
-    ReviewFormGuidance,
     ApplicationStatus,
+    Registrant,
     RegistrantPerson,
+    Registrar,
     RegistrarPerson,
     RegistryPublishedPerson,
-    Registrant,
-    Registrar,
+    Review,
+    ReviewFormGuidance,
 )
+
+from ..models.storage_util import s3_root_storage
 from .filters import (
-    StatusFilter,
-    OwnerFilter,
-    RegistrarOrgFilter,
-    RegistrantOrgFilter,
-    wrap_with_application_filter,
     LastUpdatedFilter,
+    OwnerFilter,
+    RegistrantOrgFilter,
+    RegistrarOrgFilter,
+    StatusFilter,
+    wrap_with_application_filter,
 )
 from .forms import ReviewForm
-from ..models.storage_util import s3_root_storage
 
 LOGGER = logging.getLogger(__name__)
 
@@ -111,11 +112,7 @@ def convert_to_local_time(obj):
     :param obj:
     :return:
     """
-    return (
-        obj.astimezone(ZoneInfo("Europe/London")).strftime("%d %b %Y %H:%M:%S %p")
-        if obj
-        else "-"
-    )
+    return obj.astimezone(ZoneInfo("Europe/London")).strftime("%d %b %Y %H:%M:%S %p") if obj else "-"
 
 
 class ReportDownLoadMixin:
@@ -221,9 +218,7 @@ class ArchiveMixin:
         return request.user.is_superuser
 
 
-class ReviewAdmin(
-    SimpleHistoryAdmin, FileDownloadMixin, ReportDownLoadMixin, admin.ModelAdmin
-):
+class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, ReportDownLoadMixin, admin.ModelAdmin):
     model = Review
     form = ReviewForm
     change_form_template = "admin/review_change_form.html"
@@ -276,9 +271,7 @@ class ReviewAdmin(
         return "review"
 
     def _get_formatted_display_fields(self, display_fields: dict) -> str:
-        return render_to_string(
-            "admin/reviewer_read_only_fields.html", {"display_fields": display_fields}
-        )
+        return render_to_string("admin/reviewer_read_only_fields.html", {"display_fields": display_fields})
 
     def get_registrar_fieldset(self, obj):
         return (
@@ -293,9 +286,7 @@ class ReviewAdmin(
                         "Email address": obj.application.registrar_person.email_address,
                     }
                 )
-                + markdown.markdown(
-                    ReviewFormGuidance.objects.get(name="registrar_details").how_to
-                ),
+                + markdown.markdown(ReviewFormGuidance.objects.get(name="registrar_details").how_to),
             },
         )
 
@@ -313,11 +304,7 @@ class ReviewAdmin(
                         "Reason for request": obj.application.domain_purpose,
                     }
                 )
-                + markdown.markdown(
-                    ReviewFormGuidance.objects.get(
-                        name="domain_name_availability"
-                    ).how_to
-                ),
+                + markdown.markdown(ReviewFormGuidance.objects.get(name="domain_name_availability").how_to),
             },
         )
 
@@ -329,9 +316,7 @@ class ReviewAdmin(
                 "description": self._get_formatted_display_fields(
                     {"Registrant's organisation": obj.application.registrant_org.name}
                 )
-                + markdown.markdown(
-                    ReviewFormGuidance.objects.get(name="registrant_org").how_to
-                ),
+                + markdown.markdown(ReviewFormGuidance.objects.get(name="registrant_org").how_to),
             },
         )
 
@@ -347,47 +332,31 @@ class ReviewAdmin(
                         "Email address": obj.application.registrant_person.email_address,
                     }
                 )
-                + markdown.markdown(
-                    ReviewFormGuidance.objects.get(name="registrant_person").how_to
-                ),
+                + markdown.markdown(ReviewFormGuidance.objects.get(name="registrant_person").how_to),
             },
         )
 
     def get_registrant_permission_fieldset(self, obj):
         if obj.application.written_permission_evidence:
-            download_link = self.generate_download_link(
-                obj, "written_permission_evidence", "View document"
-            )
+            download_link = self.generate_download_link(obj, "written_permission_evidence", "View document")
             return (
                 "The registrant's permission to apply for the domain",
                 {
                     "fields": ("registrant_permission", "registrant_permission_notes"),
-                    "description": self._get_formatted_display_fields(
-                        {"Evidence": download_link}
-                    )
-                    + markdown.markdown(
-                        ReviewFormGuidance.objects.get(
-                            name="registrant_permission"
-                        ).how_to
-                    ),
+                    "description": self._get_formatted_display_fields({"Evidence": download_link})
+                    + markdown.markdown(ReviewFormGuidance.objects.get(name="registrant_permission").how_to),
                 },
             )
 
     def get_policy_exemption_fieldset(self, obj):
         if obj.application.policy_exemption_evidence:
-            download_link = self.generate_download_link(
-                obj, "policy_exemption_evidence", "View document"
-            )
+            download_link = self.generate_download_link(obj, "policy_exemption_evidence", "View document")
             return (
                 "Exemption from using the GOV.UK website",
                 {
                     "fields": ("policy_exemption", "policy_exemption_notes"),
-                    "description": self._get_formatted_display_fields(
-                        {"Evidence": download_link}
-                    )
-                    + markdown.markdown(
-                        ReviewFormGuidance.objects.get(name="policy_exemption").how_to
-                    ),
+                    "description": self._get_formatted_display_fields({"Evidence": download_link})
+                    + markdown.markdown(ReviewFormGuidance.objects.get(name="policy_exemption").how_to),
                 },
             )
 
@@ -399,17 +368,13 @@ class ReviewAdmin(
                 "description": self._get_formatted_display_fields(
                     {"Domain name requested": obj.application.domain_name}
                 )
-                + markdown.markdown(
-                    ReviewFormGuidance.objects.get(name="domain_name_rules").how_to
-                ),
+                + markdown.markdown(ReviewFormGuidance.objects.get(name="domain_name_rules").how_to),
             },
         )
 
     def get_senior_support_fieldset(self, obj):
         if obj.application.ministerial_request_evidence:
-            download_link = self.generate_download_link(
-                obj, "ministerial_request_evidence", "View document"
-            )
+            download_link = self.generate_download_link(obj, "ministerial_request_evidence", "View document")
             return (
                 "Domain name has Ministerial/Perm Sec support",
                 {
@@ -417,14 +382,8 @@ class ReviewAdmin(
                         "registrant_senior_support",
                         "registrant_senior_support_notes",
                     ),
-                    "description": self._get_formatted_display_fields(
-                        {"Evidence": download_link}
-                    )
-                    + markdown.markdown(
-                        ReviewFormGuidance.objects.get(
-                            name="registrant_senior_support"
-                        ).how_to
-                    ),
+                    "description": self._get_formatted_display_fields({"Evidence": download_link})
+                    + markdown.markdown(ReviewFormGuidance.objects.get(name="registrant_senior_support").how_to),
                 },
             )
 
@@ -439,9 +398,7 @@ class ReviewAdmin(
                         "Registrant email": obj.application.registry_published_person.email_address,
                     }
                 )
-                + markdown.markdown(
-                    ReviewFormGuidance.objects.get(name="registry_details").how_to
-                ),
+                + markdown.markdown(ReviewFormGuidance.objects.get(name="registry_details").how_to),
             },
         )
 
@@ -519,28 +476,18 @@ class ReviewAdmin(
                     f"{reverse('application_confirm')}?obj_id={obj.application.id}&action=approval"
                 )
             else:
-                self.message_user(
-                    request, "This application can't be approved!", messages.ERROR
-                )
-                return HttpResponseRedirect(
-                    reverse("admin:request_review_change", args=[obj.id])
-                )
+                self.message_user(request, "This application can't be approved!", messages.ERROR)
+                return HttpResponseRedirect(reverse("admin:request_review_change", args=[obj.id]))
         if "_reject" in request.POST:
             if obj.is_rejectable():
                 return HttpResponseRedirect(
                     f"{reverse('application_confirm')}?obj_id={obj.application.id}&action=rejection"
                 )
             else:
-                self.message_user(
-                    request, "This application can't be rejected!", messages.ERROR
-                )
-                return HttpResponseRedirect(
-                    reverse("admin:request_review_change", args=[obj.id])
-                )
+                self.message_user(request, "This application can't be rejected!", messages.ERROR)
+                return HttpResponseRedirect(reverse("admin:request_review_change", args=[obj.id]))
         if "_change_status" in request.POST:
-            return HttpResponseRedirect(
-                f"{reverse('change_status_view')}?obj_id={obj.application.id}"
-            )
+            return HttpResponseRedirect(f"{reverse('change_status_view')}?obj_id={obj.application.id}")
         return super().response_change(request, obj)
 
     def save_model(self, request, obj, form, change):
@@ -550,9 +497,7 @@ class ReviewAdmin(
             obj.application.status = ApplicationStatus.IN_PROGRESS
         if not obj.application.owner:
             obj.application.owner = request.user
-            LOGGER.info(
-                f"Initial owner assigned {obj.application} - {obj.application.owner}"
-            )
+            LOGGER.info(f"Initial owner assigned {obj.application} - {obj.application.owner}")
 
         obj.application.last_updated_by = request.user
         LOGGER.info(
@@ -709,6 +654,4 @@ class RegistrarAdmin(FilterAndOrderByName):
     list_display = ["name", "active"]
 
     def change_view(self, request, object_id=None, form_url="", extra_context=None):
-        return super().change_view(
-            request, object_id, form_url, extra_context=dict(show_delete=False)
-        )
+        return super().change_view(request, object_id, form_url, extra_context=dict(show_delete=False))

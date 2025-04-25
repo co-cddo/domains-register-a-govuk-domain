@@ -1,45 +1,38 @@
 from unittest.mock import Mock
 
-
 from django.contrib.auth.models import User
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from request_a_govuk_domain.request import db
 from request_a_govuk_domain.request.management.commands import add_init_guidance_text
 from request_a_govuk_domain.request.models import (
-    Registrar,
     Registrant,
     RegistrantPerson,
+    Registrar,
     RegistrarPerson,
     RegistryPublishedPerson,
     Review,
 )
 from request_a_govuk_domain.request.models.review_choices import (
-    RegistryDetailsReviewChoices,
-    RegistrantOrgReviewChoices,
-    RegistrantPersonReviewChoices,
-    RegistrantPermissionReviewChoices,
-    PolicyExemptionReviewChoices,
     DomainNameRulesReviewChoices,
+    PolicyExemptionReviewChoices,
+    RegistrantOrgReviewChoices,
+    RegistrantPermissionReviewChoices,
+    RegistrantPersonReviewChoices,
     RegistrantSeniorSupportReviewChoices,
     RegistrarDetailsReviewChoices,
+    RegistryDetailsReviewChoices,
 )
 
 
 class ReviewSetTestCase(TestCase):
     def setUp(self):
         self.registrar = Registrar.objects.create(name="dummy registrar")
-        self.registrar_person = RegistrarPerson.objects.create(
-            name="dummy registrar person", registrar=self.registrar
-        )
+        self.registrar_person = RegistrarPerson.objects.create(name="dummy registrar person", registrar=self.registrar)
         self.registrant = Registrant.objects.create(name="dummy registrant")
-        self.registrant_person = RegistrantPerson.objects.create(
-            name="dummy registrant person"
-        )
-        self.registry_publish_person = RegistryPublishedPerson.objects.create(
-            name="dummy reg publish person"
-        )
+        self.registrant_person = RegistrantPerson.objects.create(name="dummy registrant person")
+        self.registry_publish_person = RegistryPublishedPerson.objects.create(name="dummy reg publish person")
         self.registration_data = {
             "registrant_type": "parish_council",
             "domain_name": "test.domain.gov.uk",
@@ -63,9 +56,7 @@ class ReviewSetTestCase(TestCase):
         guidance_text = add_init_guidance_text.Command()
         guidance_text.handle()
         self.c = Client()
-        self.c.login(
-            username="superuser", password="secret"  # pragma: allowlist secret
-        )
+        self.c.login(username="superuser", password="secret")  # pragma: allowlist secret
         request = Mock()
         request.session = SessionDict({"registration_data": self.registration_data})
 
@@ -160,9 +151,7 @@ class ReviewSetTestCase(TestCase):
             follow=True,
         )
 
-        self.assertContains(
-            approve_response, "This application can&#x27;t be approved!"
-        )
+        self.assertContains(approve_response, "This application can&#x27;t be approved!")
 
     def test_review_missing_notes(self):
         """

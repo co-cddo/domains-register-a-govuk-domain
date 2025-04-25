@@ -9,11 +9,12 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import logging
 import os
 import re
-import logging
 import uuid
 from pathlib import Path
+
 from environ import Env
 
 env = Env(
@@ -39,9 +40,7 @@ if DEBUG:
 
     load_dotenv()
 
-SECRET_KEY: str = (
-    str(uuid.uuid4()) if DEBUG else env.str("SECRET_KEY", default="not_set")
-)
+SECRET_KEY: str = str(uuid.uuid4()) if DEBUG else env.str("SECRET_KEY", default="not_set")
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 ENVIRONMENT = env.str("ENVIRONMENT", default=None)
@@ -49,9 +48,7 @@ ENVIRONMENT = env.str("ENVIRONMENT", default=None)
 # AWS related settings
 IS_AWS: bool = env.bool("IS_AWS", default=False)
 IS_SCANNING_ENABLED: bool = env.bool("SCANNING_ENABLED", default=True)
-AWS_STORAGE_BUCKET_NAME = env.str(
-    "S3_MEDIA_ROOT", default=f"registration-app-media-root-{ENVIRONMENT}"
-)
+AWS_STORAGE_BUCKET_NAME = env.str("S3_MEDIA_ROOT", default=f"registration-app-media-root-{ENVIRONMENT}")
 
 # Application definition
 
@@ -144,9 +141,7 @@ if "RDS_DB_NAME" in os.environ:
     }
 else:
     DATABASES = {
-        "default": env.db_url(
-            default="postgresql:///govuk_domain", engine="psqlextra.backend"
-        ),
+        "default": env.db_url(default="postgresql:///govuk_domain", engine="psqlextra.backend"),
     }
 
 # Password validation
@@ -245,9 +240,7 @@ CONTENT_TYPES = ["png", "jpeg", "jpg", "pdf"]
 # 10 MB
 MAX_UPLOAD_SIZE = "10485760"
 
-CLAMD_TCP_ADDR = env.str(
-    "CLAMD_TCP_ADDR", default="clamav.internal-domains-registry-cluster"
-)
+CLAMD_TCP_ADDR = env.str("CLAMD_TCP_ADDR", default="clamav.internal-domains-registry-cluster")
 CLAMD_TCP_SOCKET = 3310
 
 # Cross-site request forgery protection
@@ -285,9 +278,7 @@ CSP_REPORT_ONLY = False
 # If we want to test CSP breaches we need to set a fake reporting URL, so the tests
 # check if it's been called.
 if "TEST_CSP" in os.environ:
-    CSP_REPORT_URI = (
-        "/csp-report"  # The URI doesn't exist but is intercepted by the test suite
-    )
+    CSP_REPORT_URI = "/csp-report"  # The URI doesn't exist but is intercepted by the test suite
 
 
 # HTTP Strict Transport Security settings
@@ -309,8 +300,7 @@ if SENTRY_DSN is not None:
             == "request_a_govuk_domain.request.tasks.check_email_failure_and_notify"
         ) or (
             sampling_context["transaction_context"]["name"] == "generic WSGI request"
-            and sampling_context["wsgi_environ"]["HTTP_USER_AGENT"]
-            == "ELB-HealthChecker/2.0"
+            and sampling_context["wsgi_environ"]["HTTP_USER_AGENT"] == "ELB-HealthChecker/2.0"
         ):
             return 0.0 if ENVIRONMENT in ["dev", "test", "stage"] else 0.1
         else:
@@ -330,9 +320,7 @@ S3_STORAGE_ENABLED = env.bool("S3_STORAGE_ENABLED", default=IS_AWS)
 CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", "redis://localhost/0")
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_TASK_DEFAULT_QUEUE = env.str("QUEUE_NAME", "celery")
-CELERY_BEAT_SCHEDULE_FILENAME = env.str(
-    "CELERY_BEAT_SCHEDULE_FILENAME", default="celerybeat-schedule"
-)
+CELERY_BEAT_SCHEDULE_FILENAME = env.str("CELERY_BEAT_SCHEDULE_FILENAME", default="celerybeat-schedule")
 CELERY_BROKER_TRANSPORT_OPTIONS = env.json("CELERY_BROKER_TRANSPORT_OPTIONS", {})
 # The setting "CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True" is to get rid of the following deprecation warning
 # message, which shows up in the Cloudwatch Celery worker logs

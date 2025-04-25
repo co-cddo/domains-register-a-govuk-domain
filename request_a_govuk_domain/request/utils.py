@@ -4,7 +4,7 @@ import uuid
 
 import clamd
 from django.conf import settings
-from django.core.exceptions import ValidationError, BadRequest
+from django.core.exceptions import BadRequest, ValidationError
 from django.core.files.uploadedfile import UploadedFile
 from notifications_python_client import NotificationsAPIClient
 
@@ -61,9 +61,7 @@ def validate_file_infection(file):
     Raises a ValidationError
     """
     if settings.IS_SCANNING_ENABLED:
-        cd = clamd.ClamdNetworkSocket(
-            settings.CLAMD_TCP_ADDR, settings.CLAMD_TCP_SOCKET
-        )
+        cd = clamd.ClamdNetworkSocket(settings.CLAMD_TCP_ADDR, settings.CLAMD_TCP_SOCKET)
         result = cd.instream(file)
 
         if result and result["stream"][0] == "FOUND":
@@ -184,9 +182,7 @@ def get_registration_data(request) -> dict:
     try:
         return request.session["registration_data"]
     except KeyError:
-        raise BadRequest(
-            "No session data found. User's probably gone to a random page without a session"
-        )
+        raise BadRequest("No session data found. User's probably gone to a random page without a session")
 
 
 def add_to_session(form, request, field_names: list[str]) -> dict:
@@ -287,9 +283,7 @@ def send_email(email_address: str, template_id: str, personalisation: dict) -> N
         notification_response_id.save()
 
 
-def personalisation(
-    reference: str, registration_data: dict[str, str | None]
-) -> dict[str, str | None]:
+def personalisation(reference: str, registration_data: dict[str, str | None]) -> dict[str, str | None]:
     """
     Creates personalisation dictionary to be used in the GovUK Notify templates
 
@@ -299,32 +293,22 @@ def personalisation(
     :return: personalisation dictionary to be used in the GovUK Notify templates
     """
     domain_purpose = registration_data.get("domain_purpose")
-    domain_purpose_personalisation = (
-        DOMAIN_PURPOSE_TRANSLATION_MAP.get(domain_purpose) if domain_purpose else None
-    )
+    domain_purpose_personalisation = DOMAIN_PURPOSE_TRANSLATION_MAP.get(domain_purpose) if domain_purpose else None
 
     exemption = registration_data.get("exemption")
-    exemption_personalisation = (
-        YES_NO_TRANSLATION_MAP.get(exemption) if exemption else None
-    )
+    exemption_personalisation = YES_NO_TRANSLATION_MAP.get(exemption) if exemption else None
 
     written_permission = registration_data.get("written_permission")
-    written_permission_personalisation = (
-        YES_NO_TRANSLATION_MAP.get(written_permission) if written_permission else None
-    )
+    written_permission_personalisation = YES_NO_TRANSLATION_MAP.get(written_permission) if written_permission else None
 
     minister = registration_data.get("minister")
-    minister_personalisation = (
-        YES_NO_TRANSLATION_MAP.get(minister) if minister else None
-    )
+    minister_personalisation = YES_NO_TRANSLATION_MAP.get(minister) if minister else None
 
     return {
         "domain_name": registration_data["domain_name"],
         "reference": reference,
         "registrar_name": registration_data["registrar_name"],
-        "registrant_type": RegistrantTypeChoices.get_label(
-            registration_data["registrant_type"]
-        ),
+        "registrant_type": RegistrantTypeChoices.get_label(registration_data["registrant_type"]),
         "domain_purpose": domain_purpose_personalisation,
         "exemption": exemption_personalisation,
         "written_permission": written_permission_personalisation,
@@ -338,9 +322,7 @@ def personalisation(
     }
 
 
-def route_specific_email_template(
-    email_type: str, registration_data: dict[str, str]
-) -> str:
+def route_specific_email_template(email_type: str, registration_data: dict[str, str]) -> str:
     """
     Derive the email template based on email type ( confirmation/approval/rejection ) and route (central government/
     parish council etc.) derived from registration data
@@ -354,9 +336,7 @@ def route_specific_email_template(
     if route["primary"] in [1, 3]:
         route_specific_email_template = f"{email_type}-{route['primary']}"
     else:
-        route_specific_email_template = (
-            f"{email_type}-{route['primary']}-{route['secondary']}"
-        )
+        route_specific_email_template = f"{email_type}-{route['primary']}-{route['secondary']}"
     return route_specific_email_template
 
 
@@ -383,9 +363,7 @@ def variable_page_content(_request):
 
     # Google Tag Manager ID for inclusion in the HTML markup
     google_analytics_id = os.getenv("GOOGLE_ANALYTICS_ID", "")
-    context["GOOGLE_ANALYTICS_ID"] = (
-        google_analytics_id if google_analytics_id[:4].upper() == "GTM-" else ""
-    )
+    context["GOOGLE_ANALYTICS_ID"] = google_analytics_id if google_analytics_id[:4].upper() == "GTM-" else ""
 
     return context
 

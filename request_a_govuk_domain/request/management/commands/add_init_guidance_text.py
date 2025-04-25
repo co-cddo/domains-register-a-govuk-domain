@@ -1,7 +1,8 @@
 import os
-from django.core.management.base import BaseCommand
-from request_a_govuk_domain.request import models
 
+from django.core.management.base import BaseCommand
+
+from request_a_govuk_domain.request import models
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 INIT_GUIDANCE_PATH = os.path.join(SCRIPT_PATH, "..", "..", "init_guidance")
@@ -27,8 +28,6 @@ class Command(BaseCommand):
             try:
                 models.ReviewFormGuidance.objects.get(name=section)
             except models.ReviewFormGuidance.DoesNotExist:
-                with open(
-                    os.path.join(INIT_GUIDANCE_PATH, f"{section}.md"), "r"
-                ) as file:
+                with open(os.path.join(INIT_GUIDANCE_PATH, f"{section}.md"), "r") as file:
                     guidance = file.read()
                 models.ReviewFormGuidance.objects.create(name=section, how_to=guidance)

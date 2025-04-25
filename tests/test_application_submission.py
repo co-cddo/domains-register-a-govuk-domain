@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 from django.db import connection
 from django.test import TransactionTestCase
 
-from request_a_govuk_domain.request.models import Registrar, Application
+from request_a_govuk_domain.request.models import Application, Registrar
 from request_a_govuk_domain.request.views import ConfirmView
 
 

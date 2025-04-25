@@ -14,60 +14,58 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path
-from django.conf.urls.static import static
-from django.conf import settings
-
-from .request.views import (
-    StartView,
-    CookiesPageView,
-    PrivacyPolicyPageView,
-    StartSessionView,
-    RegistrarDetailsView,
-    RegistrantTypeView,
-    DomainView,
-    DomainConfirmationView,
-    RegistrantDetailsView,
-    RegistryDetailsView,
-    RegistrantTypeFailView,
-    WrittenPermissionView,
-    WrittenPermissionFailView,
-    ExemptionUploadRemoveView,
-    WrittenPermissionUploadRemoveView,
-    MinisterUploadRemoveView,
-    ConfirmView,
-    SuccessView,
-    ExemptionView,
-    MinisterView,
-    ExemptionUploadView,
-    MinisterUploadView,
-    WrittenPermissionUploadView,
-    ExemptionUploadConfirmView,
-    MinisterUploadConfirmView,
-    WrittenPermissionUploadConfirmView,
-    ExemptionFailView,
-    DomainPurposeView,
-    DomainPurposeFailView,
-    service_failure_view,
-    page_not_found_view,
-    security_txt_view,
-    robots_txt_view,
-    forbidden_view,
-    bad_request_view,
-    download_file,
-    AccessibilityView,
-    TermsAndConditionsView,
-)
 
 from .request.admin.views import (
-    DecisionConfirmationView,
     AdminDashboardView,
-    ChangeStatusView,
-    ReviewByRefView,
     ApplicationByRefView,
+    ChangeStatusView,
+    DecisionConfirmationView,
+    ReviewByRefView,
 )
-
+from .request.views import (
+    AccessibilityView,
+    ConfirmView,
+    CookiesPageView,
+    DomainConfirmationView,
+    DomainPurposeFailView,
+    DomainPurposeView,
+    DomainView,
+    ExemptionFailView,
+    ExemptionUploadConfirmView,
+    ExemptionUploadRemoveView,
+    ExemptionUploadView,
+    ExemptionView,
+    MinisterUploadConfirmView,
+    MinisterUploadRemoveView,
+    MinisterUploadView,
+    MinisterView,
+    PrivacyPolicyPageView,
+    RegistrantDetailsView,
+    RegistrantTypeFailView,
+    RegistrantTypeView,
+    RegistrarDetailsView,
+    RegistryDetailsView,
+    StartSessionView,
+    StartView,
+    SuccessView,
+    TermsAndConditionsView,
+    WrittenPermissionFailView,
+    WrittenPermissionUploadConfirmView,
+    WrittenPermissionUploadRemoveView,
+    WrittenPermissionUploadView,
+    WrittenPermissionView,
+    bad_request_view,
+    download_file,
+    forbidden_view,
+    page_not_found_view,
+    robots_txt_view,
+    security_txt_view,
+    service_failure_view,
+)
 
 urlpatterns = [
     path("", StartView.as_view(), name="start"),
@@ -76,9 +74,7 @@ urlpatterns = [
     path("privacy", PrivacyPolicyPageView.as_view(), name="privacy_policy"),
     path("terms", TermsAndConditionsView.as_view(), name="terms_and_conditions"),
     path("start-session/", StartSessionView.as_view(), name="start_session"),
-    path(
-        "registrar-details/", RegistrarDetailsView.as_view(), name="registrar_details"
-    ),
+    path("registrar-details/", RegistrarDetailsView.as_view(), name="registrar_details"),
     path(
         "change-registrar-details/",
         RegistrarDetailsView.as_view(change=True),

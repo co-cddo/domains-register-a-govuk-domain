@@ -1,24 +1,20 @@
 from unittest.mock import Mock
-from freezegun import freeze_time
 
 import parameterized
 from django.test import TestCase
-
+from freezegun import freeze_time
 
 from request_a_govuk_domain.request import db
-from request_a_govuk_domain.request.models import (
-    Application,
-    Review,
-)
+from request_a_govuk_domain.request.models import Application, Review
 from request_a_govuk_domain.request.models.review_choices import (
-    RegistryDetailsReviewChoices,
-    RegistrantOrgReviewChoices,
-    RegistrantPersonReviewChoices,
-    RegistrantPermissionReviewChoices,
-    PolicyExemptionReviewChoices,
     DomainNameRulesReviewChoices,
+    PolicyExemptionReviewChoices,
+    RegistrantOrgReviewChoices,
+    RegistrantPermissionReviewChoices,
+    RegistrantPersonReviewChoices,
     RegistrantSeniorSupportReviewChoices,
     RegistrarDetailsReviewChoices,
+    RegistryDetailsReviewChoices,
 )
 from tests.util import AdminScreenTestMixin, SessionDict, get_admin_change_view_url
 
@@ -104,9 +100,7 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
         application_to_approve = Application.objects.filter(reference="ABCDEFGHIJG")[0]
 
         # Now we review the last application created by the client
-        review = Review.objects.filter(
-            application__reference=application_to_approve.reference
-        ).first()
+        review = Review.objects.filter(application__reference=application_to_approve.reference).first()
 
         review.registry_details = RegistryDetailsReviewChoices.APPROVE  # type: ignore
         review.registrant_org = RegistrantOrgReviewChoices.APPROVE  # type: ignore
@@ -184,9 +178,7 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
                 approve_response.redirect_chain[0][0],
             )
 
-        with self.subTest(
-            "Confirming the application will change the status to approved"
-        ):
+        with self.subTest("Confirming the application will change the status to approved"):
             # All the parameters used below are validate in the previous step
             approve_response = self.admin_client.post(
                 approve_response.redirect_chain[0][0],
@@ -204,9 +196,7 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
                 application_to_approve.status,
             )
             self.assertContains(approve_response, f"{action.capitalize()} email sent")
-            self.assertEqual(
-                application_to_approve.last_updated_by.username, "superuser"
-            )
+            self.assertEqual(application_to_approve.last_updated_by.username, "superuser")
 
             with self.subTest(f"Owner is set to {self.superuser.username}"):
                 self.assertEqual(application_to_approve.owner.username, "superuser")
@@ -228,9 +218,7 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
 
         # wait another 3 days and approve
         with freeze_time("2025-01-06"):
-            review = Review.objects.filter(
-                application__reference=application.reference
-            ).first()
+            review = Review.objects.filter(application__reference=application.reference).first()
 
             response = self.admin_client.post(
                 get_admin_change_view_url(review),

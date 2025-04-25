@@ -1,19 +1,18 @@
+import datetime
 import logging
 import re
-import datetime
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-
-from .organisation import Registrant, Registrar
-from .person import RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
-from .storage_util import select_storage, TEMP_STORAGE_ROOT
-from ...settings import S3_STORAGE_ENABLED
-
+from django.utils.translation import gettext_lazy as _
 from simple_history.models import HistoricalRecords
+
+from ...settings import S3_STORAGE_ENABLED
+from .organisation import Registrant, Registrar
+from .person import RegistrantPerson, RegistrarPerson, RegistryPublishedPerson
+from .storage_util import TEMP_STORAGE_ROOT, select_storage
 
 REF_NUM_LENGTH = 17
 logger = logging.getLogger(__name__)
@@ -31,9 +30,7 @@ class ApplicationStatus(models.TextChoices):
     NEW = "new", _("New")
     DUPLICATE_APPLICATION = "duplicate_application", _("Duplicate application")
     ARCHIVE = "archive", _("Archive")
-    FAILED_CONFIRMATION_EMAIL = "failed_confirmation_email", _(
-        "Failed Confirmation Email"
-    )
+    FAILED_CONFIRMATION_EMAIL = "failed_confirmation_email", _("Failed Confirmation Email")
     FAILED_DECISION_EMAIL = "failed_decision_email", _("Failed Decision Email")
 
 
@@ -115,9 +112,7 @@ class Application(models.Model):
     def __str__(self):
         return f"{self.reference} - {self.domain_name}"
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
         When the application is saved, move the temporary files to the applications directory
         :param force_insert:
@@ -138,9 +133,7 @@ class Application(models.Model):
             ]:
                 if file_field and not file_field.name.startswith("applications"):
                     from_path = TEMP_STORAGE_ROOT + file_field.name
-                    if file_field.file and isinstance(
-                        file_field.file, InMemoryUploadedFile
-                    ):
+                    if file_field.file and isinstance(file_field.file, InMemoryUploadedFile):
                         """
                         Sometimes the file is stored in the memory instead of the S3 bucket (i.e when uploaded
                         directly through the admin screens). Then
@@ -152,9 +145,7 @@ class Application(models.Model):
                             Body=file_field.file.read(),
                         )
 
-                    to_path = f"applications/{self.reference}/" + re.sub(
-                        r"[^A-Za-z0-9.]+", "_", file_field.name
-                    )
+                    to_path = f"applications/{self.reference}/" + re.sub(r"[^A-Za-z0-9.]+", "_", file_field.name)
                     logger.info(
                         "Copying temporary file %s to application folder %s",
                         from_path,
@@ -180,8 +171,6 @@ class Application(models.Model):
             if self.time_decided:
                 return self.time_decided - self.time_submitted
             else:
-                raise Exception(
-                    f"Application f{self.id} is closed but has no time_decided"
-                )
+                raise Exception(f"Application f{self.id} is closed but has no time_decided")
         else:
             return timezone.now() - self.time_submitted

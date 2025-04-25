@@ -14,13 +14,13 @@ create_sample_data manually as it is run by the local-init.sh script by default.
 """
 
 
+import csv
 import logging
 import os
-import shutil
-from datetime import datetime, timedelta, timezone
 import random
+import shutil
 import string
-import csv
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from django.contrib.auth.models import User
@@ -112,9 +112,7 @@ def create_sample_application(
 
     registrant, _ = models.Registrant.objects.get_or_create(name=registrant_name)
 
-    registrant_person, _ = models.RegistrantPerson.objects.get_or_create(
-        name=person_names[0]
-    )
+    registrant_person, _ = models.RegistrantPerson.objects.get_or_create(name=person_names[0])
 
     registry_published_person, _ = models.RegistryPublishedPerson.objects.get_or_create(
         name=person_names[1],
@@ -123,9 +121,7 @@ def create_sample_application(
 
     registrar, _ = models.Registrar.objects.get_or_create(pk=registrar_index)
 
-    registrar_person, _ = models.RegistrarPerson.objects.get_or_create(
-        name=person_names[2], registrar=registrar
-    )
+    registrar_person, _ = models.RegistrarPerson.objects.get_or_create(name=person_names[2], registrar=registrar)
 
     application = models.Application(
         reference=f"GOVUK{datetime.today().strftime('%Y%m%d')}{reference_suffix}",
@@ -177,9 +173,7 @@ class Command(BaseCommand):
 
         # 1. Parish council domains
         for index, (registrant, domain) in enumerate(COUNCIL_DOMAINS):
-            domain_purpose = (
-                "email-only" if random.randint(0, 10) == 0 else "website-email"
-            )
+            domain_purpose = "email-only" if random.randint(0, 10) == 0 else "website-email"
             nbp = len(PERSON_NAMES)
             three_persons = [
                 PERSON_NAMES[random.randint(0, nbp - 1)],
@@ -191,33 +185,21 @@ class Command(BaseCommand):
                 registrant_name=registrant,
                 registrar_index=index % registrar_count,
                 person_names=three_persons,
-                reference_suffix="".join(
-                    random.choice(string.ascii_uppercase) for _ in range(4)
-                ),
+                reference_suffix="".join(random.choice(string.ascii_uppercase) for _ in range(4)),
                 domain_purpose=domain_purpose,
             )
 
         # 2. Central government domains
         for index, (registrant, domain) in enumerate(CENTRAL_GOV_DOMAINS):
-            domain_purpose = (
-                "email-only" if random.randint(0, 10) == 0 else "website-email"
-            )
-            maybe_policy_exemption_file = (
-                POLICY_TEAM_EXEMPTION_FILENAME if random.randint(0, 10) == 0 else None
-            )
-            maybe_ministerial_request = (
-                MINISTERIAL_REQUEST_FILENAME if random.randint(0, 1) == 0 else None
-            )
+            domain_purpose = "email-only" if random.randint(0, 10) == 0 else "website-email"
+            maybe_policy_exemption_file = POLICY_TEAM_EXEMPTION_FILENAME if random.randint(0, 10) == 0 else None
+            maybe_ministerial_request = MINISTERIAL_REQUEST_FILENAME if random.randint(0, 1) == 0 else None
             create_sample_application(
                 domain_name=domain,
                 registrant_name=registrant,
                 registrar_index=index % registrar_count,
-                person_names=PERSON_NAMES[
-                    index % len(PERSON_NAMES) : (index + 3) % len(PERSON_NAMES)
-                ],
-                reference_suffix="".join(
-                    random.choice(string.ascii_uppercase) for _ in range(4)
-                ),
+                person_names=PERSON_NAMES[index % len(PERSON_NAMES) : (index + 3) % len(PERSON_NAMES)],
+                reference_suffix="".join(random.choice(string.ascii_uppercase) for _ in range(4)),
                 domain_purpose=domain_purpose,
                 written_permission_file=WRITTEN_PERMISSION_FILENAME,
                 policy_exemption_file=maybe_policy_exemption_file,

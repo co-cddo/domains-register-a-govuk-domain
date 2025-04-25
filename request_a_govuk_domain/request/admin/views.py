@@ -1,15 +1,15 @@
 import logging
 from datetime import timedelta
 
-from django.views import View
-from django.views.generic import RedirectView
 from django.contrib import admin, messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.contrib.admin.views.decorators import staff_member_required
+from django.views import View
+from django.views.generic import RedirectView
 
 from request_a_govuk_domain.request.models import Application, ApplicationStatus, Review
 
@@ -50,23 +50,15 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
                 # To show the backend app user a message "[Approval/Rejection] email sent", get the type of
                 # action ( i.e. whether it is Approval or Rejection )
                 approval_or_rejection = request.POST["action"].capitalize()
-                self.message_user(
-                    request, f"{approval_or_rejection} email sent", messages.SUCCESS
-                )
+                self.message_user(request, f"{approval_or_rejection} email sent", messages.SUCCESS)
                 obj = Application.objects.get(pk=request.GET.get("obj_id"))
-                LOGGER.info(
-                    f"Application {obj.reference} status set to {approval_or_rejection}"
-                )
+                LOGGER.info(f"Application {obj.reference} status set to {approval_or_rejection}")
                 return HttpResponseRedirect(reverse("admin:request_review_changelist"))
             except Exception as e:
                 LOGGER.error("Failed to send the email", exc_info=True)
                 self.message_user(request, f"Email send failed: {e}", messages.ERROR)
-        review = Review.objects.filter(
-            application__id=request.POST.get("obj_id")
-        ).first()
-        return HttpResponseRedirect(
-            reverse("admin:request_review_change", args=[review.id])
-        )
+        review = Review.objects.filter(application__id=request.POST.get("obj_id")).first()
+        return HttpResponseRedirect(reverse("admin:request_review_change", args=[review.id]))
 
 
 class ChangeStatusView(View, admin.ModelAdmin):
@@ -120,23 +112,15 @@ class ChangeStatusView(View, admin.ModelAdmin):
         if "_confirm" in request.POST:
             try:
                 self._set_application_status(request)
-                self.message_user(
-                    request, "Application status changed", messages.SUCCESS
-                )
+                self.message_user(request, "Application status changed", messages.SUCCESS)
                 obj = Application.objects.get(pk=request.GET.get("obj_id"))
                 LOGGER.info(f"Application {obj.reference} status set to {obj.status}")
                 return HttpResponseRedirect(reverse("admin:request_review_changelist"))
             except Exception as e:
                 LOGGER.error("Failed to change status of application", exc_info=True)
-                self.message_user(
-                    request, f"Application status change failed: {e}", messages.ERROR
-                )
-        review = Review.objects.filter(
-            application__id=request.POST.get("obj_id")
-        ).first()
-        return HttpResponseRedirect(
-            reverse("admin:request_review_change", args=[review.id])
-        )
+                self.message_user(request, f"Application status change failed: {e}", messages.ERROR)
+        review = Review.objects.filter(application__id=request.POST.get("obj_id")).first()
+        return HttpResponseRedirect(reverse("admin:request_review_change", args=[review.id]))
 
 
 class AdminDashboardView(View, admin.ModelAdmin):
@@ -150,12 +134,8 @@ class AdminDashboardView(View, admin.ModelAdmin):
         seven_days_ago = timezone.now() - timedelta(days=7)
 
         new_allusers_total = applications.filter(status=ApplicationStatus.NEW)
-        nac_owner_total_count = applications.filter(
-            status=ApplicationStatus.CURRENTLY_WITH_NAC, owner=user
-        ).count()
-        nac_allusers_total_count = applications.filter(
-            status=ApplicationStatus.CURRENTLY_WITH_NAC
-        ).count()
+        nac_owner_total_count = applications.filter(status=ApplicationStatus.CURRENTLY_WITH_NAC, owner=user).count()
+        nac_allusers_total_count = applications.filter(status=ApplicationStatus.CURRENTLY_WITH_NAC).count()
         context = admin.site.each_context(request)
         context.update(
             {
@@ -173,9 +153,7 @@ class AdminDashboardView(View, admin.ModelAdmin):
             ready2i_allusers_total_count = applications.filter(
                 status=ApplicationStatus.READY_2I,
             ).count()
-            ready2i_owner_total_count = applications.filter(
-                status=ApplicationStatus.READY_2I, owner=user
-            ).count()
+            ready2i_owner_total_count = applications.filter(status=ApplicationStatus.READY_2I, owner=user).count()
             ready2i_owner_late = applications.filter(
                 status=ApplicationStatus.READY_2I,
                 time_submitted__lt=seven_days_ago,
@@ -200,9 +178,7 @@ class AdminDashboardView(View, admin.ModelAdmin):
                 }
             )
         else:
-            inprogress_allusers_total_count = applications.filter(
-                status=ApplicationStatus.IN_PROGRESS
-            ).count()
+            inprogress_allusers_total_count = applications.filter(status=ApplicationStatus.IN_PROGRESS).count()
             inprogress_owner_total_count = applications.filter(
                 status=ApplicationStatus.IN_PROGRESS,
                 owner=user,

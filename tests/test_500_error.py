@@ -1,5 +1,6 @@
 from django.test import SimpleTestCase, override_settings
 from django.urls import path
+
 import request_a_govuk_domain
 
 
@@ -34,7 +35,5 @@ class ServiceFailureErrorHandlerTests(SimpleTestCase):
     def test_handler_renders_template_response(self):
         self.client.raise_request_exception = False
         response = self.client.get("/500/")
-        self.assertContains(
-            response, "Sorry, there is a problem with the service", status_code=500
-        )
+        self.assertContains(response, "Sorry, there is a problem with the service", status_code=500)
         self.assertTemplateUsed(response, "500.html")

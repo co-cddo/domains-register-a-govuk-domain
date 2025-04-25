@@ -3,18 +3,12 @@ from django.utils.translation import gettext_lazy as _
 
 
 class RegistrarDetailsReviewChoices(models.TextChoices):
-    APPROVE = "approve", _(
-        "Registrar's email address matches Registrar's recognised domain - approve"
-    )
-    REJECT = "reject", _(
-        "Registrar's email address does not match Registrar's recognised domain - reject"
-    )
+    APPROVE = "approve", _("Registrar's email address matches Registrar's recognised domain - approve")
+    REJECT = "reject", _("Registrar's email address does not match Registrar's recognised domain - reject")
 
 
 class DomainNameAvailabilityReviewChoices(models.TextChoices):
-    APPROVE = "approve", _(
-        "Name is available and organisation has no existing third-level .gov.uk domain - approve"
-    )
+    APPROVE = "approve", _("Name is available and organisation has no existing third-level .gov.uk domain - approve")
     HOLDING = "holding", _("Name not available - on hold awaiting response")
     REJECT = "reject", _("Name not available - reject")
 
@@ -45,12 +39,8 @@ class PolicyExemptionReviewChoices(models.TextChoices):
 
 class DomainNameRulesReviewChoices(models.TextChoices):
     APPROVE = "approve", _("Meets domain naming rules - approve")
-    HOLDING = "holding", _(
-        "Organisation already has a third-level .gov.uk domain - on hold awaiting response"
-    )
-    REJECT_NAME = "reject", _(
-        "Does not meet naming rules - reject unless minister/perm sec request"
-    )
+    HOLDING = "holding", _("Organisation already has a third-level .gov.uk domain - on hold awaiting response")
+    REJECT_NAME = "reject", _("Does not meet naming rules - reject unless minister/perm sec request")
 
 
 class RegistrantSeniorSupportReviewChoices(models.TextChoices):

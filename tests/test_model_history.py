@@ -3,12 +3,8 @@ from unittest.mock import Mock
 from django.test import TestCase
 
 from request_a_govuk_domain.request import db
-from request_a_govuk_domain.request.models import (
-    Review,
-    ApplicationStatus,
-)
-from tests.util import get_admin_change_view_url, SessionDict, AdminScreenTestMixin
-from request_a_govuk_domain.request.models import Application
+from request_a_govuk_domain.request.models import Application, ApplicationStatus, Review
+from tests.util import AdminScreenTestMixin, SessionDict, get_admin_change_view_url
 
 
 class CheckHistoryTestCase(AdminScreenTestMixin, TestCase):
@@ -52,9 +48,7 @@ class CheckHistoryTestCase(AdminScreenTestMixin, TestCase):
         application = Application.objects.filter(reference="ABCDEFGHIJL")[0]
 
         # Now we review the last application created by the client
-        review = Review.objects.filter(
-            application__reference=application.reference
-        ).first()
+        review = Review.objects.filter(application__reference=application.reference).first()
 
         # see the records in history table
         history = review.history.all()  # type: ignore

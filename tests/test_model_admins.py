@@ -1,16 +1,16 @@
 import datetime
 import zoneinfo
-from unittest.mock import Mock, patch, call
+from unittest.mock import Mock, call, patch
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
 from parameterized import parameterized
 
 from request_a_govuk_domain.request import db
 from request_a_govuk_domain.request.admin.model_admins import convert_to_local_time
-from request_a_govuk_domain.request.models import Registrar, Application
+from request_a_govuk_domain.request.models import Application, Registrar
 
 
 class ModelAdminTestCase(TestCase):
@@ -42,9 +42,7 @@ class ModelAdminTestCase(TestCase):
         Zero GMT should be converted to 1AM local time as we are in BST
         :return:
         """
-        bst_date = datetime.datetime(
-            2024, 5, 1, 0, 0, 0, 0, tzinfo=zoneinfo.ZoneInfo(key="GMT")
-        )
+        bst_date = datetime.datetime(2024, 5, 1, 0, 0, 0, 0, tzinfo=zoneinfo.ZoneInfo(key="GMT"))
         self.assertEqual("01 May 2024 01:00:00 AM", convert_to_local_time(bst_date))
 
     def test_gmt_time_is_converted_correctly(self):
@@ -52,9 +50,7 @@ class ModelAdminTestCase(TestCase):
         Zero GMT should not be converted as the time zone is GMT in November
         :return:
         """
-        gmt_date = datetime.datetime(
-            2024, 11, 1, 0, 0, 0, 0, tzinfo=zoneinfo.ZoneInfo(key="GMT")
-        )
+        gmt_date = datetime.datetime(2024, 11, 1, 0, 0, 0, 0, tzinfo=zoneinfo.ZoneInfo(key="GMT"))
         self.assertEqual("01 Nov 2024 00:00:00 AM", convert_to_local_time(gmt_date))
 
     @parameterized.expand(
@@ -75,15 +71,9 @@ class ModelAdminTestCase(TestCase):
         c = Client()
         c.login(username="superuser", password="secret")  # pragma: allowlist secret
 
-        written_permission_evidence = SimpleUploadedFile(
-            file_name, b"file_content", content_type="application/pdf"
-        )
-        with patch(
-            "request_a_govuk_domain.request.models.application.S3_STORAGE_ENABLED", True
-        ):
-            with patch(
-                "request_a_govuk_domain.request.models.application.select_storage"
-            ) as mock_select_storage:
+        written_permission_evidence = SimpleUploadedFile(file_name, b"file_content", content_type="application/pdf")
+        with patch("request_a_govuk_domain.request.models.application.S3_STORAGE_ENABLED", True):
+            with patch("request_a_govuk_domain.request.models.application.select_storage") as mock_select_storage:
                 mock_storage = Mock()
                 mock_storage.bucket_name = "mock-data-bucket"
                 mock_select_storage.return_value = mock_storage

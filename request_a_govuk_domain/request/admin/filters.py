@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 
 from request_a_govuk_domain.request.models import (
     ApplicationStatus,
-    Registrar,
     Registrant,
+    Registrar,
 )
 
 
@@ -91,9 +91,7 @@ class RegistrantOrgFilter(ApplicationFilterSupportMixin, SimpleListFilter):
     query_field = "registrant_org__name"
 
     def lookups(self, request, model_admin):
-        return list(
-            u for u in Registrant.objects.values_list("name", "name").distinct()
-        )
+        return list(u for u in Registrant.objects.values_list("name", "name").distinct())
 
 
 def wrap_with_application_filter(filter_class):

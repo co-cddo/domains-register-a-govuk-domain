@@ -1,8 +1,7 @@
 import base64
 
-from django.test import TestCase
 from django.core.exceptions import ValidationError
-
+from django.test import TestCase
 from six import BytesIO
 
 from request_a_govuk_domain.request.utils import validate_file_infection
