@@ -64,6 +64,7 @@ class AdminScreenTestMixin:
             "time_decided_1": "17:35:58",
             "reference": application.reference,
             "status": application.status,
+            "sub_status": application.sub_status,
             "domain_name": application.domain_name,
             "registrar_person": application.registrar_person.id,
             "registrant_person": application.registrant_person.id,

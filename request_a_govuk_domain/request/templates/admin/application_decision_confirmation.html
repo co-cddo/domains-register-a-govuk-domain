@@ -14,8 +14,25 @@
         {% csrf_token %}
         <input type="hidden" name="action" value="{{ action }}">
         <input type="hidden" name="obj_id" value="{{ obj.id }}">
-        <input type="submit" value="Confirm" class="default" name="_confirm">
-        <input type="submit" value="Cancel" class="default" name="_cancel">
+        {% if action == 'approval' %}
+        <label for="sub_status">Select Approval Reason:</label>
+        <select id="sub_status" name="sub_status">
+            {% for choice in sub_status_choices %}
+            <option value="{{ choice.status }}">{{ choice.label }}</option>
+            {% endfor %}
+        </select>
+        {% elif action == 'rejection' %}
+        <label for="sub_status">Select Rejection Reason:</label>
+        <select id="sub_status" name="sub_status">
+            {% for choice in sub_status_choices %}
+            <option value="{{ choice.status }}">{{ choice.label }}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+        <div>
+            <input type="submit" value="Confirm" class="default" name="_confirm">
+            <input type="submit" value="Cancel" class="default" name="_cancel">
+        </div>
     </form>
 </div>
 {% endblock %}

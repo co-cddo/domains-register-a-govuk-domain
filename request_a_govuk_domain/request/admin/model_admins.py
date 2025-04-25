@@ -2,6 +2,7 @@ import csv
 import logging
 from zoneinfo import ZoneInfo
 from datetime import datetime
+from urllib.parse import urlencode
 
 import django.db.models.fields.files
 import markdown
@@ -515,8 +516,11 @@ class ReviewAdmin(
     def response_change(self, request, obj):
         if "_approve" in request.POST:
             if obj.is_approvable():
+                query_params = urlencode(
+                    {"obj_id": obj.application.id, "action": "approval"}
+                )
                 return HttpResponseRedirect(
-                    f"{reverse('application_confirm')}?obj_id={obj.application.id}&action=approval"
+                    f"{reverse('application_confirm')}?{query_params}"
                 )
             else:
                 self.message_user(
@@ -527,8 +531,11 @@ class ReviewAdmin(
                 )
         if "_reject" in request.POST:
             if obj.is_rejectable():
+                query_params = urlencode(
+                    {"obj_id": obj.application.id, "action": "rejection"}
+                )
                 return HttpResponseRedirect(
-                    f"{reverse('application_confirm')}?obj_id={obj.application.id}&action=rejection"
+                    f"{reverse('application_confirm')}?{query_params}"
                 )
             else:
                 self.message_user(

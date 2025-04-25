@@ -1,4 +1,4 @@
-from .application import Application, ApplicationStatus
+from .application import Application, ApplicationStatus, ApprovalRejectionStatus
 from .notification_response_id import NotificationResponseID
 from .organisation import Registrant, Registrar, RegistrantTypeChoices
 from .person import Person, RegistryPublishedPerson, RegistrarPerson, RegistrantPerson
@@ -18,4 +18,5 @@ __all__ = [
     "RegistrarPerson",
     "Review",
     "ReviewFormGuidance",
+    "ApprovalRejectionStatus",
 ]
