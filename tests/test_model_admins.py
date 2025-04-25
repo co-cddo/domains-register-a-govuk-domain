@@ -96,6 +96,7 @@ class ModelAdminTestCase(TestCase):
                         "time_decided_0": "2024-06-24",
                         "time_decided_1": "12:00",
                         "status": app.status,
+                        "sub_status": app.sub_status,
                         "domain_name": app.domain_name,
                         "registrar_person": app.registrar_person.id,
                         "registrant_person": app.registrant_person.id,

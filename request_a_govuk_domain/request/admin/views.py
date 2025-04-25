@@ -36,7 +36,7 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
         :return: A list of dictionaries with keys 'status' and 'label'.
         """
         action_map = {"approval": "approved", "rejection": "rejected"}
-        action = action_map.get(action, action)
+        action = action_map[action]
         sub_status_list = [
             {"status": status, "label": label}
             for status, label in ApprovalRejectionStatus.choices
@@ -64,8 +64,8 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
         elif request.POST.get("action") == "rejection":
             obj.status = ApplicationStatus.REJECTED
         # more statuses can be added here
-        status = request.POST.get("status")
-        obj.sub_status = ApprovalRejectionStatus(status)
+        sub_status = request.POST.get("sub_status")
+        obj.sub_status = ApprovalRejectionStatus(sub_status)
         obj.time_decided = timezone.now()
         obj.save()
 

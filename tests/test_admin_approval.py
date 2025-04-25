@@ -72,11 +72,11 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
 
     @parameterized.parameterized.expand(
         [
-            ["approve", "Good Application", "approval"],
-            ["reject", "Bad Application", "rejection"],
+            ["approve", "Good Application", "approval", "approved_no_delay"],
+            ["reject", "Bad Application", "rejection", "rejected_no_delay"],
         ]
     )
-    def test_create_approval_works(self, status, reason, action):
+    def test_create_approval_works(self, status, reason, action, sub_status):
         """
         Test case to check that we load the correct application on the review screen.
         When we click on the item in the list, we load the correct data from the corresponding review steps.
@@ -194,13 +194,14 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
                     "_confirm": "Confirm",
                     "action": f"{action}",
                     "obj_id": application_to_approve.id,
+                    "sub_status": f"{sub_status}",
                 },
                 follow=True,
             )
             # Refresh from the database
             application_to_approve.refresh_from_db()
             self.assertEqual(
-                f"{'approved' if status == 'approve' else 'rejected'}",
+                f"{'approved' if action == 'approval' else 'rejected'}",
                 application_to_approve.status,
             )
             self.assertContains(approve_response, f"{action.capitalize()} email sent")
@@ -265,6 +266,7 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
                     "_confirm": "Confirm",
                     "action": "approval",
                     "obj_id": application.id,
+                    "sub_status": "approved_no_delay",
                 },
                 follow=True,
             )

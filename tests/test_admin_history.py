@@ -61,7 +61,12 @@ class SimpleHistoryTest(AdminScreenTestMixin, TestCase):
         # raise Exception(f"Review id is {review.id}, redirect chain {review_response.redirect_chain[0][0]}")
         self.admin_client.post(
             review_response.redirect_chain[0][0],
-            {"action": "approval", "obj_id": application.id, "_confirm": "Confirm"},
+            {
+                "action": "approval",
+                "obj_id": application.id,
+                "_confirm": "Confirm",
+                "sub_status": "approved_no_delay",
+            },
         )
         response = self.admin_client.get(get_admin_history_view_url(review))
         self.assertEqual(response.status_code, 200)

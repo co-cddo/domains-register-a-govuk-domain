@@ -15,15 +15,15 @@
         <input type="hidden" name="action" value="{{ action }}">
         <input type="hidden" name="obj_id" value="{{ obj.id }}">
         {% if action == 'approval' %}
-        <label for="status">Select Approval Reason:</label>
-        <select id="status" name="status">
+        <label for="sub_status">Select Approval Reason:</label>
+        <select id="sub_status" name="sub_status">
             {% for choice in sub_status_choices %}
             <option value="{{ choice.status }}">{{ choice.label }}</option>
             {% endfor %}
         </select>
         {% elif action == 'rejection' %}
-        <label for="status">Select Rejection Reason:</label>
-        <select id="status" name="status">
+        <label for="sub_status">Select Rejection Reason:</label>
+        <select id="sub_status" name="sub_status">
             {% for choice in sub_status_choices %}
             <option value="{{ choice.status }}">{{ choice.label }}</option>
             {% endfor %}
