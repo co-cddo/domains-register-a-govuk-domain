@@ -516,16 +516,6 @@ class ReviewAdmin(
     def response_change(self, request, obj):
         if "_approve" in request.POST:
             if obj.is_approvable():
-                approval_rejection_list = [
-                    "Approved (with no delay)",
-                    "Approved, but delayed by Registrant ID/Organization verification",
-                    "Approved, but delayed by Registry published details",
-                    "Approved, but delayed by Issues with evidence",
-                    "Approved, but delayed by Other types",
-                    "Approved with NAC",
-                ]
-                # Store the approval_list in the session
-                request.session["approval_rejection_list"] = approval_rejection_list
                 query_params = urlencode(
                     {"obj_id": obj.application.id, "action": "approval"}
                 )
@@ -541,15 +531,6 @@ class ReviewAdmin(
                 )
         if "_reject" in request.POST:
             if obj.is_rejectable():
-                approval_rejection_list = [
-                    "Rejected (with no delay)",
-                    "Rejected, but delayed by Registrant ID/Organization verification",
-                    "Rejected, but delayed by Registry published details",
-                    "Rejected, but delayed by Issues with evidence",
-                    "Rejected, but delayed by Other types",
-                    "Rejected with NAC",
-                ]
-                request.session["approval_rejection_list"] = approval_rejection_list
                 query_params = urlencode(
                     {"obj_id": obj.application.id, "action": "rejection"}
                 )

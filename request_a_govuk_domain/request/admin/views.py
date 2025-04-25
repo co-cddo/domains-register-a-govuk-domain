@@ -14,6 +14,7 @@ from request_a_govuk_domain.request.models import (
     Application,
     ApplicationStatus,
     Review,
+    ApprovalRejectionStatus,
 )
 
 from .email import send_approval_or_rejection_email
@@ -26,17 +27,32 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
+    def get_sub_status_choices(self, action):
+        """
+        Retrieve a list of sub-status choices for the application
+        based on the action (approval/rejection).
+        :param action: sub-status choices (approval or rejection).
+        :return: A list of dictionaries with keys 'status' and 'label'.
+        """
+        action_map = {"approval": "approved", "rejection": "rejected"}
+        action = action_map.get(action, action)
+        sub_status_list = [
+            {"status": status, "label": label}
+            for status, label in ApprovalRejectionStatus.choices
+            if action in status
+        ]
+        return sub_status_list
+
     def get(self, request):
+        action = request.GET.get("action")
         obj = Application.objects.get(pk=request.GET.get("obj_id"))
         review = Review.objects.filter(application__id=obj.id).first()
-        approval_rejection_list = request.session.pop(
-            "approval_rejection_list", None
-        )  # Retrieve and remove from session
+        sub_status_choices = self.get_sub_status_choices(action)
         context = {
             "obj": obj,
-            "action": request.GET.get("action"),
+            "action": action,
             "reason": review.reason,
-            "approval_rejection_list": approval_rejection_list,
+            "sub_status_choices": sub_status_choices,
         }
         return render(request, "admin/application_decision_confirmation.html", context)
 
@@ -47,8 +63,8 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
         elif request.POST.get("action") == "rejection":
             obj.status = ApplicationStatus.REJECTED
         # more statuses can be added here
-        # status = request.POST.get("status")
-        # obj.status = ApplicationStatus(status)
+        status = request.POST.get("status")
+        obj.sub_status = ApprovalRejectionStatus(status)
         obj.time_decided = timezone.now()
         obj.save()
 

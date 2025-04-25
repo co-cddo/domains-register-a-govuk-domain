@@ -102,6 +102,11 @@ class Application(models.Model):
         default=ApplicationStatus.NEW,
         max_length=25,
     )
+    sub_status = models.CharField(
+        choices=ApprovalRejectionStatus.choices,
+        default=ApprovalRejectionStatus.APPROVED_NO_DELAY,
+        max_length=50,
+    )
     # This is going to lead to duplicate persons and organisations. It's fine
     # for now pending working out what our intention is. We're not going to
     # enable users to select e.g. a registrant from a previous record so

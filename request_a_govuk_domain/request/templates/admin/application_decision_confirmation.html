@@ -17,15 +17,15 @@
         {% if action == 'approval' %}
         <label for="status">Select Approval Reason:</label>
         <select id="status" name="status">
-            {% for approve in approval_rejection_list %}
-            <option value="{{ approve }}">{{ approve }}</option>
+            {% for choice in sub_status_choices %}
+            <option value="{{ choice.status }}">{{ choice.label }}</option>
             {% endfor %}
         </select>
         {% elif action == 'rejection' %}
         <label for="status">Select Rejection Reason:</label>
         <select id="status" name="status">
-            {% for reject in approval_rejection_list %}
-            <option value="{{ reject }}">{{ reject }}</option>
+            {% for choice in sub_status_choices %}
+            <option value="{{ choice.status }}">{{ choice.label }}</option>
             {% endfor %}
         </select>
         {% endif %}
