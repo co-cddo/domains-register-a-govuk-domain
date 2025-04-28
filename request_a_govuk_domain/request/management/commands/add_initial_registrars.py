@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+
 from request_a_govuk_domain.request import models
 
 REGISTRAR_NAMES = [

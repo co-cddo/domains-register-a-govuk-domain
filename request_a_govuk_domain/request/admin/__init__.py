@@ -1,26 +1,27 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
+
 from request_a_govuk_domain.request.models import (
     Application,
-    Review,
+    Registrant,
     RegistrantPerson,
+    Registrar,
     RegistrarPerson,
     RegistryPublishedPerson,
-    Registrant,
-    Registrar,
-)
-from .model_admins import (
-    ApplicationAdmin,
-    ReviewAdmin,
-    DomainRegistrationUserAdmin,
-    DomainRegistrationGroupAdmin,
-    RegistrantPersonAdmin,
-    RegistrarPersonAdmin,
-    RegistryPublishedPersonAdmin,
-    RegistrantAdmin,
-    RegistrarAdmin,
+    Review,
 )
 
+from .model_admins import (
+    ApplicationAdmin,
+    DomainRegistrationGroupAdmin,
+    DomainRegistrationUserAdmin,
+    RegistrantAdmin,
+    RegistrantPersonAdmin,
+    RegistrarAdmin,
+    RegistrarPersonAdmin,
+    RegistryPublishedPersonAdmin,
+    ReviewAdmin,
+)
 
 admin.site.unregister(User)
 admin.site.register(User, DomainRegistrationUserAdmin)

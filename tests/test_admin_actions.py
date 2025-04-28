@@ -2,11 +2,11 @@ from datetime import datetime
 from unittest.mock import Mock
 
 from django.contrib.auth.models import User
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from request_a_govuk_domain.request import db
-from request_a_govuk_domain.request.models import Registrar, Application
+from request_a_govuk_domain.request.models import Application, Registrar
 
 
 class ModelAdminActionsTestCase(TestCase):

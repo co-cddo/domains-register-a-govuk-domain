@@ -4,14 +4,14 @@ from unittest.mock import Mock
 from django.test import TestCase
 
 from request_a_govuk_domain.request import db
-from request_a_govuk_domain.request.models import Review, Application
+from request_a_govuk_domain.request.models import Application, Review
 from request_a_govuk_domain.request.templatetags.admin_tags import format_date
 from tests.util import (
     AdminScreenTestMixin,
     SessionDict,
+    get_admin_change_view_url,
     get_admin_history_view_url,
     get_response_content,
-    get_admin_change_view_url,
 )
 
 
@@ -33,9 +33,7 @@ class SimpleHistoryTest(AdminScreenTestMixin, TestCase):
 
         # Simulate 1st review user interaction.
         # Now we review the last application created by the client
-        review = Review.objects.filter(
-            application__reference=application.reference
-        ).first()
+        review = Review.objects.filter(application__reference=application.reference).first()
 
         review_response = self.admin_client.post(
             get_admin_change_view_url(review),

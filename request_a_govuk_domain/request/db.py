@@ -5,21 +5,22 @@ This module provides functions for interacting with the database in Register App
 """
 
 import logging
-from django.db import transaction
+
 from django.core.exceptions import BadRequest
+from django.db import transaction
 
 from request_a_govuk_domain.request.models import (
-    Registrant,
-    Registrar,
     Application,
-    RegistrarPerson,
+    Registrant,
     RegistrantPerson,
+    Registrar,
+    RegistrarPerson,
     RegistryPublishedPerson,
     Review,
 )
-from .models.storage_util import select_storage
 
-from .utils import route_number, is_valid_session_data, get_registration_data
+from .models.storage_util import select_storage
+from .utils import get_registration_data, is_valid_session_data, route_number
 
 logger = logging.getLogger(__name__)
 
@@ -105,9 +106,7 @@ def save_data_in_database(reference, request):
         return False
 
     session_data = get_registration_data(request)
-    registration_data = sanitised_registration_data(
-        session_data, request.session.session_key
-    )
+    registration_data = sanitised_registration_data(session_data, request.session.session_key)
 
     if not is_valid_session_data(registration_data):
         raise BadRequest(
@@ -116,9 +115,7 @@ def save_data_in_database(reference, request):
 
     try:
         with transaction.atomic():
-            registrar_org = Registrar.objects.get(
-                id=int(registration_data["registrar_organisation"].split("-")[1])
-            )
+            registrar_org = Registrar.objects.get(id=int(registration_data["registrar_organisation"].split("-")[1]))
             registrar_person, _ = RegistrarPerson.objects.get_or_create(
                 registrar=registrar_org,
                 name=registration_data["registrar_name"],
@@ -143,9 +140,7 @@ def save_data_in_database(reference, request):
                 type=registration_data["registrant_type"],
             )
 
-            registrar_org = Registrar.objects.get(
-                id=int(registration_data["registrar_organisation"].split("-")[1])
-            )
+            registrar_org = Registrar.objects.get(id=int(registration_data["registrar_organisation"].split("-")[1]))
 
             application = Application.objects.create(
                 reference=reference,
@@ -155,20 +150,12 @@ def save_data_in_database(reference, request):
                 registry_published_person=registry_published_person,
                 registrant_org=registrant_org,
                 registrar_org=registrar_org,
-                written_permission_evidence=registration_data.get(
-                    "written_permission_file_uploaded_filename"
-                ),
+                written_permission_evidence=registration_data.get("written_permission_file_uploaded_filename"),
                 domain_purpose=registration_data.get("domain_purpose"),
-                ministerial_request_evidence=registration_data.get(
-                    "minister_file_uploaded_filename"
-                ),
-                policy_exemption_evidence=registration_data.get(
-                    "exemption_file_uploaded_filename"
-                ),
+                ministerial_request_evidence=registration_data.get("minister_file_uploaded_filename"),
+                policy_exemption_evidence=registration_data.get("exemption_file_uploaded_filename"),
             )
-            logger.info(
-                "Saved application %d with reference %s", application.id, reference
-            )
+            logger.info("Saved application %d with reference %s", application.id, reference)
             Review.objects.create(application=application)
         return True
     except Exception as e:

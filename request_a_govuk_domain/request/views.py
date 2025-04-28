@@ -6,44 +6,44 @@ from datetime import datetime
 from django.core.exceptions import BadRequest
 from django.db import transaction
 from django.http import (
-    HttpResponse,
-    HttpRequest,
     FileResponse,
-    HttpResponseNotFound,
+    HttpRequest,
+    HttpResponse,
     HttpResponseBadRequest,
+    HttpResponseNotFound,
 )
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, RedirectView
+from django.views.generic import RedirectView, TemplateView
 from django.views.generic.edit import FormView
 
 from .constants import NOTIFY_TEMPLATE_ID_MAP
 from .db import save_data_in_database
 from .forms import (
+    ConfirmationForm,
     DomainConfirmationForm,
-    ExemptionForm,
-    UploadForm,
-    RegistrarDetailsForm,
-    RegistrantTypeForm,
-    DomainPurposeForm,
     DomainForm,
+    DomainPurposeForm,
+    ExemptionForm,
     MinisterForm,
     RegistrantDetailsForm,
+    RegistrantTypeForm,
+    RegistrarDetailsForm,
     RegistryDetailsForm,
+    UploadForm,
     WrittenPermissionForm,
-    ConfirmationForm,
 )
-from .models.organisation import Registrar, RegistrantTypeChoices
+from .models.organisation import RegistrantTypeChoices, Registrar
 from .models.storage_util import select_storage
 from .utils import (
-    handle_uploaded_file,
     add_to_session,
-    route_number,
-    send_email,
-    route_specific_email_template,
-    personalisation,
     get_registration_data,
+    handle_uploaded_file,
+    personalisation,
+    route_number,
+    route_specific_email_template,
+    send_email,
 )
 
 REGISTRATION_DATA = "registration_data"
@@ -101,9 +101,7 @@ class RegistrarDetailsView(FormView):
         initial = super().get_initial()
         session_data = self.request.session.get(REGISTRATION_DATA)
         if session_data is not None:
-            initial["registrar_organisation"] = session_data.get(
-                "registrar_organisation", ""
-            )
+            initial["registrar_organisation"] = session_data.get("registrar_organisation", "")
             initial["registrar_name"] = session_data.get("registrar_name", "")
             initial["registrar_phone"] = session_data.get("registrar_phone", "")
             initial["registrar_email"] = session_data.get("registrar_email", "")
@@ -243,9 +241,7 @@ class RegistrantDetailsView(FormView):
     def get_initial(self):
         initial = super().get_initial()
         session_data = get_registration_data(self.request)
-        initial["registrant_organisation"] = session_data.get(
-            "registrant_organisation", ""
-        )
+        initial["registrant_organisation"] = session_data.get("registrant_organisation", "")
         initial["registrant_full_name"] = session_data.get("registrant_full_name", "")
         initial["registrant_phone"] = session_data.get("registrant_phone", "")
         initial["registrant_email"] = session_data.get("registrant_email", "")
@@ -294,9 +290,7 @@ class RegistryDetailsView(FormView):
         initial = super().get_initial()
         session_data = get_registration_data(self.request)
         initial["registrant_role"] = session_data.get("registrant_role", "")
-        initial["registrant_contact_email"] = session_data.get(
-            "registrant_contact_email", ""
-        )
+        initial["registrant_contact_email"] = session_data.get("registrant_contact_email", "")
         return initial
 
     def form_valid(self, form):
@@ -335,10 +329,7 @@ class WrittenPermissionView(FormView):
             self.success_url = reverse_lazy("written_permission_fail")
 
         # if the user has previously uploaded a file, take them to the confirmation directly
-        elif (
-            registration_data.get("written_permission_file_uploaded_filename")
-            is not None
-        ):
+        elif registration_data.get("written_permission_file_uploaded_filename") is not None:
             self.success_url = reverse_lazy("written_permission_upload_confirm")
 
         return super().form_valid(form)
@@ -362,23 +353,15 @@ class UploadRemoveView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         registration_data = self.request.session.get(REGISTRATION_DATA, {})
-        if path_to_delete := registration_data.get(
-            self.page_type + "_file_uploaded_filename"
-        ):
+        if path_to_delete := registration_data.get(self.page_type + "_file_uploaded_filename"):
             storage = select_storage()
             if storage.exists(path_to_delete):
                 storage.delete(path_to_delete)
 
         # delete the session data
-        del self.request.session[REGISTRATION_DATA][
-            self.page_type + "_file_uploaded_filename"
-        ]
-        del self.request.session[REGISTRATION_DATA][
-            self.page_type + "_file_original_filename"
-        ]
-        del self.request.session[REGISTRATION_DATA][
-            self.page_type + "_file_uploaded_url"
-        ]
+        del self.request.session[REGISTRATION_DATA][self.page_type + "_file_uploaded_filename"]
+        del self.request.session[REGISTRATION_DATA][self.page_type + "_file_original_filename"]
+        del self.request.session[REGISTRATION_DATA][self.page_type + "_file_uploaded_url"]
         self.request.session.modified = True
         return super().get_redirect_url(*args, **kwargs)
 
@@ -410,15 +393,11 @@ class ConfirmView(FormView):
         :return:
         """
         reference_ = request.session.get(APPLICATION_REFERENCE)
-        self.save_application_to_database_and_send_confirmation_email(
-            reference_, request
-        )
+        self.save_application_to_database_and_send_confirmation_email(reference_, request)
         return redirect("success")
 
     @transaction.atomic  # This ensures that any failure during email send will not save data in db either
-    def save_application_to_database_and_send_confirmation_email(
-        self, reference: str, request: HttpRequest
-    ) -> None:
+    def save_application_to_database_and_send_confirmation_email(self, reference: str, request: HttpRequest) -> None:
         """
         Saves data in the db and sends confirmation email
 
@@ -443,9 +422,7 @@ class ConfirmView(FormView):
         # Notify personalisation dictionary to be used in the notify templates
         personalisation_dict = personalisation(reference, registration_data)
 
-        route_specific_email_template_name = route_specific_email_template(
-            "confirmation", registration_data
-        )
+        route_specific_email_template_name = route_specific_email_template("confirmation", registration_data)
 
         send_email(
             email_address=registration_data["registrar_email"],
@@ -463,18 +440,12 @@ class ConfirmView(FormView):
         context[REGISTRATION_DATA] = registration_data
 
         # Registrar organisation name: need to look up real name
-        registrar_id = int(
-            registration_data["registrar_organisation"].split("registrar-", 1)[1]
-        )
+        registrar_id = int(registration_data["registrar_organisation"].split("registrar-", 1)[1])
         context["registrar_name"] = Registrar.objects.get(id=registrar_id).name
 
         # Registrant type human-readable name
-        registrant_types = {
-            code: label for code, label in RegistrantTypeChoices.choices
-        }
-        context["registrant_type"] = registrant_types[
-            registration_data["registrant_type"]
-        ]
+        registrant_types = {code: label for code, label in RegistrantTypeChoices.choices}
+        context["registrant_type"] = registrant_types[registration_data["registrant_type"]]
         # Pass the route number as what's on the page depends on it
         context["route"] = route_number(self.request.session.get(REGISTRATION_DATA))
         form = ConfirmationForm({})
@@ -496,9 +467,7 @@ class ConfirmView(FormView):
             str: application reference.
         """
 
-        random_letters = [
-            letter for letter in string.ascii_uppercase if letter not in "AEIOUY"
-        ]
+        random_letters = [letter for letter in string.ascii_uppercase if letter not in "AEIOUY"]
         random_string = "".join(random.choices(random_letters, k=4))
         return "GOVUK" + datetime.today().strftime("%d%m%Y") + random_string
 
@@ -506,9 +475,7 @@ class ConfirmView(FormView):
 class SuccessView(View):
     def get(self, request):
         if application_reference := request.session.get(APPLICATION_REFERENCE):
-            http_response = render(
-                request, "success.html", {"reference": application_reference}
-            )
+            http_response = render(request, "success.html", {"reference": application_reference})
             # No need to store it anymore
             # We're finished, so clear the session data
             request.session.pop(REGISTRATION_DATA, None)
@@ -603,17 +570,11 @@ class UploadView(FormView):
         return super().__init__()
 
     def form_valid(self, form):
-        saved_filename = handle_uploaded_file(
-            self.request.FILES["file"], self.request.session.session_key
-        )
+        saved_filename = handle_uploaded_file(self.request.FILES["file"], self.request.session.session_key)
         registration_data = self.request.session.get(REGISTRATION_DATA, {})
         registration_data[f"{self.page_type}_file_uploaded_filename"] = saved_filename
-        registration_data[f"{self.page_type}_file_uploaded_url"] = select_storage().url(
-            saved_filename
-        )
-        registration_data[
-            f"{self.page_type}_file_original_filename"
-        ] = self.request.FILES["file"].name
+        registration_data[f"{self.page_type}_file_uploaded_url"] = select_storage().url(saved_filename)
+        registration_data[f"{self.page_type}_file_original_filename"] = self.request.FILES["file"].name
         self.request.session[REGISTRATION_DATA] = registration_data
         if "back_to_answers" in self.request.POST.keys():
             self.success_url = reverse_lazy("confirm")

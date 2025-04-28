@@ -3,9 +3,9 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from request_a_govuk_domain.request.models import Application, Review
-from request_a_govuk_domain.request.constants import NOTIFY_TEMPLATE_ID_MAP
 from request_a_govuk_domain.request import utils
+from request_a_govuk_domain.request.constants import NOTIFY_TEMPLATE_ID_MAP
+from request_a_govuk_domain.request.models import Application, Review
 from request_a_govuk_domain.request.utils import get_env_variable
 
 
@@ -26,9 +26,7 @@ def registration_data_from_application(
         "registrant_type": application.registrant_org.type,
         "domain_purpose": application.domain_purpose,
         "exemption": "yes" if application.policy_exemption_evidence else "no",
-        "written_permission": "yes"
-        if application.written_permission_evidence
-        else "no",
+        "written_permission": "yes" if application.written_permission_evidence else "no",
         "minister": "yes" if application.ministerial_request_evidence else "no",
         "registrant_organisation": application.registrant_org.name,
         "registrant_full_name": application.registrant_person.name,
@@ -52,9 +50,7 @@ def nominet_env_variable(env_var_name: str) -> str | None:
     # for these are "default" and the actual values are set manually. Following code ensures that a
     # non-default/actual values are set in production environment, otherwise it errors out
     if get_env_variable("ENVIRONMENT") == "prod" and env_variable_value == "default":
-        raise ValueError(
-            f"Proper value for env variable {env_var_name} not found in Production environment"
-        )
+        raise ValueError(f"Proper value for env variable {env_var_name} not found in Production environment")
     return env_variable_value
 
 
@@ -80,9 +76,7 @@ def token(reference, domain_name: str) -> str:
     ).hexdigest()
 
     #  Concatenate required attributes into the final token
-    generated_token = (
-        f"{token_id}#{roms_id}#{domain_lower}#{token_expiry_datetime}#{signature}"
-    )
+    generated_token = f"{token_id}#{roms_id}#{domain_lower}#{token_expiry_datetime}#{signature}"
     return generated_token
 
 
@@ -105,17 +99,13 @@ def send_approval_or_rejection_email(request):
 
     # If approval_or_rejection is approval, then add token to the personalisation
     if approval_or_rejection == "approval":
-        personalisation_dict["token"] = token(
-            reference, registration_data["domain_name"]
-        )
+        personalisation_dict["token"] = token(reference, registration_data["domain_name"])
     else:
         # we add the reason for the approval/rejection to personalisation_dict
         review = Review.objects.filter(application__id=application.id).first()
         personalisation_dict["reason_for_rejection"] = review.reason
 
-    route_specific_email_template_name = utils.route_specific_email_template(
-        approval_or_rejection, registration_data
-    )
+    route_specific_email_template_name = utils.route_specific_email_template(approval_or_rejection, registration_data)
 
     utils.send_email(
         email_address=registrar_email,

@@ -1,6 +1,6 @@
-from django.test import TestCase
 from django.contrib.auth.models import Group
 from django.core.management import call_command
+from django.test import TestCase
 
 EXPECTED_PERMISSIONS = [
     "change_application",
@@ -24,8 +24,5 @@ class CreateReviewerGroupTestCase(TestCase):
     def test_group_permissions(self):
         call_command("create_reviewer_group")
         reviewer_group = Group.objects.get(name="reviewer")
-        codenames = [
-            permission["codename"]
-            for permission in reviewer_group.permissions.all().values()
-        ]
+        codenames = [permission["codename"] for permission in reviewer_group.permissions.all().values()]
         self.assertEqual(sorted(EXPECTED_PERMISSIONS), sorted(codenames))

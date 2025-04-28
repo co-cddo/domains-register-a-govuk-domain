@@ -4,9 +4,9 @@ from django.urls import reverse
 
 from request_a_govuk_domain.request.management.commands import add_init_guidance_text
 from request_a_govuk_domain.request.models import (
-    Registrar,
     Registrant,
     RegistrantPerson,
+    Registrar,
     RegistrarPerson,
     RegistryPublishedPerson,
 )
@@ -15,16 +15,10 @@ from request_a_govuk_domain.request.models import (
 class AdminScreenTestMixin:
     def setUp(self):
         self.registrar = Registrar.objects.create(name="dummy registrar")
-        self.registrar_person = RegistrarPerson.objects.create(
-            name="dummy registrar person", registrar=self.registrar
-        )
+        self.registrar_person = RegistrarPerson.objects.create(name="dummy registrar person", registrar=self.registrar)
         self.registrant = Registrant.objects.create(name="dummy registrant")
-        self.registrant_person = RegistrantPerson.objects.create(
-            name="dummy registrant person"
-        )
-        self.registry_publish_person = RegistryPublishedPerson.objects.create(
-            name="dummy reg publish person"
-        )
+        self.registrant_person = RegistrantPerson.objects.create(name="dummy registrant person")
+        self.registry_publish_person = RegistryPublishedPerson.objects.create(name="dummy reg publish person")
         self.registration_data = {
             "registrant_type": "parish_council",
             "domain_name": "test.domain.gov.uk",
@@ -53,9 +47,7 @@ class AdminScreenTestMixin:
         guidance_text = add_init_guidance_text.Command()
         guidance_text.handle()
         self.admin_client = Client()
-        self.admin_client.login(
-            username="superuser", password="secret"  # pragma: allowlist secret
-        )
+        self.admin_client.login(username="superuser", password="secret")  # pragma: allowlist secret
 
     def get_application_update_json(self, application):
         data = {

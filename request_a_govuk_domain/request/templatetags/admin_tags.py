@@ -1,5 +1,6 @@
-from zoneinfo import ZoneInfo
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from django import template
 from django.contrib.auth.models import User
 
@@ -29,19 +30,13 @@ def application_admin_url(value, arg):
     return "admin:%s_%s_%s" % ("request", "application", arg)
 
 
-@register.inclusion_tag(
-    "simple_history/_review_object_history_list.html", takes_context=True
-)
+@register.inclusion_tag("simple_history/_review_object_history_list.html", takes_context=True)
 def display_review_list(context):
-    context["application_history"] = Application.history.filter(
-        id=context["object"].application.id
-    ).order_by("-pk")
+    context["application_history"] = Application.history.filter(id=context["object"].application.id).order_by("-pk")
     return context
 
 
-@register.inclusion_tag(
-    "simple_history/_application_object_history_list.html", takes_context=True
-)
+@register.inclusion_tag("simple_history/_application_object_history_list.html", takes_context=True)
 def display_application_list(context):
     return context
 
@@ -87,11 +82,7 @@ def should_display(action, **kwargs):
 
 @register.filter(is_safe=True)
 def format_date(date):
-    return (
-        date.astimezone(ZoneInfo("Europe/London")).strftime("%d %b %Y %H:%M:%S %p")
-        if date
-        else "-"
-    )
+    return date.astimezone(ZoneInfo("Europe/London")).strftime("%d %b %Y %H:%M:%S %p") if date else "-"
 
 
 @register.filter(is_safe=True)

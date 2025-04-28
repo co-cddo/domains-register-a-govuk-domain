@@ -4,9 +4,7 @@ from simple_history.models import HistoricalRecords
 
 
 class RegistrantTypeChoices(models.TextChoices):
-    CENTRAL_GOVERNMENT = "central_government", _(
-        "Central government department or agency"
-    )
+    CENTRAL_GOVERNMENT = "central_government", _("Central government department or agency")
     ALB = "alb", _("Non-departmental body - also known as an arm's length body")
     PARISH_COUNCIL = "parish_council", _("Parish, town or community council")
     LOCAL_AUTHORITY = "local_authority", _("District, borough, city or county council")
@@ -15,12 +13,8 @@ class RegistrantTypeChoices(models.TextChoices):
     PCC = "pcc", _("Police and crime commissioner")
     JOINT_AUTHORITY = "joint_authority", _("Joint authority")
     JOINT_COMMITTEE = "joint_committee", _("Joint committee")
-    PSB_GROUP = "psb_group", _(
-        "Organisation representing a group of public sector bodies"
-    )
-    PSB_PROFESSION = "psb_profession", _(
-        "Organisation representing a profession across public sector bodies"
-    )
+    PSB_GROUP = "psb_group", _("Organisation representing a group of public sector bodies")
+    PSB_PROFESSION = "psb_profession", _("Organisation representing a profession across public sector bodies")
 
     @classmethod
     def get_label(cls, code: str | None) -> str | None:

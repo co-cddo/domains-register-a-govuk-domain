@@ -83,9 +83,7 @@ def create_sample_application(
 
     registrar = models.Registrar.objects.get(pk=registrar_index)
 
-    registrar_person = models.RegistrarPerson.objects.create(
-        name=person_names[2], registrar=registrar
-    )
+    registrar_person = models.RegistrarPerson.objects.create(name=person_names[2], registrar=registrar)
 
     application = models.Application(
         reference=f"GOVUK{datetime.today().strftime('%Y%m%d')}{reference_suffix}",

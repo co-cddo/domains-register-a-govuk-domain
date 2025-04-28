@@ -1,19 +1,20 @@
-from django.db import models
 from django.core.validators import MinLengthValidator
-
+from django.db import models
 from simple_history.models import HistoricalRecords
-from .application import Application
+
 from request_a_govuk_domain.request.models.review_choices import (
-    RegistrarDetailsReviewChoices,
     DomainNameAvailabilityReviewChoices,
-    RegistrantOrgReviewChoices,
-    RegistrantPersonReviewChoices,
-    RegistrantPermissionReviewChoices,
-    PolicyExemptionReviewChoices,
     DomainNameRulesReviewChoices,
+    PolicyExemptionReviewChoices,
+    RegistrantOrgReviewChoices,
+    RegistrantPermissionReviewChoices,
+    RegistrantPersonReviewChoices,
     RegistrantSeniorSupportReviewChoices,
+    RegistrarDetailsReviewChoices,
     RegistryDetailsReviewChoices,
 )
+
+from .application import Application
 
 NOTES_MAX_LENGTH = 5000
 NOTES_MIN_LENGTH = 1
@@ -31,9 +32,7 @@ class Review(models.Model):
 
     application = models.OneToOneField(Application, on_delete=models.CASCADE)
 
-    registrar_details = models.CharField(
-        choices=RegistrarDetailsReviewChoices.choices, blank=False, null=True
-    )
+    registrar_details = models.CharField(choices=RegistrarDetailsReviewChoices.choices, blank=False, null=True)
     registrar_details_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH,
         validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
@@ -51,9 +50,7 @@ class Review(models.Model):
         null=True,
     )
 
-    registrant_org = models.CharField(
-        choices=RegistrantOrgReviewChoices.choices, blank=False, null=True
-    )
+    registrant_org = models.CharField(choices=RegistrantOrgReviewChoices.choices, blank=False, null=True)
     registrant_org_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH,
         validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
@@ -61,9 +58,7 @@ class Review(models.Model):
         null=True,
     )
 
-    registrant_person = models.CharField(
-        choices=RegistrantPersonReviewChoices.choices, blank=False, null=True
-    )
+    registrant_person = models.CharField(choices=RegistrantPersonReviewChoices.choices, blank=False, null=True)
     registrant_person_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH,
         validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
@@ -71,9 +66,7 @@ class Review(models.Model):
         null=True,
     )
 
-    registrant_permission = models.CharField(
-        choices=RegistrantPermissionReviewChoices.choices, blank=False, null=True
-    )
+    registrant_permission = models.CharField(choices=RegistrantPermissionReviewChoices.choices, blank=False, null=True)
     registrant_permission_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH,
         validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
@@ -81,9 +74,7 @@ class Review(models.Model):
         null=True,
     )
 
-    policy_exemption = models.CharField(
-        choices=PolicyExemptionReviewChoices.choices, blank=False, null=True
-    )
+    policy_exemption = models.CharField(choices=PolicyExemptionReviewChoices.choices, blank=False, null=True)
     policy_exemption_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH,
         validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
@@ -91,9 +82,7 @@ class Review(models.Model):
         null=True,
     )
 
-    domain_name_rules = models.CharField(
-        choices=DomainNameRulesReviewChoices.choices, blank=False, null=True
-    )
+    domain_name_rules = models.CharField(choices=DomainNameRulesReviewChoices.choices, blank=False, null=True)
     domain_name_rules_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH,
         validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
@@ -111,9 +100,7 @@ class Review(models.Model):
         null=True,
     )
 
-    registry_details = models.CharField(
-        choices=RegistryDetailsReviewChoices.choices, blank=False, null=True
-    )
+    registry_details = models.CharField(choices=RegistryDetailsReviewChoices.choices, blank=False, null=True)
     registry_details_notes = models.TextField(
         max_length=NOTES_MAX_LENGTH,
         validators=[MinLengthValidator(NOTES_MIN_LENGTH)],
@@ -134,14 +121,12 @@ class Review(models.Model):
     def is_approvable(self) -> bool:
         if (
             self.registrar_details == RegistrarDetailsReviewChoices.APPROVE
-            and self.domain_name_availability
-            == DomainNameAvailabilityReviewChoices.APPROVE
+            and self.domain_name_availability == DomainNameAvailabilityReviewChoices.APPROVE
             and self.registrant_org == RegistrantOrgReviewChoices.APPROVE
             and self.registrant_person == RegistrantPersonReviewChoices.APPROVE
             and (
                 not self.application.written_permission_evidence
-                or self.registrant_permission
-                == RegistrantPermissionReviewChoices.APPROVE
+                or self.registrant_permission == RegistrantPermissionReviewChoices.APPROVE
             )
             and (
                 not self.application.policy_exemption_evidence
@@ -149,8 +134,7 @@ class Review(models.Model):
             )
             and (
                 not self.application.ministerial_request_evidence
-                or self.registrant_senior_support
-                == RegistrantSeniorSupportReviewChoices.APPROVE
+                or self.registrant_senior_support == RegistrantSeniorSupportReviewChoices.APPROVE
             )
             and self.domain_name_rules == DomainNameRulesReviewChoices.APPROVE
             and self.registry_details == RegistryDetailsReviewChoices.APPROVE

@@ -12,11 +12,7 @@ def select_storage():
     with the same name.
     :return:
     """
-    return (
-        S3Boto3Storage(location=TEMP_STORAGE_ROOT)
-        if settings.S3_STORAGE_ENABLED
-        else FileSystemStorage()
-    )
+    return S3Boto3Storage(location=TEMP_STORAGE_ROOT) if settings.S3_STORAGE_ENABLED else FileSystemStorage()
 
 
 def s3_root_storage():
