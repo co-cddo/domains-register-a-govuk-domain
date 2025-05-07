@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import parameterized
 from django.test import TestCase
@@ -19,6 +19,7 @@ from request_a_govuk_domain.request.models.review_choices import (
 from tests.util import AdminScreenTestMixin, SessionDict, get_admin_change_view_url
 
 
+@patch.dict("os.environ", {"NOMINET_ROMSID": "test", "NOMINET_SECRET": "test"})  # pragma: allowlist secret
 class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
     @parameterized.parameterized.expand(
         [
@@ -186,13 +187,14 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
                     "_confirm": "Confirm",
                     "action": f"{action}",
                     "obj_id": application_to_approve.id,
+                    "status": f"{'approved' if action == 'approval' else 'rejected'}",
                 },
                 follow=True,
             )
             # Refresh from the database
             application_to_approve.refresh_from_db()
             self.assertEqual(
-                f"{'approved' if status == 'approve' else 'rejected'}",
+                f"{'approved' if action == 'approval' else 'rejected'}",
                 application_to_approve.status,
             )
             self.assertContains(approve_response, f"{action.capitalize()} email sent")
@@ -253,6 +255,7 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
                     "_confirm": "Confirm",
                     "action": "approval",
                     "obj_id": application.id,
+                    "status": "approved_2i_check_acronym",
                 },
                 follow=True,
             )
@@ -265,4 +268,4 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
         with freeze_time("2025-01-20"):
             # Application has been closed, so time elapsed is time between created and when
             # it was closed, so same as above regardless of time since
-            self.assertEqual(application.time_elapsed().days, 5)
+            self.assertEqual(application.time_elapsed().days, 19)

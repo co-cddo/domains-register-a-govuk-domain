@@ -2,20 +2,59 @@
 
 {% block content %}
 <div class="submit-row">
-    <h1>Confirm application {{ action }}</h1>
-    <div>Reason for {{ action }}: {{ reason }}</div>
-    <div>Confirming the {{ action }} will:</div>
-    <ul>
-        <li>Send an email confirming the {{ action }} to {{ obj.registrar_person.email_address }}</li>
-        <li>Mark the application as closed</li>
-    </ul>
+  <h1>Confirm application {{ action }}</h1>
+  <div>Reason for {{ action }}: {{ reason }}</div>
+  <div>Confirming the {{ action }} will:</div>
+  <ul>
+    <li>Send an email confirming the {{ action }} to {{ obj.registrar_person.email_address }}</li>
+    <li>Mark the application as closed</li>
+  </ul>
 
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="{{ action }}">
-        <input type="hidden" name="obj_id" value="{{ obj.id }}">
-        <input type="submit" value="Confirm" class="default" name="_confirm">
-        <input type="submit" value="Cancel" class="default" name="_cancel">
-    </form>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="{{ action }}">
+    <input type="hidden" name="obj_id" value="{{ obj.id }}">
+    {% if action == 'approval' %}
+      <label for="status">Select Approval Reason:</label>
+      <select id="status" name="status">
+        {% for choice in sub_status_choices %}
+          <option value="{{ choice.status }}">{{ choice.label }}</option>
+        {% endfor %}
+      </select>
+    {% elif action == 'rejection' %}
+      <label for="status">Select Rejection Reason:</label>
+      <select id="status" name="status">
+        {% for choice in sub_status_choices %}
+          <option value="{{ choice.status }}">{{ choice.label }}</option>
+        {% endfor %}
+      </select>
+    {% endif %}
+
+    <!-- Reason field, initially hidden -->
+    <div id="reason-container">
+      <label for="ar_reason">Provide a reason for {{ action }}:</label>
+      <textarea id="ar_reason" name="ar_reason" rows="4" cols="50"></textarea>
+    </div>
+
+    <div>
+      <input type="submit" value="Confirm" class="default" name="_confirm">
+      <input type="submit" value="Cancel" class="default" name="_cancel">
+    </div>
+  </form>
 </div>
+
+<script nonce="{{request.csp_nonce}}">
+    document.addEventListener("DOMContentLoaded", function () {
+        const statusDropdown = document.getElementById("status");
+        const reasonContainer = document.getElementById("reason-container");
+
+        // Initialize the reason container visibility based on the current dropdown value
+        reasonContainer.style.display = statusDropdown.value === "other" ? "block" : "none";
+
+        // Add event listener for the dropdown
+        statusDropdown.addEventListener("change", function () {
+            reasonContainer.style.display = statusDropdown.value === "other" ? "block" : "none";
+        });
+    });
+</script>
 {% endblock %}
