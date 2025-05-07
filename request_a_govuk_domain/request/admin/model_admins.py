@@ -165,6 +165,8 @@ class ReportDownLoadMixin:
                     row.append(self.get_business_days_to_complete(obj))  # New column
                 elif field == "Application reviewed by":
                     row.append(obj.last_updated_by)  # New column
+                elif field == "Approval Rejection comment":
+                    row.append(obj.approval_or_rejection_comment)
                 else:
                     row.append(self.format_field(obj, field))
             writer.writerow(row)
@@ -618,6 +620,7 @@ class ApplicationAdmin(
             "Date application is processed",  # New column
             "Business days to complete",  # New column
             "Application reviewed by",  # New column
+            "Approval Rejection comment",  # New column
         ]
         return field_names
 
