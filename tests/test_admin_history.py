@@ -1,5 +1,5 @@
 from time import sleep
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from django.test import TestCase
 
@@ -15,6 +15,7 @@ from tests.util import (
 )
 
 
+@patch.dict("os.environ", {"NOMINET_ROMSID": "test", "NOMINET_SECRET": "test"})  # pragma: allowlist secret
 class SimpleHistoryTest(AdminScreenTestMixin, TestCase):
     def test_application_history(self):
         """
@@ -59,7 +60,7 @@ class SimpleHistoryTest(AdminScreenTestMixin, TestCase):
         # raise Exception(f"Review id is {review.id}, redirect chain {review_response.redirect_chain[0][0]}")
         self.admin_client.post(
             review_response.redirect_chain[0][0],
-            {"action": "approval", "obj_id": application.id, "_confirm": "Confirm"},
+            {"action": "approval", "obj_id": application.id, "_confirm": "Confirm", "status": "approved"},
         )
         response = self.admin_client.get(get_admin_history_view_url(review))
         self.assertEqual(response.status_code, 200)
