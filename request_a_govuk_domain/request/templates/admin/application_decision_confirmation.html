@@ -44,17 +44,17 @@
 </div>
 
 <script nonce="{{request.csp_nonce}}">
-    document.addEventListener("DOMContentLoaded", function () {
-        const statusDropdown = document.getElementById("status");
-        const reasonContainer = document.getElementById("reason-container");
+  document.addEventListener("DOMContentLoaded", function () {
+    const statusDropdown = document.getElementById("status");
+    const reasonContainer = document.getElementById("reason-container");
 
-        // Initialize the reason container visibility based on the current dropdown value
-        reasonContainer.style.display = statusDropdown.value === "other" ? "block" : "none";
+    // Initialize the reason container visibility based on the current dropdown value
+    reasonContainer.style.display = statusDropdown.value === "other" ? "block" : "none";
 
-        // Add event listener for the dropdown
-        statusDropdown.addEventListener("change", function () {
-            reasonContainer.style.display = statusDropdown.value === "other" ? "block" : "none";
-        });
+    // Add event listener for the dropdown
+    statusDropdown.addEventListener("change", function () {
+      reasonContainer.style.display = statusDropdown.value === "other" ? "block" : "none";
     });
+  });
 </script>
 {% endblock %}
