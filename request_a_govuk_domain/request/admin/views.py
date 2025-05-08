@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.html import escape
 from django.views import View
 from django.views.generic import RedirectView
 
@@ -23,22 +24,38 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
+    def get_sub_status_choices(self, action):
+        """
+        Retrieve a list of sub-status choices for the application
+        based on the action (approval/rejection).
+        :param action: sub-status choices (approval or rejection).
+        :return: A list of dictionaries with keys 'status' and 'label'.
+        """
+        action_map = {"approval": "approved", "rejection": "rejected"}
+        action = action_map[action]
+        sub_status_list = [
+            {"status": status, "label": label} for status, label in ApplicationStatus.choices if action in status
+        ]
+        # Append the "other" key-value pair
+        sub_status_list.append({"status": "other", "label": "Other"})
+        return sub_status_list
+
     def get(self, request):
+        action = request.GET.get("action")
         obj = Application.objects.get(pk=request.GET.get("obj_id"))
         review = Review.objects.filter(application__id=obj.id).first()
+        sub_status_choices = self.get_sub_status_choices(action)
         context = {
             "obj": obj,
-            "action": request.GET.get("action"),
+            "action": action,
             "reason": review.reason,
+            "sub_status_choices": sub_status_choices,
         }
         return render(request, "admin/application_decision_confirmation.html", context)
 
     def _set_application_status(self, request):
         obj = Application.objects.get(pk=request.POST.get("obj_id"))
-        if request.POST.get("action") == "approval":
-            obj.status = ApplicationStatus.APPROVED
-        elif request.POST.get("action") == "rejection":
-            obj.status = ApplicationStatus.REJECTED
+        obj.status = ApplicationStatus(request.POST.get("status"))
         obj.time_decided = timezone.now()
         obj.save()
 
@@ -52,6 +69,13 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
                 approval_or_rejection = request.POST["action"].capitalize()
                 self.message_user(request, f"{approval_or_rejection} email sent", messages.SUCCESS)
                 obj = Application.objects.get(pk=request.GET.get("obj_id"))
+
+                # Validate and sanitize input
+                ar_reason = request.POST.get("ar_reason", "").strip()
+                sanitized_reason = escape(ar_reason)  # Sanitize input to prevent XSS
+                obj.approval_or_rejection_comment = sanitized_reason
+                obj.save()
+
                 LOGGER.info(f"Application {obj.reference} status set to {approval_or_rejection}")
                 return HttpResponseRedirect(reverse("admin:request_review_changelist"))
             except Exception as e:
@@ -82,7 +106,26 @@ class ChangeStatusView(View, admin.ModelAdmin):
                 ...
             ]
         """
-        excluded_statuses = [ApplicationStatus.APPROVED, ApplicationStatus.REJECTED]
+        excluded_statuses = [
+            ApplicationStatus.APPROVED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.APPROVED_2I_CHECK_ACRONYM,
+            ApplicationStatus.APPROVED_2I_CHECK_REGISTRANT,
+            ApplicationStatus.APPROVED_2I_CHANGE_DOMAIN_NAME,
+            ApplicationStatus.APPROVED_2I_GET_PERMISSION_LETTER,
+            ApplicationStatus.APPROVED_2I_CHECK_REGISTRY_DETAILS,
+            ApplicationStatus.APPROVED_PARKED,
+            ApplicationStatus.APPROVED_WENT_THROUGH_NAC,
+            ApplicationStatus.APPROVED_DOMAINS_TEAM_DISCUSSION,
+            ApplicationStatus.APPROVED_REVIEWER_CHANGE_DOMAIN_NAME_BEFORE_2I,
+            ApplicationStatus.APPROVED_REVIEWER_CHECK_REGISTRANT_BEFORE_2I,
+            ApplicationStatus.APPROVED_REVIEWER_CHECK_ACRONYM_BEFORE_2I,
+            ApplicationStatus.APPROVED_REVIEWER_CHECK_REGISTRY_DETAILS_BEFORE_2I,
+            ApplicationStatus.APPROVED_REVIEWER_CHANGE_NAME_BEFORE_2I,
+            ApplicationStatus.REJECTED_WITH_NAC,
+            ApplicationStatus.REJECTED_DUPLICATE_APPLICATION,
+            ApplicationStatus.REJECTED_REGISTRAR_ERROR,
+        ]
         status_list = [
             {"status": status, "label": label}
             for status, label in ApplicationStatus.choices
