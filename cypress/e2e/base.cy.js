@@ -422,17 +422,13 @@ Cypress.Commands.add('logInAsAdmin', () => {
   cy.get('#id_username').clear().type('admin')
   cy.get('#id_password').clear().type('ilovedomains')
   cy.get('input[type=submit]').click()
-  cy.checkPageTitleIncludes('Site administration')
+  cy.checkPageTitleIncludes('Welcome, admin')
 })
 
 
 Cypress.Commands.add('deleteAllApplications', () => {
-  cy.visit('/admin')
-  cy.get('#id_username').clear().type('admin')
-  cy.get('#id_password').clear().type('ilovedomains')
-  cy.get('input[type=submit]').click()
-  cy.checkPageTitleIncludes('Site administration')
-  cy.get('a[href="/admin/request/application/"]').eq(0).click()
+  cy.logInAsAdmin()
+  cy.visit('/admin/request/application/')
   cy.get('body')
     .then(body => {
       if (body.find('#action-toggle').length) {
@@ -454,7 +450,7 @@ Cypress.Commands.add('checkApplicationIsOnBackend', app => {
   // Then check it's there in the admin panel, with the correct data
   cy.get('@ref').then(ref => {
     cy.logInAsAdmin()
-    cy.get('a[href="/admin/request/application/"]').eq(0).click()
+    cy.visit('/admin/request/application/')
     cy.get('a').contains(ref.trim()).click()
     if (app.domain) cy.get('#id_domain_name').should('have.value', app.domain)
     if (app.registrar_org) cy.get('#id_registrar_org option[selected]').should('include.text', app.registrar_org)

@@ -140,11 +140,6 @@ urlpatterns = [
         ChangeStatusView.as_view(),
         name="change_status_view",
     ),
-    path(
-        "admin/dashboard/",
-        AdminDashboardView.as_view(),
-        name="admin_dashboard",
-    ),
     re_path(
         r"^admin/request/review_by_ref/(?P<ref>GOVUK.+)/$",
         ReviewByRefView.as_view(),
@@ -155,6 +150,7 @@ urlpatterns = [
         ApplicationByRefView.as_view(),
         name="admin_application_by_reference",
     ),
+    path("admin/", AdminDashboardView.as_view(), name="admin_dashboard"),
     path("admin/", admin.site.urls),
     path(
         "registrant-type-fail/",
