@@ -1,6 +1,6 @@
 import csv
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import django.db.models.fields.files
@@ -153,15 +153,55 @@ class ReportDownLoadMixin:
             for field in field_names:
                 if field == "date_submitted":
                     row.append(self.format_date(obj.time_submitted))
-                elif field == "application_month":
+                elif field == "Organisation type":
+                    row.append("")  # Empty column
+                elif field == "Application month":
                     row.append(self.get_application_month(obj.time_submitted))
-                elif field == "days_taken_to_decide":
-                    row.append(self.get_days_between(obj))
+                elif field == "Calendar days to complete":
+                    row.append(self.get_days_between(obj))  # Renamed column
+                elif field == "Date application is processed":
+                    row.append(self.get_date_application_processed(obj))  # New column
+                elif field == "Business days to complete":
+                    row.append(self.get_business_days_to_complete(obj))  # New column
+                elif field == "Application reviewed by":
+                    row.append(obj.last_updated_by)  # New column
                 else:
                     row.append(self.format_field(obj, field))
             writer.writerow(row)
 
         return response
+
+    def get_application_month(self, date):
+        """
+        Get the application month from the date_submitted field.
+        :param date:
+        :return: application month in 'April' format if date is in April.
+        """
+        return date.strftime("%B") if date else ""
+
+    def get_date_application_processed(self, app: Application) -> str:
+        """
+        Get the date the application was processed (approved or rejected).
+        :param app: Application object
+        :return: Date as a string
+        """
+        if app.status in [ApplicationStatus.APPROVED, ApplicationStatus.REJECTED]:
+            return self.format_date(app.time_decided)
+        return ""
+
+    def get_business_days_to_complete(self, app: Application) -> int:
+        """
+        Calculate the number of business days to complete the application.
+        :param app: Application object
+        :return: Number of business days
+        """
+        if app.time_decided:
+            calendar_days = self.get_days_between(app)
+            weekends = sum(
+                1 for day in range(calendar_days) if (app.time_submitted + timedelta(days=day)).weekday() >= 5
+            )
+            return calendar_days - weekends
+        return 0
 
     def format_field(self, obj, field):
         """
@@ -184,14 +224,6 @@ class ReportDownLoadMixin:
         :return: formatted date string
         """
         return date.strftime("%d/%m/%Y") if date else ""
-
-    def get_application_month(self, date):
-        """
-        Get the application month from the date_submitted field.
-        :param date:
-        :return: application month in 'January 2025' format
-        """
-        return date.strftime("%B %Y") if date else ""
 
     def get_days_between(self, app: Application) -> int:
         return app.time_elapsed().days
@@ -579,9 +611,13 @@ class ApplicationAdmin(
             "date_submitted",
             "registrar_org",
             "domain_name",
+            "Organisation type",  # New empty column
             "status",
-            "application_month",
-            "days_taken_to_decide",
+            "Application month",
+            "Calendar days to complete",  # Renamed column
+            "Date application is processed",  # New column
+            "Business days to complete",  # New column
+            "Application reviewed by",  # New column
         ]
         return field_names
 
