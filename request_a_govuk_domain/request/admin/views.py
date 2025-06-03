@@ -1,14 +1,14 @@
 import logging
 from datetime import timedelta
 
+from django import forms
 from django.contrib import admin, messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.html import escape
 from django.views import View
 from django.views.generic import RedirectView
 
@@ -17,6 +17,17 @@ from request_a_govuk_domain.request.models import Application, ApplicationStatus
 from .email import send_approval_or_rejection_email
 
 LOGGER = logging.getLogger(__name__)
+
+
+class DecisionForm(forms.Form):
+    """
+    Form for confirming the decision on an application.
+    """
+
+    obj_id = forms.IntegerField(widget=forms.HiddenInput())
+    action = forms.CharField(widget=forms.HiddenInput())
+    status = forms.ChoiceField(choices=ApplicationStatus.choices)
+    ar_reason = forms.CharField(required=False, widget=forms.Textarea)
 
 
 class DecisionConfirmationView(View, admin.ModelAdmin):
@@ -45,35 +56,45 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
         obj = Application.objects.get(pk=request.GET.get("obj_id"))
         review = Review.objects.filter(application__id=obj.id).first()
         sub_status_choices = self.get_sub_status_choices(action)
+
+        # Prepare choices for the DecisionForm
+        status_choices = [(choice["status"], choice["label"]) for choice in sub_status_choices]
+
+        initial_data = {
+            "obj_id": obj.id,
+            "action": action,
+        }
+        form = DecisionForm(initial=initial_data)
+        form.fields["status"].choices = status_choices  # Set choices dynamically
+
         context = {
             "obj": obj,
             "action": action,
             "reason": review.reason,
             "sub_status_choices": sub_status_choices,
+            "form": form,
         }
         return render(request, "admin/application_decision_confirmation.html", context)
 
-    def _set_application_status(self, request):
-        obj = Application.objects.get(pk=request.POST.get("obj_id"))
-        obj.status = ApplicationStatus(request.POST.get("status"))
+    def _set_application_status(self, obj, status):
+        obj.status = ApplicationStatus(status)
         obj.time_decided = timezone.now()
         obj.save()
 
     def post(self, request):
-        if "_confirm" in request.POST:
+        form = DecisionForm(request.POST)
+        if form.is_valid():
             try:
+                obj = get_object_or_404(Application, pk=form.cleaned_data["obj_id"])
                 send_approval_or_rejection_email(request)
-                self._set_application_status(request)
+                self._set_application_status(obj, form.cleaned_data["status"])
                 # To show the backend app user a message "[Approval/Rejection] email sent", get the type of
                 # action ( i.e. whether it is Approval or Rejection )
                 approval_or_rejection = request.POST["action"].capitalize()
                 self.message_user(request, f"{approval_or_rejection} email sent", messages.SUCCESS)
-                obj = Application.objects.get(pk=request.GET.get("obj_id"))
 
-                # Validate and sanitize input
-                ar_reason = request.POST.get("ar_reason", "").strip()
-                sanitized_reason = escape(ar_reason)  # Sanitize input to prevent XSS
-                obj.approval_or_rejection_comment = sanitized_reason
+                # Save sanitized reason
+                obj.approval_or_rejection_comment = form.cleaned_data["ar_reason"]
                 obj.save()
 
                 LOGGER.info(f"Application {obj.reference} status set to {approval_or_rejection}")
@@ -81,6 +102,20 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
             except Exception as e:
                 LOGGER.error("Failed to send the email", exc_info=True)
                 self.message_user(request, f"Email send failed: {e}", messages.ERROR)
+        else:
+            action = request.POST.get("action")
+            obj = get_object_or_404(Application, pk=request.POST.get("obj_id"))
+            review = Review.objects.filter(application__id=obj.id).first()
+            sub_status_choices = self.get_sub_status_choices(action)
+            context = {
+                "obj": obj,
+                "action": action,
+                "reason": review.reason,
+                "sub_status_choices": sub_status_choices,
+                "form": form,
+            }
+            return render(request, "admin/application_decision_confirmation.html", context)
+
         review = Review.objects.filter(application__id=request.POST.get("obj_id")).first()
         return HttpResponseRedirect(reverse("admin:request_review_change", args=[review.id]))
 
