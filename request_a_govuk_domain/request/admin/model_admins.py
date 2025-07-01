@@ -1,6 +1,6 @@
 import csv
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import django.db.models.fields.files
@@ -151,19 +151,65 @@ class ReportDownLoadMixin:
         for obj in queryset:
             row = []
             for field in field_names:
-                if field == "date_submitted":
+                if field == "Date Submitted":
                     row.append(self.format_date(obj.time_submitted))
-                elif field == "application_month":
+                elif field == "Registrar org":
+                    row.append(obj.registrar_org.name if obj.registrar_org else "")
+                elif field == "Domain name":
+                    row.append(obj.domain_name)
+                elif field == "Organisation type":
+                    row.append("")
+                elif field == "Application month":
                     row.append(self.get_application_month(obj.time_submitted))
-                elif field == "days_taken_to_decide":
+                elif field == "Calendar days to complete":
                     row.append(self.get_days_between(obj))
+                elif field == "Date application is processed":
+                    row.append(self.get_date_application_processed(obj))
+                elif field == "Business days to complete":
+                    row.append(self.get_business_days_to_complete(obj))
+                elif field == "Application reviewed by":
+                    row.append(obj.last_updated_by)
+                elif field == "Approval Rejection comment":
+                    row.append(obj.approval_or_rejection_comment)
                 else:
                     row.append(self.format_field(obj, field))
             writer.writerow(row)
 
         return response
 
-    def format_field(self, obj, field):
+    def get_application_month(self, date: datetime | None) -> str:
+        """
+        Get the application month from the date_submitted field.
+        :param date:
+        :return: application month in 'April' format if date is in April.
+        """
+        return date.strftime("%B") if date else ""
+
+    def get_date_application_processed(self, app: Application) -> str:
+        """
+        Get the date the application was processed (approved or rejected).
+        :param app: Application object
+        :return: Date as a string
+        """
+        if app.status in [ApplicationStatus.APPROVED, ApplicationStatus.REJECTED]:
+            return self.format_date(app.time_decided)
+        return ""
+
+    def get_business_days_to_complete(self, app: Application) -> int:
+        """
+        Calculate the number of business days to complete the application.
+        :param app: Application object
+        :return: Number of business days
+        """
+        if app.time_decided:
+            calendar_days = self.get_days_between(app)
+            weekends = sum(
+                1 for day in range(calendar_days) if (app.time_submitted + timedelta(days=day)).weekday() >= 5
+            )
+            return calendar_days - weekends
+        return 0
+
+    def format_field(self, obj: object, field: str) -> str:
         """
         Human readable names for the status and truncated datetime to date
         :param obj:
@@ -184,14 +230,6 @@ class ReportDownLoadMixin:
         :return: formatted date string
         """
         return date.strftime("%d/%m/%Y") if date else ""
-
-    def get_application_month(self, date):
-        """
-        Get the application month from the date_submitted field.
-        :param date:
-        :return: application month in 'January 2025' format
-        """
-        return date.strftime("%B %Y") if date else ""
 
     def get_days_between(self, app: Application) -> int:
         return app.time_elapsed().days
@@ -576,12 +614,17 @@ class ApplicationAdmin(
         """
         field_names = [
             "reference",
-            "date_submitted",
-            "registrar_org",
-            "domain_name",
+            "Date Submitted",
+            "Registrar org",
+            "Domain name",
+            "Organisation type",
             "status",
-            "application_month",
-            "days_taken_to_decide",
+            "Application month",
+            "Calendar days to complete",
+            "Date application is processed",
+            "Business days to complete",
+            "Application reviewed by",
+            "Approval Rejection comment",
         ]
         return field_names
 
