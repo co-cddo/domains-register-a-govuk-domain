@@ -210,8 +210,9 @@ class ReportDownLoadMixin:
         data = response.json()
         uk_holidays = [item["date"] for item in data["england-and-wales"]["events"]]
         uk_bank_holidays = pd.to_datetime(uk_holidays)
-
-        net_days = len(pd.bdate_range(app.time_submitted, app.time_decided, holidays=uk_bank_holidays))
+        # Convert to list of dates for pandas custom business day calculation
+        holidays_list = uk_bank_holidays.date.tolist() if hasattr(uk_bank_holidays, "date") else list(uk_bank_holidays)
+        net_days = len(pd.bdate_range(app.time_submitted, app.time_decided, freq="C", holidays=holidays_list))
 
         if net_days == 1:
             return 0
@@ -506,7 +507,7 @@ class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, ReportDownLoadMixin, ad
 
     @admin.display(description="Duration (days)")
     def time_decided_local_time(self, review: Review) -> str:
-        return str(review.application.time_elapsed().days)
+        return str(self.get_business_days_to_complete(review.application))
 
     @admin.display(description="Owner")
     def get_owner(self, obj):
@@ -652,7 +653,7 @@ class ApplicationAdmin(
 
     @admin.display(description="Duration (days)")
     def time_decided_local_time(self, app: Application) -> str:
-        return str(app.time_elapsed().days)
+        return str(self.get_business_days_to_complete(app))
 
     @admin.display(description="Last updated (UK time)")
     def last_updated_local_time(self, obj):
