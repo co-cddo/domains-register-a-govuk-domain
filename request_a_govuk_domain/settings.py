@@ -222,7 +222,7 @@ LOGGING = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-STATIC_URL = "/static/"
+STATIC_URL = "/assets/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # Django Whitenoise Configuration
 WHITENOISE_SKIP_COMPRESS_EXTENSIONS = [".map"]
