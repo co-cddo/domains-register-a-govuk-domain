@@ -1,10 +1,12 @@
 import csv
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import django.db.models.fields.files
 import markdown
+import pandas as pd
+import requests
 from django.contrib import admin, messages
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin.widgets import AdminFileWidget
@@ -201,13 +203,21 @@ class ReportDownLoadMixin:
         :param app: Application object
         :return: Number of business days
         """
-        if app.time_decided:
-            calendar_days = self.get_days_between(app)
-            weekends = sum(
-                1 for day in range(calendar_days) if (app.time_submitted + timedelta(days=day)).weekday() >= 5
-            )
-            return calendar_days - weekends
-        return 0
+        if not app.time_submitted or not app.time_decided or app.time_submitted == app.time_decided:
+            return 0
+
+        response = requests.get("https://www.gov.uk/bank-holidays.json")
+        data = response.json()
+        uk_holidays = [item["date"] for item in data["england-and-wales"]["events"]]
+        uk_bank_holidays = pd.to_datetime(uk_holidays)
+        # Convert to list of dates for pandas custom business day calculation
+        holidays_list = uk_bank_holidays.date.tolist() if hasattr(uk_bank_holidays, "date") else list(uk_bank_holidays)
+        net_days = len(pd.bdate_range(app.time_submitted, app.time_decided, freq="C", holidays=holidays_list))
+
+        if net_days == 1:
+            return 0
+        else:
+            return max(0, net_days - 1)
 
     def format_field(self, obj: object, field: str) -> str:
         """
@@ -497,7 +507,7 @@ class ReviewAdmin(SimpleHistoryAdmin, FileDownloadMixin, ReportDownLoadMixin, ad
 
     @admin.display(description="Duration (days)")
     def time_decided_local_time(self, review: Review) -> str:
-        return str(review.application.time_elapsed().days)
+        return str(self.get_business_days_to_complete(review.application))
 
     @admin.display(description="Owner")
     def get_owner(self, obj):
@@ -643,7 +653,7 @@ class ApplicationAdmin(
 
     @admin.display(description="Duration (days)")
     def time_decided_local_time(self, app: Application) -> str:
-        return str(app.time_elapsed().days)
+        return str(self.get_business_days_to_complete(app))
 
     @admin.display(description="Last updated (UK time)")
     def last_updated_local_time(self, obj):

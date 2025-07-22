@@ -61,3 +61,6 @@ repos:
         -    celery
         -    django_celery_results
         -    django-macros
+        -    pandas
+        -    requests
+        -    types-requests
