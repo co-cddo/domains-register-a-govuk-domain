@@ -78,7 +78,7 @@ class RegistrarOrgFilter(ApplicationFilterSupportMixin, SimpleListFilter):
     query_field = "registrar_org"
 
     def lookups(self, request, model_admin):
-        return list(u for u in Registrar.objects.values_list("id", "name"))
+        return list(u for u in Registrar.objects.values_list("id", "name").order_by("name"))
 
 
 class RegistrantOrgFilter(ApplicationFilterSupportMixin, SimpleListFilter):
@@ -91,7 +91,7 @@ class RegistrantOrgFilter(ApplicationFilterSupportMixin, SimpleListFilter):
     query_field = "registrant_org__name"
 
     def lookups(self, request, model_admin):
-        return list(u for u in Registrant.objects.values_list("name", "name").distinct())
+        return list(Registrant.objects.values_list("name", "name").distinct().order_by("name"))
 
 
 def wrap_with_application_filter(filter_class):
