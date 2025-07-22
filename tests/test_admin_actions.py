@@ -1,11 +1,12 @@
 from datetime import datetime
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 
 from request_a_govuk_domain.request import db
+from request_a_govuk_domain.request.admin.model_admins import ApplicationAdmin
 from request_a_govuk_domain.request.models import Application, Registrar
 
 
@@ -41,24 +42,29 @@ class ModelAdminActionsTestCase(TestCase):
         c = Client()
         c.login(username="superuser", password="secret")  # pragma: allowlist secret
 
-        response = c.post(
-            reverse(
-                "admin:request_application_changelist",
-            ),
-            data={
-                "action": "export",
-                "_selected_action": [app.pk],
-            },
-            follow=True,
-        )
+        # Patch get_business_days_to_complete to return a value
+        with patch.object(ApplicationAdmin, "get_business_days_to_complete", return_value=5):
+            response = c.post(
+                reverse(
+                    "admin:request_application_changelist",
+                ),
+                data={
+                    "action": "export",
+                    "_selected_action": [app.pk],
+                },
+                follow=True,
+            )
 
-        self.assertEqual(
-            response.get("Content-Disposition"),
-            f"attachment; filename=request.application_{datetime.today().strftime('%Y-%m-%d')}_data_backup.csv",
-        )
+            self.assertEqual(
+                response.get("Content-Disposition"),
+                f"attachment; filename=request.application_{datetime.today().strftime('%Y-%m-%d')}_data_backup.csv",
+            )
 
-        self.assertContains(response, "reference")
-        self.assertContains(response, "ABCDEFGHIJK")
+            self.assertContains(response, "reference")
+            self.assertContains(response, "ABCDEFGHIJK")
+            # Check if the business days to complete is included in the export
+            self.assertContains(response, "Business days to complete")
+            self.assertContains(response, "5")
 
 
 class SessionDict(dict):
