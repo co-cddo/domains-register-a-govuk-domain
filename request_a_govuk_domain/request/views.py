@@ -65,6 +65,7 @@ class StartSessionView(RedirectView):
         # User has clicked the green button, so they're
         # starting a new journey. Therefore delete the session data
         # so that no previous answer is shown in the new journey.
+        request.session.flush()
         request.session.pop(REGISTRATION_DATA, None)
         request.session.pop(APPLICATION_REFERENCE, None)
         return super().setup(request, *args, **kwargs)
@@ -478,6 +479,7 @@ class SuccessView(View):
             http_response = render(request, "success.html", {"reference": application_reference})
             # No need to store it anymore
             # We're finished, so clear the session data
+            request.session.flush()
             request.session.pop(REGISTRATION_DATA, None)
             request.session.pop(APPLICATION_REFERENCE, None)
             request.session.modified = True
