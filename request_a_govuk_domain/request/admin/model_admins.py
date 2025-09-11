@@ -197,6 +197,14 @@ class ReportDownLoadMixin:
             return self.format_date(app.time_decided)
         return ""
 
+    def _get_bank_holidays(self):
+        """Return a list of dates of UK bank holiday dates as returned by gov.uk"""
+        response = requests.get("https://www.gov.uk/bank-holidays.json")
+        response.raise_for_status()
+        data = response.json()
+        uk_holidays = [item["date"] for item in data["england-and-wales"]["events"]]
+        return uk_holidays
+
     def get_business_days_to_complete(self, app: Application) -> int:
         """
         Calculate the number of business days to complete the application.
@@ -205,13 +213,16 @@ class ReportDownLoadMixin:
         """
         if not app.time_submitted or not app.time_decided or app.time_submitted == app.time_decided:
             return 0
+        try:
+            uk_holidays = self._get_bank_holidays()
+            uk_bank_holidays = pd.to_datetime(uk_holidays)
+            holidays_list = (
+                uk_bank_holidays.date.tolist() if hasattr(uk_bank_holidays, "date") else list(uk_bank_holidays)
+            )
+        except Exception as e:
+            LOGGER.error(f"Error fetching holidays data: {e}")
+            holidays_list = []
 
-        response = requests.get("https://www.gov.uk/bank-holidays.json")
-        data = response.json()
-        uk_holidays = [item["date"] for item in data["england-and-wales"]["events"]]
-        uk_bank_holidays = pd.to_datetime(uk_holidays)
-        # Convert to list of dates for pandas custom business day calculation
-        holidays_list = uk_bank_holidays.date.tolist() if hasattr(uk_bank_holidays, "date") else list(uk_bank_holidays)
         net_days = len(pd.bdate_range(app.time_submitted, app.time_decided, freq="C", holidays=holidays_list))
 
         if net_days == 1:
