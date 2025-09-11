@@ -1,7 +1,3 @@
-**The project is in initial stages**
-
-**README file is in work-in-progress. It will be updated as the project progresses.**
-
 ## Application description
 
 The application is a frontend client to apply for gov.uk domains.
