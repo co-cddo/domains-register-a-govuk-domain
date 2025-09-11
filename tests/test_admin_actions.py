@@ -1,6 +1,7 @@
 from datetime import datetime
 from unittest.mock import Mock, patch
 
+import requests
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -65,6 +66,25 @@ class ModelAdminActionsTestCase(TestCase):
             # Check if the business days to complete is included in the export
             self.assertContains(response, "Business days to complete")
             self.assertContains(response, "5")
+
+    @patch("requests.get", side_effect=requests.exceptions.ConnectionError)
+    def test_get_holidays_data_fails(self, get_mock):
+        """
+        Test that if the call to get gov.uk holidays data fails, the admin action still works
+        """
+        request = Mock()
+        request.session = SessionDict({"registration_data": self.registration_data})
+        db.save_data_in_database("ABCDEFGHIJK", request)
+
+        c = Client()
+        c.login(username="superuser", password="secret")  # pragma: allowlist secret
+
+        # Assert that no exception is raised and the page loads
+        try:
+            response = c.get(reverse("admin:request_review_changelist"))
+        except requests.exceptions.ConnectionError:
+            self.fail("ConnectionError should be handled gracefully by the admin action.")
+        self.assertEqual(response.status_code, 200)
 
 
 class SessionDict(dict):
