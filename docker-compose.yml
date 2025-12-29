@@ -90,7 +90,7 @@ services:
 
   postgres:
     platform: linux/amd64
-    image: postgres
+    image: postgres:16
     ports:
       - 54321:5432
     environment:
