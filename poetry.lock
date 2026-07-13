@@ -838,31 +838,31 @@ python-dateutil = ">=2.7"
 
 [[package]]
 name = "govuk-frontend-django"
-version = "0.4.0"
+version = "0.17.0"
 description = "Django functionality to help when building a GOV.UK website."
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "govuk_frontend_django-0.4.0-py3-none-any.whl", hash = "sha256:254179fcbbac748a741ca62cac6a9ad38b95b7211c342b0868dea5cac0897582"},
-    {file = "govuk_frontend_django-0.4.0.tar.gz", hash = "sha256:2a699b94b1d240c48086ddea7bd7140da0a868eedb2450bb79db03871a06b442"},
+    {file = "govuk_frontend_django-0.17.0-py3-none-any.whl", hash = "sha256:83f3eb0d5e95fd64f0f059cc77a7cff327664979412443ed630d738c1a43af4c"},
+    {file = "govuk_frontend_django-0.17.0.tar.gz", hash = "sha256:cffcab665ef563c090521ee5a1b1ee31234e965dc97df128d2ac9bdfbe6da725"},
 ]
 
 [package.dependencies]
-Django = ">=4.1.9,<5.0.0"
-govuk-frontend-jinja = "2.7.0"
+Django = ">=4.1.9,<6"
+govuk-frontend-jinja = "3.6.0"
 jinja2 = ">=3.1.2,<4.0.0"
 
 [[package]]
 name = "govuk-frontend-jinja"
-version = "2.7.0"
+version = "3.6.0"
 description = "GOV.UK Frontend Jinja Macros"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "govuk-frontend-jinja-2.7.0.tar.gz", hash = "sha256:de797f6a1247da50c70677a9b50197e3198e0001dbabe9e17703f33e72818646"},
-    {file = "govuk_frontend_jinja-2.7.0-py3-none-any.whl", hash = "sha256:94ee83e6c766922204c2b26005779cd4a44c2e9d6f1c7d9a0c2868a41785be39"},
+    {file = "govuk_frontend_jinja-3.6.0-py3-none-any.whl", hash = "sha256:4c1d430d7679a45fa62075bee7c4cbab10b6ccd46e3123f81e0ddfc0a51f58a2"},
+    {file = "govuk_frontend_jinja-3.6.0.tar.gz", hash = "sha256:04392645d733f3e5737cadc781035fae95c28e0c864f601519c7f266e2406831"},
 ]
 
 [package.dependencies]
@@ -2637,4 +2637,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "3bb9d76e1e5a70e33d31970ee0e6434fef7bb0f427587fcc5bc621dd7c3ecb12"
+content-hash = "aa01c3a5ffcb5a6167b28241cb963803188da446a7e7574b32869551b09e7847"
