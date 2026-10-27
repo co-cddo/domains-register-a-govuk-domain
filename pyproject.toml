@@ -1,61 +1,73 @@
-[tool.poetry]
+[project]
 name = "request_a_govuk_domain"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
-license = "MIT"
 readme = "README.md"
+license = { text = "MIT" }
+# Migration from poetry to uv note:
+# Poetry used carets whereas uv doesnt support that under its PEP 621 form
+# so ^4.2 becomes >=4.2,<5 which is the same as Poetry does with a caret.
+requires-python = ">=3.12,<4"
+dependencies = [
+    "django>=4.2,<5",
+    "django-environ>=0.11.2,<0.12",
+    "django-postgres-extra>=2.0.8,<3",
+    "psycopg2-binary>=2.9.9,<3",
+    "whitenoise>=6.6.0,<7",
+    "govuk-frontend-django>=0.4.0,<0.5",
+    "crispy-forms-gds>=0.3.0,<0.4",
+    "django-phonenumber-field[phonenumberslite]>=7.3.0,<8",
+    "django-simple-history>=3.5.0,<4",
+    "clamd>=1.0.2,<2",
+    "notifications-python-client>=9.0.0,<10",
+    "python-dotenv>=1.0.1,<2",
+    "django-admin-interface>=0.28.6,<0.29",
+    "django-storages[s3]>=1.14.2,<2",
+    "django-csp>=3.8,<4",
+    "sentry-sdk[django]>=2.8.0,<3",
+    "markdown>=3.6,<4",
+    "django-celery-results>=2.5.1,<3",
+    "celery[sqs]>=5.4.0,<6",
+    "django-redis-cache>=3.0.1,<4",
+    "django-macros>=0.4.0,<0.5",
+    "pandas>=2.3.1,<3",
+    "requests>=2.32.4,<3",
+    "gunicorn",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-django = "^4.2"
-django-environ = "^0.11.2"
-django-postgres-extra = "^2.0.8"
-psycopg2-binary = "^2.9.9"
-whitenoise = "^6.6.0"
-govuk-frontend-django = "^0.4.0"
-crispy-forms-gds = "^0.3.0"
-django-phonenumber-field = {extras = ["phonenumberslite"], version = "^7.3.0"}
-django-simple-history = "^3.5.0"
-pre-commit = "^3.6.2"
-clamd = "^1.0.2"
-notifications-python-client = "^9.0.0"
-python-dotenv = "^1.0.1"
-django-admin-interface = "^0.28.6"
-django-storages = {extras = ["s3"], version = "^1.14.2"}
-django-csp = "^3.8"
-sentry-sdk = {extras = ["django"], version = "^2.8.0"}
-markdown = "^3.6"
-django-celery-results = "^2.5.1"
-celery = {extras = ["sqs"], version = "^5.4.0"}
-django-redis-cache = "^3.0.1"
-django-macros = "^0.4.0"
-pandas = "^2.3.1"
-requests = "^2.32.4"
-types-requests = "^2.32.4.20250611"
+[dependency-groups]
+dev = [
+    "pre-commit>=3.6.2,<4",
+    "ruff>=0.17.2,<0.18",
+    "ipdb>=0.13.13,<0.14",
+    "web-pdb>=1.6.2,<2",
+    "types-markdown>=3.6.0.20240316,<4",
+    "types-six>=1.17.0,<2",
+    "types-requests>=2.32.4.20250611,<3",
+    "parameterized>=0.9.0,<0.10",
+    "mypy>=1.15.0,<2",
+    "django-stubs[compatible-mypy]>=5.1.3,<6",
+]
+test = [
+    "freezegun>=1.5.1,<2",
+]
 
+[tool.uv]
+package = false
 
-[tool.poetry.group.dev.dependencies]
-isort = "^5.13.2"
-flake8 = "^7.0.0"
-black = ">=24.3,<27.0"
-ipdb = "^0.13.13"
-web-pdb = "^1.6.2"
-types-markdown = "^3.6.0.20240316"
-parameterized = "^0.9.0"
-mypy = "^1.15.0"
-django-stubs = {extras = ["compatible-mypy"], version = "^5.1.3"}
-
-
-[tool.poetry.group.test.dependencies]
-freezegun = "^1.5.1"
-
-[tool.isort]
-profile = "black"
-
-[tool.black]
+[tool.ruff]
 # https://gds-way.cloudapps.digital/manuals/programming-languages/python/python.html#maximum-line-length-of-120-characters
 line-length = 120
+extend-exclude = ["request_a_govuk_domain/static", "seed", "cache", "wsgi.py", "asgi.py"]
+
+[tool.ruff.lint]
+# E/W/F replace flake8, I replaces isort, C90 keeps the flake8 max-complexity check.
+select = ["E", "F", "W", "I", "C90"]
+# E203 whitespace before ':' in slice
+ignore = ["E203"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 14
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -64,7 +76,3 @@ plugins = ['mypy_django_plugin.main']
 
 [tool.django-stubs]
 django_settings_module = "request_a_govuk_domain.settings"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"

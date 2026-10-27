@@ -1,66 +1,62 @@
+default_stages: [pre-commit]
+
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
     hooks:
-    -   id: check-yaml
+      - id: check-yaml
         args: [--allow-multiple-documents]
-    -   id: end-of-file-fixer
+      - id: end-of-file-fixer
         exclude: request_a_govuk_domain/static|seed/
-    -   id: trailing-whitespace
+      - id: trailing-whitespace
         exclude: request_a_govuk_domain/static|seed/
-# Sort import statements
-- repo: https://github.com/pycqa/isort
-  rev: 5.12.0
-  hooks:
-    - id: isort
-      name: isort
-# Enforce code style
--   repo: https://github.com/psf/black
-    rev: 23.12.0
+
+  # Runs the ruff pinned in infra/uv.lock
+  - repo: local
     hooks:
-    -   id: black
-        exclude: request_a_govuk_domain/static|seed/
-# Linting
--   repo: https://github.com/PyCQA/flake8
-    rev: 6.1.0
+    - id: ruff-check
+      name: ruff check
+      entry: uv run ruff check --fix
+      language: system
+      types_or: [python, pyi]
+    - id: ruff-format
+      name: ruff format
+      entry: uv run ruff format
+      language: system
+      types_or: [python, pyi]
+
+  # Keep infra/uv.lock in sync with pyproject.toml
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.13.5
     hooks:
-    -   id: flake8
-        exclude: request_a_govuk_domain/static|seed/
-# https://gds-way.cloudapps.digital/standards/pre-commit-hooks.html
--   repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
+      - id: uv-lock
+        files: ^(pyproject\.toml|uv\.lock)$
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
     hooks:
-    -   id: detect-secrets
+      - id: detect-secrets
         exclude: (^\.github/workflows/)|package\.lock\.json|(^tests/fixtures/)|request_a_govuk_domain/static|seed|request_a_govuk_domain/request/static/.+.js
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.0
+
+  # Static type checking
+  - repo: local
     hooks:
-    -   id: mypy
-        exclude: wsgi.py
+      - id: mypy
+        name: mypy
+        entry: uv run mypy .
+        language: system
+        types: [python]
+        pass_filenames: false
         verbose: true
-        args: [--pretty]
-        additional_dependencies:
-        -    types-six
-        -    'django-stubs[compatible-mypy]'
-        -    django-admin-interface
-        -    django-environ
-        -    psycopg2-binary
-        -    django-postgres-extra
-        -    govuk-frontend-django
-        -    crispy-forms-gds
-        -    django-simple-history
-        -    django-phonenumbers
-        -    django-phonenumber-field
-        -    django-storages
-        -    django-cors-headers
-        -    boto3
-        -    clamd
-        -    notifications-python-client
-        -    markdown
-        -    types-Markdown
-        -    celery
-        -    django_celery_results
-        -    django-macros
-        -    pandas
-        -    requests
-        -    types-requests
+
+  # actionlint: GitHub Actions workflow linting
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+
+  # shellcheck: shell script linting (workflow run blocks)
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck

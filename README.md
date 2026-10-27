@@ -53,9 +53,9 @@ The team can view and assess registration applications via the Django admin site
 
 You can start developing directly with the docker setup. The container will reload the app if you make changes to the source code, and tests will run with `make test`.
 
-If you're more comfortable running the application locally without docker, you will need Poetry for dependency management and packaging. To install Poetry, follow the instructions at https://python-poetry.org/
+If you're more comfortable running the application locally without docker, you will need [uv](https://docs.astral.sh/uv/) for dependency management. It installs the Python version pinned in `.python-version` for you.
 
-To install dependencies for local development ( e.g. when using IDE to make changes ) , use `poetry install`.
+To install dependencies for local development ( e.g. when using IDE to make changes ) , use `uv sync --all-groups`.
 
 This repository is set up with [pre-commit](https://pre-commit.com/) for style and error checking before every commit.
 You should install pre-commit, then run `pre-commit install` from within the project directory.
@@ -156,11 +156,11 @@ Following are some of the make commands:
 There is a unit test suite that is run when pushing to github. It can also be run manually
 with:
 
-`poetry run ./manage.py test`
+`uv run ./manage.py test`
 
 Some tests require clamav to run or will try to send email, so if you're working on something else you might want to run specific tests instead, with:
 
-`ENVIRONMENT=local poetry run ./manage.py tests.test_admin_approval.ModelAdminTestCase.test_create_approval_works_0_approve`
+`ENVIRONMENT=local uv run ./manage.py tests.test_admin_approval.ModelAdminTestCase.test_create_approval_works_0_approve`
 
 ## End-to-end testing
 
