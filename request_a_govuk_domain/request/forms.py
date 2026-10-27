@@ -273,9 +273,9 @@ class RegistryDetailsForm(forms.Form):
             Button("submit", "Continue"),
         )
         self.fields["registrant_role"].error_messages["required"] = "Enter the registrant's role name"
-        self.fields["registrant_contact_email"].error_messages[
-            "required"
-        ] = "Enter the registrant's role-based email address"
+        self.fields["registrant_contact_email"].error_messages["required"] = (
+            "Enter the registrant's role-based email address"
+        )
 
 
 class WrittenPermissionForm(forms.Form):
@@ -439,9 +439,9 @@ class DomainPurposeForm(forms.Form):
             ),
             Button("submit", "Continue"),
         )
-        self.fields["domain_purpose"].error_messages[
-            "required"
-        ] = "Select what you plan to use the .gov.uk domain name for"
+        self.fields["domain_purpose"].error_messages["required"] = (
+            "Select what you plan to use the .gov.uk domain name for"
+        )
 
 
 class ConfirmationForm(forms.Form):

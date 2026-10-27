@@ -36,7 +36,5 @@ class DomainsHTML(HTML):
                     %s
                   </strong>
                 </div>
-            """ % (
-            mark_safe(content),
-        )
+            """ % (mark_safe(content),)
         return HTML(snippet)

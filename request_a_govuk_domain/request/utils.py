@@ -128,7 +128,7 @@ def is_valid_session_data(rd: dict) -> bool:
     ):
         return False
     possible_registrant_types = [choice[0] for choice in RegistrantTypeChoices.choices]
-    if not rd.get("registrant_type") in possible_registrant_types:
+    if rd.get("registrant_type") not in possible_registrant_types:
         return False
 
     # Minister. Must be "yes" or "no" on route 2 and 8, otherwise None

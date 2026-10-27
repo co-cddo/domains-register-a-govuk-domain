@@ -36,32 +36,40 @@ class ApplicationStatus(models.TextChoices):
     # specific to the approval process
     APPROVED_2I_CHECK_ACRONYM = "approved_2i_check_acronym", _("Approved - 2i sent back to check acronym")
     APPROVED_2I_CHECK_REGISTRANT = "approved_2i_check_registrant", _("Approved - 2i sent back to check Registrant")
-    APPROVED_2I_CHANGE_DOMAIN_NAME = "approved_2i_change_domain_name", _(
-        "Approved - 2i sent back to change domain name"
+    APPROVED_2I_CHANGE_DOMAIN_NAME = (
+        "approved_2i_change_domain_name",
+        _("Approved - 2i sent back to change domain name"),
     )
-    APPROVED_2I_GET_PERMISSION_LETTER = "approved_2i_get_permission_letter", _(
-        "Approved - 2i sent back to get permission letter"
+    APPROVED_2I_GET_PERMISSION_LETTER = (
+        "approved_2i_get_permission_letter",
+        _("Approved - 2i sent back to get permission letter"),
     )
-    APPROVED_2I_CHECK_REGISTRY_DETAILS = "approved_2i_check_registry_details", _(
-        "Approved - 2i sent back to check Registry published details"
+    APPROVED_2I_CHECK_REGISTRY_DETAILS = (
+        "approved_2i_check_registry_details",
+        _("Approved - 2i sent back to check Registry published details"),
     )
     APPROVED_PARKED = "approved_parked", _("Approved - Parked")
     APPROVED_WENT_THROUGH_NAC = "approved_went_through_nac", _("Approved - Went through NAC")
     APPROVED_DOMAINS_TEAM_DISCUSSION = "approved_domains_team_discussion", _("Approved - Domains team discussion")
-    APPROVED_REVIEWER_CHANGE_DOMAIN_NAME_BEFORE_2I = "approved_reviewer_change_domain_name_before_2i", _(
-        "Approved - Reviewer sent back to change domain name before 2i"
+    APPROVED_REVIEWER_CHANGE_DOMAIN_NAME_BEFORE_2I = (
+        "approved_reviewer_change_domain_name_before_2i",
+        _("Approved - Reviewer sent back to change domain name before 2i"),
     )
-    APPROVED_REVIEWER_CHECK_REGISTRANT_BEFORE_2I = "approved_reviewer_check_registrant_before_2i", _(
-        "Approved - Reviewer sent back to check Registrant before 2i"
+    APPROVED_REVIEWER_CHECK_REGISTRANT_BEFORE_2I = (
+        "approved_reviewer_check_registrant_before_2i",
+        _("Approved - Reviewer sent back to check Registrant before 2i"),
     )
-    APPROVED_REVIEWER_CHECK_ACRONYM_BEFORE_2I = "approved_reviewer_check_acronym_before_2i", _(
-        "Approved - Reviewer sent back to check acronym before 2i"
+    APPROVED_REVIEWER_CHECK_ACRONYM_BEFORE_2I = (
+        "approved_reviewer_check_acronym_before_2i",
+        _("Approved - Reviewer sent back to check acronym before 2i"),
     )
-    APPROVED_REVIEWER_CHECK_REGISTRY_DETAILS_BEFORE_2I = "approved_reviewer_check_registry_details_before_2i", _(
-        "Approved - Reviewer sent back to check Registry published details before 2i"
+    APPROVED_REVIEWER_CHECK_REGISTRY_DETAILS_BEFORE_2I = (
+        "approved_reviewer_check_registry_details_before_2i",
+        _("Approved - Reviewer sent back to check Registry published details before 2i"),
     )
-    APPROVED_REVIEWER_CHANGE_NAME_BEFORE_2I = "approved_reviewer_change_name_before_2i", _(
-        "Approved - Reviewer sent back to change name before 2i"
+    APPROVED_REVIEWER_CHANGE_NAME_BEFORE_2I = (
+        "approved_reviewer_change_name_before_2i",
+        _("Approved - Reviewer sent back to change name before 2i"),
     )
 
     # specific to the rejection process

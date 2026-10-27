@@ -149,9 +149,9 @@ class ReportDownLoadMixin:
         field_names = self.get_field_names()
 
         response = HttpResponse(content_type="text/csv")
-        response[
-            "Content-Disposition"
-        ] = f"attachment; filename={meta}_{datetime.today().strftime('%Y-%m-%d')}_data_backup.csv"
+        response["Content-Disposition"] = (
+            f"attachment; filename={meta}_{datetime.today().strftime('%Y-%m-%d')}_data_backup.csv"
+        )
         writer = csv.writer(response)
 
         writer.writerow(field_names)

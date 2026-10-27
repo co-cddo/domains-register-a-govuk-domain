@@ -13,7 +13,6 @@ create_sample_data manually as it is run by the local-init.sh script by default.
 
 """
 
-
 import csv
 import logging
 import os
