@@ -1,0 +1,7 @@
+# Python version for the app is pinned in .python-version
+# The below python version is for IaC ie infra code
+
+AWS_CDK_VERSION=2.1146.1
+NODE_VERSION=24.22.1
+PYTHON_VERSION=3.13
+UV_VERSION=0.13.5

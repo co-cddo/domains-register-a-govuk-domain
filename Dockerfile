@@ -1,25 +1,30 @@
 FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 
-ARG POETRY_ARGS="--no-root --no-ansi --only main"
+# Extra flags for `uv sync`
+# docker-compose passes --all-groups for a dev image
+ARG UV_SYNC_ARGS="--no-dev"
 
 # shadow-utils is needed for useradd command used below
-RUN dnf -y install python3.12 python3.12-devel python3-pip shadow-utils && \
+RUN dnf -y install python3.12 shadow-utils && \
     ln -s /usr/bin/python3.12 /usr/bin/python && \
-    python3.12 -m ensurepip && \
-    pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 
 RUN useradd -u 1000 -m govuk_domain
 
-RUN pip install --no-cache-dir poetry gunicorn
+COPY --from=ghcr.io/astral-sh/uv:0.13.5 /uv /uvx /bin/
 
-COPY pyproject.toml poetry.lock /app/
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
+    UV_PYTHON=/usr/bin/python3.12 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    PATH="/opt/venv/bin:$PATH"
+
+COPY pyproject.toml uv.lock /app/
 
 WORKDIR /app
 
-RUN poetry config virtualenvs.create false && \
-    poetry install ${POETRY_ARGS}
+RUN uv sync --frozen --no-cache ${UV_SYNC_ARGS}
 
 COPY manage.py /app/
 COPY request_a_govuk_domain /app/request_a_govuk_domain

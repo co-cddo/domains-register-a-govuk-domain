@@ -19,7 +19,7 @@ x-api-base: &api-base
   build:
     context: .
     args:
-      POETRY_ARGS: "--no-root --no-ansi"
+      UV_SYNC_ARGS: "--all-groups"
 
 
 services:
@@ -48,7 +48,7 @@ services:
     ports:
       - "8010:8000"
     #Added the reload flag so the application will be reloaded when the source is modified.
-    entrypoint: [ "/usr/local/bin/gunicorn", "request_a_govuk_domain.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "120", "--access-logfile", "-", "--reload" ]
+    entrypoint: [ "/opt/venv/bin/gunicorn", "request_a_govuk_domain.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "120", "--access-logfile", "-", "--reload" ]
     environment:
       <<: *common-application-variables
     volumes:
@@ -74,8 +74,8 @@ services:
     build:
       context: .
       args:
-        POETRY_ARGS: "--no-root --no-ansi"
-    entrypoint: [ "/usr/local/bin/celery", "-A", "request_a_govuk_domain" ]
+        UV_SYNC_ARGS: "--all-groups"
+    entrypoint: [ "/opt/venv/bin/celery", "-A", "request_a_govuk_domain" ]
     command: [ "worker", "-B", "-l", "INFO" ]
     environment:
       <<: *common-application-variables

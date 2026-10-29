@@ -27,12 +27,14 @@ class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
             ["reviewer", "superuser", "reviewer"],
             ["superuser", "superuser", "superuser"],
         ],
-        name_func=lambda testcase_func, param_num, param: "%s_%s"
-        % (
-            testcase_func.__name__,
-            parameterized.parameterized.to_safe_name(
-                "_".join(["owner_is", str(param.args[0]), "updated_by", param.args[1]]),
-            ),
+        name_func=lambda testcase_func, param_num, param: (
+            "%s_%s"
+            % (
+                testcase_func.__name__,
+                parameterized.parameterized.to_safe_name(
+                    "_".join(["owner_is", str(param.args[0]), "updated_by", param.args[1]]),
+                ),
+            )
         ),
     )
     def test_last_modified_is_set_correctly(self, owner, changed_by, expected_owner):
