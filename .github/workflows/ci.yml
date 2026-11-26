@@ -2,17 +2,84 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 permissions:
   contents: read
 
 jobs:
-  test:
-    name: Lint, unit and integration tests
+  unit-test:
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: govuk_domain
+          POSTGRES_USER: govuk_domain
+          POSTGRES_PASSWORD: govuk_domain
+        ports:
+          - "5432:5432"
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      clamav:
+        image: clamav/clamav:latest
+        ports:
+          - "3310:3310"
+      s3:
+        image: adobe/s3mock:3.12.0
+        env:
+          initialBuckets: registration-app-media-root-local
+          debug: "true"
+          retainFilesOnExit: "false"
+        ports:
+          - "9090:9090"
+    name: Run unit tests
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+        with:
+          node: true
+      - name: Install dependencies
+        run: |
+          uv sync --frozen --all-groups
+      - name: Run linters
+        run: uv run pre-commit run --all-files
+      - name: Init server
+        env:
+          SECRET_KEY: blah
+          DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
+          DOMAIN_NAME: http://localhost:8010
+        run: |
+          uv run ./manage.py collectstatic --noinput
+          uv run ./manage.py migrate --noinput
+          uv run ./manage.py create_reviewer_group
+          uv run ./manage.py loaddata ./seed/users.json
+          uv run ./manage.py create_sample_data
+      - name: Run unit tests
+        env:
+          DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
+          AWS_ENDPOINT_URL_S3: http://127.0.0.1:9090
+          CLAMD_TCP_ADDR: 127.0.0.1
+          S3_STORAGE_ENABLED: "True"
+          AWS_ACCESS_KEY_ID: "dummy-key-id"
+          AWS_SECRET_ACCESS_KEY: "dummy-key"
+          ENVIRONMENT: 'local'
+          NOMINET_ROMSID: test_romsid
+          NOMINET_SECRET: test_secret # pragma: allowlist secret
+          SECRET_KEY: unneeded
+          DOMAIN_NAME: http://localhost:8010
+        run: uv run python manage.py test -v 2
+
+  integration-test:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    needs: [ unit-test ]
 
     services:
       postgres:
@@ -49,10 +116,9 @@ jobs:
         with:
           node: "true"
 
-      - name: Install dependencies and run linters
+      - name: Install dependencies
         run: |
           uv sync --frozen --all-groups
-          uv run pre-commit run --all-files
 
       - name: Init server
         env:
@@ -81,18 +147,3 @@ jobs:
           ENVIRONMENT: 'local'
         with:
           start: sh ./.github/workflows/start-server.sh
-
-      - name: Run unit tests
-        env:
-          DATABASE_URL: postgresql://govuk_domain:govuk_domain@localhost:5432/govuk_domain
-          AWS_ENDPOINT_URL_S3: http://127.0.0.1:9090
-          CLAMD_TCP_ADDR: 127.0.0.1
-          S3_STORAGE_ENABLED: "True"
-          AWS_ACCESS_KEY_ID: "dummy-key-id"
-          AWS_SECRET_ACCESS_KEY: "dummy-key"
-          ENVIRONMENT: 'local'
-          NOMINET_ROMSID: test_romsid
-          NOMINET_SECRET: test_secret # pragma: allowlist secret
-          SECRET_KEY: unneeded
-          DOMAIN_NAME: http://localhost:8010
-        run: uv run python manage.py test -v 2

@@ -11,11 +11,10 @@ name: Deploy - Dev/Test/MISP
 #
 
 on:
-#  Only deploy if the ci is successful
-  workflow_run:
-    workflows: ["CI"]
-    types:
-      - completed
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
