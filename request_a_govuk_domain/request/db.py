@@ -161,6 +161,7 @@ def save_data_in_database(reference, request):
     except Exception as e:
         logger.error(
             f"""Exception while saving data. Exception: {type(e).__name__} - {str(e)} ,
-             Registration data: {registration_data.get('domain_name')=} {registration_data.get('registrar_organisation')=}"""
+             Registration data: {registration_data.get('domain_name')=} {registration_data.get(
+                'registrar_organisation')=}"""
         )
         raise e

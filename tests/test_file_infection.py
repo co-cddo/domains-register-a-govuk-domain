@@ -11,7 +11,8 @@ class FileInfectionTestCase(TestCase):
     def test_file_infection_fail(self):
         # test infected signature from calmd library
         infected_signature = base64.b64decode(
-            b"WDVPIVAlQEFQWzRcUFpYNTQoUF4pN0NDKTd9JEVJQ0FSLVNUQU5EQVJELUFOVElWSVJVUy1URVNU\nLUZJTEUhJEgrSCo=\n"  # pragma: allowlist secret
+            b"WDVPIVAlQEFQWzRcUFpYNTQoUF4pN0NDKTd9JEVJQ0FSLVNUQU5EQVJELUFOVElWSVJVUy1URVNU"  # pragma: allowlist secret
+            b"\nLUZJTEUhJEgrSCo=\n"
         )
         with self.assertRaises(ValidationError):
             validate_file_infection(BytesIO(infected_signature))

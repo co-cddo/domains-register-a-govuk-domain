@@ -146,7 +146,8 @@ class Migration(migrations.Migration):
                         choices=[
                             (
                                 "approve",
-                                "Name is available and organisation has no existing third-level .gov.uk domain - approve",
+                                "Name is available and organisation has no existing third-level .gov.uk domain"
+                                " - approve",
                             ),
                             (
                                 "holding",
@@ -443,7 +444,8 @@ class Migration(migrations.Migration):
                         choices=[
                             (
                                 "approve",
-                                "Name is available and organisation has no existing third-level .gov.uk domain - approve",
+                                "Name is available and organisation has no existing third-level"
+                                " .gov.uk domain - approve",
                             ),
                             (
                                 "holding",
