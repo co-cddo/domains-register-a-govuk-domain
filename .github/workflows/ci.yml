@@ -80,7 +80,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: "dummy-key"
           ENVIRONMENT: 'local'
         with:
-          start: ./.github/workflows/start-server.sh
+          start: sh ./.github/workflows/start-server.sh
 
       - name: Run unit tests
         env:
