@@ -19,11 +19,19 @@ from .email import send_approval_or_rejection_email
 LOGGER = logging.getLogger(__name__)
 
 
-class DecisionConfirmationView(View, admin.ModelAdmin):
-    @method_decorator(staff_member_required)
+class AdminPermissionCheckMixin:
+    """
+    Mixin to check if the user is an admin before allowing access to certain views.
+    """
+
     def dispatch(self, *args, **kwargs):
+        # Only admin users are allowed to change the status of the application
+        if self.request.user.is_anonymous or not self.request.user.is_superuser:
+            return HttpResponseRedirect(reverse("admin:login"))
         return super().dispatch(*args, **kwargs)
 
+
+class DecisionConfirmationView(AdminPermissionCheckMixin, View, admin.ModelAdmin):
     def get_sub_status_choices(self, action):
         """
         Retrieve a list of sub-status choices for the application
@@ -85,11 +93,7 @@ class DecisionConfirmationView(View, admin.ModelAdmin):
         return HttpResponseRedirect(reverse("admin:request_review_change", args=[review.id]))
 
 
-class ChangeStatusView(View, admin.ModelAdmin):
-    @method_decorator(staff_member_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
+class ChangeStatusView(AdminPermissionCheckMixin, View, admin.ModelAdmin):
     def get_status_choices(self):
         """
         Retrieve a list of status choices for the application, excluding APPROVED and REJECTED statuses.
@@ -166,7 +170,7 @@ class ChangeStatusView(View, admin.ModelAdmin):
         return HttpResponseRedirect(reverse("admin:request_review_change", args=[review.id]))
 
 
-class AdminDashboardView(View, admin.ModelAdmin):
+class AdminDashboardView(AdminPermissionCheckMixin, View, admin.ModelAdmin):
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
