@@ -26,7 +26,8 @@ def domain_validator(domain_name: str):
         raise ValidationError("The .gov.uk domain name must be between 3 and 63 characters")
     if not domain_input_regexp.match(domain_name):
         raise ValidationError(
-            "The .gov.uk domain name must only include a to z, alphanumberic characters and special characters such as hyphens."
+            "The .gov.uk domain name must only include a to z, "
+            "alphanumberic characters and special characters such as hyphens."
         )
 
 
@@ -75,7 +76,8 @@ class RegistrarDetailsForm(forms.Form):
         self.helper.layout = Layout(
             Fieldset(
                 DomainsHTML(
-                    '<h2 class="govuk-heading-m" autocomplete="false">Organisation name</h2>'  # pragma: allowlist secret
+                    '<h2 class="govuk-heading-m" autocomplete="false">'
+                    "Organisation name</h2>"  # pragma: allowlist secret
                 ),
                 Field.text("registrar_organisation"),
             ),
@@ -338,7 +340,9 @@ class MinisterForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields["minister"] = forms.ChoiceField(
             label=f"Has a central government minister requested the {self.domain_name} domain name?",
-            help_text="If the requested domain name does not meet the domain naming rules, it could still be approved if it has ministerial support.<br />For example, the domain is needed to support the creation of a new government department or body.",
+            help_text="If the requested domain name does not meet the domain naming rules,"
+            " it could still be approved if it has ministerial support.<br />For example,"
+            " the domain is needed to support the creation of a new government department or body.",
             choices=(("yes", "Yes"), ("no", "No")),
             widget=forms.RadioSelect,
             error_messages={

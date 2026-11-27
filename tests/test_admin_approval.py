@@ -1,11 +1,13 @@
 from unittest.mock import Mock, patch
 
 import parameterized
-from django.test import TestCase
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
 from freezegun import freeze_time
 
 from request_a_govuk_domain.request import db
-from request_a_govuk_domain.request.models import Application, Review
+from request_a_govuk_domain.request.models import Application, ApplicationStatus, Review
 from request_a_govuk_domain.request.models.review_choices import (
     DomainNameRulesReviewChoices,
     PolicyExemptionReviewChoices,
@@ -21,6 +23,85 @@ from tests.util import AdminScreenTestMixin, SessionDict, get_admin_change_view_
 
 @patch.dict("os.environ", {"NOMINET_ROMSID": "test", "NOMINET_SECRET": "test"})  # pragma: allowlist secret
 class ModelAdminTestCase(AdminScreenTestMixin, TestCase):
+    @parameterized.parameterized.expand(
+        [
+            (
+                "change_status",
+                "change_status_view",
+                "status",
+                ApplicationStatus.ARCHIVE,
+                ApplicationStatus.ARCHIVE,
+            ),
+            (
+                "decision_confirmation",
+                "application_confirm",
+                "approval",
+                ApplicationStatus.APPROVED,
+                ApplicationStatus.APPROVED,
+            ),
+        ]
+    )
+    def test_only_superusers_can_change_or_confirm_status(
+        self,
+        route_description,
+        route_name,
+        action,
+        submitted_status,
+        permitted_status,
+    ):
+        request = Mock()
+        request.session = SessionDict({"registration_data": self.registration_data})
+        db.save_data_in_database("ABCDEFGHIJK", request)
+        application = Application.objects.get(reference="ABCDEFGHIJK")
+
+        staff_user = User.objects.create_user(username="staff", is_staff=True)
+        regular_user = User.objects.create_user(username="regular")
+        test_cases = [
+            ("anonymous", None, False),
+            ("regular user", regular_user, False),
+            ("staff user", staff_user, False),
+            ("superuser", self.superuser, True),
+        ]
+
+        for description, user, can_change_status in test_cases:
+            with self.subTest(user=description):
+                application.status = ApplicationStatus.NEW
+                application.save(update_fields=["status"])
+
+                client = Client()
+                if user:
+                    client.force_login(user)
+
+                data = {
+                    "_confirm": "Confirm",
+                    "obj_id": application.id,
+                    "status": submitted_status,
+                }
+                if route_name == "application_confirm":
+                    data["action"] = action
+
+                query = f"?obj_id={application.id}"
+                if route_name == "application_confirm":
+                    query += f"&action={action}"
+
+                with patch("request_a_govuk_domain.request.admin.views.send_approval_or_rejection_email") as send_email:
+                    response = client.post(
+                        f"{reverse(route_name)}{query}",
+                        data=data,
+                    )
+
+                application.refresh_from_db()
+                if can_change_status:
+                    self.assertEqual(response.status_code, 302)
+                    self.assertEqual(application.status, permitted_status)
+                    if route_name == "application_confirm":
+                        send_email.assert_called_once()
+                else:
+                    self.assertEqual(response.status_code, 302)
+                    self.assertIn("/admin/login/", response["Location"])
+                    self.assertEqual(application.status, ApplicationStatus.NEW)
+                    send_email.assert_not_called()
+
     @parameterized.parameterized.expand(
         [
             [None, "superuser", "superuser"],

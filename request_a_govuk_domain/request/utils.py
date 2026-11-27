@@ -358,7 +358,9 @@ def variable_page_content(_request):
         context = {
             "PHASE_CLASS": "",
             "PHASE_HEADER": "Beta",
-            "PHASE_CONTENT": "<div class='govuk-phase-banner__text'>This is a new service. Help us improve it, <a class='govuk-link' href='https://surveys.domains.gov.uk/s/VCVZSB/' target='_blank'>report a problem or give your feedback (opens in new tab)</a>.</div>",
+            "PHASE_CONTENT": "<div class='govuk-phase-banner__text'>This is a new service. Help us improve it, "
+            "<a class='govuk-link' href='https://surveys.domains.gov.uk/s/VCVZSB/' target='_blank'>"
+            "report a problem or give your feedback (opens in new tab)</a>.</div>",
         }
 
     # Google Tag Manager ID for inclusion in the HTML markup
